@@ -2,9 +2,9 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Limpet library dependencies
 Bundle-SymbolicName: info.limpet.libs;singleton:=true
-Bundle-Version: 1.0.7
+Bundle-Version: 1.0.11
 Bundle-Vendor: MWC
-Bundle-RequiredExecutionEnvironment: JavaSE-1.7
+Bundle-RequiredExecutionEnvironment: JavaSE-11
 Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: .,
  libs/commons-math3-3.5.jar,
@@ -112,3 +112,4 @@ Export-Package: org.apache.commons.csv,
  tec.units.ri.internal.format
 Require-Bundle: org.eclipse.draw2d,
  org.eclipse.jface
+Automatic-Module-Name: info.limpet.libs

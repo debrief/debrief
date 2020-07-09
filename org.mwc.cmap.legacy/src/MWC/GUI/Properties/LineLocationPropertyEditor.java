@@ -1,20 +1,22 @@
-/*
- *    Debrief - the Open Source Maritime Analysis Application
- *    http://debrief.info
+/*******************************************************************************
+ * Debrief - the Open Source Maritime Analysis Application
+ * http://debrief.info
  *
- *    (C) 2000-2014, PlanetMayo Ltd
+ * (C) 2000-2020, Deep Blue C Technology Ltd
  *
- *    This library is free software; you can redistribute it and/or
- *    modify it under the terms of the Eclipse Public License v1.0
- *    (http://www.eclipse.org/legal/epl-v10.html)
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the Eclipse Public License v1.0
+ * (http://www.eclipse.org/legal/epl-v10.html)
  *
- *    This library is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
- */
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *******************************************************************************/
+
 package MWC.GUI.Properties;
 
 // Copyright MWC 1999, Debrief 3 Project
+
 // $RCSfile: LineLocationPropertyEditor.java,v $
 // @author $Author: Ian.Mayo $
 // @version $Revision: 1.2 $
@@ -47,67 +49,55 @@ package MWC.GUI.Properties;
 // Initial revision
 //
 
-
 import java.beans.PropertyEditorSupport;
 
-public class LineLocationPropertyEditor extends PropertyEditorSupport
-{
+public class LineLocationPropertyEditor extends PropertyEditorSupport {
 
-  final static public int START = 0;
-  final static public int MIDDLE = 1;
-  final static public int END = 2;
+	final static public int START = 0;
+	final static public int MIDDLE = 1;
+	final static public int END = 2;
 
-  String [] _myTags;
+	String[] _myTags;
 
-  protected Integer _myLineLocation;
+	protected Integer _myLineLocation;
 
-  public String[] getTags()
-  {
-    if(_myTags == null)
-    {
-      _myTags = new String[] {"Start",
-                       "Middle",
-                       "End"};
-    }
-    return _myTags;
-  }
+	@Override
+	public String getAsText() {
+		String res = null;
+		final int index = _myLineLocation.intValue();
+		res = getTags()[index];
+		return res;
+	}
 
-  public Object getValue()
-  {
-    return _myLineLocation;
-  }
+	@Override
+	public String[] getTags() {
+		if (_myTags == null) {
+			_myTags = new String[] { "Start", "Middle", "End" };
+		}
+		return _myTags;
+	}
 
+	@Override
+	public Object getValue() {
+		return _myLineLocation;
+	}
 
+	@Override
+	public void setAsText(final String val) {
+		for (int i = 0; i < getTags().length; i++) {
+			final String thisStr = getTags()[i];
+			if (thisStr.equals(val))
+				_myLineLocation = new Integer(i);
+		}
+	}
 
-  public void setValue(final Object p1)
-  {
-    if(p1 instanceof Integer)
-    {
-      _myLineLocation = (Integer)p1;
-    }
-    else if(p1 instanceof String)
-    {
-      final String val = (String) p1;
-      setAsText(val);
-    }
-  }
-
-  public void setAsText(final String val)
-  {
-    for(int i=0;i<getTags().length;i++)
-    {
-      final String thisStr = getTags()[i];
-      if(thisStr.equals(val))
-        _myLineLocation = new Integer(i);
-    }
-  }
-
-  public String getAsText()
-  {
-    String res = null;
-    final int index = _myLineLocation.intValue();
-    res = getTags()[index];
-    return res;
-  }
+	@Override
+	public void setValue(final Object p1) {
+		if (p1 instanceof Integer) {
+			_myLineLocation = (Integer) p1;
+		} else if (p1 instanceof String) {
+			final String val = (String) p1;
+			setAsText(val);
+		}
+	}
 }
-

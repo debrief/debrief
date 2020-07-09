@@ -1,18 +1,21 @@
-/*
- *    Debrief - the Open Source Maritime Analysis Application
- *    http://debrief.info
+/*******************************************************************************
+ * Debrief - the Open Source Maritime Analysis Application
+ * http://debrief.info
  *
- *    (C) 2000-2014, PlanetMayo Ltd
+ * (C) 2000-2020, Deep Blue C Technology Ltd
  *
- *    This library is free software; you can redistribute it and/or
- *    modify it under the terms of the Eclipse Public License v1.0
- *    (http://www.eclipse.org/legal/epl-v10.html)
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the Eclipse Public License v1.0
+ * (http://www.eclipse.org/legal/epl-v10.html)
  *
- *    This library is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
- */
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *******************************************************************************/
+
 package MWC.GUI.Properties.Swing;
+
+import java.awt.Dimension;
 
 // Copyright MWC 1999, Debrief 3 Project
 // $RCSfile: SwingDatePropertyEditor.java,v $
@@ -97,196 +100,196 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import javax.swing.SwingConstants;
 
 import MWC.GUI.Dialogs.DialogFactory;
 import MWC.GenericData.HiResDate;
 import MWC.Utilities.TextFormatting.DebriefFormatDateTime;
 
-public class SwingDatePropertyEditor extends
-  MWC.GUI.Properties.DatePropertyEditor implements java.awt.event.FocusListener
-{
-  /////////////////////////////////////////////////////////////
-  // member variables
-  ////////////////////////////////////////////////////////////
+public class SwingDatePropertyEditor extends MWC.GUI.Properties.DatePropertyEditor
+		implements java.awt.event.FocusListener {
 
-  /**
-   * field to edit the date
-   */
-  JTextField _theDate;
+	/////////////////////////////////////////////////////////////
+	// member variables
+	////////////////////////////////////////////////////////////
 
-  /**
-   * field to edit the time
-   */
-  JTextField _theTime;
+	/**
+	 * field to edit the date
+	 */
+	JTextField _theDate;
 
-  /**
-   * label to show the microsecodns
-   */
-  JLabel _theMicrosTxt;
+	/**
+	 * field to edit the time
+	 */
+	JTextField _theTime;
 
-  /**
-   * panel to hold everything
-   */
-  JPanel _theHolder;
+	/**
+	 * label to show the microsecodns
+	 */
+	JLabel _theMicrosTxt;
 
-  /////////////////////////////////////////////////////////////
-  // constructor
-  ////////////////////////////////////////////////////////////
+	/**
+	 * panel to hold everything
+	 */
+	JPanel _theHolder;
 
-  /////////////////////////////////////////////////////////////
-  // member functions
-  ////////////////////////////////////////////////////////////
+	/**
+	 * Prefered size of the JTextFields
+	 */
+	final Dimension jtextFieldDimension = new Dimension(75, 20);
 
-  /**
-   * build the editor
-   */
-  public java.awt.Component getCustomEditor()
-  {
-    _theHolder = new JPanel();
+	/////////////////////////////////////////////////////////////
+	// constructor
+	////////////////////////////////////////////////////////////
 
-    final java.awt.BorderLayout bl1 = new java.awt.BorderLayout();
-    bl1.setVgap(0);
-    bl1.setHgap(0);
-    final java.awt.BorderLayout bl2 = new java.awt.BorderLayout();
-    bl2.setVgap(0);
-    bl2.setHgap(0);
+	/////////////////////////////////////////////////////////////
+	// member functions
+	////////////////////////////////////////////////////////////
 
-    final JPanel lPanel = new JPanel();
-    lPanel.setLayout(bl1);
-    final JPanel rPanel = new JPanel();
-    rPanel.setLayout(bl2);
+	/**
+	 * user wants to edit the microseconds. give him a popup
+	 */
+	void editMicrosPressed() {
+		// To change body of created methods use File | Settings | File Templates.
+		final Integer res = DialogFactory.getInteger("Edit microseconds", "Enter microseconds", _theMicros);
 
-    _theHolder.setLayout(new java.awt.GridLayout(0, 2));
-    _theDate = new JTextField();
-    _theDate.setToolTipText("Format: " + NULL_DATE);
-    _theTime = new JTextField();
-    _theTime.setToolTipText("Format: " + NULL_TIME);
-    lPanel.add("Center", new JLabel("Date:", JLabel.RIGHT));
-    lPanel.add("East", _theDate);
-    rPanel.add("Center", new JLabel("Time:", JLabel.RIGHT));
-    rPanel.add("East", _theTime);
+		// did user enter anything?
+		if (res != null) {
+			// store the data
+			_theMicros = res.intValue();
 
-    _theHolder.add(lPanel);
-    _theHolder.add(rPanel);
+			// and update the screen
+			resetData();
+		}
+	}
 
-    // get the fields to select the full text when they're selected
-    _theDate.addFocusListener(this);
-    _theTime.addFocusListener(this);
+	/**
+	 * Invoked when a component gains the keyboard focus.
+	 */
+	@Override
+	public void focusGained(final FocusEvent e) {
+		final java.awt.Component c = e.getComponent();
+		if (c instanceof JTextField) {
+			final JTextField jt = (JTextField) c;
+			jt.setSelectionStart(0);
+			jt.setSelectionEnd(jt.getText().length());
+		}
+	}
 
-    // right, just see if we are in hi-res DTG editing mode
-    if (HiResDate.inHiResProcessingMode())
-    {
-      // ok, add a button to allow the user to enter DTG data
-      final JButton editMicros = new JButton("Micros");
-      editMicros.addActionListener(new ActionListener()
-      {
-        public void actionPerformed(final ActionEvent e)
-        {
-          editMicrosPressed();
-        }
-      });
+	/**
+	 * Invoked when a component loses the keyboard focus.
+	 */
+	@Override
+	public void focusLost(final FocusEvent e) {
+	}
 
-      // ok, we'
-      _theMicrosTxt = new JLabel("..");
-      _theHolder.add(_theMicrosTxt);
-      _theHolder.add(editMicros);
-    }
+	/**
+	 * build the editor
+	 */
+	@Override
+	public java.awt.Component getCustomEditor() {
+		_theHolder = new JPanel();
 
-    resetData();
-    return _theHolder;
-  }
+		final java.awt.BorderLayout bl1 = new java.awt.BorderLayout();
+		bl1.setVgap(0);
+		bl1.setHgap(0);
+		final java.awt.BorderLayout bl2 = new java.awt.BorderLayout();
+		bl2.setVgap(0);
+		bl2.setHgap(0);
 
-  /**
-   * user wants to edit the microseconds.  give him a popup
-   */
-  void editMicrosPressed()
-  {
-    //To change body of created methods use File | Settings | File Templates.
-    final Integer res = DialogFactory.getInteger("Edit microseconds", "Enter microseconds",(int) _theMicros);
+		final JPanel lPanel = new JPanel();
+		lPanel.setLayout(bl1);
+		final JPanel rPanel = new JPanel();
+		rPanel.setLayout(bl2);
 
-    // did user enter anything?
-    if(res != null)
-    {
-      // store the data
-      _theMicros = res.intValue();
+		_theHolder.setLayout(new java.awt.GridLayout(0, 2));
+		_theDate = new JTextField();
+		_theDate.setPreferredSize(jtextFieldDimension);
+		_theDate.setToolTipText("Format: " + NULL_DATE);
+		_theTime = new JTextField();
+		_theTime.setPreferredSize(jtextFieldDimension);
+		_theTime.setToolTipText("Format: " + NULL_TIME);
+		lPanel.add("Center", new JLabel("Date:", SwingConstants.RIGHT));
+		lPanel.add("East", _theDate);
+		rPanel.add("Center", new JLabel("Time:", SwingConstants.RIGHT));
+		rPanel.add("East", _theTime);
 
-      // and update the screen
-      resetData();
-    }
-  }
+		_theHolder.add(lPanel);
+		_theHolder.add(rPanel);
 
-  /**
-   * get the date text as a string
-   */
-  protected String getDateText()
-  {
-    return _theDate.getText();
-  }
+		// get the fields to select the full text when they're selected
+		_theDate.addFocusListener(this);
+		_theTime.addFocusListener(this);
 
-  /**
-   * get the date text as a string
-   */
-  protected String getTimeText()
-  {
-    return _theTime.getText();
-  }
+		// right, just see if we are in hi-res DTG editing mode
+		if (HiResDate.inHiResProcessingMode()) {
+			// ok, add a button to allow the user to enter DTG data
+			final JButton editMicros = new JButton("Micros");
+			editMicros.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(final ActionEvent e) {
+					editMicrosPressed();
+				}
+			});
 
-  /**
-   * set the date text in string form
-   */
-  protected void setDateText(final String val)
-  {
-    if (_theHolder != null)
-    {
-      _theDate.setText(val);
-    }
-  }
+			// ok, we'
+			_theMicrosTxt = new JLabel("..");
+			_theHolder.add(_theMicrosTxt);
+			_theHolder.add(editMicros);
+		}
 
-  /**
-   * set the time text in string form
-   */
-  protected void setTimeText(final String val)
-  {
-    if (_theHolder != null)
-    {
-      _theTime.setText(val);
-    }
-  }
+		resetData();
+		return _theHolder;
+	}
 
-  /**
-   * show the user how many microseconds there are
-   *
-   * @param val
-   */
-  protected void setMicroText(final long val)
-  {
-    // output the number of microseconds
-    _theMicrosTxt.setText(DebriefFormatDateTime.formatMicros(new HiResDate(0, val)) + " micros");
-  }
+	/**
+	 * get the date text as a string
+	 */
+	@Override
+	protected String getDateText() {
+		return _theDate.getText();
+	}
 
-  /////////////////////////////
-  // focus listener support classes
-  /////////////////////////////
+	/**
+	 * get the date text as a string
+	 */
+	@Override
+	protected String getTimeText() {
+		return _theTime.getText();
+	}
 
+	/**
+	 * set the date text in string form
+	 */
+	@Override
+	protected void setDateText(final String val) {
+		if (_theHolder != null) {
+			_theDate.setText(val);
+		}
+	}
 
-  /**
-   * Invoked when a component gains the keyboard focus.
-   */
-  public void focusGained(final FocusEvent e)
-  {
-    final java.awt.Component c = e.getComponent();
-    if (c instanceof JTextField)
-    {
-      final JTextField jt = (JTextField) c;
-      jt.setSelectionStart(0);
-      jt.setSelectionEnd(jt.getText().length());
-    }
-  }
+	/////////////////////////////
+	// focus listener support classes
+	/////////////////////////////
 
-  /**
-   * Invoked when a component loses the keyboard focus.
-   */
-  public void focusLost(final FocusEvent e)
-  {
-  }
+	/**
+	 * show the user how many microseconds there are
+	 *
+	 * @param val
+	 */
+	@Override
+	protected void setMicroText(final long val) {
+		// output the number of microseconds
+		_theMicrosTxt.setText(DebriefFormatDateTime.formatMicros(new HiResDate(0, val)) + " micros");
+	}
+
+	/**
+	 * set the time text in string form
+	 */
+	@Override
+	protected void setTimeText(final String val) {
+		if (_theHolder != null) {
+			_theTime.setText(val);
+		}
+	}
 }

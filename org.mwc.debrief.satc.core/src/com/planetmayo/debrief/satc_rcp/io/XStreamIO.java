@@ -1,17 +1,18 @@
-/*
- *    Debrief - the Open Source Maritime Analysis Application
- *    http://debrief.info
+/*******************************************************************************
+ * Debrief - the Open Source Maritime Analysis Application
+ * http://debrief.info
  *
- *    (C) 2000-2014, PlanetMayo Ltd
+ * (C) 2000-2020, Deep Blue C Technology Ltd
  *
- *    This library is free software; you can redistribute it and/or
- *    modify it under the terms of the Eclipse Public License v1.0
- *    (http://www.eclipse.org/legal/epl-v10.html)
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the Eclipse Public License v1.0
+ * (http://www.eclipse.org/legal/epl-v10.html)
  *
- *    This library is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
- */
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *******************************************************************************/
+
 package com.planetmayo.debrief.satc_rcp.io;
 
 import java.io.IOException;
@@ -53,13 +54,106 @@ import com.planetmayo.debrief.satc.model.generator.ISolver;
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.converters.basic.DateConverter;
 
-public class XStreamIO
-{
+public class XStreamIO {
+	private static class DebriefDateConverter extends DateConverter {
+
+		@Override
+		public Object fromString(final String str) {
+			final Date date = (Date) super.fromString(str);
+			return new Date(date.getTime() - TimeZone.getDefault().getRawOffset());
+		}
+
+		@Override
+		public String toString(final Object obj) {
+			final Date date = new Date(((Date) obj).getTime() + TimeZone.getDefault().getRawOffset());
+			return super.toString(date);
+		}
+
+	}
+
+	public static class XStreamReader implements ISolver.Reader {
+		private SolutionDescription description;
+		private boolean loaded;
+
+		public XStreamReader(final InputStream inputStream, final String fileName) {
+			try {
+				final Object object = xstream.fromXML(new InputStreamReader(inputStream, "utf-8"));
+				if (object instanceof SolutionDescription) {
+					description = (SolutionDescription) object;
+					if (description.getVersion() != CURRENT_VERSION) {
+						LogFactory.getLog().warn("Version of " + fileName + " is " + description.getVersion()
+								+ ", but current version is " + CURRENT_VERSION);
+					}
+					loaded = true;
+				} else {
+					throw new IOException();
+				}
+
+			} catch (final IOException ex) {
+				description = null;
+				LogFactory.getLog().error("Can't load SATC Solution from xml", ex);
+			} finally {
+				IOUtils.closeQuietly(inputStream);
+			}
+		}
+
+		public boolean isLoaded() {
+			return loaded;
+		}
+
+		@Override
+		public List<BaseContribution> readContributions() {
+			return description.getContributions();
+		}
+
+		@Override
+		public Precision readPrecision() {
+			return description.getPrecision();
+		}
+
+		@Override
+		public VehicleType readVehicleType() {
+			return description.getVehicleType();
+		}
+
+	}
+
+	public static class XStreamWriter implements ISolver.Writer {
+
+		private final SolutionDescription description = new SolutionDescription();
+
+		public void process(final OutputStream outputStream) {
+			description.setVersion(CURRENT_VERSION);
+			try {
+				xstream.toXML(description, new OutputStreamWriter(outputStream, "utf-8"));
+			} catch (final IOException ex) {
+				LogFactory.getLog().error("Can't save file", ex);
+			} finally {
+				IOUtils.closeQuietly(outputStream);
+			}
+		}
+
+		@Override
+		public void writeContributions(final List<BaseContribution> contributions) {
+			description.setContributions(contributions);
+		}
+
+		@Override
+		public void writePrecision(final Precision precision) {
+			description.setPrecision(precision);
+		}
+
+		@Override
+		public void writeVehicleType(final VehicleType vehicleType) {
+			description.setVehicleType(vehicleType);
+		}
+	}
+
 	public static final int CURRENT_VERSION = 1;
 
 	private static final XStream xstream;
-	static
-	{
+
+	static {
 		xstream = new XStream();
 		xstream.registerConverter(new DebriefDateConverter(), XStream.PRIORITY_VERY_HIGH);
 		xstream.processAnnotations(SolutionDescription.class);
@@ -87,16 +181,16 @@ public class XStreamIO
 		xstream.useAttributeFor(FrequencyMeasurement.class, "freq");
 		xstream.useAttributeFor(FrequencyMeasurement.class, "time");
 		xstream.useAttributeFor(FrequencyMeasurement.class, "isActive");
-		
+
 		xstream.useAttributeFor(FrequencyMeasurementContribution.class, "baseFrequency");
 		xstream.useAttributeFor(FrequencyMeasurementContribution.class, "soundSpeed");
-		
+
 		xstream.useAttributeFor(Range1959ForecastContribution.class, "fNought");
 		xstream.useAttributeFor(Range1959ForecastContribution.class, "speedSound");
 		xstream.useAttributeFor(Range1959ForecastContribution.class, "calculatedRange");
 		xstream.useAttributeFor(Range1959ForecastContribution.class, "minRangeM");
 		xstream.useAttributeFor(Range1959ForecastContribution.class, "maxRangeM");
-		
+
 		xstream.useAttributeFor(CoreMeasurement.class, "isActive");
 		xstream.useAttributeFor(CoreMeasurement.class, "time");
 
@@ -118,149 +212,19 @@ public class XStreamIO
 		xstream.useAttributeFor(StraightLegForecastContribution.class, "autoGenBy");
 
 		xstream.useAttributeFor(GeoPoint.class, "lat");
-		xstream.useAttributeFor(GeoPoint.class, "lon");		
+		xstream.useAttributeFor(GeoPoint.class, "lon");
 	}
 
-	private static void aliasFor(XStream xstream, Class<?> klass)
-	{
-		String simpleName = klass.getSimpleName();
-		xstream.alias(
-				Character.toLowerCase(simpleName.charAt(0)) + simpleName.substring(1),
-				klass);
+	private static void aliasFor(final XStream xstream, final Class<?> klass) {
+		final String simpleName = klass.getSimpleName();
+		xstream.alias(Character.toLowerCase(simpleName.charAt(0)) + simpleName.substring(1), klass);
 	}
 
-	public static XStreamWriter newWriter()
-	{
-		return new XStreamWriter();
-	}
-
-	public static XStreamReader newReader(InputStream inputStream, String filename)
-	{
+	public static XStreamReader newReader(final InputStream inputStream, final String filename) {
 		return new XStreamReader(inputStream, filename);
 	}
 
-	public static class XStreamWriter implements ISolver.Writer
-	{
-
-		private final SolutionDescription description = new SolutionDescription();
-
-		@Override
-		public void writeContributions(List<BaseContribution> contributions)
-		{
-			description.setContributions(contributions);
-		}
-
-		@Override
-		public void writeVehicleType(VehicleType vehicleType)
-		{
-			description.setVehicleType(vehicleType);
-		}
-
-		@Override
-		public void writePrecision(Precision precision)
-		{
-			description.setPrecision(precision);
-		}
-
-		public void process(OutputStream outputStream)
-		{
-			description.setVersion(CURRENT_VERSION);
-			try
-			{
-				xstream.toXML(description,
-						new OutputStreamWriter(outputStream, "utf-8"));
-			}
-			catch (IOException ex)
-			{
-				LogFactory.getLog().error("Can't save file", ex);
-			}
-			finally
-			{
-				IOUtils.closeQuietly(outputStream);
-			}
-		}
-	}
-
-	public static class XStreamReader implements ISolver.Reader
-	{
-		private SolutionDescription description;
-		private boolean loaded;
-
-		public XStreamReader(InputStream inputStream, String fileName)
-		{
-			try
-			{
-				Object object = xstream.fromXML(new InputStreamReader(inputStream,
-						"utf-8"));
-				if (object instanceof SolutionDescription)
-				{
-					description = (SolutionDescription) object;
-					if (description.getVersion() != CURRENT_VERSION)
-					{
-						LogFactory.getLog().warn(
-								"Version of " + fileName + " is " + description.getVersion()
-										+ ", but current version is " + CURRENT_VERSION);
-					}
-					loaded = true;
-				}
-				else
-				{
-					throw new IOException();
-				}
-
-			}
-			catch (IOException ex)
-			{
-				description = null;
-				LogFactory.getLog().error("Can't load SATC Solution from xml", ex);
-			}
-			finally
-			{
-				IOUtils.closeQuietly(inputStream);
-			}
-		}
-
-		public boolean isLoaded()
-		{
-			return loaded;
-		}
-
-		@Override
-		public List<BaseContribution> readContributions()
-		{
-			return description.getContributions();
-		}
-
-		@Override
-		public VehicleType readVehicleType()
-		{
-			return description.getVehicleType();
-		}
-
-		@Override
-		public Precision readPrecision()
-		{
-			return description.getPrecision();
-		}
-
-	}
-
-	private static class DebriefDateConverter extends DateConverter {
-
-		@Override
-		public Object fromString(String str)
-		{
-			Date date = (Date) super.fromString(str);
-			return new Date(date.getTime() - TimeZone.getDefault().getRawOffset());
-		}
-
-		@Override
-		public String toString(Object obj)
-		{
-			Date date = new Date(((Date)obj).getTime() + TimeZone.getDefault().getRawOffset());
-			return super.toString(date);
-		}
-		
-		
+	public static XStreamWriter newWriter() {
+		return new XStreamWriter();
 	}
 }

@@ -21,145 +21,128 @@ import org.mwc.debrief.dis.providers.network.NetworkDISProvider;
 
 import edu.nps.moves.dis.EntityID;
 
-public class HeadlessDISLogger
-{
+public class HeadlessDISLogger {
 
-  private static final int SITE_ID = 778;
-  private static final int APPLICATION_ID = 777;
-  private boolean _terminated = false;
-  private EntityID _ourID;
+	private static final int SITE_ID = 778;
+	private static final int APPLICATION_ID = 777;
 
-  public static void main(String[] args)
-  {
-    // start running
-    new HeadlessDISLogger(args);
-  }
+	public static void main(final String[] args) {
+		// start running
+		new HeadlessDISLogger(args);
+	}
 
-  public HeadlessDISLogger(String[] args)
-  {
+	private boolean _terminated = false;
 
-    // setup the ID
-    _ourID = new EntityID();
-    _ourID.setApplication((short) APPLICATION_ID);
-    _ourID.setSite((short) SITE_ID);
+	private final EntityID _ourID;
 
-    // do we have a root?
-    String root = System.getProperty("java.io.tmpdir");
+	public HeadlessDISLogger(final String[] args) {
 
-    // do we have an IP address?
-    String address = NetworkPduSender.DEFAULT_MULTICAST_GROUP;
+		// setup the ID
+		_ourID = new EntityID();
+		_ourID.setApplication((short) APPLICATION_ID);
+		_ourID.setSite((short) SITE_ID);
 
-    // do we have a PORT?
-    int port = NetworkPduSender.PORT;
+		// do we have a root?
+		String root = System.getProperty("java.io.tmpdir");
 
-    // write to screen?
-    boolean toScreen = true;
+		// do we have an IP address?
+		String address = NetworkPduSender.DEFAULT_MULTICAST_GROUP;
 
-    // All system properties, passed in on the command line via
-    // -Dattribute=value
-    Properties systemProperties = System.getProperties();
-    // IP address we send to
-    String destinationIpString = systemProperties.getProperty("group");
-    // Port we send to, and local port we open the socket on
-    String portString = systemProperties.getProperty("port");
+		// do we have a PORT?
+		int port = NetworkPduSender.PORT;
 
-    // Port we send to, and local port we open the socket on
-    String rootString = systemProperties.getProperty("root");
+		// write to screen?
+		boolean toScreen = true;
 
-    // whether to write progress to screen
-    String toScreenStr = systemProperties.getProperty("screen");
+		// All system properties, passed in on the command line via
+		// -Dattribute=value
+		final Properties systemProperties = System.getProperties();
+		// IP address we send to
+		final String destinationIpString = systemProperties.getProperty("group");
+		// Port we send to, and local port we open the socket on
+		final String portString = systemProperties.getProperty("port");
 
-    if (destinationIpString != null)
-    {
-      address = destinationIpString;
-    }
-    if (portString != null)
-    {
-      port = Integer.parseInt(portString);
-    }
-    if (rootString != null)
-    {
-      root = rootString;
-    }
-    if (toScreenStr != null)
-    {
-      toScreen = Boolean.valueOf(toScreenStr);
-    }
+		// Port we send to, and local port we open the socket on
+		final String rootString = systemProperties.getProperty("root");
 
-    // setup the output destinations
-    boolean toFile = true;
+		// whether to write progress to screen
+		final String toScreenStr = systemProperties.getProperty("screen");
 
-    if (toFile)
-    {
-      System.out.println("Writing datafiles to:" + root);
-    }
+		if (destinationIpString != null) {
+			address = destinationIpString;
+		}
+		if (portString != null) {
+			port = Integer.parseInt(portString);
+		}
+		if (rootString != null) {
+			root = rootString;
+		}
+		if (toScreenStr != null) {
+			toScreen = Boolean.valueOf(toScreenStr);
+		}
 
-    IDISModule subject = new DISModule();
-    IDISNetworkPrefs netPrefs = new CoreNetPrefs(address, port);
-    final IPDUProvider provider =
-        new NetworkDISProvider(netPrefs, new NetworkDISProvider.LogInterface()
-        {
+		// setup the output destinations
+		final boolean toFile = true;
 
-          @Override
-          public void log(int status, String msg, Exception e)
-          {
-            System.out.println("Logging:" + msg);
-            if(e != null)
-            {
-              e.printStackTrace();
-            }
-          }
-        });
-    subject.setProvider(provider);
+		if (toFile) {
+			System.out.println("Writing datafiles to:" + root);
+		}
 
-    // setup our loggers
-    subject.addFixListener(new FixToFileListener(root, toFile, false, null));
-    subject.addStopListener(new StopFileListener(root, toFile, toScreen, null));
-    subject.addDetonationListener(new DetonateFileListener(root, toFile,
-        toScreen, null));
-    subject.addEventListener(new EventFileListener(root, toFile, toScreen, null));
-    subject.addFireListener(new FireFileListener(root, toFile, toScreen, null));
-    subject.addCollisionListener(new CollisionFileListener(root, toFile,
-        toScreen, null));
+		final IDISModule subject = new DISModule();
+		final IDISNetworkPrefs netPrefs = new CoreNetPrefs(address, port);
+		final IPDUProvider provider = new NetworkDISProvider(netPrefs, new NetworkDISProvider.LogInterface() {
 
-    subject
-        .addStartResumeListener(new StartFileListener(root, toFile, toScreen, null));
+			@Override
+			public void log(final int status, final String msg, final Exception e) {
+				System.out.println("Logging:" + msg);
+				if (e != null) {
+					e.printStackTrace();
+				}
+			}
+		});
+		subject.setProvider(provider);
 
-    // output dot marker to screen, to demonstrate progress
-    subject.addFixListener(new IDISFixListener()
-    {
-      @Override
-      public void add(long time, short exerciseId, long id, String eName,
-          short force, short kind, short domain, short category,
-          boolean isHighlighted, double dLat, double dLong, double depth,
-          double courseDegs, double speedMS, final int damage)
-      {
-        // System.out.print(".");
-      }
-    });
+		// setup our loggers
+		subject.addFixListener(new FixToFileListener(root, toFile, false, null));
+		subject.addStopListener(new StopFileListener(root, toFile, toScreen, null));
+		subject.addDetonationListener(new DetonateFileListener(root, toFile, toScreen, null));
+		subject.addEventListener(new EventFileListener(root, toFile, toScreen, null));
+		subject.addFireListener(new FireFileListener(root, toFile, toScreen, null));
+		subject.addCollisionListener(new CollisionFileListener(root, toFile, toScreen, null));
 
-    // listen out for stop, so we can shut down.
-    subject.addStopListener(new IDISStopListener()
-    {
-      @Override
-      public void stop(long time, int appId, short eid, short reason, long numRuns)
-      {
-        System.out.println("== STOP RECEIVED ==");
-        provider.detach();
-        _terminated = true;
-        System.exit(0);
-      }
-    });
+		subject.addStartResumeListener(new StartFileListener(root, toFile, toScreen, null));
 
-    // tell the network provider to start
-    provider.attach(null, _ourID);
+		// output dot marker to screen, to demonstrate progress
+		subject.addFixListener(new IDISFixListener() {
+			@Override
+			public void add(final long time, final short exerciseId, final long id, final String eName,
+					final short force, final short kind, final short domain, final short category,
+					final boolean isHighlighted, final double dLat, final double dLong, final double depth,
+					final double courseDegs, final double speedMS, final int damage) {
+				// System.out.print(".");
+			}
+		});
 
-    // get looping
-    while (!_terminated)
-    {
-      // stay alive!
-    }
+		// listen out for stop, so we can shut down.
+		subject.addStopListener(new IDISStopListener() {
+			@Override
+			public void stop(final long time, final int appId, final short eid, final short reason,
+					final long numRuns) {
+				System.out.println("== STOP RECEIVED ==");
+				provider.detach();
+				_terminated = true;
+				System.exit(0);
+			}
+		});
 
-  }
+		// tell the network provider to start
+		provider.attach(null, _ourID);
+
+		// get looping
+		while (!_terminated) {
+			// stay alive!
+		}
+
+	}
 
 }

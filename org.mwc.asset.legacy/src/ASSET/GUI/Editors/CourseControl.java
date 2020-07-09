@@ -1,182 +1,172 @@
-/*
- *    Debrief - the Open Source Maritime Analysis Application
- *    http://debrief.info
- *
- *    (C) 2000-2014, PlanetMayo Ltd
- *
- *    This library is free software; you can redistribute it and/or
- *    modify it under the terms of the Eclipse Public License v1.0
- *    (http://www.eclipse.org/legal/epl-v10.html)
- *
- *    This library is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
- */
+
 package ASSET.GUI.Editors;
 
-import java.awt.*;
-import javax.swing.*;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.GridLayout;
+
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.SwingConstants;
 
 import MWC.GUI.Properties.DebriefColors;
 
-/**
- * Title:
- * Description:
- * Copyright:    Copyright (c) 2001
- * Company:
- * @author
- * @version 1.0
- */
+/*******************************************************************************
+ * Debrief - the Open Source Maritime Analysis Application http://debrief.info
+ *
+ * (C) 2000-2020, Deep Blue C Technology Ltd
+ *
+ * This library is free software; you can redistribute it and/or modify it under
+ * the terms of the Eclipse Public License v1.0
+ * (http://www.eclipse.org/legal/epl-v10.html)
+ *
+ * This library is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.
+ *******************************************************************************/
 
 public class CourseControl extends JPanel {
 
-  /**
-	 * 
+	/**
+	 *
 	 */
 	private static final long serialVersionUID = 1L;
 	//////////////////////////////////////////////////////////////////////
-  // UI components
-  //////////////////////////////////////////////////////////////////////
-  private JPanel centrePanel = new JPanel();
-  private GridLayout gridLayout2 = new GridLayout();
-  private JLabel jLabel6 = new JLabel();
-  private JLabel jLabel7 = new JLabel();
-  private JLabel demCourseVal = new JLabel();
-  private JLabel curCourseVal = new JLabel();
+	// UI components
+	//////////////////////////////////////////////////////////////////////
+	private final JPanel centrePanel = new JPanel();
+	private final GridLayout gridLayout2 = new GridLayout();
+	private final JLabel jLabel6 = new JLabel();
+	private final JLabel jLabel7 = new JLabel();
+	private final JLabel demCourseVal = new JLabel();
+	private final JLabel curCourseVal = new JLabel();
 
-  //////////////////////////////////////////////////////////////////////
-  // my parameters
-  //////////////////////////////////////////////////////////////////////
-  private double curCourseRads = 0.785;
-  private double demCourseRads = 0.334;
+	//////////////////////////////////////////////////////////////////////
+	// my parameters
+	//////////////////////////////////////////////////////////////////////
+	private double curCourseRads = 0.785;
+	private double demCourseRads = 0.334;
 
-  public CourseControl() {
-    try {
-      jbInit();
-    }
-    catch(Exception ex) {
-      ex.printStackTrace();
-    }
-  }
-  private void jbInit() throws Exception {
-    this.setLayout(borderLayout1);
-    centrePanel.setLayout(gridLayout2);
-    gridLayout2.setRows(2);
-    jLabel6.setHorizontalAlignment(SwingConstants.RIGHT);
-    jLabel6.setText("dem:");
-    jLabel7.setHorizontalAlignment(SwingConstants.RIGHT);
-    jLabel7.setText("cur:");
-    demCourseVal.setFont(new java.awt.Font("Dialog", 0, 18));
-    demCourseVal.setForeground(Color.red);
-    demCourseVal.setText("000");
-    curCourseVal.setFont(new java.awt.Font("Dialog", 0, 18));
-    curCourseVal.setText("000");
-    jLabel1.setFont(new java.awt.Font("Dialog", 0, 45));
-    jLabel1.setText("   ");
-    jLabel2.setText("              ");
-    jLabel3.setText("              ");
-    jLabel4.setFont(new java.awt.Font("Dialog", 0, 45));
-    jLabel4.setText(" ");
-    this.add(centrePanel, BorderLayout.CENTER);
-    centrePanel.add(jLabel6, null);
-    centrePanel.add(demCourseVal, null);
-    centrePanel.add(jLabel7, null);
-    centrePanel.add(curCourseVal, null);
-    this.add(jLabel1, BorderLayout.SOUTH);
-    this.add(jLabel2, BorderLayout.WEST);
-    this.add(jLabel3, BorderLayout.EAST);
-    this.add(jLabel4, BorderLayout.NORTH);
-  }
+	private final java.text.DecimalFormat courseF = new java.text.DecimalFormat("000.0");
+	private final BorderLayout borderLayout1 = new BorderLayout();
 
-  private java.text.DecimalFormat courseF = new java.text.DecimalFormat("000.0");
-  private BorderLayout borderLayout1 = new BorderLayout();
-  private JLabel jLabel1 = new JLabel();
-  private JLabel jLabel2 = new JLabel();
-  private JLabel jLabel3 = new JLabel();
-  private JLabel jLabel4 = new JLabel();
+	private final JLabel jLabel1 = new JLabel();
+	private final JLabel jLabel2 = new JLabel();
+	private final JLabel jLabel3 = new JLabel();
+	private final JLabel jLabel4 = new JLabel();
 
-  public void setDemCourse(final double val)
-  {
-    demCourseVal.setText(courseF.format(val));
-    demCourseRads = MWC.Algorithms.Conversions.Degs2Rads(val);
-    this.repaint();
-  }
-  public void setCourse(final double val)
-  {
-    curCourseVal.setText(courseF.format(val));
-    curCourseRads = MWC.Algorithms.Conversions.Degs2Rads(val);
-    this.repaint();
+	public CourseControl() {
+		try {
+			jbInit();
+		} catch (final Exception ex) {
+			ex.printStackTrace();
+		}
+	}
 
-  }
+	private void jbInit() throws Exception {
+		this.setLayout(borderLayout1);
+		centrePanel.setLayout(gridLayout2);
+		gridLayout2.setRows(2);
+		jLabel6.setHorizontalAlignment(SwingConstants.RIGHT);
+		jLabel6.setText("dem:");
+		jLabel7.setHorizontalAlignment(SwingConstants.RIGHT);
+		jLabel7.setText("cur:");
+		demCourseVal.setFont(new java.awt.Font("Dialog", 0, 18));
+		demCourseVal.setForeground(Color.red);
+		demCourseVal.setText("000");
+		curCourseVal.setFont(new java.awt.Font("Dialog", 0, 18));
+		curCourseVal.setText("000");
+		jLabel1.setFont(new java.awt.Font("Dialog", 0, 45));
+		jLabel1.setText("   ");
+		jLabel2.setText("              ");
+		jLabel3.setText("              ");
+		jLabel4.setFont(new java.awt.Font("Dialog", 0, 45));
+		jLabel4.setText(" ");
+		this.add(centrePanel, BorderLayout.CENTER);
+		centrePanel.add(jLabel6, null);
+		centrePanel.add(demCourseVal, null);
+		centrePanel.add(jLabel7, null);
+		centrePanel.add(curCourseVal, null);
+		this.add(jLabel1, BorderLayout.SOUTH);
+		this.add(jLabel2, BorderLayout.WEST);
+		this.add(jLabel3, BorderLayout.EAST);
+		this.add(jLabel4, BorderLayout.NORTH);
+	}
 
-  public void paint(final java.awt.Graphics graph)
-  {
+	@Override
+	public void paint(final java.awt.Graphics graph) {
 
-    super.paint(graph);
+		super.paint(graph);
 
-    // where is our tl corner
-    final java.awt.Point myTL = this.getLocation();
+		// where is our tl corner
+		final java.awt.Point myTL = this.getLocation();
 
+		// draw our outer circle
+		final java.awt.Dimension mySize = this.getSize();
 
-    // draw our outer circle
-    final java.awt.Dimension mySize = this.getSize();
+		// calculate the smaller size
+		final int diam = Math.min(mySize.width, mySize.height) - 30;
 
-    // calculate the smaller size
-    final int diam = Math.min(mySize.width , mySize.height) - 30;
+		// determine the centre
+		final java.awt.Point centre = new java.awt.Point(mySize.width / 2, mySize.height / 2);
 
-    // determine the centre
-    final java.awt.Point centre = new java.awt.Point(mySize.width/2, mySize.height/2);
+		centre.translate(myTL.x, myTL.y);
 
+		// determine the tl corner
+		final java.awt.Point tl = new java.awt.Point(centre.x - diam / 2, centre.y - diam / 2);
 
-    centre.translate(myTL.x, myTL.y);
+		graph.setColor(DebriefColors.BLACK);
 
-    // determine the tl corner
-    final java.awt.Point tl = new java.awt.Point(centre.x - diam/2, centre.y - diam/2);
+		// draw the circle
+		graph.drawOval(tl.x, tl.y, diam, diam);
 
+		// draw the spokes
+		double sinVal = Math.sin(curCourseRads);
+		double cosVal = Math.cos(curCourseRads);
 
-    graph.setColor(DebriefColors.BLACK);
+		// produce the point
+		int innerRad = (diam / 2) - 3;
+		int outerRad = (diam / 2) + 5;
 
-    // draw the circle
-    graph.drawOval(tl.x, tl.y, diam, diam);
+		final java.awt.Point innerCur = new java.awt.Point((int) (innerRad * sinVal), -(int) (innerRad * cosVal));
+		final java.awt.Point outerCur = new java.awt.Point((int) (outerRad * sinVal), -(int) (outerRad * cosVal));
 
-    // draw the spokes
-    double sinVal = Math.sin(curCourseRads);
-    double cosVal = Math.cos(curCourseRads);
+		// and plot it
+		graph.setColor(DebriefColors.BLACK);
+		innerCur.translate(centre.x, centre.y);
+		outerCur.translate(centre.x, centre.y);
+		graph.drawLine(innerCur.x, innerCur.y, outerCur.x, outerCur.y);
 
-    // produce the point
-    int innerRad = (diam / 2) - 3;
-    int outerRad = (diam / 2) + 5;
+		// now the outer
+		sinVal = Math.sin(demCourseRads);
+		cosVal = Math.cos(demCourseRads);
 
-    final java.awt.Point innerCur = new java.awt.Point((int)(innerRad * sinVal),
-                                              -(int)(innerRad * cosVal));
-    final java.awt.Point outerCur = new java.awt.Point((int)(outerRad * sinVal),
-                                              -(int)(outerRad * cosVal));
+		// produce the point
+		innerRad = (diam / 2) - 3;
+		outerRad = (diam / 2) + 5;
 
-    // and plot it
-    graph.setColor(DebriefColors.BLACK);
-    innerCur.translate(centre.x, centre.y);
-    outerCur.translate(centre.x, centre.y);
-    graph.drawLine(innerCur.x, innerCur.y, outerCur.x, outerCur.y);
+		final java.awt.Point innerDem = new java.awt.Point((int) (innerRad * sinVal), -(int) (innerRad * cosVal));
+		final java.awt.Point outerDem = new java.awt.Point((int) (outerRad * sinVal), -(int) (outerRad * cosVal));
 
-    // now the outer
-    sinVal = Math.sin(demCourseRads);
-    cosVal = Math.cos(demCourseRads);
+		// and plot it
+		graph.setColor(DebriefColors.RED);
+		innerDem.translate(centre.x, centre.y);
+		outerDem.translate(centre.x, centre.y);
+		graph.drawLine(innerDem.x, innerDem.y, outerDem.x, outerDem.y);
 
-    // produce the point
-    innerRad = (diam / 2) - 3;
-    outerRad = (diam / 2) + 5;
+	}
 
-    final java.awt.Point innerDem = new java.awt.Point((int)(innerRad * sinVal),
-                                                  -(int)(innerRad * cosVal));
-    final java.awt.Point outerDem = new java.awt.Point((int)(outerRad * sinVal),
-                                                 -(int)(outerRad * cosVal));
+	public void setCourse(final double val) {
+		curCourseVal.setText(courseF.format(val));
+		curCourseRads = MWC.Algorithms.Conversions.Degs2Rads(val);
+		this.repaint();
 
-    // and plot it
-    graph.setColor(DebriefColors.RED);
-    innerDem.translate(centre.x, centre.y);
-    outerDem.translate(centre.x, centre.y);
-    graph.drawLine(innerDem.x, innerDem.y, outerDem.x, outerDem.y);
+	}
 
-  }
+	public void setDemCourse(final double val) {
+		demCourseVal.setText(courseF.format(val));
+		demCourseRads = MWC.Algorithms.Conversions.Degs2Rads(val);
+		this.repaint();
+	}
 
 }

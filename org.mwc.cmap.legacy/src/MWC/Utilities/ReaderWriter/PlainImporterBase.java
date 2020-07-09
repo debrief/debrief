@@ -1,17 +1,18 @@
-/*
- *    Debrief - the Open Source Maritime Analysis Application
- *    http://debrief.info
+/*******************************************************************************
+ * Debrief - the Open Source Maritime Analysis Application
+ * http://debrief.info
  *
- *    (C) 2000-2014, PlanetMayo Ltd
+ * (C) 2000-2020, Deep Blue C Technology Ltd
  *
- *    This library is free software; you can redistribute it and/or
- *    modify it under the terms of the Eclipse Public License v1.0
- *    (http://www.eclipse.org/legal/epl-v10.html)
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the Eclipse Public License v1.0
+ * (http://www.eclipse.org/legal/epl-v10.html)
  *
- *    This library is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
- */
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *******************************************************************************/
+
 // $RCSfile: PlainImporterBase.java,v $
 // @author $Author: ian.mayo $
 // @version $Revision: 1.7 $
@@ -88,265 +89,237 @@ import MWC.GUI.Plottable;
 import MWC.GUI.Dialogs.DialogFactory;
 
 /**
- * class to provide general (non file-type specific) for importing a whole file. The class performs
- * layers management tasks
+ * class to provide general (non file-type specific) for importing a whole file.
+ * The class performs layers management tasks
  */
-public abstract class PlainImporterBase implements PlainImporter
-{
+public abstract class PlainImporterBase implements PlainImporter {
 
-  // //////////////////////////////////////
-  // member variables
-  // //////////////////////////////////////
+	// //////////////////////////////////////
+	// member variables
+	// //////////////////////////////////////
 
-  /**
-   * the layers object being created/extended in this process
-   */
-  private Layers _theLayers;
+	/**
+	 * the block of text we're collating
+	 *
+	 */
+	private static StringBuffer _beingExported;
 
-  /**
-   * the suffixes which we import with this import manager (set by the instantiation)
-   */
-  protected String[] _myTypes;
+	public static void clearBuffer() {
+		_beingExported = null;
+	}
 
-  /**
-   * the block of text we're collating
-   * 
-   */
-  private static StringBuffer _beingExported;
+	/**
+	 * the layers object being created/extended in this process
+	 */
+	private Layers _theLayers;
 
-  /**
-   * collect any layers that we load
-   * 
-   */
-  protected List<Layer> _newLayers = new ArrayList<Layer>();
+	/**
+	 * the suffixes which we import with this import manager (set by the
+	 * instantiation)
+	 */
+	protected String[] _myTypes;
 
-  // //////////////////////////////////////
-  // member methods
-  // //////////////////////////////////////
+	// //////////////////////////////////////
+	// member methods
+	// //////////////////////////////////////
 
-  /**
-   * general command used to import a whole file of a specific type
-   */
-  public void importThis(final String fName, final InputStream is,
-      final Layers theData)
-  {
-    _theLayers = theData;
-    importThis(fName, is);
-  }
+	/**
+	 * collect any layers that we load
+	 *
+	 */
+	protected List<Layer> _newLayers = new ArrayList<Layer>();
 
-  @Override
-  public void importThis(String fName, InputStream is, final Layers theData,
-      final MonitorProvider provider)
-  {
-    _theLayers = theData;
-    importThis(fName, is,provider);
-  }
-  
-  abstract public void importThis(final String fName, final InputStream is);
+	/**
+	 * add the specified layer to our data
+	 */
+	public void addLayer(final Layer theLayer) {
+		// add it to the manager
+		_theLayers.addThisLayer(theLayer);
 
-  abstract public void importThis(final String fName, final InputStream is,
-      final MonitorProvider provider);
+		// also remember the fact that we're adding this new layer
+		_newLayers.add(theLayer);
+	}
 
-  /**
-   * create a new layer in the data using this name
-   * 
-   * @return the new layer
-   */
-  public Layer createLayer(final String theName)
-  {
-    final Layer res = new BaseLayer();
-    res.setName(theName);
-    return res;
-  }
+	/**
+	 * append this line to what we're building up
+	 *
+	 * @param txt
+	 */
+	protected void addThisToExport(final String txt) {
+		// initialise the export string?
+		if (_beingExported == null)
+			_beingExported = new StringBuffer();
+		else
+			_beingExported.append('\n');
 
-  /**
-   * add the specified layer to our data
-   */
-  public void addLayer(final Layer theLayer)
-  {
-    // add it to the manager
-    _theLayers.addThisLayer(theLayer);
+		_beingExported.append(txt);
+	}
 
-    // also remember the fact that we're adding this new layer
-    _newLayers.add(theLayer);
-  }
+	/**
+	 * add the provided data item to the indicated layer, creating the layer if
+	 * necessary
+	 */
+	public void addToLayer(final Plottable theItem, final Layer theLayer) {
+		// add this item to the layer
+		theLayer.add(theItem);
 
-  /**
-   * retrieve the layer of the given name (and create it if necessary)
-   * 
-   * @return the requested layer, or null if not found
-   */
-  public Layer getLayerFor(final String theName)
-  {
-    return getLayerFor(theName, true);
-  }
-  
-  public Layer getLayerFor(final String theName, final boolean recursive)
-  {
-    if(recursive)
-    {
-      final Layer theLayer = _theLayers.findLayer(theName, true);
-      return theLayer;
-    }
-    else
-    {
-      final Layer theLayer = _theLayers.findLayer(theName);
-      return theLayer;
-    }
-  }
+		// if we don't already store it, remember that we've modified this layer
+		if (!_newLayers.contains(theLayer)) {
+			_newLayers.add(theLayer);
+		}
+		// _theLayers.fireModified(theLayer);
+	}
 
-  /**
-   * add the provided data item to the indicated layer, creating the layer if necessary
-   */
-  public void addToLayer(final Plottable theItem, final Layer theLayer)
-  {
-    // add this item to the layer
-    theLayer.add(theItem);
-    
-    // if we don't already store it, remember that we've modified this layer
-    if(!_newLayers.contains(theLayer))
-    {
-      _newLayers.add(theLayer);
-    }
-  }
+	public int countLinesFor(final String fName) {
+		int counter = 0;
+		if (fName != null) {
+			try {
 
-  /**
-   * signal problem importing data
-   */
-  public void readError(final String fName, final int line, final String msg,
-      final String thisLine)
-  {
-    String res = "Problem at line " + line + " of:\n";
-    res += fName + "\n";
-    res += msg + ":" + thisLine;
-    DialogFactory.showMessage("Error in opening file", res);
-  }
+				// see if we can find the required file
+				final File findIt = new File(fName);
+				if (findIt.exists()) {
+					final InputStream is = new FileInputStream(fName);
+					counter = countLinesInStream(is);
+					is.close();
+				} else {
+					System.err.println("Can't find input file:" + fName);
+				}
+			} catch (final Exception e) {
+				e.printStackTrace();
+			}
+		}
+		return counter;
+	}
 
-  /**
-   * provide setter function for the layers object
-   */
-  public void setLayers(final Layers theData)
-  {
-    _theLayers = theData;
-  }
+	/**
+	 * @param is
+	 * @return
+	 * @throws IOException
+	 */
+	public int countLinesInStream(final InputStream is) throws IOException {
+		int counter = 0;
+		final InputStreamReader ir = new InputStreamReader(is);
+		final BufferedReader br = new BufferedReader(ir);
+		String line = br.readLine();
+		while (line != null) {
+			counter++;
+			line = br.readLine();
+		}
+		br.close();
+		ir.close();
+		return counter;
+	}
 
-  /**
-   * get the layers object we are editing
-   */
-  protected Layers getLayers()
-  {
-    return _theLayers;
-  }
+	/**
+	 * create a new layer in the data using this name
+	 *
+	 * @return the new layer
+	 */
+	public Layer createLayer(final String theName) {
+		final Layer res = new BaseLayer();
+		res.setName(theName);
+		return res;
+	}
 
-  public int countLinesFor(final String fName)
-  {
-    int counter = 0;
-    if (fName != null)
-    {
-      try
-      {
+	/**
+	 * ok, we've build up our string to export. put it on the clipboard
+	 *
+	 * @param item
+	 */
+	@Override
+	public void endExport(final Plottable item) {
+		// check the export worked
+		if (_beingExported != null) {
 
-        // see if we can find the required file
-        final File findIt = new File(fName);
-        if (findIt.exists())
-        {
-          final InputStream is = new FileInputStream(fName);
-          counter = countLinesInStream(is);
-          is.close();
-        }
-        else
-        {
-          System.err.println("Can't find input file:" + fName);
-        }
-      }
-      catch (final Exception e)
-      {
-        e.printStackTrace();
-      }
-    }
-    return counter;
-  }
+			// get the clipboard;
+			final java.awt.datatransfer.Clipboard cl = Toolkit.getDefaultToolkit().getSystemClipboard();
 
-  /**
-   * @param is
-   * @return
-   * @throws IOException
-   */
-  public int countLinesInStream(final InputStream is)
-      throws IOException
-  {
-    int counter = 0;
-    final InputStreamReader ir = new InputStreamReader(is);
-    final BufferedReader br = new BufferedReader(ir);
-    String line = br.readLine();
-    while (line != null)
-    {
-      counter++;
-      line = br.readLine();
-    }
-    br.close();
-    ir.close();
-    return counter;
-  }
+			// create the string to write
+			final StringSelection ss = new StringSelection(_beingExported.toString());
 
-  /**
-   * get everything ready for the export
-   * 
-   * @param item
-   */
-  public void startExport(final Plottable item)
-  {
-    // clear the output buffer
- //  _beingExported = null;
-  }
-  
-  public static void clearBuffer()
-  {
-    _beingExported = null;
-  }
-  
-  public StringBuffer getBuffer()
-  {
-    return _beingExported;
-  }
+			// dump it on there.
+			cl.setContents(ss, ss);
+		}
+	}
 
-  /**
-   * ok, we've build up our string to export. put it on the clipboard
-   * 
-   * @param item
-   */
-  public void endExport(final Plottable item)
-  {
-    // check the export worked
-    if (_beingExported != null)
-    {
+	public StringBuffer getBuffer() {
+		return _beingExported;
+	}
 
-      // get the clipboard;
-      final java.awt.datatransfer.Clipboard cl =
-          Toolkit.getDefaultToolkit().getSystemClipboard();
+	/**
+	 * retrieve the layer of the given name (and create it if necessary)
+	 *
+	 * @return the requested layer, or null if not found
+	 */
+	public Layer getLayerFor(final String theName) {
+		return getLayerFor(theName, true);
+	}
 
-      // create the string to write
-      final StringSelection ss =
-          new StringSelection(_beingExported.toString());
+	public Layer getLayerFor(final String theName, final boolean recursive) {
+		if (recursive) {
+			final Layer theLayer = _theLayers.findLayer(theName, true);
+			return theLayer;
+		} else {
+			final Layer theLayer = _theLayers.findLayer(theName);
+			return theLayer;
+		}
+	}
 
-      // dump it on there.
-      cl.setContents(ss, ss);
-    }
-  }
+	/**
+	 * get the layers object we are editing
+	 */
+	protected Layers getLayers() {
+		return _theLayers;
+	}
 
-  /**
-   * append this line to what we're building up
-   * 
-   * @param txt
-   */
-  protected void addThisToExport(final String txt)
-  {
-    // initialise the export string?
-    if (_beingExported == null)
-      _beingExported = new StringBuffer();
-    else
-      _beingExported.append('\n');
+	@Override
+	abstract public void importThis(final String fName, final InputStream is);
 
-    _beingExported.append(txt);
-  }
+	/**
+	 * general command used to import a whole file of a specific type
+	 */
+	@Override
+	public void importThis(final String fName, final InputStream is, final Layers theData) {
+		_theLayers = theData;
+		importThis(fName, is);
+	}
+
+	@Override
+	public void importThis(final String fName, final InputStream is, final Layers theData,
+			final MonitorProvider provider) {
+		_theLayers = theData;
+		importThis(fName, is, provider);
+	}
+
+	@Override
+	abstract public void importThis(final String fName, final InputStream is, final MonitorProvider provider);
+
+	/**
+	 * signal problem importing data
+	 */
+	@Override
+	public void readError(final String fName, final int line, final String msg, final String thisLine) {
+		String res = "Problem at line " + line + " of:\n";
+		res += fName + "\n";
+		res += msg + ":" + thisLine;
+		DialogFactory.showMessage("Error in opening file", res);
+	}
+
+	/**
+	 * provide setter function for the layers object
+	 */
+	public void setLayers(final Layers theData) {
+		_theLayers = theData;
+	}
+
+	/**
+	 * get everything ready for the export
+	 *
+	 * @param item
+	 */
+	@Override
+	public void startExport(final Plottable item) {
+		// clear the output buffer
+		// _beingExported = null;
+	}
 }

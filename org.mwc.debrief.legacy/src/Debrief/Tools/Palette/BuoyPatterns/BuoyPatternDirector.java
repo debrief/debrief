@@ -1,17 +1,18 @@
-/*
- *    Debrief - the Open Source Maritime Analysis Application
- *    http://debrief.info
+/*******************************************************************************
+ * Debrief - the Open Source Maritime Analysis Application
+ * http://debrief.info
  *
- *    (C) 2000-2014, PlanetMayo Ltd
+ * (C) 2000-2020, Deep Blue C Technology Ltd
  *
- *    This library is free software; you can redistribute it and/or
- *    modify it under the terms of the Eclipse Public License v1.0
- *    (http://www.eclipse.org/legal/epl-v10.html)
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the Eclipse Public License v1.0
+ * (http://www.eclipse.org/legal/epl-v10.html)
  *
- *    This library is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
- */
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *******************************************************************************/
+
 // $RCSfile: BuoyPatternDirector.java,v $
 // @author $Author: Ian.Mayo $
 // @version $Revision: 1.1.1.2 $
@@ -48,65 +49,50 @@
 //
 package Debrief.Tools.Palette.BuoyPatterns;
 
-import java.util.*;
+import java.util.Vector;
 
-final class BuoyPatternDirector
-{
+final class BuoyPatternDirector {
 
-  //////////////////////////////////////////
-  // Member variables
-  //////////////////////////////////////////
+	//////////////////////////////////////////
+	// Member variables
+	//////////////////////////////////////////
 
-  //////////////////////////////////////////
-  // Constructor
-  //////////////////////////////////////////
+	//////////////////////////////////////////
+	// Constructor
+	//////////////////////////////////////////
 
-  //////////////////////////////////////////
-  // Member functions
-  //////////////////////////////////////////
+	//////////////////////////////////////////
+	// Member functions
+	//////////////////////////////////////////
 
+	public final PatternBuilderType createBuilder(final MWC.GenericData.WorldLocation centre, final String type,
+			final MWC.GUI.Properties.PropertiesPanel thePanel, final MWC.GUI.Layers theData) {
+		PatternBuilderType res = null;
+		if (type.equals("Field")) {
+			res = new FieldBuilder(centre, thePanel, theData);
+		} else if (type.equals("Circle")) {
+			res = new CircleBuilder(centre, thePanel, theData);
+		} else if (type.equals("Barrier")) {
+			res = new BarrierBuilder(centre, thePanel, theData);
+		} else if (type.equals("Wedge")) {
+			res = new WedgeBuilder(centre, thePanel, theData);
+		} else if (type.equals("Arc")) {
+			res = new ArcBuilder(centre, thePanel, theData);
+		}
 
-  public final PatternBuilderType createBuilder(final MWC.GenericData.WorldLocation centre,
-                                          final String type,
-                                          final MWC.GUI.Properties.PropertiesPanel thePanel,
-                                          final MWC.GUI.Layers theData)
-  {
-    PatternBuilderType res = null;
-    if(type.equals("Field"))
-    {
-      res = new FieldBuilder(centre, thePanel, theData);
-    }
-    else if (type.equals("Circle"))
-    {
-      res = new CircleBuilder(centre, thePanel, theData);
-    }
-    else if (type.equals("Barrier"))
-    {
-      res = new BarrierBuilder(centre, thePanel, theData);
-    }
-    else if (type.equals("Wedge"))
-    {
-      res = new WedgeBuilder(centre, thePanel, theData);
-    }
-    else if (type.equals("Arc"))
-    {
-      res = new ArcBuilder(centre, thePanel, theData);
-    }
+		return res;
+	}
 
-    return res;
-  }
+	public final Object[] getPatterns() {
+		final Vector<String> res = new Vector<String>(0, 1);
+		Object[] res2 = new String[] { "d1", "d2" };
+		res.addElement("Field");
+		res.addElement("Barrier");
+		res.addElement("Wedge");
+		res.addElement("Circle");
+		res.addElement("Arc");
+		res2 = res.toArray(res2);
+		return res2;
 
-  public final Object[] getPatterns()
-  {
-    final Vector<String> res = new Vector<String>(0,1);
-    Object[] res2 = new String[]{"d1", "d2"};
-    res.addElement("Field");
-    res.addElement("Barrier");
-    res.addElement("Wedge");
-    res.addElement("Circle");
-    res.addElement("Arc");
-    res2 = res.toArray(res2);
-    return res2;
-
-  }
+	}
 }

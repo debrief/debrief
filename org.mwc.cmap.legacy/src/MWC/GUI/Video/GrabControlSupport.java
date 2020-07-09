@@ -1,17 +1,18 @@
-/*
- *    Debrief - the Open Source Maritime Analysis Application
- *    http://debrief.info
+/*******************************************************************************
+ * Debrief - the Open Source Maritime Analysis Application
+ * http://debrief.info
  *
- *    (C) 2000-2014, PlanetMayo Ltd
+ * (C) 2000-2020, Deep Blue C Technology Ltd
  *
- *    This library is free software; you can redistribute it and/or
- *    modify it under the terms of the Eclipse Public License v1.0
- *    (http://www.eclipse.org/legal/epl-v10.html)
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the Eclipse Public License v1.0
+ * (http://www.eclipse.org/legal/epl-v10.html)
  *
- *    This library is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
- */
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *******************************************************************************/
+
 // $RCSfile: GrabControlSupport.java,v $
 // @author $Author: Ian.Mayo $
 // @version $Revision: 1.2 $
@@ -66,262 +67,246 @@ import javax.media.format.VideoFormat;
 import javax.media.protocol.DataSource;
 import javax.media.protocol.FileTypeDescriptor;
 
-public class GrabControlSupport
-{
-  /** the frame rate for the recording
-   *
-   */
-  private float _myFrameRate;
+public class GrabControlSupport {
+	/**
+	 * the frame rate for the recording
+	 *
+	 */
+	private float _myFrameRate;
 
-  /** the screen area we will be recording
-   *
-   */
-  private Rectangle _myArea;
+	/**
+	 * the screen area we will be recording
+	 *
+	 */
+	private Rectangle _myArea;
 
-  /** the destination for the recording
-   *
-   */
-  private String _myDestination = "file:debrief.avi";
+	/**
+	 * the destination for the recording
+	 *
+	 */
+	private String _myDestination = "file:debrief.avi";
 
-  /** my procesor
-   *
-   */
-  public Processor _myProcessor = null;
+	/**
+	 * my procesor
+	 *
+	 */
+	public Processor _myProcessor = null;
 
-  /** my file writer
-   *
-   */
-  protected DataSink _myWriter = null;
+	/**
+	 * my file writer
+	 *
+	 */
+	protected DataSink _myWriter = null;
 
-  /** my data producer
-   *
-   */
-  protected JDataSource _mySource = null;
+	/**
+	 * my data producer
+	 *
+	 */
+	protected JDataSource _mySource = null;
 
-  /** the type of output file we are producing
-   *
-   */
-  protected String _myFileType = FileTypeDescriptor.MSVIDEO;
+	/**
+	 * the type of output file we are producing
+	 *
+	 */
+	protected String _myFileType = FileTypeDescriptor.MSVIDEO;
 
+	/**
+	 * start recording
+	 *
+	 */
+	public void configure() throws java.io.FileNotFoundException, java.io.IOException, javax.media.MediaException {
+		// do we have a source?
+		if (_mySource == null) {
+			// create the source
+			_mySource = new JDataSource();
 
-  private MediaLocator getSourceLocator()
-  {
-    MediaLocator res = null;
-    // do we have the necessary data?
-    if(_myArea != null)
-    {
-      String val = "screen:/";
-      // produce a string representing the area and frame rate
-      val += _myArea.x + "," + _myArea.y + "," + _myArea.width + "," + _myArea.height + "/" + _myFrameRate;
-      res = new MediaLocator(val);
-    }
-    return res;
-  }
+			// provide the screen area and frame rate
+			_mySource.setLocator(getSourceLocator());
 
+			// connect to the source
+			_mySource.connect();
+		}
 
-  /** get the destination for the data
-   *
-   */
-  private MediaLocator getDestinationLocator()
-  {
-    String thisDest = new String(_myDestination);
+		// check we're connected
+		if (!_mySource.connected)
+			_mySource.connect();
 
-    // check the destination path
-    if(_myDestination.startsWith("file"))
-    {
-      // that's ok, it's in the correct format
-    }
-    else
-    {
-      // prepend the file URL indicator
-      thisDest = "file:" + thisDest;
-    }
+		// do we know the format?
+		final Object[] the_streams = _mySource.getStreams();
+		final LiveStream str = (LiveStream) the_streams[0];
+		final Format my_format = str.getFormat();
+		final Format[] formats = new Format[1];
+		formats[0] = my_format;
 
-    final MediaLocator res = new MediaLocator(thisDest);
-    return res;
-  }
+		final Format[] inter_format = new Format[] { new VideoFormat(VideoFormat.RGB) };
 
-  /** start recording
-   *
-   */
-  public void configure() throws java.io.FileNotFoundException, java.io.IOException, javax.media.MediaException
-  {
-      // do we have a source?
-      if(_mySource == null)
-      {
-        // create the source
-        _mySource = new JDataSource();
+		// prepare the output file
+		final FileTypeDescriptor output_format = new FileTypeDescriptor(_myFileType);
+		// create the processor model
+		final ProcessorModel theModel = new ProcessorModel(_mySource, inter_format, output_format);
 
-        // provide the screen area and frame rate
-        _mySource.setLocator(getSourceLocator());
+		// now get ready for the output
+		_myProcessor = Manager.createRealizedProcessor(theModel);
 
-        // connect to the source
-        _mySource.connect();
-      }
+		// finally the destination
+		final MediaLocator destination = getDestinationLocator();
+		final DataSource source = _myProcessor.getDataOutput(); // take the data from our compressor
+		_myWriter = Manager.createDataSink(source, destination);
+		_myWriter.addDataSinkListener(new DataSinkListener() {
+			@Override
+			public void dataSinkUpdate(final DataSinkEvent event) {
+				_myWriter.close();
+			}
+		});
 
-      // check we're connected
-      if(!_mySource.connected)
-        _mySource.connect();
+		// open and start the writer, to check it works ok
+		_myWriter.open();
+		_myWriter.start();
+		// ok, we're ready now, just wait for the configure!
 
-      // do we know the format?
-      final Object[] the_streams = _mySource.getStreams();
-      final LiveStream str = (LiveStream)  the_streams[0];
-      final Format my_format = str.getFormat();
-      final Format[] formats = new Format[1];
-      formats[0] = my_format;
+	}
 
-      final Format[] inter_format  = new Format[]{new VideoFormat(VideoFormat.RGB)};
+	/**
+	 * get the area we will be recording
+	 *
+	 */
+	public Rectangle getArea() {
+		return _myArea;
+	}
 
-      // prepare the output file
-      final FileTypeDescriptor output_format = new FileTypeDescriptor(_myFileType);
-      // create the processor model
-      final ProcessorModel theModel = new ProcessorModel(_mySource,
-                                                   inter_format,
-                                                   output_format);
+	/**
+	 * get the destination for the recording
+	 *
+	 */
+	public String getDescription() {
+		return _myDestination;
+	}
 
-      // now get ready for the output
-      _myProcessor = Manager.createRealizedProcessor(theModel);
+	/**
+	 * get the destination for the data
+	 *
+	 */
+	private MediaLocator getDestinationLocator() {
+		String thisDest = new String(_myDestination);
 
-      // finally the destination
-      final MediaLocator destination = getDestinationLocator();
-      final DataSource source = _myProcessor.getDataOutput(); // take the data from our compressor
-      _myWriter = Manager.createDataSink(source, destination);
-      _myWriter.addDataSinkListener(new DataSinkListener()
-      {
-        public void dataSinkUpdate(final DataSinkEvent event)
-        {
-          _myWriter.close();
-        }
-      });
+		// check the destination path
+		if (_myDestination.startsWith("file")) {
+			// that's ok, it's in the correct format
+		} else {
+			// prepend the file URL indicator
+			thisDest = "file:" + thisDest;
+		}
 
-      // open and start the writer, to check it works ok
-      _myWriter.open();
-      _myWriter.start();
-      // ok, we're ready now, just wait for the configure!
+		final MediaLocator res = new MediaLocator(thisDest);
+		return res;
+	}
 
-  }
+	/**
+	 * get the frame rate for the recording
+	 *
+	 */
+	public float getFrameRate() {
+		return _myFrameRate;
+	}
 
-  public void start()
-  {
-    try
-    {
-      // check everything's ok
-      if(_mySource == null)
-      {
-        System.out.println("oops, need to configure!");
-        configure();
-      }
+	private MediaLocator getSourceLocator() {
+		MediaLocator res = null;
+		// do we have the necessary data?
+		if (_myArea != null) {
+			String val = "screen:/";
+			// produce a string representing the area and frame rate
+			val += _myArea.x + "," + _myArea.y + "," + _myArea.width + "," + _myArea.height + "/" + _myFrameRate;
+			res = new MediaLocator(val);
+		}
+		return res;
+	}
 
-      if(!_mySource.connected)
-      {
-        System.out.println("oops, need to re-connect");
-        _mySource.connect();
-      }
+	/**
+	 * set the Rectangle which we will be recording
+	 *
+	 */
+	public void setArea(final Rectangle area) {
+		// check if this will change what we're doing
+		if (!area.equals(_myArea)) {
+			_myArea = area;
+			_mySource = null;
+		}
+	}
 
-      // ok, lets go!
-      _myProcessor.start();
-    }
-    catch(final java.io.IOException e)
-    {
-      MWC.Utilities.Errors.Trace.trace(e, "Failed to open video file writer, is file already open?");
-    }
-    catch(final javax.media.MediaException me)
-    {
-      MWC.Utilities.Errors.Trace.trace(me, "Failed to configure video formats.  Is correct version of JMF installed?");
-    }
-  }
+	/**
+	 * set the destination for the recording
+	 *
+	 */
+	public void setDestination(final String path) {
+		// see if this changes how we write our data
+		if (!path.equals(_myDestination)) {
+			_myDestination = path;
+			_myWriter = null;
+		}
+	}
 
-  /** stop recording
-   *
-   */
-  public void stop()
-  {
-    if(_myProcessor == null)
-    {
-      // hey, we're not even running!
-      return;
-    }
+	/**
+	 * set the file type for the processing
+	 *
+	 */
+	public void setFileType(final String fileType) {
+		_myFileType = fileType;
+	}
 
-    // stop the processor
-    _myProcessor.stop();
-    _myProcessor.close();
+	/**
+	 * set the frame rate for the recording
+	 *
+	 */
+	public void setFrameRate(final float val) {
+		// check if this will change what we're doing
+		if (val != _myFrameRate) {
+			_myFrameRate = val;
+			_mySource = null;
+		}
+	}
 
-    // and close the source
-    _mySource.disconnect();
+	public void start() {
+		try {
+			// check everything's ok
+			if (_mySource == null) {
+				System.out.println("oops, need to configure!");
+				configure();
+			}
 
-    // note, we close the writer by listening out to the relevant request (above)
+			if (!_mySource.connected) {
+				System.out.println("oops, need to re-connect");
+				_mySource.connect();
+			}
 
-  }
+			// ok, lets go!
+			_myProcessor.start();
+		} catch (final java.io.IOException e) {
+			MWC.Utilities.Errors.Trace.trace(e, "Failed to open video file writer, is file already open?");
+		} catch (final javax.media.MediaException me) {
+			MWC.Utilities.Errors.Trace.trace(me,
+					"Failed to configure video formats.  Is correct version of JMF installed?");
+		}
+	}
 
-  /** set the file type for the processing
-   *
-   */
-  public void setFileType(final String fileType)
-  {
-    _myFileType = fileType;
-  }
+	/**
+	 * stop recording
+	 *
+	 */
+	public void stop() {
+		if (_myProcessor == null) {
+			// hey, we're not even running!
+			return;
+		}
 
-  /** set the frame rate for the recording
-   *
-   */
-  public void setFrameRate(final float val)
-  {
-    // check if this will change what we're doing
-    if(val != _myFrameRate)
-    {
-      _myFrameRate = val;
-      _mySource = null;
-    }
-  }
+		// stop the processor
+		_myProcessor.stop();
+		_myProcessor.close();
 
-  /** get the frame rate for the recording
-   *
-   */
-  public float getFrameRate()
-  {
-    return _myFrameRate;
-  }
+		// and close the source
+		_mySource.disconnect();
 
-  /** set the Rectangle which we will be recording
-   *
-   */
-  public void setArea(final Rectangle area)
-  {
-    // check if this will change what we're doing
-    if(!area.equals(_myArea))
-    {
-      _myArea = area;
-      _mySource = null;
-    }
-  }
+		// note, we close the writer by listening out to the relevant request (above)
 
-  /** get the area we will be recording
-   *
-   */
-  public Rectangle getArea()
-  {
-    return _myArea;
-  }
-
-  /** set the destination for the recording
-   *
-   */
-  public void setDestination(final String path)
-  {
-    // see if this changes how we write our data
-    if(!path.equals(_myDestination))
-    {
-      _myDestination = path;
-      _myWriter = null;
-    }
-  }
-
-  /** get the destination for the recording
-   *
-   */
-  public String getDescription()
-  {
-    return _myDestination;
-  }
+	}
 
 }

@@ -1,17 +1,18 @@
-/*
- *    Debrief - the Open Source Maritime Analysis Application
- *    http://debrief.info
+/*******************************************************************************
+ * Debrief - the Open Source Maritime Analysis Application
+ * http://debrief.info
  *
- *    (C) 2000-2014, PlanetMayo Ltd
+ * (C) 2000-2020, Deep Blue C Technology Ltd
  *
- *    This library is free software; you can redistribute it and/or
- *    modify it under the terms of the Eclipse Public License v1.0
- *    (http://www.eclipse.org/legal/epl-v10.html)
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the Eclipse Public License v1.0
+ * (http://www.eclipse.org/legal/epl-v10.html)
  *
- *    This library is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
- */
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *******************************************************************************/
+
 package MWC.GUI.Tools.Chart;
 
 // Copyright MWC 1999
@@ -104,191 +105,181 @@ import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldLocation;
 import MWC.GenericData.WorldVector;
 
-public class Pan extends PlainDragTool implements Serializable
-{
-  /**
-	 * 
+public class Pan extends PlainDragTool implements Serializable {
+	public static class PanAction implements Action {
+
+		/**
+		 * re-usable method for setting the data area. We've made it public so that it
+		 * can be used both during a drag operation, and at the end of that operation
+		 *
+		 * @param proj    the viewport that we're adjusting
+		 * @param theArea the new area to show
+		 */
+		public static void setNewArea(final PlainProjection proj, final WorldArea theArea) {
+			final double oldBorder = proj.getDataBorder();
+			proj.setDataBorderNoZoom(1.0);
+			proj.setDataArea(theArea);
+			// Note: pre-GeoTools we used to have to do a zero zoom to fit to window
+			// after changing the data area. We don't now.
+			// proj.zoom(0.0);
+			proj.setDataBorderNoZoom(oldBorder);
+		}
+
+		private final PlainProjection _theProj;
+		private final WorldArea _oldArea;
+
+		private final WorldArea _newArea;
+
+		public PanAction(final PlainProjection theProjection, final WorldArea oldArea, final WorldArea newArea) {
+			_theProj = theProjection;
+			_oldArea = oldArea;
+			_newArea = newArea;
+		}
+
+		@Override
+		public void execute() {
+			// set the area
+			setNewArea(_theProj, _newArea);
+		}
+
+		@Override
+		public boolean isRedoable() {
+			return true;
+		}
+
+		@Override
+		public boolean isUndoable() {
+			return true;
+		}
+
+		@Override
+		public String toString() {
+			return "Pan operation";
+		}
+
+		@Override
+		public void undo() {
+			// set the area
+			setNewArea(_theProj, _oldArea);
+		}
+
+	}
+
+	/**
+	 *
 	 */
 	private static final long serialVersionUID = 1L;
 	//////////////////////////////////////////////////
-  // member variables
-  //////////////////////////////////////////////////
-  WorldArea _oldArea;
-  WorldArea _tmpArea;
-  WorldLocation _tmpLocation;
+	// member variables
+	//////////////////////////////////////////////////
+	WorldArea _oldArea;
+	WorldArea _tmpArea;
 
-  protected Rubberband _myRubber = new MWC.GUI.RubberBanding.NullRubberBand();
+	WorldLocation _tmpLocation;
 
+	protected Rubberband _myRubber = new MWC.GUI.RubberBanding.NullRubberBand();
 
-  //////////////////////////////////////////////////
-  // constructor
-  //////////////////////////////////////////////////
-  public Pan(final PlainChart theChart,
-                         final ToolParent theParent,
-                         final String theImage){
-    this(theChart, theParent, theImage, false);
-  }
+	//////////////////////////////////////////////////
+	// constructor
+	//////////////////////////////////////////////////
+	public Pan(final PlainChart theChart, final ToolParent theParent, final String theImage) {
+		this(theChart, theParent, theImage, false);
+	}
 
-  public Pan(final PlainChart theChart,
-                         final ToolParent theParent,
-                         final String theImage,
-                         final boolean isAlternate){
-    super(theChart, theParent, "Pan", "images/hand.png", isAlternate);
-  }
+	//////////////////////////////////////////////////
+	// member functions
+	//////////////////////////////////////////////////
 
+	public Pan(final PlainChart theChart, final ToolParent theParent, final String theImage,
+			final boolean isAlternate) {
+		super(theChart, theParent, "Pan", "images/hand.png", isAlternate);
+	}
 
-  //////////////////////////////////////////////////
-  // member functions
-  //////////////////////////////////////////////////
+	@Override
+	public void areaSelected(final MWC.GenericData.WorldLocation theLocation, final Point thePoint) {
+		super.areaSelected(theLocation, thePoint);
 
-  public void areaSelected(final MWC.GenericData.WorldLocation theLocation, final Point thePoint){
-    super.areaSelected(theLocation, thePoint);
+		super.restoreCursor();
 
-    super.restoreCursor();
+		// we've got to restore the old area in order to calculate
+		// the destination position in terms of old coordinates
+		// instead of the current screen coordinates
+		setNewArea(getChart().getCanvas().getProjection(), _oldArea);
 
-    // we've got to restore the old area in order to calculate
-    // the destination position in terms of old coordinates
-    // instead of the current screen coordinates
-    setNewArea(getChart().getCanvas().getProjection(), _oldArea);
+		// now we can do our data/world transform correctly
+		_theEnd = getChart().getCanvas().toWorld(thePoint);
 
-    // now we can do our data/world transform correctly
-    _theEnd = getChart().getCanvas().toWorld(thePoint);
+		// sort out the vector to apply to the corners
+		final WorldVector wv = _theStart.subtract(_theEnd);
 
-    // sort out the vector to apply to the corners
-    final WorldVector wv = _theStart.subtract(_theEnd);
+		// apply this vector to the corners
+		final WorldLocation currentCentre = _oldArea.getCentre();
+		final WorldLocation newCentre = currentCentre.add(wv);
 
-    // apply this vector to the corners
-    final WorldLocation currentCentre = _oldArea.getCentre();
-    final WorldLocation newCentre = currentCentre.add(wv);
+		// and store the new area
+		final WorldArea _newArea = new WorldArea(_oldArea);
+		_newArea.setCentre(newCentre);
 
-    // and store the new area
-    final WorldArea _newArea = new WorldArea(_oldArea);
-    _newArea.setCentre(newCentre);
+		super.doExecute(new PanAction(getChart().getCanvas().getProjection(), _oldArea, _newArea));
 
-    super.doExecute(new PanAction(getChart().getCanvas().getProjection(), _oldArea, _newArea));
+	}
 
-  }
+	@Override
+	public void dragging(final WorldLocation theLocation, final Point thePoint) {
+		if (_tmpLocation != null) {
 
-  public void startMotion(){
-    // store the current area
-    _oldArea = getChart().getCanvas().getProjection().getDataArea();
+			// sort out the vector to apply to the corners
+			final WorldVector wv = _tmpLocation.subtract(theLocation);
 
-    _tmpArea = new WorldArea(_oldArea);
-    _tmpLocation = null;
+			// apply this vector to the corners
+			final WorldArea newArea = new WorldArea(_tmpArea.getTopLeft().add(wv), _tmpArea.getBottomRight().add(wv));
 
-    final MWC.GUI.ToolParent parent = getParent();
-    if(parent != null)
-      parent.setCursor(java.awt.Cursor.MOVE_CURSOR);
-  }
+			setNewArea(getChart().getCanvas().getProjection(), newArea);
 
+			_tmpArea = getChart().getCanvas().getProjection().getDataArea();
 
-  public String getName(){
-    return "Pan tool";
-  }
+			getChart().update();
+		} else
+			_tmpLocation = new WorldLocation(theLocation);
 
-  public Action getData(){
-    return null;
-  }
+	}
 
+	@Override
+	public Action getData() {
+		return null;
+	}
 
-  public MWC.GUI.Rubberband getRubberband()
-  {
-    return _myRubber;
-  }
+	public String getName() {
+		return "Pan tool";
+	}
 
+	@Override
+	public MWC.GUI.Rubberband getRubberband() {
+		return _myRubber;
+	}
 
-  protected void setNewArea(final PlainProjection proj, final WorldArea theArea){
-    final double oldBorder = proj.getDataBorder();
-    proj.setDataBorderNoZoom(1.0);
-    proj.setDataArea(theArea);
-    proj.zoom(0.0);
-    proj.setDataBorderNoZoom(oldBorder);
-  }
+	protected void setNewArea(final PlainProjection proj, final WorldArea theArea) {
+		final double oldBorder = proj.getDataBorder();
+		proj.setDataBorderNoZoom(1.0);
+		proj.setDataArea(theArea);
+		proj.zoom(0.0);
+		proj.setDataBorderNoZoom(oldBorder);
+	}
 
+	//////////////////////////////////////////////////
+	// the data for the action
+	///////////////////////////////////////////////////
 
-  public void dragging(final WorldLocation theLocation, final Point thePoint)
-  {
-    if(_tmpLocation != null){
+	@Override
+	public void startMotion() {
+		// store the current area
+		_oldArea = getChart().getCanvas().getProjection().getDataArea();
 
-      // sort out the vector to apply to the corners
-      final WorldVector wv = _tmpLocation.subtract(theLocation);
+		_tmpArea = new WorldArea(_oldArea);
+		_tmpLocation = null;
 
-      // apply this vector to the corners
-      final WorldArea newArea = new WorldArea(_tmpArea.getTopLeft().add(wv),
-                                         _tmpArea.getBottomRight().add(wv));
-
-      setNewArea(getChart().getCanvas().getProjection(), newArea);
-
-      _tmpArea = getChart().getCanvas().getProjection().getDataArea();
-
-      getChart().update();
-    }
-    else
-      _tmpLocation = new WorldLocation(theLocation);
-
-
-  }
-
-
-  //////////////////////////////////////////////////
-  // the data for the action
-  ///////////////////////////////////////////////////
-
-  public static class PanAction implements Action{
-
-    private final PlainProjection _theProj;
-    private final WorldArea _oldArea;
-    private final WorldArea _newArea;
-
-
-    public PanAction(final PlainProjection theProjection,
-                     final WorldArea oldArea,
-                     final WorldArea newArea){
-    	_theProj = theProjection;
-      _oldArea = oldArea;
-      _newArea = newArea;
-    }
-
-    public boolean isRedoable(){
-      return true;
-    }
-
-    public boolean isUndoable()
-    {
-      return true;
-    }
-
-    public String toString()
-    {
-      return "Pan operation";
-    }
-
-    public void undo()
-    {
-      // set the area
-      setNewArea(_theProj, _oldArea);
-    }
-
-    public void execute()
-    {
-      // set the area
-      setNewArea(_theProj, _newArea);
-    }
-
-    /** re-usable method for setting the data area. We've made it public so that it can be used
-     * both during a drag operation, and at the end of that operation
-     * @param proj the viewport that we're adjusting
-     * @param theArea the new area to show
-     */
-    public static void setNewArea(final PlainProjection proj, final WorldArea theArea){
-      final double oldBorder = proj.getDataBorder();
-      proj.setDataBorderNoZoom(1.0);
-      proj.setDataArea(theArea);
-      // Note: pre-GeoTools we used to have to do a zero zoom to fit to window
-      // after changing the data area. We don't now.
-      // proj.zoom(0.0);
-      proj.setDataBorderNoZoom(oldBorder);
-    }
-
-  }
+		final MWC.GUI.ToolParent parent = getParent();
+		if (parent != null)
+			parent.setCursor(java.awt.Cursor.MOVE_CURSOR);
+	}
 }

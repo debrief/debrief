@@ -1,189 +1,181 @@
 package edu.nps.moves.dis7;
 
-import java.util.*;
-import java.io.*;
-import edu.nps.moves.disenum.*;
-import edu.nps.moves.disutil.*;
-
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Used for XML compatability. A container that holds PDUs
  *
- * Copyright (c) 2008-2016, MOVES Institute, Naval Postgraduate School. All rights reserved.
- * This work is licensed under the BSD open source license, available at https://www.movesinstitute.org/licenses/bsd.html
+ * Copyright (c) 2008-2016, MOVES Institute, Naval Postgraduate School. All
+ * rights reserved. This work is licensed under the BSD open source license,
+ * available at https://www.movesinstitute.org/licenses/bsd.html
  *
  * @author DMcG
  */
-public class PduContainer extends Object implements Serializable
-{
-   /** Number of PDUs in the container list */
-   protected int  numberOfPdus;
+public class PduContainer extends Object implements Serializable {
+	/**
+	 *
+	 */
+	private static final long serialVersionUID = 1L;
 
-   /** List of PDUs */
-   protected List< Pdu > pdus = new ArrayList< Pdu >(); 
+	/** Number of PDUs in the container list */
+	protected int numberOfPdus;
 
-/** Constructor */
- public PduContainer()
- {
- }
+	/** List of PDUs */
+	protected List<Pdu> pdus = new ArrayList<Pdu>();
 
-public int getMarshalledSize()
-{
-   int marshalSize = 0; 
+	/** Constructor */
+	public PduContainer() {
+	}
 
-   marshalSize = marshalSize + 4;  // numberOfPdus
-   for(int idx=0; idx < pdus.size(); idx++)
-   {
-        Pdu listElement = pdus.get(idx);
-        marshalSize = marshalSize + listElement.getMarshalledSize();
-   }
+	/*
+	 * The equals method doesn't always work--mostly it works only on classes that
+	 * consist only of primitives. Be careful.
+	 */
+	@Override
+	public boolean equals(final Object obj) {
 
-   return marshalSize;
-}
+		if (this == obj) {
+			return true;
+		}
 
+		if (obj == null) {
+			return false;
+		}
 
-public int getNumberOfPdus()
-{ return (int)pdus.size();
-}
+		if (getClass() != obj.getClass())
+			return false;
 
-/** Note that setting this value will not change the marshalled value. The list whose length this describes is used for that purpose.
- * The getnumberOfPdus method will also be based on the actual list length rather than this value. 
- * The method is simply here for java bean completeness.
- */
-public void setNumberOfPdus(int pNumberOfPdus)
-{ numberOfPdus = pNumberOfPdus;
-}
+		return equalsImpl(obj);
+	}
 
-public void setPdus(List<Pdu> pPdus)
-{ pdus = pPdus;
-}
+	/**
+	 * Compare all fields that contribute to the state, ignoring transient and
+	 * static fields, for <code>this</code> and the supplied object
+	 *
+	 * @param obj the object to compare to
+	 * @return true if the objects are equal, false otherwise.
+	 */
+	public boolean equalsImpl(final Object obj) {
+		boolean ivarsEqual = true;
 
-public List<Pdu> getPdus()
-{ return pdus; }
+		if (!(obj instanceof PduContainer))
+			return false;
 
+		final PduContainer rhs = (PduContainer) obj;
 
-public void marshal(DataOutputStream dos)
-{
-    try 
-    {
-       dos.writeInt( (int)pdus.size());
+		if (!(numberOfPdus == rhs.numberOfPdus))
+			ivarsEqual = false;
 
-       for(int idx = 0; idx < pdus.size(); idx++)
-       {
-            Pdu aPdu = pdus.get(idx);
-            aPdu.marshal(dos);
-       } // end of list marshalling
+		for (int idx = 0; idx < pdus.size(); idx++) {
+			if (!(pdus.get(idx).equals(rhs.pdus.get(idx))))
+				ivarsEqual = false;
+		}
 
-    } // end try 
-    catch(Exception e)
-    { 
-      System.out.println(e);}
-    } // end of marshal method
+		return ivarsEqual;
+	}
 
-public void unmarshal(DataInputStream dis)
-{
-    try 
-    {
-       numberOfPdus = dis.readInt();
-       for(int idx = 0; idx < numberOfPdus; idx++)
-       {
-           Pdu anX = new Pdu();
-           anX.unmarshal(dis);
-           pdus.add(anX);
-       }
+	public int getMarshalledSize() {
+		int marshalSize = 0;
 
-    } // end try 
-   catch(Exception e)
-    { 
-      System.out.println(e); 
-    }
- } // end of unmarshal method 
+		marshalSize = marshalSize + 4; // numberOfPdus
+		for (int idx = 0; idx < pdus.size(); idx++) {
+			final Pdu listElement = pdus.get(idx);
+			marshalSize = marshalSize + listElement.getMarshalledSize();
+		}
 
+		return marshalSize;
+	}
 
-/**
- * Packs a Pdu into the ByteBuffer.
- * @throws java.nio.BufferOverflowException if buff is too small
- * @throws java.nio.ReadOnlyBufferException if buff is read only
- * @see java.nio.ByteBuffer
- * @param buff The ByteBuffer at the position to begin writing
- * @since ??
- */
-public void marshal(java.nio.ByteBuffer buff)
-{
-       buff.putInt( (int)pdus.size());
+	public int getNumberOfPdus() {
+		return pdus.size();
+	}
 
-       for(int idx = 0; idx < pdus.size(); idx++)
-       {
-            Pdu aPdu = (Pdu)pdus.get(idx);
-            aPdu.marshal(buff);
-       } // end of list marshalling
+	public List<Pdu> getPdus() {
+		return pdus;
+	}
 
-    } // end of marshal method
+	public void marshal(final DataOutputStream dos) {
+		try {
+			dos.writeInt(pdus.size());
 
-/**
- * Unpacks a Pdu from the underlying data.
- * @throws java.nio.BufferUnderflowException if buff is too small
- * @see java.nio.ByteBuffer
- * @param buff The ByteBuffer at the position to begin reading
- * @since ??
- */
-public void unmarshal(java.nio.ByteBuffer buff)
-{
-       numberOfPdus = buff.getInt();
-       for(int idx = 0; idx < numberOfPdus; idx++)
-       {
-            Pdu anX = new Pdu();
-            anX.unmarshal(buff);
-            pdus.add(anX);
-       }
+			for (int idx = 0; idx < pdus.size(); idx++) {
+				final Pdu aPdu = pdus.get(idx);
+				aPdu.marshal(dos);
+			} // end of list marshalling
 
- } // end of unmarshal method 
+		} // end try
+		catch (final Exception e) {
+			System.out.println(e);
+		}
+	} // end of marshal method
 
+	/**
+	 * Packs a Pdu into the ByteBuffer.
+	 *
+	 * @throws java.nio.BufferOverflowException if buff is too small
+	 * @throws java.nio.ReadOnlyBufferException if buff is read only
+	 * @see java.nio.ByteBuffer
+	 * @param buff The ByteBuffer at the position to begin writing
+	 * @since ??
+	 */
+	public void marshal(final java.nio.ByteBuffer buff) {
+		buff.putInt(pdus.size());
 
- /*
-  * The equals method doesn't always work--mostly it works only on classes that consist only of primitives. Be careful.
-  */
-@Override
- public boolean equals(Object obj)
- {
+		for (int idx = 0; idx < pdus.size(); idx++) {
+			final Pdu aPdu = pdus.get(idx);
+			aPdu.marshal(buff);
+		} // end of list marshalling
 
-    if(this == obj){
-      return true;
-    }
+	} // end of marshal method
 
-    if(obj == null){
-       return false;
-    }
+	/**
+	 * Note that setting this value will not change the marshalled value. The list
+	 * whose length this describes is used for that purpose. The getnumberOfPdus
+	 * method will also be based on the actual list length rather than this value.
+	 * The method is simply here for java bean completeness.
+	 */
+	public void setNumberOfPdus(final int pNumberOfPdus) {
+		numberOfPdus = pNumberOfPdus;
+	}
 
-    if(getClass() != obj.getClass())
-        return false;
+	public void setPdus(final List<Pdu> pPdus) {
+		pdus = pPdus;
+	}
 
-    return equalsImpl(obj);
- }
+	public void unmarshal(final DataInputStream dis) {
+		try {
+			numberOfPdus = dis.readInt();
+			for (int idx = 0; idx < numberOfPdus; idx++) {
+				final Pdu anX = new Pdu();
+				anX.unmarshal(dis);
+				pdus.add(anX);
+			}
 
- /**
-  * Compare all fields that contribute to the state, ignoring
- transient and static fields, for <code>this</code> and the supplied object
-  * @param obj the object to compare to
-  * @return true if the objects are equal, false otherwise.
-  */
- public boolean equalsImpl(Object obj)
- {
-     boolean ivarsEqual = true;
+		} // end try
+		catch (final Exception e) {
+			System.out.println(e);
+		}
+	} // end of unmarshal method
 
-    if(!(obj instanceof PduContainer))
-        return false;
+	/**
+	 * Unpacks a Pdu from the underlying data.
+	 *
+	 * @throws java.nio.BufferUnderflowException if buff is too small
+	 * @see java.nio.ByteBuffer
+	 * @param buff The ByteBuffer at the position to begin reading
+	 * @since ??
+	 */
+	public void unmarshal(final java.nio.ByteBuffer buff) {
+		numberOfPdus = buff.getInt();
+		for (int idx = 0; idx < numberOfPdus; idx++) {
+			final Pdu anX = new Pdu();
+			anX.unmarshal(buff);
+			pdus.add(anX);
+		}
 
-     final PduContainer rhs = (PduContainer)obj;
-
-     if( ! (numberOfPdus == rhs.numberOfPdus)) ivarsEqual = false;
-
-     for(int idx = 0; idx < pdus.size(); idx++)
-     {
-        if( ! ( pdus.get(idx).equals(rhs.pdus.get(idx)))) ivarsEqual = false;
-     }
-
-
-    return ivarsEqual;
- }
+	} // end of unmarshal method
 } // end of class

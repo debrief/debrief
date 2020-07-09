@@ -1,3 +1,17 @@
+/*******************************************************************************
+ * Debrief - the Open Source Maritime Analysis Application
+ * http://debrief.info
+ *
+ * (C) 2000-2020, Deep Blue C Technology Ltd
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the Eclipse Public License v1.0
+ * (http://www.eclipse.org/legal/epl-v10.html)
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *******************************************************************************/
 package ASSET.Models.Sensor.Initial;
 
 import java.util.ArrayList;
@@ -13,7 +27,7 @@ import ASSET.Models.Environment.EnvironmentType;
 import ASSET.Models.Environment.SimpleEnvironment;
 import ASSET.Models.Mediums.NarrowbandRadNoise;
 import ASSET.Models.Mediums.Optic;
-import ASSET.Models.Movement.SSMovementCharacteristics;
+import ASSET.Models.Movement.MovementCharacteristics;
 import ASSET.Models.Sensor.CoreSensor;
 import ASSET.Models.Vessels.Buoy;
 import ASSET.Models.Vessels.Radiated.RadiatedCharacteristics;
@@ -29,414 +43,340 @@ import MWC.GenericData.WorldLocation;
 import MWC.GenericData.WorldSpeed;
 import MWC.GenericData.WorldVector;
 
-public class BistaticReceiver extends CoreSensor
-{
+public class BistaticReceiver extends CoreSensor {
 
-  public BistaticReceiver(int id)
-  {
-    super(id, 0, "Bistatic Receiver");
-  }
+	static public class BistaticTest extends SupportTesting.EditableTesting {
+		static public final String TEST_ALL_TEST_TYPE = "UNIT";
 
-  /**
-   * 
-   */
-  private static final long serialVersionUID = 1L;
+		public BistaticTest(final String name) {
+			super(name);
+		}
 
-  /**
-   * detection threshold
-   * 
-   */
-  private final double THRESHOLD = 5; // db
+		/**
+		 * get an object which we can test
+		 *
+		 * @return Editable object which we can check the properties for
+		 */
+		@Override
+		public Editable getEditable() {
+			final BistaticReceiver theDet = new BistaticReceiver(12);
+			return theDet;
+		}
 
-  /**
-   * whether to suppress bistatic hits when they would be obscured by direct path
-   */
-  private boolean _suppressDirect = true;
+		private void showDetections(final DetectionList detections) {
+			final Iterator<DetectionEvent> iter = detections.iterator();
+			while (iter.hasNext()) {
+				final DetectionEvent de = iter.next();
+				System.out.println(de.getTargetType().getType() + " bearing:" + de.getBearing());
+			}
 
-  /** the angle either side (Degs) that we suppress
-   * direct path bearings
-   */
-  private double _obscureAngle;
+		}
 
-  @Override
-  public WorldDistance getEstimatedRange()
-  {
-    return null;
-  }
+		public void testBistatics() {
+			final CoreScenario scenario = new CoreScenario();
+			scenario.setScenarioStepTime(10000);
 
-  @Override
-  protected boolean canProduceBearing()
-  {
-    return true;
-  }
+			// reset the earth model
+			WorldLocation.setModel(new MWC.Algorithms.EarthModels.CompletelyFlatEarth());
 
-  @Override
-  protected boolean canProduceRange()
-  {
-    return false;
-  }
+			// now the objects
+			final WorldLocation l1 = new WorldLocation(0, 0, 0);
+			final WorldLocation l2 = l1.add(new WorldVector(0, MWC.Algorithms.Conversions.m2Degs(2000), 0));
 
-  @Override
-  public int getMedium()
-  {
-    return EnvironmentType.NARROWBAND;
-  }
+			final Status theStat = new Status(12, 0);
+			theStat.setLocation(l1);
+			theStat.setSpeed(new WorldSpeed(12, WorldSpeed.Kts));
 
-  @Override
-  public boolean hasEditor()
-  {
-    return false;
-  }
+			final ASSET.Models.Vessels.SSN ssn = new ASSET.Models.Vessels.SSN(14);
+			ssn.setCategory(
+					new Category(Category.Force.BLUE, Category.Environment.SUBSURFACE, Category.Type.SUBMARINE));
+			final Status otherStat = new Status(theStat);
+			otherStat.setLocation(l2);
+			otherStat.setSpeed(new WorldSpeed(12, WorldSpeed.Kts));
+			final RadiatedCharacteristics rc = new RadiatedCharacteristics();
+			final Optic opticRadNoise = new Optic(2, new WorldDistance(2, WorldDistance.METRES));
+			rc.add(EnvironmentType.VISUAL, opticRadNoise);
+			ssn.setMovementChars(MovementCharacteristics.getSampleChars());
+			ssn.setRadiatedChars(rc);
+			ssn.setStatus(otherStat);
 
-  @Override
-  public EditorType getInfo()
-  {
-    return null;
-  }
+			final EnvironmentType env = new SimpleEnvironment(1, 1, 1);
 
-  @Override
-  public String getVersion()
-  {
-    return "1.0";
-  }
+			// ok, generate the transmitter
+			final Buoy tx = new Buoy(2);
+			tx.setName("TX");
+			final Status txStat = new Status(theStat);
+			tx.setCategory(new Category(Category.Force.BLUE, Category.Environment.SUBSURFACE, Category.Type.BUOY));
 
-  @Override
-  protected DetectionEvent detectThis(EnvironmentType environment,
-      ParticipantType host, ParticipantType target, long time,
-      ScenarioType scenario)
-  {
-    DetectionEvent res = null;
+			txStat.setLocation(txStat.getLocation().add(new WorldVector(3, 0.004, 0)));
+			txStat.setSpeed(new WorldSpeed(0, WorldSpeed.Kts));
+			final NarrowbandSensor noiseSource = new NarrowbandSensor(55);
+			final NarrowbandRadNoise nrn = new NarrowbandRadNoise(150, 150);
+			final RadiatedCharacteristics txRadChars = new RadiatedCharacteristics();
+			txRadChars.add(EnvironmentType.NARROWBAND, nrn);
+			tx.setRadiatedChars(txRadChars);
+			tx.getSensorFit().add(noiseSource);
+			tx.setStatus(txStat);
 
-    // is this an active buoy?
-    if (Category.Type.BUOY.equals(target.getCategory().getType()))
-    {
-      // ok, we don't produce detections of buoys
-    }
-    else
-    {
-      // ok, now see if we can find any active transmitters
-      ArrayList<ParticipantType> transmitters =
-          new ArrayList<ParticipantType>();
+			final Buoy rx = new Buoy(3);
+			rx.setName("RX");
+			rx.setCategory(new Category(Category.Force.BLUE, Category.Environment.SUBSURFACE, Category.Type.BUOY));
+			final Status rxStat = new Status(theStat);
+			rxStat.setLocation(rxStat.getLocation().add(new WorldVector(1, 0.004, 0)));
+			rxStat.setSpeed(new WorldSpeed(0, WorldSpeed.Kts));
+			final BistaticReceiver receiver = new BistaticReceiver(44);
+			rx.getSensorFit().add(receiver);
+			rx.setStatus(rxStat);
 
-      // loop through the participants
-      final Collection<ParticipantType> parts = scenario
-          .getListOfVisibleParticipants();
+			scenario.addParticipant(ssn.getId(), ssn);
+			scenario.addParticipant(tx.getId(), tx);
+			scenario.addParticipant(rx.getId(), rx);
 
-      for (Iterator<ParticipantType> iterator = parts.iterator(); iterator
-          .hasNext();)
-      {
-        ParticipantType thisP = (ParticipantType) iterator.next();
+			DetectionList detections = new DetectionList();
+			receiver.detects(env, detections, rx, scenario, 20000);
 
-        // see if this is a buoy
-        if (Category.Type.BUOY.equals(thisP.getCategory().getType()))
-        {
-          // is it active?
-          if (thisP.radiatesThisNoise(EnvironmentType.NARROWBAND))
-          {
-            // ok, remember it
-            transmitters.add(thisP);
-          }
-        }
-      }
+			assertEquals("got some detections", 1, detections.size());
 
-      // did we find any?
-      if (transmitters.size() > 0)
-      {
-        // ok, now consider the two way travel journey
-        Iterator<ParticipantType> iter = transmitters.iterator();
-        while (iter.hasNext())
-        {
-          ParticipantType transmitter = (ParticipantType) iter.next();
+			showDetections(detections);
 
-          // sort out the locations
-          WorldLocation txLoc = transmitter.getStatus().getLocation();
-          WorldLocation contactLoc = target.getStatus().getLocation();
-          WorldLocation myLoc = getHostLocationFor(host);
+			detections.clear();
+			receiver.detects(env, detections, rx, scenario, 40000);
 
-          // what's the bearing to the tx from ux?
-          double bearingToTxDegs = MWC.Algorithms.Conversions.Rads2Degs(txLoc.bearingFrom(myLoc));
-          if(bearingToTxDegs > 180)
-          {
-            bearingToTxDegs -= 180;
-          }
+			assertEquals("got some detections", 1, detections.size());
 
-          // determine the bistatic propagation loss
-          RadiatedCharacteristics txChars = transmitter.getRadiatedChars();
-          NarrowbandRadNoise radNoise = (NarrowbandRadNoise) txChars.getMedium(
-              EnvironmentType.NARROWBAND);
-          double radLevel = radNoise.getBaseNoiseLevel();
-          double baseFreq = radNoise.getFrequency();
+			// ok, do some steps
+			for (int i = 0; i < 10; i++) {
+				detections = receiver.getAllDetections();
+				detections.clear();
 
-          // NOTE:: don't can't just combine the two separate propagation losses. Calculate
-          // the loss for the overall range
-          final double sep1 = txLoc.rangeFrom(contactLoc);
-          final double sep2 = contactLoc.rangeFrom(myLoc);
-          final double total_sep = sep1 + sep2;
-          // convert to yds
-          final double rng_yds = MWC.Algorithms.Conversions.Degs2m(total_sep);
+				scenario.step();
+				showDetections(detections);
+			}
 
-          // produce a transmission loss
-          final float remainingNoise;
-          if (rng_yds == 0)
-          {
-            // zero range is a special occurence, since it doesn't get through our log calcs
-            remainingNoise = (float) radLevel;
-          }
-          else
-          {
-            // first sort out the spreading
-            remainingNoise = (float) (radLevel - (20f * Math.log(rng_yds) / Math
-                .log(10d)));
-          }
+		}
+	}
 
-          // is this sufficient?
-          if (remainingNoise > THRESHOLD)
-          {
-            float bearing = (float) MWC.Algorithms.Conversions.Rads2Degs(
-                contactLoc.subtract(myLoc).getBearing());
+	/**
+	 *
+	 */
+	private static final long serialVersionUID = 1L;
 
-            final boolean obscured;
-            if (_suppressDirect)
-            {
-              final double trimmedBearing = bearing > 180 ? bearing - 360 : bearing;
-                            
-              double brgDelta = trimmedBearing - bearingToTxDegs;
-              if(brgDelta > 180)
-              {
-                brgDelta -= 360d;
-              }
-              if(brgDelta < -180)
-              {
-                brgDelta += 360d;
-              }
-                
-              if (Math.abs(brgDelta) < _obscureAngle)
-              {
-                obscured = true;
-              }
-              else
-              {
-                obscured = false;
-              }
-            }
-            else
-            {
-              obscured = false;
-            }
+	/**
+	 * detection threshold
+	 *
+	 */
+	private final double THRESHOLD = 5; // db
 
-            if (!obscured)
-            {
-              res = new DetectionEvent(time, host.getId(), myLoc, this, null,
-                  null, bearing, null, remainingNoise, target.getCategory(),
-                  null, null, target);
+	/**
+	 * whether to suppress bistatic hits when they would be obscured by direct path
+	 */
+	private boolean _suppressDirect = true;
 
-              // start off by changing the freq from the tx to the target
-              double SpeedOfSound = 1500;
-              double osHeadingRads = MWC.Algorithms.Conversions.Degs2Rads(
-                  transmitter.getStatus().getCourse());
-              double tgtHeadingRads = MWC.Algorithms.Conversions.Degs2Rads(
-                  target.getStatus().getCourse());
-              double osSpeed = transmitter.getStatus().getSpeed().getValueIn(
-                  WorldSpeed.M_sec);
-              double tgtSpeed = target.getStatus().getSpeed().getValueIn(
-                  WorldSpeed.M_sec);
-              double bearingRads = txLoc.subtract(contactLoc).getBearing();
-              double freq = FrequencyCalcs.calcPredictedFreqSI(SpeedOfSound,
-                  osHeadingRads, tgtHeadingRads, osSpeed, tgtSpeed, bearingRads,
-                  baseFreq);
+	/**
+	 * the angle either side (Degs) that we suppress direct path bearings
+	 */
+	private double _obscureAngle;
 
-              // now change the freq from the target to the rx
-              osHeadingRads = MWC.Algorithms.Conversions.Degs2Rads(target
-                  .getStatus().getCourse());
-              tgtHeadingRads = MWC.Algorithms.Conversions.Degs2Rads(host
-                  .getStatus().getCourse());
-              osSpeed = target.getStatus().getSpeed().getValueIn(
-                  WorldSpeed.M_sec);
-              tgtSpeed = host.getStatus().getSpeed().getValueIn(
-                  WorldSpeed.M_sec);
-              bearingRads = contactLoc.subtract(myLoc).getBearing();
-              freq = FrequencyCalcs.calcPredictedFreqSI(SpeedOfSound,
-                  osHeadingRads, tgtHeadingRads, osSpeed, tgtSpeed, bearingRads,
-                  freq);
+	public BistaticReceiver(final int id) {
+		super(id, 0, "Bistatic Receiver");
+	}
 
-              // and store the overall result
-              res.setFreq((float) freq);
+	@Override
+	protected boolean canDetectThisType(final NetworkParticipant ownship, final ParticipantType other,
+			final EnvironmentType env) {
+		// hey, we can probably detect anything that's not airborne
+		return !Category.Environment.AIRBORNE.equals(other.getCategory().getEnvironment());
+	}
 
-              // ok - this method can only return one detection.
-              return res;
-            }
-          }
-        }
-      }
-    }
+	@Override
+	public boolean canIdentifyTarget() {
+		return true;
+	}
 
-    return res;
-  }
+	@Override
+	protected boolean canProduceBearing() {
+		return true;
+	}
 
-  @Override
-  protected boolean canDetectThisType(NetworkParticipant ownship,
-      ParticipantType other, EnvironmentType env)
-  {
-    // hey, we can probably detect anything that's not airborne
-    return !Category.Environment.AIRBORNE.equals(other.getCategory()
-        .getEnvironment());
-  }
+	@Override
+	protected DetectionEvent detectThis(final EnvironmentType environment, final ParticipantType host,
+			final ParticipantType target, final long time, final ScenarioType scenario) {
+		DetectionEvent res = null;
 
-  @Override
-  public boolean canIdentifyTarget()
-  {
-    return true;
-  }
+		// is this an active buoy?
+		if (Category.Type.BUOY.equals(target.getCategory().getType())) {
+			// ok, we don't produce detections of buoys
+		} else {
+			// ok, now see if we can find any active transmitters
+			final ArrayList<ParticipantType> transmitters = new ArrayList<ParticipantType>();
 
-  static public class BistaticTest extends SupportTesting.EditableTesting
-  {
-    static public final String TEST_ALL_TEST_TYPE = "UNIT";
+			// loop through the participants
+			final Collection<ParticipantType> parts = scenario.getListOfVisibleParticipants();
 
-    public BistaticTest(final String name)
-    {
-      super(name);
-    }
+			for (final Iterator<ParticipantType> iterator = parts.iterator(); iterator.hasNext();) {
+				final ParticipantType thisP = iterator.next();
 
-    /**
-     * get an object which we can test
-     * 
-     * @return Editable object which we can check the properties for
-     */
-    public Editable getEditable()
-    {
-      BistaticReceiver theDet = new BistaticReceiver(12);
-      return theDet;
-    }
+				// is it active?
+				if (thisP.radiatesThisNoise(EnvironmentType.NARROWBAND)) {
+					// ok, remember it
+					transmitters.add(thisP);
+				}
+			}
 
-    public void testBistatics()
-    {
-      final CoreScenario scenario = new CoreScenario();
-      scenario.setScenarioStepTime(10000);
+			// did we find any?
+			if (transmitters.size() > 0) {
+				// ok, now consider the two way travel journey
+				final Iterator<ParticipantType> iter = transmitters.iterator();
+				while (iter.hasNext()) {
+					final ParticipantType transmitter = iter.next();
 
-      // reset the earth model
-      WorldLocation.setModel(
-          new MWC.Algorithms.EarthModels.CompletelyFlatEarth());
+					// sort out the locations
+					final WorldLocation txLoc = transmitter.getStatus().getLocation();
+					final WorldLocation contactLoc = target.getStatus().getLocation();
+					final WorldLocation myLoc = getHostLocationFor(host);
 
-      // now the objects
-      WorldLocation l1 = new WorldLocation(0, 0, 0);
-      WorldLocation l2 = l1.add(new WorldVector(0, MWC.Algorithms.Conversions
-          .m2Degs(2000), 0));
+					// what's the bearing to the tx from ux?
+					double bearingToTxDegs = MWC.Algorithms.Conversions.Rads2Degs(txLoc.bearingFrom(myLoc));
+					if (bearingToTxDegs > 180) {
+						bearingToTxDegs -= 180;
+					}
 
-      final Status theStat = new Status(12, 0);
-      theStat.setLocation(l1);
-      theStat.setSpeed(new WorldSpeed(12, WorldSpeed.Kts));
+					// determine the bistatic propagation loss
+					final RadiatedCharacteristics txChars = transmitter.getRadiatedChars();
+					final NarrowbandRadNoise radNoise = (NarrowbandRadNoise) txChars
+							.getMedium(EnvironmentType.NARROWBAND);
+					final double radLevel = radNoise.getBaseNoiseLevel();
+					final double baseFreq = radNoise.getFrequency();
 
-      ASSET.Models.Vessels.SSN ssn = new ASSET.Models.Vessels.SSN(14);
-      ssn.setCategory(new Category(Category.Force.BLUE,
-          Category.Environment.SUBSURFACE, Category.Type.SUBMARINE));
-      Status otherStat = new Status(theStat);
-      otherStat.setLocation(l2);
-      otherStat.setSpeed(new WorldSpeed(12, WorldSpeed.Kts));
-      RadiatedCharacteristics rc = new RadiatedCharacteristics();
-      Optic opticRadNoise = new Optic(2, new WorldDistance(2,
-          WorldDistance.METRES));
-      rc.add(EnvironmentType.VISUAL, opticRadNoise);
-      ssn.setMovementChars(SSMovementCharacteristics.getSampleChars());
-      ssn.setRadiatedChars(rc);
-      ssn.setStatus(otherStat);
+					// NOTE:: don't can't just combine the two separate propagation losses.
+					// Calculate
+					// the loss for the overall range
+					final double sep1 = txLoc.rangeFrom(contactLoc);
+					final double sep2 = contactLoc.rangeFrom(myLoc);
+					final double total_sep = sep1 + sep2;
+					// convert to yds
+					final double rng_yds = MWC.Algorithms.Conversions.Degs2m(total_sep);
 
-      EnvironmentType env = new SimpleEnvironment(1, 1, 1);
+					final WorldDistance range = canProduceRange() ? new WorldDistance(sep2, WorldDistance.DEGS) : null;
 
-      // ok, generate the transmitter
-      Buoy tx = new Buoy(2);
-      tx.setName("TX");
-      Status txStat = new Status(theStat);
-      tx.setCategory(new Category(Category.Force.BLUE,
-          Category.Environment.SUBSURFACE, Category.Type.BUOY));
+					// produce a transmission loss
+					final float remainingNoise;
+					if (rng_yds == 0) {
+						// zero range is a special occurence, since it doesn't get through our log calcs
+						remainingNoise = (float) radLevel;
+					} else {
+						// first sort out the spreading
+						remainingNoise = (float) (radLevel - (20f * Math.log(rng_yds) / Math.log(10d)));
+					}
 
-      txStat.setLocation(txStat.getLocation().add(new WorldVector(3, 0.004,
-          0)));
-      txStat.setSpeed(new WorldSpeed(0, WorldSpeed.Kts));
-      NarrowbandSensor noiseSource = new NarrowbandSensor(55);
-      NarrowbandRadNoise nrn = new NarrowbandRadNoise(150, 150);
-      RadiatedCharacteristics txRadChars = new RadiatedCharacteristics();
-      txRadChars.add(EnvironmentType.NARROWBAND, nrn);
-      tx.setRadiatedChars(txRadChars);
-      tx.getSensorFit().add(noiseSource);
-      tx.setStatus(txStat);
+					// is this sufficient?
+					if (remainingNoise > THRESHOLD) {
+						final float bearing = (float) MWC.Algorithms.Conversions
+								.Rads2Degs(contactLoc.subtract(myLoc).getBearing());
 
-      Buoy rx = new Buoy(3);
-      rx.setName("RX");
-      rx.setCategory(new Category(Category.Force.BLUE,
-          Category.Environment.SUBSURFACE, Category.Type.BUOY));
-      Status rxStat = new Status(theStat);
-      rxStat.setLocation(rxStat.getLocation().add(new WorldVector(1, 0.004,
-          0)));
-      rxStat.setSpeed(new WorldSpeed(0, WorldSpeed.Kts));
-      BistaticReceiver receiver = new BistaticReceiver(44);
-      rx.getSensorFit().add(receiver);
-      rx.setStatus(rxStat);
+						final boolean obscured;
+						if (_suppressDirect) {
+							final double trimmedBearing = bearing > 180 ? bearing - 360 : bearing;
 
-      scenario.addParticipant(ssn.getId(), ssn);
-      scenario.addParticipant(tx.getId(), tx);
-      scenario.addParticipant(rx.getId(), rx);
+							double brgDelta = trimmedBearing - bearingToTxDegs;
+							if (brgDelta > 180) {
+								brgDelta -= 360d;
+							}
+							if (brgDelta < -180) {
+								brgDelta += 360d;
+							}
 
-      DetectionList detections = new DetectionList();
-      receiver.detects(env, detections, rx, scenario, 20000);
+							if (Math.abs(brgDelta) < _obscureAngle) {
+								obscured = true;
+							} else {
+								obscured = false;
+							}
+						} else {
+							obscured = false;
+						}
 
-      assertEquals("got some detections", 1, detections.size());
+						if (!obscured) {
+							res = new DetectionEvent(time, host.getId(), myLoc, this, range, null, bearing, null,
+									remainingNoise, target.getCategory(), null, null, target);
 
-      showDetections(detections);
+							// start off by changing the freq from the tx to the target
+							final double SpeedOfSound = 1500;
+							double osHeadingRads = MWC.Algorithms.Conversions
+									.Degs2Rads(transmitter.getStatus().getCourse());
+							double tgtHeadingRads = MWC.Algorithms.Conversions
+									.Degs2Rads(target.getStatus().getCourse());
+							double osSpeed = transmitter.getStatus().getSpeed().getValueIn(WorldSpeed.M_sec);
+							double tgtSpeed = target.getStatus().getSpeed().getValueIn(WorldSpeed.M_sec);
+							double bearingRads = txLoc.subtract(contactLoc).getBearing();
+							double freq = FrequencyCalcs.calcPredictedFreqSI(SpeedOfSound, osHeadingRads,
+									tgtHeadingRads, osSpeed, tgtSpeed, bearingRads, baseFreq);
 
-      detections.clear();
-      receiver.detects(env, detections, rx, scenario, 40000);
+							// now change the freq from the target to the rx
+							osHeadingRads = MWC.Algorithms.Conversions.Degs2Rads(target.getStatus().getCourse());
+							tgtHeadingRads = MWC.Algorithms.Conversions.Degs2Rads(host.getStatus().getCourse());
+							osSpeed = target.getStatus().getSpeed().getValueIn(WorldSpeed.M_sec);
+							tgtSpeed = host.getStatus().getSpeed().getValueIn(WorldSpeed.M_sec);
+							bearingRads = contactLoc.subtract(myLoc).getBearing();
+							freq = FrequencyCalcs.calcPredictedFreqSI(SpeedOfSound, osHeadingRads, tgtHeadingRads,
+									osSpeed, tgtSpeed, bearingRads, freq);
 
-      assertEquals("got some detections", 1, detections.size());
+							// and store the overall result
+							res.setFreq((float) freq);
 
-      // ok, do some steps
-      for (int i = 0; i < 10; i++)
-      {
-        detections = receiver.getAllDetections();
-        detections.clear();
+							// ok - this method can only return one detection.
+							return res;
+						}
+					}
+				}
+			}
+		}
 
-        scenario.step();
-        showDetections(detections);
-      }
+		return res;
+	}
 
-    }
+	@Override
+	public WorldDistance getEstimatedRange() {
+		return null;
+	}
 
-    private void showDetections(DetectionList detections)
-    {
-      Iterator<DetectionEvent> iter = detections.iterator();
-      while (iter.hasNext())
-      {
-        DetectionEvent de = (DetectionEvent) iter.next();
-        System.out.println(de.getTargetType().getType() + " bearing:" + de
-            .getBearing());
-      }
+	@Override
+	public EditorType getInfo() {
+		return null;
+	}
 
-    }
-  }
+	@Override
+	public int getMedium() {
+		return EnvironmentType.NARROWBAND;
+	}
 
-  @Override
-  public void update(DemandedStatus myDemandedStatus, Status myStatus,
-      long newTime)
-  {
-    // don't bother...
-  }
+	public double getObscureAngle() {
+		return _obscureAngle;
+	}
 
-  public boolean isSuppressDirect()
-  {
-    return _suppressDirect;
-  }
+	@Override
+	public String getVersion() {
+		return "1.0";
+	}
 
-  public void setSuppressDirect(boolean suppressDirect)
-  {
-    this._suppressDirect = suppressDirect;
-  }
+	@Override
+	public boolean hasEditor() {
+		return false;
+	}
 
-  public double getObscureAngle()
-  {
-    return _obscureAngle;
-  }
+	public boolean isSuppressDirect() {
+		return _suppressDirect;
+	}
 
-  public void setObscureAngle(double obscureAngle)
-  {
-    this._obscureAngle = obscureAngle;
-  }
+	public void setObscureAngle(final double obscureAngle) {
+		this._obscureAngle = obscureAngle;
+	}
+
+	public void setSuppressDirect(final boolean suppressDirect) {
+		this._suppressDirect = suppressDirect;
+	}
+
+	@Override
+	public void update(final DemandedStatus myDemandedStatus, final Status myStatus, final long newTime) {
+		// don't bother...
+	}
 }

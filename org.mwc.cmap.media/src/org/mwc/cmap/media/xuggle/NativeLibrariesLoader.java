@@ -1,17 +1,18 @@
-/*
- *    Debrief - the Open Source Maritime Analysis Application
- *    http://debrief.info
+/*******************************************************************************
+ * Debrief - the Open Source Maritime Analysis Application
+ * http://debrief.info
  *
- *    (C) 2000-2014, PlanetMayo Ltd
+ * (C) 2000-2020, Deep Blue C Technology Ltd
  *
- *    This library is free software; you can redistribute it and/or
- *    modify it under the terms of the Eclipse Public License v1.0
- *    (http://www.eclipse.org/legal/epl-v10.html)
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the Eclipse Public License v1.0
+ * (http://www.eclipse.org/legal/epl-v10.html)
  *
- *    This library is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
- */
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *******************************************************************************/
+
 package org.mwc.cmap.media.xuggle;
 
 import java.io.File;
@@ -27,17 +28,17 @@ import org.osgi.framework.Bundle;
 import com.xuggle.ferry.JNIHelper;
 
 public class NativeLibrariesLoader {
-	
-	private static void cleanDirectory(File directory) {
-		for (File child : directory.listFiles()) {
+
+	private static void cleanDirectory(final File directory) {
+		for (final File child : directory.listFiles()) {
 			if (child.isDirectory()) {
 				cleanDirectory(child);
 			}
 			child.delete();
 		}
 	}
-	
-	public static void loadBundledXuggler(File nativeLibrariesDirectory, Bundle bundle) throws IOException {
+
+	public static void loadBundledXuggler(final File nativeLibrariesDirectory, final Bundle bundle) throws IOException {
 		nativeLibrariesDirectory.mkdirs();
 		cleanDirectory(nativeLibrariesDirectory);
 		String nativePath = null;
@@ -53,28 +54,25 @@ public class NativeLibrariesLoader {
 			// we don't have bundled libraries for this os
 			return;
 		}
-		InputStream loadOrderStream = bundle.getResource(nativePath + "load-order").openStream();
+		final InputStream loadOrderStream = bundle.getResource(nativePath + "load-order").openStream();
 		try {
-			List<String> loadOrder = IOUtils.readLines(loadOrderStream);
+			final List<String> loadOrder = IOUtils.readLines(loadOrderStream);
 			for (String libraryToLoad : loadOrder) {
 				libraryToLoad = libraryToLoad.trim();
 				if (libraryToLoad.isEmpty()) {
 					continue;
 				}
-				File libraryFile = new File(nativeLibrariesDirectory, libraryToLoad);
-				FileUtils.copyURLToFile(
-						bundle.getResource(nativePath + libraryToLoad),
-						libraryFile
-				);
+				final File libraryFile = new File(nativeLibrariesDirectory, libraryToLoad);
+				FileUtils.copyURLToFile(bundle.getResource(nativePath + libraryToLoad), libraryFile);
 				String libraryName = libraryToLoad.substring(0, libraryToLoad.lastIndexOf('.'));
 				if (libraryName.startsWith("lib")) {
-					libraryName = libraryName.substring(3);					
+					libraryName = libraryName.substring(3);
 				}
-				int indexOfSeparator = libraryName.lastIndexOf(versionSeparator);
+				final int indexOfSeparator = libraryName.lastIndexOf(versionSeparator);
 				long libraryVersion = 0;
 				try {
 					libraryVersion = Long.parseLong(libraryName.substring(indexOfSeparator + 1));
-				} catch (NumberFormatException ex) {
+				} catch (final NumberFormatException ex) {
 					// ignore
 				}
 				libraryName = libraryName.substring(0, indexOfSeparator);

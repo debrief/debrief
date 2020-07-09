@@ -1,5 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?eclipse version="3.0"?>
+<!--
+    Debrief - the Open Source Maritime Analysis Application
+    http://debrief.info
+     
+    (C) 2000-2020, Deep Blue C Technology Ltd
+     
+    This library is free software; you can redistribute it and/or
+    modify it under the terms of the Eclipse Public License v1.0
+    (http://www.eclipse.org/legal/epl-v10.html)
+     
+    This library is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ -->
+
 <plugin>
 
     <extension point="org.eclipse.ui.views">
@@ -19,9 +34,10 @@
         <editor class="org.mwc.debrief.core.editors.PlotEditor"
             contributorClass="org.mwc.debrief.core.editors.PlotEditorActionBarContributor"
             icon="icons/16/plot_file.png" id="org.mwc.debrief.PlotEditor" name="Debrief Plot Editor">
-            <contentTypeBinding contentTypeId="org.mwc.debrief.contenttype.DebriefPlot"> </contentTypeBinding>
-            <contentTypeBinding contentTypeId="org.mwc.debrief.contenttype.DebriefPlotGPX"
-            > </contentTypeBinding>
+            <contentTypeBinding contentTypeId="org.mwc.debrief.contenttype.DebriefPlot"/>
+            <contentTypeBinding contentTypeId="org.mwc.debrief.contenttype.DebriefPlotGPX"/>
+            <contentTypeBinding contentTypeId="org.mwc.debrief.contenttype.OTH_G_Log"/>
+            <contentTypeBinding contentTypeId="org.mwc.debrief.contenttype.CLog"/>
         </editor>
     </extension>
 
@@ -36,6 +52,8 @@
             <contentTypeBinding contentTypeId="org.mwc.debrief.contenttype.KMZTrackArchive"/>
             <contentTypeBinding contentTypeId="org.mwc.debrief.contenttype.AISTrackFile"/>
             <contentTypeBinding contentTypeId="org.mwc.debrief.contenttype.NMEALogFile"/>
+            <contentTypeBinding contentTypeId="org.mwc.debrief.contenttype.NisidaLogFile"/>
+            <contentTypeBinding contentTypeId="org.mwc.debrief.contenttype.CSV_GZ_LogFile"/>
             <contentTypeBinding contentTypeId="org.mwc.debrief.contenttype.SATCTrackFile"/>
             <contentTypeBinding contentTypeId="org.mwc.debrief.contenttype.SATCSampleTrackFile"/>
         </editor>
@@ -79,6 +97,14 @@
             name="KMZ Track Archive" priority="normal"> </content-type>
         <content-type id="org.mwc.debrief.contenttype.KMZTrackFile" file-extensions="kml"
             name="KMZ Track File" priority="normal"> </content-type>
+        <content-type id="org.mwc.debrief.contenttype.OTH_G_Log" file-extensions="txt"
+            name="OTH-Gold log file" priority="high"> 
+            <describer class="org.mwc.debrief.core.contenttype.OTH_G_ContentDescriber"/>
+        </content-type>
+        <content-type id="org.mwc.debrief.contenttype.CLog" file-extensions="txt"
+            name="CLog file" priority="high"> 
+            <describer class="org.mwc.debrief.core.contenttype.CLog_ContentDescriber"/>
+        </content-type>
         <content-type id="org.mwc.debrief.contenttype.LogTrackFile" file-extensions="csv"
             name="S2087 Context Track File (Log)" priority="normal"> </content-type>
         <content-type id="org.mwc.debrief.contenttype.AISTrackFile"
@@ -90,6 +116,16 @@
             file-extensions="log"
             name="NMEA Log file" priority="high">
             <describer class="org.mwc.debrief.core.contenttype.NMEAContentDescriber"/>
+        </content-type>
+        <content-type id="org.mwc.debrief.contenttype.NisidaLogFile"
+            file-extensions="txt"
+            name="Nisida Log file" priority="high">
+            <describer class="org.mwc.debrief.core.contenttype.NisidaContentDescriber"/>
+        </content-type>
+        <content-type id="org.mwc.debrief.contenttype.CSV_GZ_LogFile"
+            file-extensions="gz"
+            name="Compressed CSV C-Log file" priority="high">
+            <describer class="org.mwc.debrief.core.contenttype.CSV_GZ_ContentDescriber"/>
         </content-type>
         <content-type id="org.mwc.debrief.contenttype.SATCTrackFile"
             file-extensions="txt"
@@ -143,6 +179,22 @@
     </extension>
     <extension point="org.mwc.debrief.core.DebriefPlotLoader">
         <loader class="org.mwc.debrief.core.loaders.NMEALoader" extensions="log" first_line="$POSL" name="NMEA Log File"        
+        />
+    </extension>
+    <extension point="org.mwc.debrief.core.DebriefPlotLoader">
+        <loader class="org.mwc.debrief.core.loaders.NisidaLoader" extensions="txt" first_line="" name="Nisida Log File"        
+        />
+    </extension>
+    <extension point="org.mwc.debrief.core.DebriefPlotLoader">
+        <loader class="org.mwc.debrief.core.loaders.OTH_Gold_Loader" extensions="txt" name="OTH-Gold Log File"        
+        />
+    </extension>
+    <extension point="org.mwc.debrief.core.DebriefPlotLoader">
+        <loader class="org.mwc.debrief.core.loaders.CLog_Loader" extensions="txt" first_line="Unknown" name="CLog File"        
+        />
+    </extension>
+    <extension point="org.mwc.debrief.core.DebriefPlotLoader">
+        <loader class="org.mwc.debrief.core.loaders.CSV_GZ_Loader" extensions="gz"  name="Compressed CLog File"        
         />
     </extension>
     <extension point="org.mwc.debrief.core.DebriefPlotLoader">
@@ -893,6 +945,9 @@
 
         <command defaultHandler="org.mwc.cmap.plotViewer.actions.ZoomOut"
             id="org.mwc.debrief.core.ZoomOut" name="Zoom &amp;Out"> </command>
+            
+        <command defaultHandler="org.mwc.cmap.plotViewer.actions.ImportDatabase"
+            id="org.mwc.debrief.core.Pepys" name="&amp;Import from Database"> </command>
 
         <command defaultHandler="org.mwc.cmap.plotViewer.actions.FitToWindow"
             id="org.mwc.debrief.core.FitToWindow" name="&amp;Fit to window"> </command>
@@ -1304,9 +1359,11 @@
             class="org.mwc.debrief.core.splashHandlers.ExtensibleSplashHandler"
             id="org.mwc.debrief.core.splashHandlers.extensible">
       </splashHandler>
-      <splashHandlerProductBinding	
-            productId="org.mwc.debrief.core.Debrief"	
-            splashId="org.mwc.debrief.core.splashHandlers.extensible">	
-      </splashHandlerProductBinding>
+   </extension>
+   <extension
+         point="org.mwc.cmap.core.EarthModelProvider">
+      <provider
+            class="org.mwc.debrief.core.gt2plot.GeoCalculatorProvider">
+      </provider>
    </extension>
 </plugin>

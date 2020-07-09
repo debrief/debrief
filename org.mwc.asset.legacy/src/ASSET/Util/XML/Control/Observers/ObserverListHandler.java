@@ -1,17 +1,18 @@
-/*
- *    Debrief - the Open Source Maritime Analysis Application
- *    http://debrief.info
+/*******************************************************************************
+ * Debrief - the Open Source Maritime Analysis Application
+ * http://debrief.info
  *
- *    (C) 2000-2014, PlanetMayo Ltd
+ * (C) 2000-2020, Deep Blue C Technology Ltd
  *
- *    This library is free software; you can redistribute it and/or
- *    modify it under the terms of the Eclipse Public License v1.0
- *    (http://www.eclipse.org/legal/epl-v10.html)
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the Eclipse Public License v1.0
+ * (http://www.eclipse.org/legal/epl-v10.html)
  *
- *    This library is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
- */
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *******************************************************************************/
+
 package ASSET.Util.XML.Control.Observers;
 
 /**
@@ -90,12 +91,13 @@ import ASSET.Scenario.Observers.TrackPlotObserver;
 import ASSET.Scenario.Observers.Plotting.PlotDetectionStatusObserver;
 import ASSET.Scenario.Observers.Plotting.PlotInvestigationSubjectObserver;
 import ASSET.Scenario.Observers.Plotting.PlotSensorObserver;
-import ASSET.Scenario.Observers.Recording.NMEAObserver;
 import ASSET.Scenario.Observers.Recording.CSVExportDetectionsObserver;
 import ASSET.Scenario.Observers.Recording.CSVExportStatusObserver;
 import ASSET.Scenario.Observers.Recording.CSVTrackObserver;
+import ASSET.Scenario.Observers.Recording.CSV_CLog_TrackObserver;
 import ASSET.Scenario.Observers.Recording.DebriefDeployableSensorLocationObserver;
 import ASSET.Scenario.Observers.Recording.DebriefReplayObserver;
+import ASSET.Scenario.Observers.Recording.NMEAObserver;
 import ASSET.Scenario.Observers.Recording.RecordStatusToDBObserverType;
 import ASSET.Scenario.Observers.Recording.TowedArrayLocationObserver;
 import ASSET.Scenario.Observers.Summary.BatchCollator;
@@ -106,350 +108,274 @@ import ASSET.Scenario.Observers.Summary.TimeToLaunchObserver;
 /**
  * read in a list of observers from file
  */
-abstract public class ObserverListHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLReader
-{
-  private final static String type = "ObserverList";
+abstract public class ObserverListHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLReader {
+	private final static String type = "ObserverList";
 
-  protected Vector<ScenarioObserver> _myList;
+	public static void exportThis(final Vector<ScenarioObserver> list, final Element parent, final Document doc) {
+		// create ourselves
+		final Element sens = doc.createElement(type);
 
-  public ObserverListHandler()
-  {
-    // inform our parent what type of class we are
-    super(type);
-
-    _myList = new Vector<ScenarioObserver>(0, 1);
-
-    addHandler(new TrackPlotObserverHandler()
-    {
-      public void setObserver(final ScenarioObserver obs)
-      {
-        _myList.add(obs);
-      }
-    });
-
-    addHandler(new ElapsedTimeObserverHandler()
-    {
-      public void setObserver(final ScenarioObserver obs)
-      {
-        _myList.add(obs);
-      }
-    });
-
-    addHandler(new FinalStateObserverHandler()
-    {
-      public void setObserver(final ScenarioObserver obs)
-      {
-        _myList.add(obs);
-      }
-    });
-
-    addHandler(new DebriefReplayObserverHandler()
-    {
-      public void setObserver(final ScenarioObserver obs)
-      {
-        _myList.add(obs);
-      }
-    });
-
-    addHandler(new NMEAObserverHandler()
-    {
-      public void setObserver(final ScenarioObserver obs)
-      {
-        _myList.add(obs);
-      }
-    });
-
-    addHandler(new BMRObserverHandler()
-    {
-      public void setObserver(final ScenarioObserver obs)
-      {
-        _myList.add(obs);
-      }
-    });
-
-    addHandler(new CSVExportDetectionObserverHandler()
-    {
-      public void setObserver(final ScenarioObserver obs)
-      {
-        _myList.add(obs);
-      }
-    });
-
-    addHandler(new CSVExportStatusObserverHandler()
-    {
-      public void setObserver(final ScenarioObserver obs)
-      {
-        _myList.add(obs);
-      }
-    });
-
-    
-    addHandler(new RecordToDatabaseObserverHandler()
-    {
-      public void setObserver(final ScenarioObserver obs)
-      {
-        _myList.add(obs);
-      }
-    });
-
-    addHandler(new DebriefDeployableSensorLocationObserverHandler()
-    {
-      public void setObserver(final ScenarioObserver obs)
-      {
-        _myList.add(obs);
-      }
-    });
-    addHandler(new CSVTrackObserverHandler()
-    {
-      public void setObserver(final ScenarioObserver obs)
-      {
-        _myList.add(obs);
-      }
-    });
-    addHandler(new TowedArrayLocationObserverHandler()
-    {
-      @Override
-      public void setObserver(ScenarioObserver obs)
-      {
-        _myList.add(obs);
-      }
-    });
-    addHandler(new PlotSensorObserverHandler()
-    {
-      public void setObserver(final ScenarioObserver obs)
-      {
-        _myList.add(obs);
-      }
-    });
-    addHandler(new PlotInvestigationSubjectObserverHandler()
-		{
-	      public void setObserver(final ScenarioObserver obs)
-      {
-        _myList.add(obs);
-      }
-    });
-    addHandler(new PlotDetectionStatusObserverHandler()
-    {
-      public void setObserver(final ScenarioObserver obs)
-      {
-        _myList.add(obs);
-      }
-    });
-
-    addHandler(new DetectionObserverHandler()
-    {
-      public void setObserver(final ScenarioObserver obs)
-      {
-        _myList.add(obs);
-      }
-    });
-
-
-    addHandler(new StopOnDetectionObserverHandler()
-    {
-      public void setObserver(final ScenarioObserver obs)
-      {
-        _myList.add(obs);
-      }
-    });
-
-    addHandler(new StopOnProximityDetectionObserverHandler()
-    {
-      public void setObserver(final ScenarioObserver obs)
-      {
-        _myList.add(obs);
-      }
-    });
-
-
-    addHandler(new RemoveInAreaObserverHandler()
-    {
-			@Override
-			public void setObserver(final BatchCollator obs)
-			{
-        _myList.add(obs);
+		// step through data
+		final Iterator<ScenarioObserver> it = list.iterator();
+		while (it.hasNext()) {
+			final ScenarioObserver observer = it.next();
+			if (observer instanceof DebriefDeployableSensorLocationObserver) {
+				DebriefDeployableSensorLocationObserverHandler.exportThis(observer, sens, doc);
+			} else if (observer instanceof FinalStateObserver) {
+				FinalStateObserverHandler.exportThis(observer, sens, doc);
+			} else if (observer instanceof ElapsedTimeObserver) {
+				ElapsedTimeObserverHandler.exportThis(observer, sens, doc);
+			} else if (observer instanceof DebriefReplayObserver) {
+				DebriefReplayObserverHandler.exportThis(observer, sens, doc);
+			} else if (observer instanceof NMEAObserver) {
+				NMEAObserverHandler.exportThis(observer, sens, doc);
+			} else if (observer instanceof TrackPlotObserver) {
+				TrackPlotObserverHandler.exportThis(observer, sens, doc);
+			} else if (observer instanceof CSVTrackObserver) {
+				CSVTrackObserverHandler.exportThis(observer, sens, doc);
+			} else if (observer instanceof CSV_CLog_TrackObserver) {
+				CSVTrackObserverHandler.exportThis(observer, sens, doc);
+			} else if (observer instanceof TowedArrayLocationObserver) {
+				TowedArrayLocationObserverHandler.exportThis(observer, sens, doc);
+			} else if (observer instanceof CSVExportDetectionsObserver) {
+				CSVExportDetectionObserverHandler.exportThis(observer, sens, doc);
+			} else if (observer instanceof CSVExportStatusObserver) {
+				CSVExportStatusObserverHandler.exportThis(observer, sens, doc);
+			} else if (observer instanceof StopOnElapsedObserver) {
+				TimeObserverHandler.exportThis(observer, sens, doc);
+			} else if (observer instanceof TimeToLaunchObserver) {
+				TimeToLaunchObserverHandler.exportThis(observer, sens, doc);
+			} else if (observer instanceof DetectionObserver.StopOnProximityDetectionObserver) {
+				ProximityObserverHandler.exportThis(observer, sens, doc);
+			} else if (observer instanceof RemoveInAreaObserver) {
+				RemoveInAreaObserverHandler.exportThis(observer, sens, doc);
+			} else if (observer instanceof ProximityObserver) {
+				ProximityObserverHandler.exportThis(observer, sens, doc);
+			} else if (observer instanceof DetectionObserver.StopOnDetectionObserver) {
+				StopOnDetectionObserverHandler.exportThis(observer, sens, doc);
+			} else if (observer instanceof RemoveDetectedObserver) {
+				DetectionObserverHandler.exportThis(observer, sens, doc);
+			} else if (observer instanceof ProportionDetectedObserver) {
+				DetectionObserverHandler.exportThis(observer, sens, doc);
+			} else if (observer instanceof PlotSensorObserver) {
+				DetectionObserverHandler.exportThis(observer, sens, doc);
+			} else if (observer instanceof PlotDetectionStatusObserver) {
+				DetectionObserverHandler.exportThis(observer, sens, doc);
+			} else if (observer instanceof PlotInvestigationSubjectObserver) {
+				PlotInvestigationSubjectObserverHandler.exportThis(observer, sens, doc);
+			} else if (observer instanceof DetectionObserver) {
+				DetectionObserverHandler.exportThis(observer, sens, doc);
+			} else if (observer instanceof RecordStatusToDBObserverType) {
+				RecordToDatabaseObserverHandler.exportThis(observer, sens, doc);
 			}
-    });
 
-    addHandler(new ProportionDetectedObserverHandler()
-    {
-      public void setObserver(final ScenarioObserver obs)
-      {
-        _myList.add(obs);
-      }
-    });
+		}
 
-    addHandler(new RemoveDetectedObserverHandler()
-    {
-      public void setObserver(final ScenarioObserver obs)
-      {
-        _myList.add(obs);
-      }
-    });
+		parent.appendChild(sens);
 
-    addHandler(new ProximityObserverHandler.StopOnProximityHandler()
-    {
-      public void setObserver(final BatchCollator obs)
-      {
-        _myList.add(obs);
-      }
-    });
+	}
 
-    addHandler(new ProximityObserverHandler()
-    {
-      public void setObserver(final BatchCollator obs)
-      {
-        _myList.add(obs);
-      }
-    });
-    addHandler(new CloudObserverHandler()
-		{
-      public void setObserver(final ScenarioObserver obs)
-      {
-        _myList.add(obs);
-      }
-    });
+	protected Vector<ScenarioObserver> _myList;
 
-    addHandler(new TimeObserverHandler()
-    {
-      public void setObserver(final ScenarioObserver obs)
-      {
-        _myList.add(obs);
-      }
-    });
+	public ObserverListHandler() {
+		// inform our parent what type of class we are
+		super(type);
 
+		_myList = new Vector<ScenarioObserver>(0, 1);
 
-    addHandler(new TimeToLaunchObserverHandler()
-    {
-      public void setObserver(final ScenarioObserver obs)
-      {
-        _myList.add(obs);
-      }
-    });
+		addHandler(new TrackPlotObserverHandler() {
+			@Override
+			public void setObserver(final ScenarioObserver obs) {
+				_myList.add(obs);
+			}
+		});
 
-  }
+		addHandler(new ElapsedTimeObserverHandler() {
+			@Override
+			public void setObserver(final ScenarioObserver obs) {
+				_myList.add(obs);
+			}
+		});
 
+		addHandler(new FinalStateObserverHandler() {
+			@Override
+			public void setObserver(final ScenarioObserver obs) {
+				_myList.add(obs);
+			}
+		});
 
-  public void elementClosed()
-  {
-    setObserverList(_myList);
+		addHandler(new DebriefReplayObserverHandler() {
+			@Override
+			public void setObserver(final ScenarioObserver obs) {
+				_myList.add(obs);
+			}
+		});
 
-    // forget our reference, don't just clear the list - it may not get used just yet.
-    _myList = null;
-  }
+		addHandler(new NMEAObserverHandler() {
+			@Override
+			public void setObserver(final ScenarioObserver obs) {
+				_myList.add(obs);
+			}
+		});
 
+		addHandler(new BMRObserverHandler() {
+			@Override
+			public void setObserver(final ScenarioObserver obs) {
+				_myList.add(obs);
+			}
+		});
 
-  abstract public void setObserverList(Vector<ScenarioObserver> list);
+		addHandler(new CSVExportDetectionObserverHandler() {
+			@Override
+			public void setObserver(final ScenarioObserver obs) {
+				_myList.add(obs);
+			}
+		});
 
+		addHandler(new CSVExportStatusObserverHandler() {
+			@Override
+			public void setObserver(final ScenarioObserver obs) {
+				_myList.add(obs);
+			}
+		});
 
-  public static void exportThis(final Vector<ScenarioObserver> list, final Element parent, final Document doc)
-  {
-    // create ourselves
-    final Element sens = doc.createElement(type);
+		addHandler(new RecordToDatabaseObserverHandler() {
+			@Override
+			public void setObserver(final ScenarioObserver obs) {
+				_myList.add(obs);
+			}
+		});
 
-    // step through data
-    final Iterator<ScenarioObserver> it = list.iterator();
-    while (it.hasNext())
-    {
-      final ScenarioObserver observer = (ScenarioObserver) it.next();
-      if (observer instanceof DebriefDeployableSensorLocationObserver)
-      {
-        DebriefDeployableSensorLocationObserverHandler.exportThis(observer, sens, doc);
-      }
-      else if (observer instanceof FinalStateObserver)
-      {
-        FinalStateObserverHandler.exportThis(observer, sens, doc);
-      }
-      else if (observer instanceof ElapsedTimeObserver)
-      {
-        ElapsedTimeObserverHandler.exportThis(observer, sens, doc);
-      }
-      else if (observer instanceof DebriefReplayObserver)
-      {
-        DebriefReplayObserverHandler.exportThis(observer, sens, doc);
-      }
-      else if (observer instanceof NMEAObserver)
-      {
-        NMEAObserverHandler.exportThis(observer, sens, doc);
-      }
-      else if (observer instanceof TrackPlotObserver)
-      {
-        TrackPlotObserverHandler.exportThis(observer, sens, doc);
-      }
-      else if (observer instanceof CSVTrackObserver)
-      {
-        CSVTrackObserverHandler.exportThis(observer, sens, doc);
-      }
-      else if (observer instanceof TowedArrayLocationObserver)
-      {
-        TowedArrayLocationObserverHandler.exportThis(observer, sens, doc);
-      }
-      else if (observer instanceof CSVExportDetectionsObserver)
-      {
-      	CSVExportDetectionObserverHandler.exportThis(observer, sens, doc);
-      }
-      else if (observer instanceof CSVExportStatusObserver)
-      {
-      	CSVExportStatusObserverHandler.exportThis(observer, sens, doc);
-      }
-      else if (observer instanceof StopOnElapsedObserver)
-      {
-        TimeObserverHandler.exportThis(observer, sens, doc);
-      }
-      else if (observer instanceof TimeToLaunchObserver)
-      {
-        TimeToLaunchObserverHandler.exportThis(observer, sens, doc);
-      }
-      else if (observer instanceof DetectionObserver.StopOnProximityDetectionObserver)
-      {
-        ProximityObserverHandler.exportThis(observer, sens, doc);
-      }
-      else if (observer instanceof RemoveInAreaObserver)
-      {
-      	RemoveInAreaObserverHandler.exportThis(observer, sens, doc);
-      }
-      else if (observer instanceof ProximityObserver)
-      {
-        ProximityObserverHandler.exportThis(observer, sens, doc);
-      }
-      else if (observer instanceof DetectionObserver.StopOnDetectionObserver)
-      {
-        StopOnDetectionObserverHandler.exportThis(observer, sens, doc);
-      }
-      else if (observer instanceof RemoveDetectedObserver)
-      {
-        RemoveDetectedObserverHandler.exportThis(observer, sens, doc);
-      }
-      else if (observer instanceof ProportionDetectedObserver)
-      {
-        ProportionDetectedObserverHandler.exportThis(observer, sens, doc);
-      }
-      else if (observer instanceof PlotSensorObserver)
-      {
-        PlotSensorObserverHandler.exportThis(observer, sens, doc);
-      }
-      else if (observer instanceof PlotDetectionStatusObserver)
-      {
-        PlotDetectionStatusObserverHandler.exportThis(observer, sens, doc);
-      }
-      else if (observer instanceof PlotInvestigationSubjectObserver)
-      {
-        PlotInvestigationSubjectObserverHandler.exportThis(observer, sens, doc);
-      }
-      else if (observer instanceof DetectionObserver)
-      {
-        DetectionObserverHandler.exportThis(observer, sens, doc);
-      }
-      else if (observer instanceof RecordStatusToDBObserverType)
-      {
-        RecordToDatabaseObserverHandler.exportThis(observer, sens, doc);
-      }
+		addHandler(new DebriefDeployableSensorLocationObserverHandler() {
+			@Override
+			public void setObserver(final ScenarioObserver obs) {
+				_myList.add(obs);
+			}
+		});
+		addHandler(new CSVTrackObserverHandler() {
+			@Override
+			public void setObserver(final ScenarioObserver obs) {
+				_myList.add(obs);
+			}
+		});
+		addHandler(new CSV_CLog_TrackObserverHandler() {
+			@Override
+			public void setObserver(final ScenarioObserver obs) {
+				_myList.add(obs);
+			}
+		});
+		addHandler(new TowedArrayLocationObserverHandler() {
+			@Override
+			public void setObserver(final ScenarioObserver obs) {
+				_myList.add(obs);
+			}
+		});
+		addHandler(new PlotSensorObserverHandler() {
+			@Override
+			public void setObserver(final ScenarioObserver obs) {
+				_myList.add(obs);
+			}
+		});
+		addHandler(new PlotInvestigationSubjectObserverHandler() {
+			@Override
+			public void setObserver(final ScenarioObserver obs) {
+				_myList.add(obs);
+			}
+		});
+		addHandler(new PlotDetectionStatusObserverHandler() {
+			@Override
+			public void setObserver(final ScenarioObserver obs) {
+				_myList.add(obs);
+			}
+		});
 
-    }
+		addHandler(new DetectionObserverHandler() {
+			@Override
+			public void setObserver(final ScenarioObserver obs) {
+				_myList.add(obs);
+			}
+		});
 
-    parent.appendChild(sens);
+		addHandler(new StopOnDetectionObserverHandler() {
+			@Override
+			public void setObserver(final ScenarioObserver obs) {
+				_myList.add(obs);
+			}
+		});
 
-  }
+		addHandler(new StopOnProximityDetectionObserverHandler() {
+			@Override
+			public void setObserver(final ScenarioObserver obs) {
+				_myList.add(obs);
+			}
+		});
 
+		addHandler(new RemoveInAreaObserverHandler() {
+			@Override
+			public void setObserver(final BatchCollator obs) {
+				_myList.add(obs);
+			}
+		});
+
+		addHandler(new ProportionDetectedObserverHandler() {
+			@Override
+			public void setObserver(final ScenarioObserver obs) {
+				_myList.add(obs);
+			}
+		});
+
+		addHandler(new RemoveDetectedObserverHandler() {
+			@Override
+			public void setObserver(final ScenarioObserver obs) {
+				_myList.add(obs);
+			}
+		});
+
+		addHandler(new ProximityObserverHandler.StopOnProximityHandler() {
+			@Override
+			public void setObserver(final BatchCollator obs) {
+				_myList.add(obs);
+			}
+		});
+
+		addHandler(new ProximityObserverHandler() {
+			@Override
+			public void setObserver(final BatchCollator obs) {
+				_myList.add(obs);
+			}
+		});
+		addHandler(new CloudObserverHandler() {
+			@Override
+			public void setObserver(final ScenarioObserver obs) {
+				_myList.add(obs);
+			}
+		});
+
+		addHandler(new TimeObserverHandler() {
+			@Override
+			public void setObserver(final ScenarioObserver obs) {
+				_myList.add(obs);
+			}
+		});
+
+		addHandler(new TimeToLaunchObserverHandler() {
+			@Override
+			public void setObserver(final ScenarioObserver obs) {
+				_myList.add(obs);
+			}
+		});
+
+	}
+
+	@Override
+	public void elementClosed() {
+		setObserverList(_myList);
+
+		// forget our reference, don't just clear the list - it may not get used just
+		// yet.
+		_myList = null;
+	}
+
+	abstract public void setObserverList(Vector<ScenarioObserver> list);
 
 }

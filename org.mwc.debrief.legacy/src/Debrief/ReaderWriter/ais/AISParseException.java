@@ -1,17 +1,17 @@
 /******************************************************************************
  * 	Freeais.org
  * 	http://www.freeais.org		info@freeais.org
- * 	
- *  Copyright (c) 2007 
- *  
+ *
+ *  Copyright (c) 2007
+ *
  * 		ynnor systems GmbH
  * 		Mundsburger Damm 45
  * 		22087 Hamburg
  * 		Germany
- * 
+ *
  * 		Alexander Lotter	lotter@ynnor.de
  * 		David Schmitz		schmitz@ynnor.de
- * 
+ *
  *	This file is part of Freeais.org.
  *
  *  Freeais.org is free software; you can redistribute it and/or modify
@@ -26,11 +26,10 @@
  *
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
- *  
+ *
  ******************************************************************************/
 
 package Debrief.ReaderWriter.ais;
-
 
 public class AISParseException extends Exception {
 
@@ -51,15 +50,15 @@ public class AISParseException extends Exception {
 	public static final String NO_DECODED_BYTES = "There are no bytes to decode";
 
 	public static final String NOT_CONSISTENT_DECODED_STRING = "Decoded binary string is not consistent";
-	
+
 	public static final String LONGITUDE_OUT_OF_RANGE = "Longitude value is out of range";
-	
+
 	public static final String LATITUDE_OUT_OF_RANGE = "Latitude value is out of range";
-	
+
 	public AISParseException() {
 	}
 
-	public AISParseException(String errorMsg) {
+	public AISParseException(final String errorMsg) {
 		super(errorMsg);
 	}
 }

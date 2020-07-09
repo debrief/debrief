@@ -1,17 +1,18 @@
-/*
- *    Debrief - the Open Source Maritime Analysis Application
- *    http://debrief.info
+/*******************************************************************************
+ * Debrief - the Open Source Maritime Analysis Application
+ * http://debrief.info
  *
- *    (C) 2000-2014, PlanetMayo Ltd
+ * (C) 2000-2020, Deep Blue C Technology Ltd
  *
- *    This library is free software; you can redistribute it and/or
- *    modify it under the terms of the Eclipse Public License v1.0
- *    (http://www.eclipse.org/legal/epl-v10.html)
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the Eclipse Public License v1.0
+ * (http://www.eclipse.org/legal/epl-v10.html)
  *
- *    This library is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
- */
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *******************************************************************************/
+
 // $RCSfile: Layer.java,v $
 // @author $Author: Ian.Mayo $
 // @version $Revision: 1.6 $
@@ -107,96 +108,99 @@
 // Initial revision
 //
 
-
 package MWC.GUI;
 
 import java.io.Serializable;
 
 /**
- * this class is a collection of objects which
- * may be plotted to a Chart
+ * this class is a collection of objects which may be plotted to a Chart
  *
  * @see Plottables
  * @see Plottable
  */
-public interface Layer extends Serializable, Plottable, HasEditables
-{
-  /////////////////////////////////////////////////////////////
-  // member interfaces
-  ////////////////////////////////////////////////////////////
+public interface Layer extends Serializable, Plottable, HasEditables {
+	/////////////////////////////////////////////////////////////
+	// member interfaces
+	////////////////////////////////////////////////////////////
 
-	
-	/** marker interface for layers that should not be painted in the overview chart
-	 * 
+	/**
+	 * marker interface to indicate that this layer wants to be the very first layer
+	 */
+	public static interface BackgroundLayer {
+
+	}
+
+	/////////////////////////////////////////////////////////////
+	// member functions
+	////////////////////////////////////////////////////////////
+
+	/**
+	 * marker interface for layers that should not be painted in the overview chart
+	 *
 	 * @author ian
 	 *
 	 */
-	public interface NoPaintInOverview
-	{
-		
+	public interface NoPaintInOverview {
+
 	}
-	
-  /////////////////////////////////////////////////////////////
-  // member functions
-  ////////////////////////////////////////////////////////////
 
-  public boolean hasEditor();
+	/**
+	 * add this element to ourselves
+	 *
+	 * @param point
+	 */
+	@Override
+	public void add(MWC.GUI.Editable point);
 
-  public Editable.EditorType getInfo();
+	public void append(Layer other);
 
-  public void exportShape();
+	@Override
+	public java.util.Enumeration<Editable> elements();
 
-  public void append(Layer other);
+	public void exportShape();
 
-  public void paint(MWC.GUI.CanvasType dest);
+	@Override
+	public MWC.GenericData.WorldArea getBounds();
 
-  public MWC.GenericData.WorldArea getBounds();
+	@Override
+	public Editable.EditorType getInfo();
 
-  public void setName(String val);
-  
-  public String getName();
-  
-  /** indicator flag for if the children of this layer should be displayed in 
-   * an non-alphanumeric order
-   * @return
-   */
-  @Override
-  public boolean hasOrderedChildren();
+	/**
+	 * get the width for objects in this layer
+	 *
+	 * @return the line width
+	 */
+	public int getLineThickness();
 
-  /**
-   * get the width for objects in this layer
-   *
-   * @return the line width
-   */
-  public int getLineThickness();
+	@Override
+	public String getName();
 
-  /**
-   * add this element to ourselves
-   *
-   * @param point
-   */
-  @Override
-  public void add(MWC.GUI.Editable point);
+	@Override
+	public boolean hasEditor();
 
-  /**
-   * remove this element from this layer
-   *
-   * @param point
-   */
-  @Override
-  public void removeElement(Editable point);
+	/**
+	 * indicator flag for if the children of this layer should be displayed in an
+	 * non-alphanumeric order
+	 *
+	 * @return
+	 */
+	@Override
+	public boolean hasOrderedChildren();
 
-  @Override
-  public java.util.Enumeration<Editable> elements();
+	@Override
+	public void paint(MWC.GUI.CanvasType dest);
 
-  public void setVisible(boolean val);
+	/**
+	 * remove this element from this layer
+	 *
+	 * @param point
+	 */
+	@Override
+	public void removeElement(Editable point);
 
-  /**
-   * marker interface to indicate that this layer wants to be the very first layer
-   */
-  public static interface BackgroundLayer
-  {
+	public void setName(String val);
 
-  }
+	@Override
+	public void setVisible(boolean val);
 
 }

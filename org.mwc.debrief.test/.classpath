@@ -1,7 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path="src"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.6"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-11">
+		<attributes>
+			<attribute name="module" value="true"/>
+		</attributes>
+	</classpathentry>
 	<classpathentry kind="lib" path="/contribs/ClasspathSuite/cpsuite-1.2.6.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/org.mwc.debrief.legacy"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
@@ -17,7 +21,6 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/org.mwc.asset.VesselMonitor"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/org.mwc.cmap.core"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/org.mwc.cmap.grideditor"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/org.mwc.cmap.gt2Plot"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/org.mwc.cmap.legacy"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/org.mwc.cmap.LiveDataMonitor"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/org.mwc.cmap.NarrativeViewer"/>

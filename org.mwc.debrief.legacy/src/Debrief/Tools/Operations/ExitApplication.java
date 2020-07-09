@@ -1,17 +1,18 @@
-/*
- *    Debrief - the Open Source Maritime Analysis Application
- *    http://debrief.info
+/*******************************************************************************
+ * Debrief - the Open Source Maritime Analysis Application
+ * http://debrief.info
  *
- *    (C) 2000-2014, PlanetMayo Ltd
+ * (C) 2000-2020, Deep Blue C Technology Ltd
  *
- *    This library is free software; you can redistribute it and/or
- *    modify it under the terms of the Eclipse Public License v1.0
- *    (http://www.eclipse.org/legal/epl-v10.html)
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the Eclipse Public License v1.0
+ * (http://www.eclipse.org/legal/epl-v10.html)
  *
- *    This library is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
- */
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *******************************************************************************/
+
 // $RCSfile: ExitApplication.java,v $
 // $Author: Ian.Mayo $
 // $Log: ExitApplication.java,v $
@@ -63,33 +64,33 @@
 
 package Debrief.Tools.Operations;
 
+import Debrief.GUI.Frames.Application;
+import MWC.GUI.Tools.Action;
+import MWC.GUI.Tools.PlainTool;
 
+public final class ExitApplication extends PlainTool {
 
+	/**
+	 *
+	 */
+	private static final long serialVersionUID = 1L;
+	private final Application _theApplication;
 
+	public ExitApplication(final Application theApplication) {
+		super(theApplication, "Exit", "images/24/exit.png");
+		_theApplication = theApplication;
+	}
 
-import MWC.GUI.Tools.*;
-import Debrief.GUI.Frames.*;
+	@Override
+	public final void execute() {
+		_theApplication.exit();
+	}
 
-public final class ExitApplication extends PlainTool
-{
-  
-  private final Application _theApplication;
-  
-  /** produce the Command item - not necessary, since this is not
-   *  undoable
-   */
-  public final Action getData(){
-    return null;
-  }
-
-  public ExitApplication(final Application theApplication){
-    super(theApplication, "Exit", "images/24/exit.png");
-    _theApplication = theApplication;
-  }
-  
-
-  public final void execute()
-  {
-    _theApplication.exit();
-  }
+	/**
+	 * produce the Command item - not necessary, since this is not undoable
+	 */
+	@Override
+	public final Action getData() {
+		return null;
+	}
 }

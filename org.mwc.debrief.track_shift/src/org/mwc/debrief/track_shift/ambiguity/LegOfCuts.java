@@ -1,3 +1,17 @@
+/*******************************************************************************
+ * Debrief - the Open Source Maritime Analysis Application
+ * http://debrief.info
+ *
+ * (C) 2000-2020, Deep Blue C Technology Ltd
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the Eclipse Public License v1.0
+ * (http://www.eclipse.org/legal/epl-v10.html)
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *******************************************************************************/
 package org.mwc.debrief.track_shift.ambiguity;
 
 import java.io.FileNotFoundException;
@@ -12,353 +26,278 @@ import Debrief.Wrappers.SensorContactWrapper;
 import MWC.GenericData.HiResDate;
 import junit.framework.TestCase;
 
-public class LegOfCuts extends ArrayList<SensorContactWrapper>
-{
+public class LegOfCuts extends ArrayList<SensorContactWrapper> {
 
-  public static class TestLegs extends TestCase
-  {
+	public static class TestLegs extends TestCase {
 
-    public static void testProcessCuts() throws FileNotFoundException
-    {
-      List<WeightedObservedPoint> obs = new ArrayList<WeightedObservedPoint>();
-      obs.add(new WeightedObservedPoint(1, 80d, 260d));
-      obs.add(new WeightedObservedPoint(1, 90, 280d));
-      obs.add(new WeightedObservedPoint(1, 100, 300d));
-      obs.add(new WeightedObservedPoint(1, 110, 320d));
-      obs.add(new WeightedObservedPoint(1, 120, 340d));
-      obs.add(new WeightedObservedPoint(1, 130, 0d));
-      obs.add(new WeightedObservedPoint(1, 140, 20d));
+		public static void testProcessCuts() throws FileNotFoundException {
+			List<WeightedObservedPoint> obs = new ArrayList<WeightedObservedPoint>();
+			obs.add(new WeightedObservedPoint(1, 80d, 260d));
+			obs.add(new WeightedObservedPoint(1, 90, 280d));
+			obs.add(new WeightedObservedPoint(1, 100, 300d));
+			obs.add(new WeightedObservedPoint(1, 110, 320d));
+			obs.add(new WeightedObservedPoint(1, 120, 340d));
+			obs.add(new WeightedObservedPoint(1, 130, 0d));
+			obs.add(new WeightedObservedPoint(1, 140, 20d));
 
-      List<WeightedObservedPoint> res = LegOfCuts.putObsInCorrectDomain(obs);
-      assertEquals("correct last score", 380d, res.get(res.size() - 1).getY(),
-          0.001);
+			List<WeightedObservedPoint> res = LegOfCuts.putObsInCorrectDomain(obs);
+			assertEquals("correct last score", 380d, res.get(res.size() - 1).getY(), 0.001);
 
-      obs = new ArrayList<WeightedObservedPoint>();
-      obs.add(new WeightedObservedPoint(1, 80, 160d));
-      obs.add(new WeightedObservedPoint(1, 90, 140d));
-      obs.add(new WeightedObservedPoint(1, 100, 120d));
-      obs.add(new WeightedObservedPoint(1, 110, 80d));
-      obs.add(new WeightedObservedPoint(1, 120, 30d));
-      obs.add(new WeightedObservedPoint(1, 130, 340d));
-      obs.add(new WeightedObservedPoint(1, 140, 320d));
+			obs = new ArrayList<WeightedObservedPoint>();
+			obs.add(new WeightedObservedPoint(1, 80, 160d));
+			obs.add(new WeightedObservedPoint(1, 90, 140d));
+			obs.add(new WeightedObservedPoint(1, 100, 120d));
+			obs.add(new WeightedObservedPoint(1, 110, 80d));
+			obs.add(new WeightedObservedPoint(1, 120, 30d));
+			obs.add(new WeightedObservedPoint(1, 130, 340d));
+			obs.add(new WeightedObservedPoint(1, 140, 320d));
 
-      res = LegOfCuts.putObsInCorrectDomain(obs);
-      assertEquals("correct last score", -40d, res.get(res.size() - 1).getY(),
-          0.001);
+			res = LegOfCuts.putObsInCorrectDomain(obs);
+			assertEquals("correct last score", -40d, res.get(res.size() - 1).getY(), 0.001);
 
-      obs = new ArrayList<WeightedObservedPoint>();
-      obs.add(new WeightedObservedPoint(1, 80, -160d));
-      obs.add(new WeightedObservedPoint(1, 90, -140d));
-      obs.add(new WeightedObservedPoint(1, 100, -120d));
-      obs.add(new WeightedObservedPoint(1, 110, -80d));
-      obs.add(new WeightedObservedPoint(1, 120, -30d));
-      obs.add(new WeightedObservedPoint(1, 130, 20d));
-      obs.add(new WeightedObservedPoint(1, 140, 40d));
+			obs = new ArrayList<WeightedObservedPoint>();
+			obs.add(new WeightedObservedPoint(1, 80, -160d));
+			obs.add(new WeightedObservedPoint(1, 90, -140d));
+			obs.add(new WeightedObservedPoint(1, 100, -120d));
+			obs.add(new WeightedObservedPoint(1, 110, -80d));
+			obs.add(new WeightedObservedPoint(1, 120, -30d));
+			obs.add(new WeightedObservedPoint(1, 130, 20d));
+			obs.add(new WeightedObservedPoint(1, 140, 40d));
 
-      res = LegOfCuts.putObsInCorrectRange(obs);
-      assertEquals("correct last score", 200d, res.get(0).getY(), 0.001);
-      assertEquals("correct last score", 40d, res.get(res.size() - 1).getY(),
-          0.001);
-    }
+			res = LegOfCuts.putObsInCorrectRange(obs);
+			assertEquals("correct last score", 200d, res.get(0).getY(), 0.001);
+			assertEquals("correct last score", 40d, res.get(res.size() - 1).getY(), 0.001);
+		}
 
-  }
+	}
 
-  /**
-   * determine if we're using the main baaring, or the ambig bearing
-   * 
-   */
-  public static enum WhichBearing
-  {
-    CORE, AMBIGUOUS
-  }
+	/**
+	 * determine if we're using the main baaring, or the ambig bearing
+	 *
+	 */
+	public static enum WhichBearing {
+		CORE, AMBIGUOUS
+	}
 
-  /**
-   * determine which portion of the leg we're extracting data for
-   * 
-   */
-  public static enum WhichPeriod
-  {
-    ALL, EARLY, LATE
-  }
+	/**
+	 * determine which portion of the leg we're extracting data for
+	 *
+	 */
+	public static enum WhichPeriod {
+		ALL, EARLY, LATE
+	}
 
-  /**
-   * we use a weighting factor to reduce the influence of cuts in the first 1/4 of the leg - to
-   * reduce the impact of the cuts while the array is steadying
-   */
-  private static final double EARLY_CUTS_WEIGHTING = 0.001d;
+	/**
+	 * we use a weighting factor to reduce the influence of cuts in the first 1/4 of
+	 * the leg - to reduce the impact of the cuts while the array is steadying
+	 */
+	private static final double EARLY_CUTS_WEIGHTING = 0.001d;
 
-  /**
-   * how many cuts to include in the min leg length
-   * 
-   */
-  public static final int LEG_LENGTH = 8;
+	/**
+	 * how many cuts to include in the min leg length
+	 *
+	 */
+	public static final int LEG_LENGTH = 8;
 
-  /**
-   * 
-   */
-  private static final long serialVersionUID = 1L;
+	/**
+	 *
+	 */
+	private static final long serialVersionUID = 1L;
 
-  private static List<WeightedObservedPoint> putObsInCorrectDomain(
-      final List<WeightedObservedPoint> obs)
-  {
-    final List<WeightedObservedPoint> res =
-        new ArrayList<WeightedObservedPoint>();
+	private static double getWeightingFor(final WhichPeriod period, final WeightedObservedPoints obs, final int size) {
+		// how many are in the first 1/4?
+		final int firstQuarter = (int) Math.ceil(size / 4d);
 
-    double lastVal = Double.MIN_VALUE;
-    for (final WeightedObservedPoint ob : obs)
-    {
-      double thisVal = ob.getY();
-      if (lastVal != Double.MIN_VALUE)
-      {
-        double valToUse;
-        // ok, have we jumped up?
-        if (thisVal - lastVal > 200)
-        {
-          // ok, reduce it
-          valToUse = thisVal - 360d;
-        }
-        else if (thisVal - lastVal < -200)
-        {
-          // ok, increase it
-          valToUse = thisVal + 360d;
-        }
-        else
-        {
-          valToUse = thisVal;
-        }
-        res.add(new WeightedObservedPoint(ob.getWeight(), ob.getX(), valToUse));
+		final double weighting;
+		if (period.equals(WhichPeriod.LATE)) {
+			// ok, we're doing a late leg. we don't
+			// need to dumb down the first cuts
+			weighting = 1d;
+		} else {
+			if (obs.toList().size() <= firstQuarter) {
+				weighting = EARLY_CUTS_WEIGHTING;
+			} else {
+				weighting = 1d;
+			}
+		}
+		return weighting;
+	}
 
-        thisVal = valToUse;
-      }
-      else
-      {
-        res.add(ob);
-      }
+	private static List<WeightedObservedPoint> putObsInCorrectDomain(final List<WeightedObservedPoint> obs) {
+		final List<WeightedObservedPoint> res = new ArrayList<WeightedObservedPoint>();
 
-      lastVal = thisVal;
-    }
-    return res;
-  }
+		double lastVal = Double.MIN_VALUE;
+		for (final WeightedObservedPoint ob : obs) {
+			double thisVal = ob.getY();
+			if (lastVal != Double.MIN_VALUE) {
+				double valToUse;
+				// ok, have we jumped up?
+				if (thisVal - lastVal > 200) {
+					// ok, reduce it
+					valToUse = thisVal - 360d;
+				} else if (thisVal - lastVal < -200) {
+					// ok, increase it
+					valToUse = thisVal + 360d;
+				} else {
+					valToUse = thisVal;
+				}
+				res.add(new WeightedObservedPoint(ob.getWeight(), ob.getX(), valToUse));
 
-  private static List<WeightedObservedPoint> putObsInCorrectRange(
-      final List<WeightedObservedPoint> obs)
-  {
-    final List<WeightedObservedPoint> res =
-        new ArrayList<WeightedObservedPoint>();
-    for (final WeightedObservedPoint ob : obs)
-    {
-      double thisVal = ob.getY();
-      while (thisVal < 0)
-      {
-        thisVal += 360d;
-      }
-      while (thisVal >= 360)
-      {
-        thisVal -= 360d;
-      }
-      res.add(new WeightedObservedPoint(ob.getWeight(), ob.getX(), thisVal));
-    }
-    return res;
-  }
+				thisVal = valToUse;
+			} else {
+				res.add(ob);
+			}
 
-  /**
-   * extract the requested portion of the data
-   * 
-   * @param period
-   * @return
-   */
-  public List<SensorContactWrapper> extractPortion(final WhichPeriod period)
-  {
-    final List<SensorContactWrapper> cutsToUse;
-    if (size() > LEG_LENGTH * 2)
-    {
-      switch (period)
-      {
-        case EARLY:
-          cutsToUse = this.subList(0, LEG_LENGTH);
-          break;
-        case LATE:
-          final int len = this.size();
-          cutsToUse = this.subList(len - (LEG_LENGTH), len);
-          break;
-        case ALL:
-        default:
-          cutsToUse = this;
-          break;
-      }
-    }
-    else
-    {
-      cutsToUse = this;
-    }
-    return cutsToUse;
-  }
+			lastVal = thisVal;
+		}
+		return res;
+	}
 
-  /**
-   * fit a polynomial curve to the sensor cuts in this leg
-   * 
-   * @param period
-   *          what portion of data to use
-   * @param whichBearing
-   *          whether we want the raw or ambiguous bearing
-   * @return
-   */
-  public double[] getCurve(final WhichPeriod period,
-      final WhichBearing whichBearing)
-  {
-    final PolynomialCurveFitter fitter = PolynomialCurveFitter.create(2);
+	private static List<WeightedObservedPoint> putObsInCorrectRange(final List<WeightedObservedPoint> obs) {
+		final List<WeightedObservedPoint> res = new ArrayList<WeightedObservedPoint>();
+		for (final WeightedObservedPoint ob : obs) {
+			double thisVal = ob.getY();
+			while (thisVal < 0) {
+				thisVal += 360d;
+			}
+			while (thisVal >= 360) {
+				thisVal -= 360d;
+			}
+			res.add(new WeightedObservedPoint(ob.getWeight(), ob.getX(), thisVal));
+		}
+		return res;
+	}
 
-    // add my values
-    final WeightedObservedPoints obs = new WeightedObservedPoints();
-    Double lastBearing = null;
+	/**
+	 * extract the requested portion of the data
+	 *
+	 * @param period
+	 * @return
+	 */
+	public List<SensorContactWrapper> extractPortion(final WhichPeriod period) {
+		final List<SensorContactWrapper> cutsToUse;
+		if (size() > LEG_LENGTH * 2) {
+			switch (period) {
+			case EARLY:
+				cutsToUse = this.subList(0, LEG_LENGTH);
+				break;
+			case LATE:
+				final int len = this.size();
+				cutsToUse = this.subList(len - (LEG_LENGTH), len);
+				break;
+			case ALL:
+			default:
+				cutsToUse = this;
+				break;
+			}
+		} else {
+			cutsToUse = this;
+		}
+		return cutsToUse;
+	}
 
-    // if we're a large dataset, just us a few at the end.
-    // our curve fitter struggles with curves s-shaped curves,
-    // it works best with c-shaped curves
-    final List<SensorContactWrapper> cutsToUse = extractPortion(period);
+	/**
+	 * fit a polynomial curve to the sensor cuts in this leg
+	 *
+	 * @param period       what portion of data to use
+	 * @param whichBearing whether we want the raw or ambiguous bearing
+	 * @return
+	 */
+	public double[] getCurve(final WhichPeriod period, final WhichBearing whichBearing) {
+		final PolynomialCurveFitter fitter = PolynomialCurveFitter.create(2);
 
-    for (final SensorContactWrapper item : cutsToUse)
-    {
-      final long time = item.getDTG().getDate().getTime();
-      double theBrg;
-      if (whichBearing.equals(WhichBearing.AMBIGUOUS))
-      {
-        if (item.getHasAmbiguousBearing())
-        {
-          theBrg = item.getAmbiguousBearing();
-        }
-        else
-        {
-          theBrg = Double.NaN;
-        }
-      }
-      else
-      {
-        theBrg = item.getBearing();
-      }
+		// add my values
+		final WeightedObservedPoints obs = new WeightedObservedPoints();
+		Double lastBearing = null;
 
-      if (lastBearing != null)
-      {
-        // check if we've passed through zero
-        final double delta = theBrg - lastBearing;
-        if (Math.abs(delta) > 180)
-        {
-          if (delta > 0)
-          {
-            theBrg -= 360d;
-          }
-          else
-          {
-            theBrg += 360d;
-          }
-        }
-      }
+		// if we're a large dataset, just us a few at the end.
+		// our curve fitter struggles with curves s-shaped curves,
+		// it works best with c-shaped curves
+		final List<SensorContactWrapper> cutsToUse = extractPortion(period);
 
-      lastBearing = theBrg;
+		for (final SensorContactWrapper item : cutsToUse) {
+			final long time = item.getDTG().getDate().getTime();
+			double theBrg;
+			if (whichBearing.equals(WhichBearing.AMBIGUOUS)) {
+				if (item.getHasAmbiguousBearing()) {
+					theBrg = item.getAmbiguousBearing();
+				} else {
+					theBrg = Double.NaN;
+				}
+			} else {
+				theBrg = item.getBearing();
+			}
 
-      if (!Double.isNaN(theBrg))
-      {
-        // reduce the weighting of the first 1/4 of the cuts,
-        // if we're looking at all or the early cuts.
-        // This is to handle the occurrence where
-        // the array still isn't stable
-        final double weighting;
-        weighting = getWeightingFor(period, obs, this.size());
+			if (lastBearing != null) {
+				// check if we've passed through zero
+				final double delta = theBrg - lastBearing;
+				if (Math.abs(delta) > 180) {
+					if (delta > 0) {
+						theBrg -= 360d;
+					} else {
+						theBrg += 360d;
+					}
+				}
+			}
 
-        // and store the observation
-        obs.add(weighting, time, theBrg);
-      }
-    }
+			lastBearing = theBrg;
 
-    final List<WeightedObservedPoint> res = obs.toList();
+			if (!Double.isNaN(theBrg)) {
+				// reduce the weighting of the first 1/4 of the cuts,
+				// if we're looking at all or the early cuts.
+				// This is to handle the occurrence where
+				// the array still isn't stable
+				final double weighting;
+				weighting = getWeightingFor(period, obs, this.size());
 
-    if (res.size() > 0)
-    {
-      // process the obs, to put them all in the correct domain
-      final List<WeightedObservedPoint> rangedObs =
-          putObsInCorrectRange(obs.toList());
-      final List<WeightedObservedPoint> tidyObs =
-          putObsInCorrectDomain(rangedObs);
-      return fitter.fit(tidyObs);
-    }
-    else
-    {
-      return null;
-    }
-  }
+				// and store the observation
+				obs.add(weighting, time, theBrg);
+			}
+		}
 
-  private static double getWeightingFor(final WhichPeriod period,
-      final WeightedObservedPoints obs, int size)
-  {
-    // how many are in the first 1/4?
-    final int firstQuarter = (int) Math.ceil(size / 4d);
+		final List<WeightedObservedPoint> res = obs.toList();
 
-    final double weighting;
-    if (period.equals(WhichPeriod.LATE))
-    {
-      // ok, we're doing a late leg. we don't
-      // need to dumb down the first cuts
-      weighting = 1d;
-    }
-    else
-    {
-      if (obs.toList().size() <= firstQuarter)
-      {
-        weighting = EARLY_CUTS_WEIGHTING;
-      }
-      else
-      {
-        weighting = 1d;
-      }
-    }
-    return weighting;
-  }
+		if (res.size() > 0) {
+			// process the obs, to put them all in the correct domain
+			final List<WeightedObservedPoint> rangedObs = putObsInCorrectRange(obs.toList());
+			final List<WeightedObservedPoint> tidyObs = putObsInCorrectDomain(rangedObs);
+			return fitter.fit(tidyObs);
+		} else {
+			return null;
+		}
+	}
 
-  public HiResDate getStartDTG()
-  {
-    final HiResDate res;
-    if(isEmpty())
-    {
-      res = null;
-    }
-    else
-    {
-      res = get(0).getDTG();
-    }
-    
-    return res;
-  }
-  
-  public HiResDate getEndDTG()
-  {
-    final HiResDate res;
-    if(isEmpty())
-    {
-      res = null;
-    }
-    else
-    {
-      res = get(size()-1).getDTG();
-    }
-    
-    return res;
-  }
-  
-  
-  
-  public double getPeriodSecs()
-  {
-    final double res;
-    if(!isEmpty())
-    {
-      double first = get(0).getDTG().getDate().getTime();
-      double last = get(size()-1).getDTG().getDate().getTime();
-      res = (last - first) / 1000;
-    }
-    else
-    {
-      res = 0d;
-    }
-    return res;
-  }
+	public HiResDate getEndDTG() {
+		final HiResDate res;
+		if (isEmpty()) {
+			res = null;
+		} else {
+			res = get(size() - 1).getDTG();
+		}
+
+		return res;
+	}
+
+	public double getPeriodSecs() {
+		final double res;
+		if (!isEmpty()) {
+			final double first = get(0).getDTG().getDate().getTime();
+			final double last = get(size() - 1).getDTG().getDate().getTime();
+			res = (last - first) / 1000;
+		} else {
+			res = 0d;
+		}
+		return res;
+	}
+
+	public HiResDate getStartDTG() {
+		final HiResDate res;
+		if (isEmpty()) {
+			res = null;
+		} else {
+			res = get(0).getDTG();
+		}
+
+		return res;
+	}
 }

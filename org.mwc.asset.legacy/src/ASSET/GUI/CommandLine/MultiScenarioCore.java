@@ -1,17 +1,18 @@
-/*
- *    Debrief - the Open Source Maritime Analysis Application
- *    http://debrief.info
+/*******************************************************************************
+ * Debrief - the Open Source Maritime Analysis Application
+ * http://debrief.info
  *
- *    (C) 2000-2014, PlanetMayo Ltd
+ * (C) 2000-2020, Deep Blue C Technology Ltd
  *
- *    This library is free software; you can redistribute it and/or
- *    modify it under the terms of the Eclipse Public License v1.0
- *    (http://www.eclipse.org/legal/epl-v10.html)
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the Eclipse Public License v1.0
+ * (http://www.eclipse.org/legal/epl-v10.html)
  *
- *    This library is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
- */
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *******************************************************************************/
+
 package ASSET.GUI.CommandLine;
 
 import java.io.ByteArrayInputStream;
@@ -51,8 +52,124 @@ import MWC.Algorithms.LiveData.IAttribute;
  * Class providing multi scenario support to the command line class Log:
  */
 
-public class MultiScenarioCore implements ISimulationQue
-{
+public class MultiScenarioCore implements ISimulationQue {
+	public static class InstanceWrapper {
+		final ScenarioType scenario;
+		final CommandLine commandLine;
+		boolean _initialised = false;
+
+		public InstanceWrapper(final ScenarioType theScenario, final CommandLine theCommandLine) {
+			scenario = theScenario;
+			commandLine = theCommandLine;
+		}
+
+		public ScenarioType getScenario() {
+			return scenario;
+		}
+
+		public void initialise(final Vector<ScenarioObserver> allObservers, final File outputDirectory) {
+
+			// ok, get the scenario, so we can set up our observers
+			for (int i = 0; i < allObservers.size(); i++) {
+				final CoreObserver thisObs = (CoreObserver) allObservers.elementAt(i);
+
+				// ok, do we need to tell it about the directory?
+				if (thisObs instanceof RecordToFileObserverType) {
+					if (outputDirectory != null) {
+						final RecordToFileObserverType rec = (RecordToFileObserverType) thisObs;
+						rec.setDirectory(outputDirectory);
+					}
+				}
+
+				// and set it up
+				thisObs.setup(scenario);
+
+				// and add to the runner
+				commandLine.addObserver(thisObs);
+			}
+
+			_initialised = true;
+		}
+
+		public boolean isInitialised() {
+			return _initialised;
+		}
+
+		public void terminate(final Vector<ScenarioObserver> allObservers) {
+
+			// ok, get the scenario, so we can set up our observers
+			for (int i = 0; i < allObservers.size(); i++) {
+				final CoreObserver thisObs = (CoreObserver) allObservers.elementAt(i);
+
+				// and tear it down
+				thisObs.tearDown(scenario);
+			}
+
+			// and remove all the observers
+			commandLine.clearObservers();
+
+			_initialised = false;
+		}
+	}
+
+	// //////////////////////////////////////////////////////////
+	// testing stuff
+	// //////////////////////////////////////////////////////////
+	public static class MultiServerTest extends SupportTesting {
+		public MultiServerTest(final String val) {
+			super(val);
+		}
+
+		public void testCommandLineMainProcessing() {
+			final String[] args = new String[2];
+			args[0] = "../org.mwc.asset.legacy/src/ASSET/Util/MonteCarlo/test_variance_scenario.xml";
+			args[1] = "../org.mwc.asset.legacy/src/ASSET/Util/MonteCarlo/test_variance_realistic.xml";
+
+			CommandLine.main(args);
+		}
+
+		public void testValidStartup() {
+			final ByteArrayOutputStream bos = new ByteArrayOutputStream();
+			final ByteArrayOutputStream bes = new ByteArrayOutputStream();
+
+			final PrintStream out = new PrintStream(bos);
+			final PrintStream err = new PrintStream(bes);
+			final InputStream in = new ByteArrayInputStream(new byte[] {});
+
+			bos.reset();
+			bes.reset();
+			final String[] args = new String[2];
+			args[1] = "../org.mwc.asset.legacy/src/ASSET/Util/MonteCarlo/test_variance_scenario.xml";
+			args[0] = "../org.mwc.asset.legacy/src/ASSET/Util/MonteCarlo/test_variance1.xml";
+			// args[1] =
+			// "..\\src\\java\\ASSET_SRC\\ASSET\\Util\\MonteCarlo\\test_variance1.xml";
+			final MultiScenarioCore scen = new MultiScenarioCore();
+			final ASSETProgressMonitor pMon = new ASSETProgressMonitor() {
+				@Override
+				public void beginTask(final String name, final int totalWork) {
+				}
+
+				@Override
+				public void worked(final int work) {
+				}
+			};
+			int res = 0;
+			try {
+				res = scen.prepareFiles(args[0], args[1], out, err, in, pMon, null);
+			} catch (final XPathExpressionException e) {
+				e.printStackTrace();
+			}
+			assertEquals("ran ok", SUCCESS, res);
+
+			// check the contents of the error message
+			assertEquals("no error reported", 0, bes.size());
+
+			// check the scenarios got created
+			final Vector<Document> scenarios = scen._myScenarioDocuments;
+			assertEquals("scenarios got created", 3, scenarios.size());
+		}
+	}
+
 	/**
 	 * success code to prove it ran ok
 	 */
@@ -79,6 +196,17 @@ public class MultiScenarioCore implements ISimulationQue
 	static int TROUBLE_MAKING_FILES = 4;
 
 	/**
+	 * main method, of course - decides whether to handle this ourselves, or to pass
+	 * it on to the command line
+	 *
+	 * @param args
+	 */
+	public static void main(final String[] args) {
+		final MultiServerTest tm = new MultiServerTest("me");
+		SupportTesting.callTestMethods(tm);
+	}
+
+	/**
 	 * the scenario generator that does all the work
 	 */
 	private ScenarioGenerator _myGenny;
@@ -102,83 +230,60 @@ public class MultiScenarioCore implements ISimulationQue
 
 	private ScenarioStatusObserver _stateObserver;
 
-	/**
-	 * ok, get things up and running. Load the data-files
-	 * 
-	 * @param scenario
-	 *          the scenario file
-	 * @param control
-	 *          the control file
-	 * @param pMon
-	 *          who tell what we're up to
-	 * @param outputDirectory
-	 *          where to write to
-	 * @return null for success, message for failure
-	 * @throws XPathExpressionException 
-	 */
-	private String setup(String scenario, String control,
-			ASSETProgressMonitor pMon, File outputDirectory) throws XPathExpressionException
-	{
-		// ok, create our genny
-		_myGenny = new ScenarioGenerator();
+	@Override
+	public Vector<IAttribute> getAttributes() {
+		if (_myAttributes == null) {
+			// look at our observers, find any attributes
+			_myAttributes = new Vector<IAttribute>();
 
-		// now create somewhere for the scenarios to go
-		_myScenarioDocuments = new Vector<Document>(0, 1);
-
-		// and now create the list of scenarios
-		String res = _myGenny.createScenarios(scenario, control,
-				_myScenarioDocuments, pMon, outputDirectory);
-
-		return res;
-	}
-
-	public boolean isMultiScenario(String controlFile)
-			throws FileNotFoundException
-	{
-		return CommandLine.isMultiScenarioFile(controlFile);
-	}
-
-	/**
-	 * write this set of scenarios to disk, for later examination
-	 * 
-	 * @param out
-	 *          standard out
-	 * @param err
-	 *          error out
-	 * @param in
-	 *          input (to receive user input)
-	 * @return success code (0) or failure codes
-	 */
-	private int writeToDisk(PrintStream out, PrintStream err, InputStream in)
-	{
-		int res = 0;
-		// so,
-		try
-		{
-			String failure = _myGenny.writeTheseToFile(_myScenarioDocuments, false);
-			// just check for any other probs
-			if (failure != null)
-			{
-				res = TROUBLE_MAKING_FILES;
+			// start off with the single-scenario observers
+			for (final Iterator<ScenarioObserver> iterator = _thePlainObservers.iterator(); iterator.hasNext();) {
+				final ScenarioObserver thisS = iterator.next();
+				if (thisS instanceof IAttribute)
+					_myAttributes.add((IAttribute) thisS);
 			}
-		}
-		catch (Exception e)
-		{
-			res = TROUBLE_MAKING_FILES;
-		}
 
+			// now the multi-scenario observers
+			for (final Iterator<InterScenarioObserverType> iterator = _theInterObservers.iterator(); iterator
+					.hasNext();) {
+				final InterScenarioObserverType thisS = iterator.next();
+				if (thisS instanceof IAttribute)
+					_myAttributes.add((IAttribute) thisS);
+			}
+
+		}
+		// done.
+		return _myAttributes;
+	}
+
+	public Vector<ScenarioObserver> getObservers() {
+		return _allObservers;
+	}
+
+	public Vector<InstanceWrapper> getScenarios() {
+		return _theScenarios;
+	}
+
+	@Override
+	public Vector<ISimulation> getSimulations() {
+		final Vector<ISimulation> res = new Vector<ISimulation>();
+		for (final Iterator<InstanceWrapper> iter = _theScenarios.iterator(); iter.hasNext();)
+			res.add((ISimulation) iter.next().scenario);
+		// return my list of simulations
 		return res;
 	}
 
-	public InstanceWrapper getWrapperFor(ScenarioType scenario)
-	{
+	@Override
+	public IAttribute getState() {
+		return _stateObserver;
+	}
+
+	public InstanceWrapper getWrapperFor(final ScenarioType scenario) {
 		InstanceWrapper res = null;
-		Iterator<InstanceWrapper> sList = _theScenarios.iterator();
-		while (sList.hasNext())
-		{
-			InstanceWrapper thisWrap = (InstanceWrapper) sList.next();
-			if (thisWrap.scenario == scenario)
-			{
+		final Iterator<InstanceWrapper> sList = _theScenarios.iterator();
+		while (sList.hasNext()) {
+			final InstanceWrapper thisWrap = sList.next();
+			if (thisWrap.scenario == scenario) {
 				res = thisWrap;
 				break;
 			}
@@ -186,110 +291,111 @@ public class MultiScenarioCore implements ISimulationQue
 		return res;
 	}
 
-	/**
-	 * ok, let's get going...
-	 * 
-	 * @param out
-	 * @param err
-	 * @param scenarioRunningListener
-	 */
-	private int runAll(OutputStream out, OutputStream err, InputStream in,
-			Document controlFile, NewScenarioListener listener)
-	{
-		int result = SUCCESS;
+	// //////////////////////////////////////////////////////////
+	// and now the main method
+	// //////////////////////////////////////////////////////////
 
-		final int scenarioLen = _myScenarioDocuments.size();
+	public boolean isMultiScenario(final String controlFile) throws FileNotFoundException {
+		return CommandLine.isMultiScenarioFile(controlFile);
+	}
 
-		// get the data we're after
-		String controlStr = ScenarioGenerator.writeToString(_myGenny
-				.getControlFile());
-		InputStream controlStream = new ByteArrayInputStream(controlStr.getBytes());
+	@Override
+	public boolean isRunning() {
+		return false;
+	}
 
-		// ok, we've got our scenarios up and running, might as well run through
-		// them
-		int ctr = 0;
-		ScenarioType oldScenario = null;
-		for (Iterator<InstanceWrapper> iterator = _theScenarios.iterator(); iterator
-				.hasNext();)
-		{
-			InstanceWrapper wrapper = iterator.next();
-			ScenarioType thisS = wrapper.scenario;
+	@Override
+	public int nowRun(final PrintStream out, final PrintStream err, final InputStream in,
+			final NewScenarioListener scenarioListener) {
+		return runAll(out, err, in, _myGenny.getControlFile(), scenarioListener);
+	}
 
-			// tell the listener what's up
-			if (listener != null)
-				listener.newScenario(oldScenario, thisS);
+	public int prepareControllers(final ResultsContainer multiRunResultsStore, final ASSETProgressMonitor pMon,
+			final NewScenarioListener newScenarioListener) {
+		final int resCode = 0;
 
-			// get the observers sorted
-			wrapper.initialise(_allObservers, null);
+		_resultsStore = multiRunResultsStore;
 
-			// now run this one
-			CommandLine runner = wrapper.commandLine;
+		// sort out observers (inter & intra)
+		_theInterObservers = new Vector<InterScenarioObserverType>(0, 1);
+		_thePlainObservers = new Vector<ScenarioObserver>();
 
-			System.out.print("Run " + (ctr + 1) + " of " + scenarioLen + " ");
+		// start off by generating the time/state observers that we create for
+		// everybody
+		_stateObserver = new ScenarioStatusObserver();
+		_thePlainObservers.add(_stateObserver);
+		_thePlainObservers.add(new TimeObserver());
 
-			// now set the seed
-			thisS.setSeed(_resultsStore.randomSeed);
-
-			// and get going....
-			runner.run();
-
-			// and ditch the observers
-			wrapper.terminate(_allObservers);
-
-			try
-			{
-				// and reset the control stream
-				controlStream.reset();
-			}
-			catch (IOException e)
-			{
-				e.printStackTrace(); // To change body of catch statement use Options |
-				// File Templates.
-			}
-
-			// and remember the scenario
-			oldScenario = thisS;
-
-			ctr++;
+		// also add those from the file
+		final Vector<ScenarioObserver> theObservers = _resultsStore.observerList;
+		for (int i = 0; i < theObservers.size(); i++) {
+			final ScenarioObserver observer = theObservers.elementAt(i);
+			if (observer instanceof InterScenarioObserverType) {
+				_theInterObservers.add((InterScenarioObserverType) observer);
+			} else
+				_thePlainObservers.add(observer);
 		}
 
-		// ok, everything's finished running. Just have a pass through to
-		// close any i-scenario observers
-		for (int thisObs = 0; thisObs < _theInterObservers.size(); thisObs++)
-		{
-			ScenarioObserver scen = _theInterObservers.elementAt(thisObs);
-			if (scen.isActive())
-			{
-				InterScenarioObserverType obs = _theInterObservers.elementAt(thisObs);
-				obs.finish();
+		// also collate the collected set of observers
+		// combine the two sets of observers
+		_allObservers = new Vector<ScenarioObserver>();
+		_allObservers.addAll(_theInterObservers);
+		_allObservers.addAll(_thePlainObservers);
+
+		// also read in the collection of scenarios
+		_theScenarios = new Vector<InstanceWrapper>(0, 1);
+
+		pMon.beginTask("Reading in block of scenarios", _myScenarioDocuments.size());
+
+		for (final Iterator<Document> iterator = _myScenarioDocuments.iterator(); iterator.hasNext();) {
+			final Document thisD = iterator.next();
+			final String scenarioStr = ScenarioGenerator.writeToString(thisD);
+			final InputStream scenarioStream = new ByteArrayInputStream(scenarioStr.getBytes());
+			final CoreScenario newS = new CoreScenario();
+			ASSETReaderWriter.importThis(newS, null, scenarioStream);
+			// wrap the scenario
+			final CommandLine runner = new CommandLine(newS);
+
+			final InstanceWrapper wrapper = new InstanceWrapper(newS, runner);
+
+			_theScenarios.add(wrapper);
+			pMon.worked(1);
+		}
+
+		// ok, everything's loaded. Just have a pass through to
+		// initialise any intra-scenario observers
+		for (int thisObs = 0; thisObs < _theInterObservers.size(); thisObs++) {
+			final ScenarioObserver scen = _theInterObservers.elementAt(thisObs);
+			if (scen.isActive()) {
+				final InterScenarioObserverType obs = (InterScenarioObserverType) scen;
+				// is it active?
+				obs.initialise(_resultsStore.outputDirectory);
 			}
 		}
 
-		return result;
+		// tell the parent we've got a new scenario
+		if (newScenarioListener != null)
+			newScenarioListener.newScenario(null, _theScenarios.firstElement().scenario);
+
+		return resCode;
 	}
 
 	/**
 	 * member method, effectively to handle "main" processing.
-	 * 
-	 * @param args
-	 *          the arguments we received from the command line
-	 * @param out
-	 *          standard out
-	 * @param err
-	 *          error out
-	 * @param in
-	 *          input (to receive user input)
+	 *
+	 * @param args            the arguments we received from the command line
+	 * @param out             standard out
+	 * @param err             error out
+	 * @param in              input (to receive user input)
 	 * @param pMon
-	 * @param outputDirectory
-	 *          - where to put the working files
+	 * @param outputDirectory - where to put the working files
 	 * @return success code (0) or failure codes
-	 * @throws XPathExpressionException 
+	 * @throws XPathExpressionException
 	 */
 
-	public int prepareFiles(String controlFile, String scenarioFile,
-			PrintStream out, PrintStream err, InputStream in,
-			ASSETProgressMonitor pMon, File outputDirectory) throws XPathExpressionException
-	{
+	public int prepareFiles(final String controlFile, final String scenarioFile, final PrintStream out,
+			final PrintStream err, final InputStream in, final ASSETProgressMonitor pMon, final File outputDirectory)
+			throws XPathExpressionException {
 		int resCode = 0;
 
 		// do a little tidying
@@ -300,24 +406,18 @@ public class MultiScenarioCore implements ISimulationQue
 		System.out.println("about to generate scenarios");
 
 		// and set it up (including generating the scenarios)
-		String res = setup(scenarioFile, controlFile, pMon, outputDirectory);
+		final String res = setup(scenarioFile, controlFile, pMon, outputDirectory);
 
-		if (res != null)
-		{
+		if (res != null) {
 			// see what it was, file not found?
-			if (res.indexOf("not found") >= 0)
-			{
+			if (res.indexOf("not found") >= 0) {
 				err.println("Problem finding control file:" + res);
 				resCode = FILE_NOT_FOUND;
-			}
-			else
-			{
+			} else {
 				err.println("Problem loading multi-scenario generator:" + res);
 				resCode = PROBLEM_LOADING;
 			}
-		}
-		else
-		{
+		} else {
 			out.println("about to write new scenarios to disk");
 
 			pMon.beginTask("Writing generated scenarios to disk", 1);
@@ -336,11 +436,10 @@ public class MultiScenarioCore implements ISimulationQue
 			// yet - so we'll trigger an artificial one.
 			System.gc();
 
-			if (resCode != SUCCESS)
-			{
-				if (resCode == TROUBLE_MAKING_FILES)
-				{
-					err.println("Failed to write new scenarios to disk.  Is an old copy of an output file currently open?");
+			if (resCode != SUCCESS) {
+				if (resCode == TROUBLE_MAKING_FILES) {
+					err.println(
+							"Failed to write new scenarios to disk.  Is an old copy of an output file currently open?");
 					err.println("  Alternately, is a file-browser currently looking at the output directory?");
 				}
 			}
@@ -349,313 +448,135 @@ public class MultiScenarioCore implements ISimulationQue
 		return resCode;
 	}
 
-	public int prepareControllers(ResultsContainer multiRunResultsStore,
-			ASSETProgressMonitor pMon, NewScenarioListener newScenarioListener)
-	{
-		int resCode = 0;
+	/**
+	 * ok, let's get going...
+	 *
+	 * @param out
+	 * @param err
+	 * @param scenarioRunningListener
+	 */
+	private int runAll(final OutputStream out, final OutputStream err, final InputStream in, final Document controlFile,
+			final NewScenarioListener listener) {
+		final int result = SUCCESS;
 
-		_resultsStore = multiRunResultsStore;
+		final int scenarioLen = _myScenarioDocuments.size();
 
-		// sort out observers (inter & intra)
-		_theInterObservers = new Vector<InterScenarioObserverType>(0, 1);
-		_thePlainObservers = new Vector<ScenarioObserver>();
+		// get the data we're after
+		final String controlStr = ScenarioGenerator.writeToString(_myGenny.getControlFile());
+		final InputStream controlStream = new ByteArrayInputStream(controlStr.getBytes());
 
-		// start off by generating the time/state observers that we create for
-		// everybody
-		_stateObserver = new ScenarioStatusObserver();
-		_thePlainObservers.add(_stateObserver);
-		_thePlainObservers.add(new TimeObserver());
+		// ok, we've got our scenarios up and running, might as well run through
+		// them
+		int ctr = 0;
+		ScenarioType oldScenario = null;
+		for (final Iterator<InstanceWrapper> iterator = _theScenarios.iterator(); iterator.hasNext();) {
+			final InstanceWrapper wrapper = iterator.next();
+			final ScenarioType thisS = wrapper.scenario;
 
-		// also add those from the file
-		Vector<ScenarioObserver> theObservers = _resultsStore.observerList;
-		for (int i = 0; i < theObservers.size(); i++)
-		{
-			ScenarioObserver observer = theObservers.elementAt(i);
-			if (observer instanceof InterScenarioObserverType)
-			{
-				_theInterObservers.add((InterScenarioObserverType) observer);
+			// tell the listener what's up
+			if (listener != null)
+				listener.newScenario(oldScenario, thisS);
+
+			// get the observers sorted
+			wrapper.initialise(_allObservers, null);
+
+			// now run this one
+			final CommandLine runner = wrapper.commandLine;
+
+			System.out.print("Run " + (ctr + 1) + " of " + scenarioLen + " ");
+
+			// now set the seed
+			thisS.setSeed(_resultsStore.randomSeed);
+
+			// and get going....
+			runner.run();
+
+			// and ditch the observers
+			wrapper.terminate(_allObservers);
+
+			try {
+				// and reset the control stream
+				controlStream.reset();
+			} catch (final IOException e) {
+				e.printStackTrace(); // To change body of catch statement use Options |
+				// File Templates.
 			}
-			else
-				_thePlainObservers.add(observer);
+
+			// and remember the scenario
+			oldScenario = thisS;
+
+			ctr++;
 		}
 
-		// also collate the collected set of observers
-		// combine the two sets of observers
-		_allObservers = new Vector<ScenarioObserver>();
-		_allObservers.addAll(_theInterObservers);
-		_allObservers.addAll(_thePlainObservers);
-
-		// also read in the collection of scenarios
-		_theScenarios = new Vector<InstanceWrapper>(0, 1);
-
-		pMon.beginTask("Reading in block of scenarios", _myScenarioDocuments.size());
-
-		for (Iterator<Document> iterator = _myScenarioDocuments.iterator(); iterator
-				.hasNext();)
-		{
-			Document thisD = iterator.next();
-			String scenarioStr = ScenarioGenerator.writeToString(thisD);
-			InputStream scenarioStream = new ByteArrayInputStream(
-					scenarioStr.getBytes());
-			CoreScenario newS = new CoreScenario();
-			ASSETReaderWriter.importThis(newS, null, scenarioStream);
-			// wrap the scenario
-			CommandLine runner = new CommandLine(newS);
-
-			InstanceWrapper wrapper = new InstanceWrapper(newS, runner);
-
-			_theScenarios.add(wrapper);
-			pMon.worked(1);
-		}
-
-		// ok, everything's loaded. Just have a pass through to
-		// initialise any intra-scenario observers
-		for (int thisObs = 0; thisObs < _theInterObservers.size(); thisObs++)
-		{
-			ScenarioObserver scen = _theInterObservers.elementAt(thisObs);
-			if (scen.isActive())
-			{
-				InterScenarioObserverType obs = (InterScenarioObserverType) scen;
-				// is it active?
-				obs.initialise(_resultsStore.outputDirectory);
+		// ok, everything's finished running. Just have a pass through to
+		// close any i-scenario observers
+		for (int thisObs = 0; thisObs < _theInterObservers.size(); thisObs++) {
+			final ScenarioObserver scen = _theInterObservers.elementAt(thisObs);
+			if (scen.isActive()) {
+				final InterScenarioObserverType obs = _theInterObservers.elementAt(thisObs);
+				obs.finish();
 			}
 		}
 
-		// tell the parent we've got a new scenario
-		if (newScenarioListener != null)
-			newScenarioListener.newScenario(null,
-					_theScenarios.firstElement().scenario);
-
-		return resCode;
+		return result;
 	}
-
-	public int nowRun(PrintStream out, PrintStream err, InputStream in,
-			NewScenarioListener scenarioListener)
-	{
-		return runAll(out, err, in, _myGenny.getControlFile(), scenarioListener);
-	}
-
-	// //////////////////////////////////////////////////////////
-	// testing stuff
-	// //////////////////////////////////////////////////////////
-	public static class MultiServerTest extends SupportTesting
-	{
-		public MultiServerTest(final String val)
-		{
-			super(val);
-		}
-
-		public void testValidStartup()
-		{
-			ByteArrayOutputStream bos = new ByteArrayOutputStream();
-			ByteArrayOutputStream bes = new ByteArrayOutputStream();
-
-			PrintStream out = new PrintStream(bos);
-			PrintStream err = new PrintStream(bes);
-			InputStream in = new ByteArrayInputStream(new byte[]
-			{});
-
-			bos.reset();
-			bes.reset();
-			String[] args = new String[2];
-			args[1] = "../org.mwc.asset.legacy/src/ASSET/Util/MonteCarlo/test_variance_scenario.xml";
-			args[0] = "../org.mwc.asset.legacy/src/ASSET/Util/MonteCarlo/test_variance1.xml";
-			// args[1] =
-			// "..\\src\\java\\ASSET_SRC\\ASSET\\Util\\MonteCarlo\\test_variance1.xml";
-			MultiScenarioCore scen = new MultiScenarioCore();
-			ASSETProgressMonitor pMon = new ASSETProgressMonitor()
-			{
-				public void beginTask(String name, int totalWork)
-				{
-				}
-
-				public void worked(int work)
-				{
-				}
-			};
-			int res = 0;
-			try
-			{
-				res = scen.prepareFiles(args[0], args[1], out, err, in, pMon, null);
-			}
-			catch (XPathExpressionException e)
-			{
-				e.printStackTrace();
-			}
-			assertEquals("ran ok", SUCCESS, res);
-
-			// check the contents of the error message
-			assertEquals("no error reported", 0, bes.size());
-
-			// check the scenarios got created
-			Vector<Document> scenarios = scen._myScenarioDocuments;
-			assertEquals("scenarios got created", 3, scenarios.size());
-		}
-
-		public void testCommandLineMainProcessing()
-		{
-			String[] args = new String[2];
-			args[0] = "../org.mwc.asset.legacy/src/ASSET/Util/MonteCarlo/test_variance_scenario.xml";
-			args[1] = "../org.mwc.asset.legacy/src/ASSET/Util/MonteCarlo/test_variance_realistic.xml";
-
-			CommandLine.main(args);
-		}
-	}
-
-	// //////////////////////////////////////////////////////////
-	// and now the main method
-	// //////////////////////////////////////////////////////////
 
 	/**
-	 * main method, of course - decides whether to handle this ourselves, or to
-	 * pass it on to the command line
-	 * 
-	 * @param args
+	 * ok, get things up and running. Load the data-files
+	 *
+	 * @param scenario        the scenario file
+	 * @param control         the control file
+	 * @param pMon            who tell what we're up to
+	 * @param outputDirectory where to write to
+	 * @return null for success, message for failure
+	 * @throws XPathExpressionException
 	 */
-	public static void main(String[] args)
-	{
-		MultiServerTest tm = new MultiServerTest("me");
-		SupportTesting.callTestMethods(tm);
-	}
+	private String setup(final String scenario, final String control, final ASSETProgressMonitor pMon,
+			final File outputDirectory) throws XPathExpressionException {
+		// ok, create our genny
+		_myGenny = new ScenarioGenerator();
 
-	public Vector<IAttribute> getAttributes()
-	{
-		if (_myAttributes == null)
-		{
-			// look at our observers, find any attributes
-			_myAttributes = new Vector<IAttribute>();
+		// now create somewhere for the scenarios to go
+		_myScenarioDocuments = new Vector<Document>(0, 1);
 
-			// start off with the single-scenario observers
-			for (Iterator<ScenarioObserver> iterator = _thePlainObservers.iterator(); iterator
-					.hasNext();)
-			{
-				ScenarioObserver thisS = iterator.next();
-				if (thisS instanceof IAttribute)
-					_myAttributes.add((IAttribute) thisS);
-			}
+		// and now create the list of scenarios
+		final String res = _myGenny.createScenarios(scenario, control, _myScenarioDocuments, pMon, outputDirectory);
 
-			// now the multi-scenario observers
-			for (Iterator<InterScenarioObserverType> iterator = _theInterObservers
-					.iterator(); iterator.hasNext();)
-			{
-				InterScenarioObserverType thisS = iterator.next();
-				if (thisS instanceof IAttribute)
-					_myAttributes.add((IAttribute) thisS);
-			}
-
-		}
-		// done.
-		return _myAttributes;
-	}
-
-	public Vector<ISimulation> getSimulations()
-	{
-		Vector<ISimulation> res = new Vector<ISimulation>();
-		for (Iterator<InstanceWrapper> iter = _theScenarios.iterator(); iter
-				.hasNext();)
-			res.add((ISimulation) iter.next().scenario);
-		// return my list of simulations
 		return res;
 	}
-	
-	public Vector<InstanceWrapper> getScenarios()
-	{
-		return _theScenarios;
-	}
 
-	public boolean isRunning()
-	{
-		return false;
-	}
-
-	public void startQue(NewScenarioListener listener)
-	{
+	@Override
+	public void startQue(final NewScenarioListener listener) {
 		// ok, go for it
 		nowRun(System.out, System.err, System.in, listener);
 	}
 
-	public void stopQue()
-	{
+	@Override
+	public void stopQue() {
 	}
 
-	public IAttribute getState()
-	{
-		return _stateObserver;
-	}
-
-	public static class InstanceWrapper
-	{
-		final ScenarioType scenario;
-		final CommandLine commandLine;
-		boolean _initialised = false;
-
-		public InstanceWrapper(ScenarioType theScenario, CommandLine theCommandLine)
-		{
-			scenario = theScenario;
-			commandLine = theCommandLine;
-		}
-
-		public ScenarioType getScenario()
-		{
-			return scenario;
-		}
-		
-		public void initialise(Vector<ScenarioObserver> allObservers,
-				File outputDirectory)
-		{
-
-			// ok, get the scenario, so we can set up our observers
-			for (int i = 0; i < allObservers.size(); i++)
-			{
-				CoreObserver thisObs = (CoreObserver) allObservers.elementAt(i);
-
-				// ok, do we need to tell it about the directory?
-				if (thisObs instanceof RecordToFileObserverType)
-				{
-					if (outputDirectory != null)
-					{
-						RecordToFileObserverType rec = (RecordToFileObserverType) thisObs;
-						rec.setDirectory(outputDirectory);
-					}
-				}
-
-				// and set it up
-				thisObs.setup(scenario);
-
-				// and add to the runner
-				commandLine.addObserver(thisObs);
+	/**
+	 * write this set of scenarios to disk, for later examination
+	 *
+	 * @param out standard out
+	 * @param err error out
+	 * @param in  input (to receive user input)
+	 * @return success code (0) or failure codes
+	 */
+	private int writeToDisk(final PrintStream out, final PrintStream err, final InputStream in) {
+		int res = 0;
+		// so,
+		try {
+			final String failure = _myGenny.writeTheseToFile(_myScenarioDocuments, false);
+			// just check for any other probs
+			if (failure != null) {
+				res = TROUBLE_MAKING_FILES;
 			}
-
-			_initialised = true;
+		} catch (final Exception e) {
+			res = TROUBLE_MAKING_FILES;
 		}
 
-		public void terminate(Vector<ScenarioObserver> allObservers)
-		{
-
-			// ok, get the scenario, so we can set up our observers
-			for (int i = 0; i < allObservers.size(); i++)
-			{
-				CoreObserver thisObs = (CoreObserver) allObservers.elementAt(i);
-
-				// and tear it down
-				thisObs.tearDown(scenario);
-			}
-
-			// and remove all the observers
-			commandLine.clearObservers();
-
-			_initialised = false;
-		}
-
-		public boolean isInitialised()
-		{
-			return _initialised;
-		}
-	}
-
-	public Vector<ScenarioObserver> getObservers()
-	{
-		return _allObservers;
+		return res;
 	}
 
 }

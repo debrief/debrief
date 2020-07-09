@@ -1,17 +1,18 @@
-/*
- *    Debrief - the Open Source Maritime Analysis Application
- *    http://debrief.info
+/*******************************************************************************
+ * Debrief - the Open Source Maritime Analysis Application
+ * http://debrief.info
  *
- *    (C) 2000-2014, PlanetMayo Ltd
+ * (C) 2000-2020, Deep Blue C Technology Ltd
  *
- *    This library is free software; you can redistribute it and/or
- *    modify it under the terms of the Eclipse Public License v1.0
- *    (http://www.eclipse.org/legal/epl-v10.html)
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the Eclipse Public License v1.0
+ * (http://www.eclipse.org/legal/epl-v10.html)
  *
- *    This library is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
- */
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *******************************************************************************/
+
 // $RCSfile: PlainSymbol.java,v $
 // @author $Author: Ian.Mayo $
 // @version $Revision: 1.2 $
@@ -88,8 +89,6 @@
 
 package MWC.GUI.Shapes.Symbols;
 
-
-
 import java.awt.Color;
 import java.awt.geom.Point2D;
 import java.util.Vector;
@@ -99,151 +98,165 @@ import MWC.GUI.Editable;
 import MWC.GUI.Properties.DebriefColors;
 import MWC.GenericData.WorldLocation;
 
-/** base class for our symbols
- *  the class implements the Serializable interface so that it can be copied.
- *  */
+/**
+ * base class for our symbols the class implements the Serializable interface so
+ * that it can be copied.
+ */
 abstract public class PlainSymbol implements java.io.Serializable, MWC.GUI.Editable {
-  
-  /**
-	 * 
+
+	/**
+	 *
 	 */
 	private static final long serialVersionUID = 1L;
 
-/** relates to the scaling of the symbol (small/medium/large)*/
-  private double _theScaleVal;
+	/** relates to the scaling of the symbol (small/medium/large) */
+	private double _theScaleVal;
 
-  /** the colour to draw this symbol
-   */
-  private java.awt.Color _theCol;
+	/**
+	 * the colour to draw this symbol
+	 */
+	private java.awt.Color _theCol;
 
-  /** whether the symbol is drawn filled or not (where applicable)
-   */
-  protected boolean _fillMe;
+	/**
+	 * whether the symbol is drawn filled or not (where applicable)
+	 */
+	protected boolean _fillMe;
 
-  public PlainSymbol(){
-    _theCol = DebriefColors.CYAN;
-    _theScaleVal = SymbolScalePropertyEditor.MEDIUM;
-    _fillMe = false;
-  }
+	public PlainSymbol() {
+		_theCol = DebriefColors.CYAN;
+		_theScaleVal = SymbolScalePropertyEditor.MEDIUM;
+		_fillMe = false;
+	}
 
-  /** create a clone of this object
-   * 
-   */
-  abstract public PlainSymbol create();
+	/**
+	 * create a clone of this object
+	 *
+	 */
+	abstract public PlainSymbol create();
 
-  public void setLineWid(final CanvasType dest)
-  {
-    final float lineWid;
-    final double scaleVal = getScaleVal();
-    
-    if(scaleVal == SymbolScalePropertyEditor.HUGE)
-    {
-      lineWid = 3f;
-    }
-    else if(scaleVal == SymbolScalePropertyEditor.LARGE)
-    {
-      lineWid = 2f;      
-    }
-    else
-    {
-      lineWid = 1f;      
-    }
-    dest.setLineWidth(lineWid);
-  }
+	/** retrieve the extent of the shape in screen coordinates */
+	public abstract java.awt.Dimension getBounds();
 
-  /** whether there is any edit information for this item
-   * this is a convenience function to save creating the EditorType data
-   * first
-   * @return yes/no
-   */
-  public boolean hasEditor(){ return false;}
+	public Color getColor() {
+		return _theCol;
+	}
 
-  /** get the editor for this item
-   * @return the BeanInfo data for this editable object
-   */
-  public Editable.EditorType getInfo(){ return null;}
+	/**
+	 * get this symbol as a sequence of lines. The
+	 *
+	 * @return a collection of paths. Each path is a collection of java.awt.Point
+	 *         objects.
+	 */
+	public Vector<Vector<Point2D>> getCoordinates() {
+		final Vector<Vector<Point2D>> res = null;
+		return res;
+	}
 
-  /** the name for this symbol
-   *  @return this symbol's name
-   */
-  public String getName()
-  {
-    return "unnamed";
-  }
+	public boolean getFillSymbol() {
+		return _fillMe;
+	}
 
-  /////////////////////////////////////////////////////////////
-  // member functions
-  ////////////////////////////////////////////////////////////
+	/////////////////////////////////////////////////////////////
+	// member functions
+	////////////////////////////////////////////////////////////
 
-  public void setFillSymbol(final boolean val)
-  {
-    _fillMe = val;
-  }
+	/**
+	 * get the editor for this item
+	 *
+	 * @return the BeanInfo data for this editable object
+	 */
+	@Override
+	public Editable.EditorType getInfo() {
+		return null;
+	}
 
-  public boolean getFillSymbol()
-  {
-    return _fillMe;
-  }
+	/**
+	 * the name for this symbol
+	 *
+	 * @return this symbol's name
+	 */
+	@Override
+	public String getName() {
+		return "unnamed";
+	}
 
-  /** accessor method for child classes to determine if we are at a
-   *  scale at which use a simplified symbol
-   */
-  protected boolean showSimplifiedSymbol()
-  {
-    if(getScaleVal() >= MWC.GUI.Shapes.Symbols.SymbolScalePropertyEditor.LARGE)
-      return false;
-    else
-      return true;
-  }
+	public double getScaleVal() {
+		return _theScaleVal;
+	}
 
-  /** allow recipients to find out what type of symbol this is.
-   * @return the name of this symbol
-   */
-  abstract public String getType();
+	/**
+	 * allow recipients to find out what type of symbol this is.
+	 *
+	 * @return the name of this symbol
+	 */
+	abstract public String getType();
 
-  /** retrieve the extent of the shape in screen coordinates */
-  public abstract java.awt.Dimension getBounds();
+	/**
+	 * whether there is any edit information for this item this is a convenience
+	 * function to save creating the EditorType data first
+	 *
+	 * @return yes/no
+	 */
+	@Override
+	public boolean hasEditor() {
+		return false;
+	}
 
-  /** step through metafile, drawing in shapes
-   * @param dest the Canvas to draw to
-   * @param theCentre the WorldLoc to centre this symbol on
-    */
-  public void paint(final CanvasType dest,
-                    final WorldLocation theCentre){
-    dest.setColor(_theCol);
+	/**
+	 * step through metafile, drawing in shapes
+	 *
+	 * @param dest      the Canvas to draw to
+	 * @param theCentre the WorldLoc to centre this symbol on
+	 */
+	public void paint(final CanvasType dest, final WorldLocation theCentre) {
+		dest.setColor(_theCol);
 
-    final java.awt.Point centre = dest.toScreen(theCentre);
-    dest.drawRect(centre.x -2, centre.y - 2, 4, 4);
-  }
+		final java.awt.Point centre = dest.toScreen(theCentre);
 
-  public abstract void paint(CanvasType dest, WorldLocation centre, double direction);
+		// handle unable to gen screen coords (if off visible area)
+		if (centre == null)
+			return;
 
-  public double getScaleVal(){
-    return _theScaleVal;
-  }
+		dest.drawRect(centre.x - 2, centre.y - 2, 4, 4);
+	}
 
-  public void setScaleVal(final double scaleVal){
-    _theScaleVal = scaleVal;
-  }
+	public abstract void paint(CanvasType dest, WorldLocation centre, double direction);
 
-  public Color getColor(){
-    return _theCol;
-  }
+	public void setColor(final Color theCol) {
+		_theCol = theCol;
+	}
 
-  public void setColor(final Color theCol){
-    _theCol = theCol;
-  }
+	public void setFillSymbol(final boolean val) {
+		_fillMe = val;
+	}
 
-  /** get this symbol as a sequence of lines.
-   * The
-   *
-   * @return a collection of paths.  Each path is a collection of java.awt.Point objects.
-   */
-  public Vector<Vector<Point2D>> getCoordinates()
-  {
-  	final Vector<Vector<Point2D>> res = null;
-    return res;
-  }
+	public void setLineWid(final CanvasType dest) {
+		final float lineWid;
+		final double scaleVal = getScaleVal();
+
+		if (scaleVal == SymbolScalePropertyEditor.HUGE) {
+			lineWid = 3f;
+		} else if (scaleVal == SymbolScalePropertyEditor.LARGE) {
+			lineWid = 2f;
+		} else {
+			lineWid = 1f;
+		}
+		dest.setLineWidth(lineWid);
+	}
+
+	public void setScaleVal(final double scaleVal) {
+		_theScaleVal = scaleVal;
+	}
+
+	/**
+	 * accessor method for child classes to determine if we are at a scale at which
+	 * use a simplified symbol
+	 */
+	protected boolean showSimplifiedSymbol() {
+		if (getScaleVal() >= MWC.GUI.Shapes.Symbols.SymbolScalePropertyEditor.LARGE)
+			return false;
+		else
+			return true;
+	}
 
 }
-

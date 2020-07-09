@@ -20,39 +20,31 @@ import java.util.Queue;
 /**
  * Source: http://rosettacode.org/wiki/Averages/Simple_moving_average#Java
  */
-public class SimpleMovingAverage
-{
+public class SimpleMovingAverage {
 
-  private final Queue<Double> window = new LinkedList<Double>();
-  private final int period;
-  private double sum;
+	private final Queue<Double> window = new LinkedList<Double>();
+	private final int period;
+	private double sum;
 
-  public SimpleMovingAverage(final int period)
-  {
-    assert period > 0 : "Period must be a positive integer";
-    this.period = period;
-  }
+	public SimpleMovingAverage(final int period) {
+		assert period > 0 : "Period must be a positive integer";
+		this.period = period;
+	}
 
-  public double getAvg()
-  {
-    if (window.isEmpty())
-    {
-      return 0; // technically the average is undefined
-    }
-    else
-    {
-      return sum / window.size();
-    }
-  }
+	public double getAvg() {
+		if (window.isEmpty()) {
+			return 0; // technically the average is undefined
+		} else {
+			return sum / window.size();
+		}
+	}
 
-  public void newNum(final double num)
-  {
-    sum += num;
-    window.add(num);
-    if (window.size() > period)
-    {
-      sum -= window.remove();
-    }
-  }
+	public void newNum(final double num) {
+		sum += num;
+		window.add(num);
+		if (window.size() > period) {
+			sum -= window.remove();
+		}
+	}
 
 }

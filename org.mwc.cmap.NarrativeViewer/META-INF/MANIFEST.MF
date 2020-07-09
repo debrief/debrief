@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Narrative Viewer Plug-in
 Bundle-SymbolicName: org.mwc.cmap.NarrativeViewer;singleton:=true
-Bundle-Version: 1.0.40
+Bundle-Version: 1.0.42
 Bundle-Vendor: borlander@gmail.com
 Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.ui,
@@ -14,7 +14,7 @@ Require-Bundle: org.eclipse.core.runtime,
  org.apache.commons.logging
 Bundle-Activator: org.mwc.cmap.NarrativeViewer.app.Activator
 Bundle-ActivationPolicy: lazy
-Bundle-RequiredExecutionEnvironment: JavaSE-1.7
+Bundle-RequiredExecutionEnvironment: JavaSE-11
 Bundle-ClassPath: .,
  libs/org.eclipse.nebula.widgets.grid_1.0.0.201605312033.jar,
  libs/ca.odell.glazedlists_1.9.0.v201303080712.jar,

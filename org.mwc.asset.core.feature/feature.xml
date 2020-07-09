@@ -1,8 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!--
+    Debrief - the Open Source Maritime Analysis Application
+    http://debrief.info
+     
+    (C) 2000-2020, Deep Blue C Technology Ltd
+     
+    This library is free software; you can redistribute it and/or
+    modify it under the terms of the Eclipse Public License v1.0
+    (http://www.eclipse.org/legal/epl-v10.html)
+     
+    This library is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ -->
+
 <feature
       id="org.mwc.asset.core.feature"
       label="Feature Feature"
-      version="1.0.92">
+      version="1.0.103">
 
    <description url="http://www.example.com/description">
       [Enter Feature Description here.]
@@ -419,13 +434,6 @@
          unpack="false"/>
 
    <plugin
-         id="javax.xml"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
          id="org.apache.xml.resolver"
          download-size="0"
          install-size="0"
@@ -476,6 +484,20 @@
 
    <plugin
          id="org.eclipse.wst.common.uriresolver"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="javax.xml"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.eclipse.wst.server.discovery"
          download-size="0"
          install-size="0"
          version="0.0.0"

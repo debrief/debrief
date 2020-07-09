@@ -1,17 +1,18 @@
-/*
- *    Debrief - the Open Source Maritime Analysis Application
- *    http://debrief.info
+/*******************************************************************************
+ * Debrief - the Open Source Maritime Analysis Application
+ * http://debrief.info
  *
- *    (C) 2000-2014, PlanetMayo Ltd
+ * (C) 2000-2020, Deep Blue C Technology Ltd
  *
- *    This library is free software; you can redistribute it and/or
- *    modify it under the terms of the Eclipse Public License v1.0
- *    (http://www.eclipse.org/legal/epl-v10.html)
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the Eclipse Public License v1.0
+ * (http://www.eclipse.org/legal/epl-v10.html)
  *
- *    This library is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
- */
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *******************************************************************************/
+
 // $RCSfile: DialogFactory.java,v $
 // @author $Author: Ian.Mayo $
 // @version $Revision: 1.5 $
@@ -111,185 +112,148 @@ import MWC.GUI.Dialogs.AWT.AWTFile;
 import MWC.GUI.Dialogs.Swing.SwingFile;
 import MWC.Utilities.ReaderWriter.XML.MWCXMLReader;
 
-public class DialogFactory
-{
+public class DialogFactory {
 
-  protected static boolean _useSwing = false;
+	public interface FileGetter {
+		public java.io.File[] getExistingFile(String filter, String description, String lastDirectory);
 
-  static SwingFile _swinger = new SwingFile();
-  static AWTFile _awter = new AWTFile();
+		public java.io.File getNewFile(String filter, String description, String lastDirectory);
+	}
 
-  static private boolean _runHeadless = false;
-  
-  static public void useSwing(final boolean val)
-  {
-    _useSwing = val;
-  }
-  
-  /** direct the code to run headless, so we don't 
-   * try to open dialogs
-   * @param runHeadless whether to run headless
-   */
-  static public void setRunHeadless(final boolean runHeadless)
-  {
-    _runHeadless = runHeadless;
-  }
+	protected static boolean _useSwing = false;
+	static SwingFile _swinger = new SwingFile();
 
-  /**
-   * GUI-independent function to get filename of existing file
-   *
-   * @return the filename as a string, or null if cancelled
-   */
-  static public java.io.File[] getOpenFileName(final String filter,
-                                               final String description,
-                                               final String directory)
-  {
+	static AWTFile _awter = new AWTFile();
 
-    java.io.File[] res = null;
-    if (_useSwing)
-      res = _swinger.getExistingFile(filter,
-                                     description,
-                                     directory);
-    else
-      res = _awter.getExistingFile(filter,
-                                   description,
-                                   directory);
+	static private boolean _runHeadless = false;
 
-    return res;
-  }
+	/**
+	 * popup a dialog to retrieve an integer value from the user.
+	 *
+	 * @return the integer in an Integer object, or a null value
+	 */
+	static public Double getDouble(final String title, final String message, final int defaultVal) {
+		Double res = null;
 
-  /**
-   * GUI-independent function to get filename of file to
-   * use in save operation
-   *
-   * @param filter      string containing wildcard to use
-   * @param description a String describing the type of file we are opening
-   * @param directory   the initial directory to open up in
-   * @return the filename as a string, or null if cancelled
-   */
-  static public java.io.File getNewFile(final String filter,
-                                        final String description,
-                                        final String directory)
-  {
-    if (_useSwing)
-      return _swinger.getNewFile(filter,
-                                 description,
-                                 directory);
-    else
-      return _awter.getNewFile(filter,
-                               description,
-                               directory);
-  }
+		final javax.swing.JOptionPane myMessage = new javax.swing.JOptionPane();
+		myMessage.setInitialSelectionValue("" + defaultVal);
 
-  static public void showMessage(final String title, final String msg)
-  {
-    if (!_runHeadless)
-    {
-      // create duff frame, that message dialog can appear
-      // in centre of
-      final Frame tmp = new Frame();
-      // and put the frame in the centre of the screen
-      final Dimension sz = Toolkit.getDefaultToolkit().getScreenSize();
-      tmp.setLocation(sz.width / 2, sz.height / 2);
+		final String s = JOptionPane.showInputDialog(message);
 
-      MessageProvider.Base.show(title,
-          msg,
-          MessageProvider.ERROR);
-    }
-  }
+		if (s == null) {
+			res = null;
+		} else {
+			if (s.length() > 0) {
+				try {
+					res = MWCXMLReader.readThisDouble(s);
+				} catch (final ParseException e) {
+					MWC.Utilities.Errors.Trace.trace(e);
+					showMessage("Integer entry", "Sorry, invalid double entered");
+				}
+			}
+		}
 
+		return res;
+	}
 
-  public static void main(final String[] args)
-  {
-    showMessage("test", "duff");
-    System.exit(0);
-  }
+	/**
+	 * popup a dialog to retrieve an integer value from the user.
+	 *
+	 * @return the integer in an Integer object, or a null value
+	 */
+	static public Integer getInteger(final String title, final String message, final int defaultVal) {
+		Integer res = null;
 
-  public interface FileGetter
-  {
-    public java.io.File[] getExistingFile(String filter,
-                                          String description,
-                                          String lastDirectory);
+		final javax.swing.JOptionPane myMessage = new javax.swing.JOptionPane();
+		myMessage.setInputValue("" + defaultVal);
 
-    public java.io.File getNewFile(String filter,
-                                   String description,
-                                   String lastDirectory);
-  }
+		final String s = JOptionPane.showInputDialog(message, new String("" + defaultVal));
 
-  /**
-   * popup a dialog to retrieve an integer value from the user.
-   *
-   * @return the integer in an Integer object, or a null value
-   */
-  static public Integer getInteger(final String title,
-                                   final String message,
-                                   final int defaultVal)
-  {
-    Integer res = null;
+		if (s == null) {
+			res = null;
+		} else {
+			try {
+				res = Integer.valueOf(s);
+			} catch (final java.lang.NumberFormatException e) {
+				MWC.Utilities.Errors.Trace.trace(e);
+				showMessage("Integer entry", "Sorry, invalid integer entered");
+			}
+		}
 
-    final javax.swing.JOptionPane myMessage = new javax.swing.JOptionPane();
-    myMessage.setInputValue("" + defaultVal);
+		return res;
+	}
 
-    final String s = JOptionPane.showInputDialog(message, new String("" + defaultVal));
+	/**
+	 * GUI-independent function to get filename of file to use in save operation
+	 *
+	 * @param filter      string containing wildcard to use
+	 * @param description a String describing the type of file we are opening
+	 * @param directory   the initial directory to open up in
+	 * @return the filename as a string, or null if cancelled
+	 */
+	static public java.io.File getNewFile(final String filter, final String description, final String directory) {
+		if (_useSwing)
+			return _swinger.getNewFile(filter, description, directory);
+		else
+			return _awter.getNewFile(filter, description, directory);
+	}
 
-    if (s == null)
-    {
-      res = null;
-    }
-    else
-    {
-      try
-      {
-        res = Integer.valueOf(s);
-      }
-      catch (final java.lang.NumberFormatException e)
-      {
-        MWC.Utilities.Errors.Trace.trace(e);
-        showMessage("Integer entry", "Sorry, invalid integer entered");
-      }
-    }
+	/**
+	 * GUI-independent function to get filename of existing file
+	 *
+	 * @return the filename as a string, or null if cancelled
+	 */
+	static public java.io.File[] getOpenFileName(final String filter, final String description,
+			final String directory) {
 
-    return res;
-  }
+		java.io.File[] res = null;
+		if (_useSwing)
+			res = _swinger.getExistingFile(filter, description, directory);
+		else
+			res = _awter.getExistingFile(filter, description, directory);
 
-  /**
-   * popup a dialog to retrieve an integer value from the user.
-   *
-   * @return the integer in an Integer object, or a null value
-   */
-  static public Double getDouble(final String title,
-                                 final String message,
-                                 final int defaultVal)
-  {
-    Double res = null;
+		return res;
+	}
 
-    final javax.swing.JOptionPane myMessage = new javax.swing.JOptionPane();
-    myMessage.setInitialSelectionValue("" + defaultVal);
+	public static void main(final String[] args) {
+		showMessage("test", "duff");
+		System.exit(0);
+	}
 
-    final String s = JOptionPane.showInputDialog(message);
+	/**
+	 * direct the code to run headless, so we don't try to open dialogs
+	 *
+	 * @param runHeadless whether to run headless
+	 */
+	static public void setRunHeadless(final boolean runHeadless) {
+		_runHeadless = runHeadless;
+	}
 
-    if (s == null)
-    {
-      res = null;
-    }
-    else
-    {
-      if (s.length() > 0)
-      {
-        try
-        {
-          res = MWCXMLReader.readThisDouble(s);
-        }
-        catch (final ParseException e)
-        {
-          MWC.Utilities.Errors.Trace.trace(e);
-          showMessage("Integer entry", "Sorry, invalid double entered");
-        }
-      }
-    }
+	static public void showMessage(final String title, final String msg) {
+		showMessage(title, msg, MessageProvider.ERROR);
+	}
 
-    return res;
-  }
+	/**
+	 *
+	 * @param title  message panel title
+	 * @param msg    message to show
+	 * @param status type of icon to show
+	 */
+	static public void showMessage(final String title, final String msg, final int status) {
+		if (!_runHeadless) {
+			// create duff frame, that message dialog can appear
+			// in centre of
+			final Frame tmp = new Frame();
+			// and put the frame in the centre of the screen
+			final Dimension sz = Toolkit.getDefaultToolkit().getScreenSize();
+			tmp.setLocation(sz.width / 2, sz.height / 2);
 
+			MessageProvider.Base.show(title, msg, status);
+		}
+	}
+
+	static public void useSwing(final boolean val) {
+		_useSwing = val;
+	}
 
 }

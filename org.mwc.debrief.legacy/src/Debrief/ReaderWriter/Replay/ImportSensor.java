@@ -1,17 +1,18 @@
-/*
- *    Debrief - the Open Source Maritime Analysis Application
- *    http://debrief.info
+/*******************************************************************************
+ * Debrief - the Open Source Maritime Analysis Application
+ * http://debrief.info
  *
- *    (C) 2000-2014, PlanetMayo Ltd
+ * (C) 2000-2020, Deep Blue C Technology Ltd
  *
- *    This library is free software; you can redistribute it and/or
- *    modify it under the terms of the Eclipse Public License v1.0
- *    (http://www.eclipse.org/legal/epl-v10.html)
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the Eclipse Public License v1.0
+ * (http://www.eclipse.org/legal/epl-v10.html)
  *
- *    This library is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
- */
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *******************************************************************************/
+
 // $RCSfile: ImportSensor.java,v $
 // @author $Author: Ian.Mayo $
 // @version $Revision: 1.7 $
@@ -97,204 +98,259 @@ import java.util.StringTokenizer;
 
 import Debrief.Wrappers.SensorContactWrapper;
 import Debrief.Wrappers.SensorWrapper;
+import MWC.GUI.Properties.DebriefColors;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.WorldDistance;
 import MWC.GenericData.WorldLocation;
 import MWC.Utilities.ReaderWriter.AbstractPlainLineImporter;
 import MWC.Utilities.ReaderWriter.XML.MWCXMLReader;
 import MWC.Utilities.TextFormatting.DebriefFormatDateTime;
+import MWC.Utilities.TextFormatting.FormatRNDateTime;
+import junit.framework.TestCase;
 
 /**
  * class to parse a label from a line of text
  */
-final class ImportSensor extends AbstractPlainLineImporter
-{
-  /**
-   * the type for this string
-   */
-  private final String _myType = ";SENSOR:";
+final class ImportSensor extends AbstractPlainLineImporter {
+	public static class TestImport extends TestCase {
 
-  /**
-   * read in this string and return a Label
-   * @throws ParseException 
-   */
-  public final Object readThisLine(final String theLine) throws ParseException
-  {
+		static public final String TEST_ALL_TEST_TYPE = "CONV";
 
-    // ;SENSOR: YYMMDD HHMMSS.SSS AAAAAA @@ DD MM SS.SS H DDD MM SS.SS H BBB.B RRR XXX YYY.....YYY
+		public void testValues1() throws ParseException {
+			// ;SENSOR: YYMMDD HHMMSS.SSS AAAAAA @@ DD MM SS.SS H DDD MM SS.SS H BBB.B RRR
+			// XXX YYY.....YYY
 
-    // get a stream from the string
-    final StringTokenizer st = new StringTokenizer(theLine);
+			final String iLine = ";SENSOR: 100112 121314 T23 @A NULL 90.0 40503.2 \"Plain Cookie\" FisherOne held on Plain Cookie";
+			final AbstractPlainLineImporter iff = new ImportSensor();
+			final SensorContactWrapper res = (SensorContactWrapper) iff.readThisLine(iLine);
 
-    // declare local variables
-    String theTrack;
-    String sensorName;
-    WorldLocation origin = null;
-    HiResDate theDtg = null;
-    double brg, rng;
-    java.awt.Color theColor;
+			assertNotNull("Read it in", res);
 
-    // skip the comment identifier
-    st.nextToken();
+			// and check the result
+			assertNotNull("read it in", res);
+			assertEquals("right track", "FisherOne held on Plain Cookie", res.getLabel());
+			assertEquals("right color", new java.awt.Color(0, 100, 189), res.getColor());
+			assertEquals("right sensor", "Plain Cookie", res.getSensorName());
+			assertEquals("correct date", "1213", FormatRNDateTime.toShortString(res.getDTG().getDate().getTime()));
+			assertEquals("correct date", "121213.14", FormatRNDateTime.toString(res.getDTG().getDate().getTime()));
+			assertEquals("correct bearing", 90d, res.getBearing(), 0.01);
+			assertEquals("correct range", 40503.2, res.getRange().getValueIn(WorldDistance.YARDS), 0.001);
+			assertEquals("correct track", "T23", res.getTrackName());
+			assertEquals("right name", "100112 121314", res.getName());
+			assertEquals("correct color", DebriefColors.BLUE, res.getColor());
+		}
 
-    // combine the date, a space, and the time
-    final String dateToken = st.nextToken();
-    final String timeToken = st.nextToken();
+		public void testValuesNANBearing() throws ParseException {
+			// ;SENSOR: YYMMDD HHMMSS.SSS AAAAAA @@ DD MM SS.SS H DDD MM SS.SS H BBB.B RRR
+			// XXX YYY.....YYY
 
-    // and extract the date
-    theDtg = DebriefFormatDateTime.parseThis(dateToken, timeToken);
+			final String iLine = ";SENSOR: 100112 121314 T23 @A NULL NAN 40503.2 \"Plain Cookie\" FisherOne held on Plain Cookie";
+			final AbstractPlainLineImporter iff = new ImportSensor();
+			final SensorContactWrapper res = (SensorContactWrapper) iff.readThisLine(iLine);
 
-    // get the (possibly multi-word) track name
-    theTrack = ImportFix.checkForQuotedName(st);
+			assertNotNull("Read it in", res);
 
-    // start with the symbology
-    symbology = st.nextToken(normalDelimiters);
+			// and check the result
+			assertNotNull("read it in", res);
+			assertEquals("right track", "FisherOne held on Plain Cookie", res.getLabel());
+			assertEquals("right color", new java.awt.Color(0, 100, 189), res.getColor());
+			assertEquals("right name", "100112 121314", res.getName());
+		}
 
-    // now the sensor offsets
-    final String next = st.nextToken().trim();
+		public void testValuesNullBearing() throws ParseException {
+			// ;SENSOR: YYMMDD HHMMSS.SSS AAAAAA @@ DD MM SS.SS H DDD MM SS.SS H BBB.B RRR
+			// XXX YYY.....YYY
 
-    try
-    {
-      // find out if it's our null value
-      if (!next.startsWith("N"))
-      {
-        // get the deg out of this value
-        final double latDeg = MWCXMLReader.readThisDouble(next);
+			final String iLine = ";SENSOR: 100112 121314 T23 @A NULL NULL 40503.2 \"Plain Cookie\" FisherOne held on Plain Cookie";
+			final AbstractPlainLineImporter iff = new ImportSensor();
+			final SensorContactWrapper res = (SensorContactWrapper) iff.readThisLine(iLine);
 
-        // ok, this is valid data, persevere with it
-        final double latMin = MWCXMLReader.readThisDouble(st.nextToken());
-        final double latSec = MWCXMLReader.readThisDouble(st.nextToken());
+			assertNotNull("Read it in", res);
 
-        /**
-         * now, we may have trouble here, since there may not be a space between the hemisphere
-         * character and a 3-digit latitude value - so BE CAREFUL
-         */
-        final String vDiff = st.nextToken();
-        final double longDeg;
-        final char latHem;
-        if (vDiff.length() > 3)
-        {
-          // hmm, they are combined
-          latHem = vDiff.charAt(0);
-          final String secondPart = vDiff.substring(1, vDiff.length());
-          longDeg = MWCXMLReader.readThisDouble(secondPart);
-        }
-        else
-        {
-          // they are separate, so only the hem is in this one
-          latHem = vDiff.charAt(0);
-          longDeg = MWCXMLReader.readThisDouble(st.nextToken());
-        }
+			// and check the result
+			assertNotNull("read it in", res);
+			assertEquals("right track", "FisherOne held on Plain Cookie", res.getLabel());
+			assertEquals("right color", new java.awt.Color(0, 100, 189), res.getColor());
+			assertEquals("right name", "100112 121314", res.getName());
+		}
 
-        final double longMin = MWCXMLReader.readThisDouble(st.nextToken());
-        final double longSec = MWCXMLReader.readThisDouble(st.nextToken());
-        final char longHem = st.nextToken().charAt(0);
+	}
 
-        // create the origin
-        origin =
-            new WorldLocation(latDeg, latMin, latSec, latHem, longDeg, longMin,
-                longSec, longHem, 0);
-      } // whether the duff origin data was entered
+	/**
+	 * the type for this string
+	 */
+	private final String _myType = ";SENSOR:";
 
-      brg = MWCXMLReader.readThisDouble(st.nextToken());
+	/**
+	 * indicate if you can export this type of object
+	 *
+	 * @param val the object to test
+	 * @return boolean saying whether you can do it
+	 */
+	@Override
+	public final boolean canExportThis(final Object val) {
+		boolean res = false;
 
-      String rangeStr = st.nextToken();
-      if (rangeStr.startsWith("N"))
-      {
-        rng = 0;
-      }
-      else
-      {
-        rng = MWCXMLReader.readThisDouble(rangeStr);
-      }
+		if (val instanceof SensorWrapper) {
+			res = true;
+		}
 
-      // only store a sensor range if a legitimate one was passed in
-      WorldDistance sensorRng;
-      if (rng != 0)
-        sensorRng = new WorldDistance(rng, WorldDistance.YARDS);
-      else
-        sensorRng = null;
+		return res;
 
-      // get the (possibly multi-word) track name
-      sensorName = ImportFix.checkForQuotedName(st);
+	}
 
-      // and ditch some whitespace
-      sensorName = sensorName.trim();
+	/**
+	 * export the specified shape as a string
+	 *
+	 * @param theWrapper the thing we are going to export
+	 * @return the shape in String form
+	 */
+	@Override
+	public final String exportThis(final MWC.GUI.Plottable theWrapper) {
+		// result value
+		final String line = ";; Export of sensor data not implemented";
+		return line;
 
-      // and lastly read in the message (to the end of the line)
-      final String labelTxt;
-      if (st.hasMoreTokens())
-      {
-        labelTxt = st.nextToken("\r");
-      }
-      else
-      {
-        labelTxt = null;
-      }
+	}
 
-      theColor = ImportReplay.replayColorFor(symbology);
+	/**
+	 * determine the identifier returning this type of annotation
+	 */
+	@Override
+	public final String getYourType() {
+		return _myType;
+	}
 
-      final int theStyle = ImportReplay.replayLineStyleFor(symbology);
+	/**
+	 * read in this string and return a Label
+	 *
+	 * @throws ParseException
+	 */
+	@Override
+	public final Object readThisLine(final String theLine) throws ParseException {
 
-      // create the contact object
-      final SensorContactWrapper data =
-          new SensorContactWrapper(theTrack, theDtg, sensorRng, brg, origin,
-              theColor, null, theStyle, sensorName);
+		// ;SENSOR: YYMMDD HHMMSS.SSS AAAAAA @@ DD MM SS.SS H DDD MM SS.SS H BBB.B RRR
+		// XXX YYY.....YYY
 
-      // sort out the (optional) comment
-      data.setLabel(ImportReplay.getLabel(labelTxt));
-      data.setComment(ImportReplay.getComment(labelTxt));
+		// get a stream from the string
+		final StringTokenizer st = new StringTokenizer(theLine);
 
-      return data;
-    }
-    catch (final ParseException pe)
-    {
-      MWC.Utilities.Errors.Trace.trace(pe, "Whilst import sensor");
-      return null;
-    }
-  }
+		// declare local variables
+		String theTrack;
+		String sensorName;
+		WorldLocation origin = null;
+		HiResDate theDtg = null;
+		final Double brg;
+		final double rng;
+		java.awt.Color theColor;
 
-  /**
-   * determine the identifier returning this type of annotation
-   */
-  public final String getYourType()
-  {
-    return _myType;
-  }
+		// skip the comment identifier
+		st.nextToken();
 
-  /**
-   * export the specified shape as a string
-   * 
-   * @param theWrapper
-   *          the thing we are going to export
-   * @return the shape in String form
-   */
-  public final String exportThis(final MWC.GUI.Plottable theWrapper)
-  {
-    // result value
-    final String line = ";; Export of sensor data not implemented";
-    return line;
+		// combine the date, a space, and the time
+		final String dateToken = st.nextToken();
+		final String timeToken = st.nextToken();
 
-  }
+		// and extract the date
+		theDtg = DebriefFormatDateTime.parseThis(dateToken, timeToken);
 
-  /**
-   * indicate if you can export this type of object
-   * 
-   * @param val
-   *          the object to test
-   * @return boolean saying whether you can do it
-   */
-  public final boolean canExportThis(final Object val)
-  {
-    boolean res = false;
+		// get the (possibly multi-word) track name
+		theTrack = AbstractPlainLineImporter.checkForQuotedName(st);
 
-    if (val instanceof SensorWrapper)
-    {
-      res = true;
-    }
+		// start with the symbology
+		symbology = st.nextToken(normalDelimiters);
 
-    return res;
+		// now the sensor offsets
+		final String next = st.nextToken().trim();
 
-  }
+		try {
+			// find out if it's our null value
+			if (!next.startsWith("N")) {
+				// get the deg out of this value
+				final double latDeg = MWCXMLReader.readThisDouble(next);
+
+				// ok, this is valid data, persevere with it
+				final double latMin = MWCXMLReader.readThisDouble(st.nextToken());
+				final double latSec = MWCXMLReader.readThisDouble(st.nextToken());
+
+				/**
+				 * now, we may have trouble here, since there may not be a space between the
+				 * hemisphere character and a 3-digit latitude value - so BE CAREFUL
+				 */
+				final String vDiff = st.nextToken();
+				final double longDeg;
+				final char latHem;
+				if (vDiff.length() > 3) {
+					// hmm, they are combined
+					latHem = vDiff.charAt(0);
+					final String secondPart = vDiff.substring(1, vDiff.length());
+					longDeg = MWCXMLReader.readThisDouble(secondPart);
+				} else {
+					// they are separate, so only the hem is in this one
+					latHem = vDiff.charAt(0);
+					longDeg = MWCXMLReader.readThisDouble(st.nextToken());
+				}
+
+				final double longMin = MWCXMLReader.readThisDouble(st.nextToken());
+				final double longSec = MWCXMLReader.readThisDouble(st.nextToken());
+				final char longHem = st.nextToken().charAt(0);
+
+				// create the origin
+				origin = new WorldLocation(latDeg, latMin, latSec, latHem, longDeg, longMin, longSec, longHem, 0);
+			} // whether the duff origin data was entered
+
+			final String brgStr = st.nextToken();
+			if (brgStr.startsWith("N")) {
+				brg = null;
+			} else {
+				brg = MWCXMLReader.readThisDouble(brgStr);
+			}
+
+			final String rangeStr = st.nextToken();
+			if (rangeStr.startsWith("N")) {
+				rng = 0;
+			} else {
+				rng = MWCXMLReader.readThisDouble(rangeStr);
+			}
+
+			// only store a sensor range if a legitimate one was passed in
+			final WorldDistance sensorRng;
+			if (rng != 0)
+				sensorRng = new WorldDistance(rng, WorldDistance.YARDS);
+			else
+				sensorRng = null;
+
+			// get the (possibly multi-word) track name
+			sensorName = AbstractPlainLineImporter.checkForQuotedName(st);
+
+			// and ditch some whitespace
+			sensorName = sensorName.trim();
+
+			// and lastly read in the message (to the end of the line)
+			final String labelTxt;
+			if (st.hasMoreTokens()) {
+				labelTxt = st.nextToken("\r");
+			} else {
+				labelTxt = null;
+			}
+
+			theColor = ImportReplay.replayColorFor(symbology);
+
+			final int theStyle = ImportReplay.replayLineStyleFor(symbology);
+
+			// create the contact object
+			final SensorContactWrapper data = new SensorContactWrapper(theTrack, theDtg, sensorRng, brg, origin,
+					theColor, null, theStyle, sensorName);
+
+			// sort out the (optional) comment
+			data.setLabel(ImportReplay.getLabel(labelTxt));
+			data.setComment(ImportReplay.getComment(labelTxt));
+
+			return data;
+		} catch (final ParseException pe) {
+			MWC.Utilities.Errors.Trace.trace(pe, "Whilst import sensor");
+			return null;
+		}
+	}
 
 }

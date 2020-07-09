@@ -1,17 +1,18 @@
-/*
- *    Debrief - the Open Source Maritime Analysis Application
- *    http://debrief.info
+/*******************************************************************************
+ * Debrief - the Open Source Maritime Analysis Application
+ * http://debrief.info
  *
- *    (C) 2000-2014, PlanetMayo Ltd
+ * (C) 2000-2020, Deep Blue C Technology Ltd
  *
- *    This library is free software; you can redistribute it and/or
- *    modify it under the terms of the Eclipse Public License v1.0
- *    (http://www.eclipse.org/legal/epl-v10.html)
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the Eclipse Public License v1.0
+ * (http://www.eclipse.org/legal/epl-v10.html)
  *
- *    This library is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
- */
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *******************************************************************************/
+
 // $RCSfile: UnknownSym.java,v $
 // @author $Author: Ian.Mayo $
 // @version $Revision: 1.2 $
@@ -53,72 +54,68 @@ import MWC.GenericData.WorldLocation;
 
 public class UnknownSym extends PlainSymbol {
 
-  /**
-	 * 
+	/**
+	 *
 	 */
 	private static final long serialVersionUID = 1L;
-  private final String _myType;
+	private final String _myType;
 
-	public UnknownSym(String type)
-  {
-	  _myType = type;
-  }
-	
-  public UnknownSym()
-  {
-    this(SymbolFactory.UNKNOWN);
-  }
+	public UnknownSym() {
+		this(SymbolFactory.UNKNOWN);
+	}
 
-  public java.awt.Dimension getBounds(){
-    // sort out the size of the symbol at the current scale factor
-    final java.awt.Dimension res = new java.awt.Dimension((int)(6 * getScaleVal()),(int)(6 * getScaleVal()));
-    return res;
-  }
+	public UnknownSym(final String type) {
+		_myType = type;
+	}
 
-  public void paint(final CanvasType dest, final WorldLocation centre)
-  {
-    paint(dest, centre, 0.0);
-  }
+	@Override
+	public PlainSymbol create() {
+		return new UnknownSym(_myType);
+	}
 
-  @Override
-  public PlainSymbol create()
-  {
-    return new UnknownSym(_myType);
-  }
+	@Override
+	public java.awt.Dimension getBounds() {
+		// sort out the size of the symbol at the current scale factor
+		final java.awt.Dimension res = new java.awt.Dimension((int) (6 * getScaleVal()), (int) (6 * getScaleVal()));
+		return res;
+	}
 
-  public void paint(final CanvasType dest, final WorldLocation theLocation, final double direction)
-  {
-    // set the colour
-    dest.setColor(getColor());
+	@Override
+	public String getType() {
+		return _myType;
+	}
 
-    // create our centre point
-    final java.awt.Point centre = dest.toScreen(theLocation);
+	@Override
+	public void paint(final CanvasType dest, final WorldLocation centre) {
+		paint(dest, centre, 0.0);
+	}
 
-    final int wid = (int)(6 * getScaleVal());
-    final int wid_2 = (int)(wid/2d);
+	@Override
+	public void paint(final CanvasType dest, final WorldLocation theLocation, final double direction) {
+		// set the colour
+		dest.setColor(getColor());
 
-    // now the outer circle
-    dest.drawOval(centre.x - wid_2, centre.y - wid_2, wid, wid);
+		// create our centre point
+		final java.awt.Point centre = dest.toScreen(theLocation);
 
-    // now the slash
-    final double theta = MWC.Algorithms.Conversions.Degs2Rads(45);
-    final double dX = Math.sin(theta) * wid_2;
-    final double dY = Math.sin(theta) * wid_2;
+		// handle unable to gen screen coords (if off visible area)
+		if (centre == null)
+			return;
 
-    dest.drawLine(centre.x - (int)dX, centre.y + (int)dY,
-                  centre.x + (int)dX, centre.y - (int)dY);
-    dest.drawLine(centre.x + (int)dX, centre.y + (int)dY,
-                  centre.x - (int)dX, centre.y - (int)dY);
+		final int wid = (int) (6 * getScaleVal());
+		final int wid_2 = (int) (wid / 2d);
 
-  }
+		// now the outer circle
+		dest.drawOval(centre.x - wid_2, centre.y - wid_2, wid, wid);
 
-  public String getType()
-  {
-    return _myType;
-  }
+		// now the slash
+		final double theta = MWC.Algorithms.Conversions.Degs2Rads(45);
+		final double dX = Math.sin(theta) * wid_2;
+		final double dY = Math.sin(theta) * wid_2;
+
+		dest.drawLine(centre.x - (int) dX, centre.y + (int) dY, centre.x + (int) dX, centre.y - (int) dY);
+		dest.drawLine(centre.x + (int) dX, centre.y + (int) dY, centre.x - (int) dX, centre.y - (int) dY);
+
+	}
 
 }
-
-
-
-

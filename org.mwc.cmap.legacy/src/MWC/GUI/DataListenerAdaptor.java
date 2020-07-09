@@ -1,17 +1,18 @@
-/*
- *    Debrief - the Open Source Maritime Analysis Application
- *    http://debrief.info
+/*******************************************************************************
+ * Debrief - the Open Source Maritime Analysis Application
+ * http://debrief.info
  *
- *    (C) 2000-2014, PlanetMayo Ltd
+ * (C) 2000-2020, Deep Blue C Technology Ltd
  *
- *    This library is free software; you can redistribute it and/or
- *    modify it under the terms of the Eclipse Public License v1.0
- *    (http://www.eclipse.org/legal/epl-v10.html)
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the Eclipse Public License v1.0
+ * (http://www.eclipse.org/legal/epl-v10.html)
  *
- *    This library is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
- */
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *******************************************************************************/
+
 // $RCSfile: DataListenerAdaptor.java,v $
 // $Author: Ian.Mayo $
 // $Log: DataListenerAdaptor.java,v $
@@ -69,50 +70,45 @@
 
 package MWC.GUI;
 
-
 /**
- * this class provides a no-op default instantiation of
- * a data listener, it is to be extended by any concrete
- * class expecting to handle data listener messages
+ * this class provides a no-op default instantiation of a data listener, it is
+ * to be extended by any concrete class expecting to handle data listener
+ * messages
  */
 
-public abstract class DataListenerAdaptor implements  Layers.DataListener2
-{
+public abstract class DataListenerAdaptor implements Layers.DataListener2 {
 
+	/**
+	 * flag to indicate that the Layers object should suspend updates, just for a
+	 * while
+	 */
+	protected boolean _suspendUpdates = false;
 
-  /**
-   * flag to indicate that the Layers object should suspend updates, just for a while
-   */
-  protected boolean _suspendUpdates = false;
-
-  public void dataModified(final Layers theData, final Layer changedLayer)
-  {
-    // do nothing
-  }
-
-  public void dataExtended(final Layers theData)
-  {
-    // do nothing
-  }
-
-  public void dataReformatted(final Layers theData, final Layer changedLayer)
-  {
-    // do nothing
-  }
-
-  public void setSuspendUpdates(final boolean updates)
-  {
-    _suspendUpdates = updates;
-
-    if(updates)
-    {
-      // we're just being switched back on, trigger a full repaint
-      dataExtended(null);
-    }
-  }
-
-	public void dataExtended(final Layers theData, final Plottable newItem, final Layer parent)
-	{
+	@Override
+	public void dataExtended(final Layers theData) {
 		// do nothing
+	}
+
+	public void dataExtended(final Layers theData, final Plottable newItem, final Layer parent) {
+		// do nothing
+	}
+
+	@Override
+	public void dataModified(final Layers theData, final Layer changedLayer) {
+		// do nothing
+	}
+
+	@Override
+	public void dataReformatted(final Layers theData, final Layer changedLayer) {
+		// do nothing
+	}
+
+	public void setSuspendUpdates(final boolean updates) {
+		_suspendUpdates = updates;
+
+		if (updates) {
+			// we're just being switched back on, trigger a full repaint
+			dataExtended(null);
+		}
 	}
 }

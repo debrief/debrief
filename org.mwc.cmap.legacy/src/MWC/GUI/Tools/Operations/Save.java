@@ -1,20 +1,22 @@
-/*
- *    Debrief - the Open Source Maritime Analysis Application
- *    http://debrief.info
+/*******************************************************************************
+ * Debrief - the Open Source Maritime Analysis Application
+ * http://debrief.info
  *
- *    (C) 2000-2014, PlanetMayo Ltd
+ * (C) 2000-2020, Deep Blue C Technology Ltd
  *
- *    This library is free software; you can redistribute it and/or
- *    modify it under the terms of the Eclipse Public License v1.0
- *    (http://www.eclipse.org/legal/epl-v10.html)
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the Eclipse Public License v1.0
+ * (http://www.eclipse.org/legal/epl-v10.html)
  *
- *    This library is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
- */
- package MWC.GUI.Tools.Operations;
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *******************************************************************************/
+
+package MWC.GUI.Tools.Operations;
 
 // Copyright MWC 1999
+
 // $RCSfile: Save.java,v $
 // $Author: Ian.Mayo $
 // $Log: Save.java,v $
@@ -67,119 +69,117 @@
 // Handle user cancelling save operation
 //
 
-
 import java.io.File;
 
 import MWC.GUI.ToolParent;
 import MWC.GUI.Tools.Action;
 import MWC.GUI.Tools.PlainTool;
 
-abstract public class Save extends PlainTool
-{
-  /////////////////////////////////////////////////////////////
-  // member variables
-  ////////////////////////////////////////////////////////////
-  String _theSuffix;
+abstract public class Save extends PlainTool {
+	///////////////////////////////////////////////////////
+	// store action information
+	///////////////////////////////////////////////////////
+	protected class SavePlotAction implements Action {
+		/**
+		 * store the name of the session we have saved
+		 */
+		protected String _theSessionName;
 
-  /** the last directory we opened from
-   */
-  protected String _lastDirectory;
+		public SavePlotAction(final String theName) {
+			_theSessionName = theName;
+		}
 
-  /////////////////////////////////////////////////////////////
-  // constructor
-  ////////////////////////////////////////////////////////////
-  public Save(final ToolParent theParent,
-              final String theName,
-              final String theSuffix){
-    this(theParent, theName, theSuffix, "images/save.png");
-  }
+		@Override
+		public void execute() {
+		}
 
-  public Save(final ToolParent theParent,
-              final String theName,
-              final String theSuffix,
-              final String theImage)
-  {
-    super(theParent, theName, theImage);
+		@Override
+		public boolean isRedoable() {
+			return false;
+		}
 
-    _theSuffix = theSuffix;
-    _lastDirectory = "";
-  }
-  
-  
+		@Override
+		public boolean isUndoable() {
+			return false;
+		}
 
-  @Override
-  public String getImage()
-  {
-    // TODO Auto-generated method stub
-    return super.getImage();
-  }
+		@Override
+		public String toString() {
+			return "Save " + _theSessionName;
+		}
 
-  /////////////////////////////////////////////////////////////
-  // member functions
-  ////////////////////////////////////////////////////////////
-  /** get a filename from the user
-   */
-  private File getFile(){
-    return MWC.GUI.Dialogs.DialogFactory.getNewFile(_theSuffix,
-                                                    "Debrief Plots",
-                                                    _lastDirectory);
-  }
+		@Override
+		public void undo() {
+			// delete the plottables from the Application object
+		}
 
-  /** collate the data ready to perform the operations
-   */
-  public Action getData()
-  {
-    Action res = null;
+	}
 
-    // get the filename of the file to import
-    final File theFile = getFile();
+	/**
+		 *
+		 */
+	private static final long serialVersionUID = 1L;
 
-    if(theFile != null)
-    {
-      _lastDirectory = theFile.getParent();
+	/////////////////////////////////////////////////////////////
+	// member variables
+	////////////////////////////////////////////////////////////
+	String _theSuffix;
 
-      final String fn = theFile.getPath();
-      res = doSave(fn);
-    }
+	/**
+	 * the last directory we opened from
+	 */
+	protected String _lastDirectory;
 
-    return res;
-  }
+	/////////////////////////////////////////////////////////////
+	// constructor
+	////////////////////////////////////////////////////////////
+	public Save(final ToolParent theParent, final String theName, final String theSuffix) {
+		this(theParent, theName, theSuffix, "images/save.png");
+	}
 
-  abstract protected Action doSave(String filename);
+	public Save(final ToolParent theParent, final String theName, final String theSuffix, final String theImage) {
+		super(theParent, theName, theImage);
 
+		_theSuffix = theSuffix;
+		_lastDirectory = "";
+	}
 
-  ///////////////////////////////////////////////////////
-  // store action information
-  ///////////////////////////////////////////////////////
-  protected class SavePlotAction implements Action{
-    /** store the name of the session we have saved
-     */
-    protected String _theSessionName;
+	abstract protected Action doSave(String filename);
 
-    public SavePlotAction(final String theName){
-      _theSessionName = theName;
-    }
+	/**
+	 * collate the data ready to perform the operations
+	 */
+	@Override
+	public Action getData() {
+		Action res = null;
 
-    public boolean isRedoable(){
-      return false;
-    }
+		// get the filename of the file to import
+		final File theFile = getFile();
 
+		if (theFile != null) {
+			_lastDirectory = theFile.getParent();
 
-    public boolean isUndoable(){
-      return false;
-    }
+			final String fn = theFile.getPath();
+			res = doSave(fn);
+		}
 
-    public String toString(){
-      return "Save " + _theSessionName;
-    }
+		return res;
+	}
 
-    public void undo(){
-      // delete the plottables from the Application object
-    }
+	/////////////////////////////////////////////////////////////
+	// member functions
+	////////////////////////////////////////////////////////////
+	/**
+	 * get a filename from the user
+	 */
+	private File getFile() {
+		return MWC.GUI.Dialogs.DialogFactory.getNewFile(_theSuffix, "Debrief Plots", _lastDirectory);
+	}
 
-    public void execute(){
-    }
-
-  }
+	@Override
+	public String getImage() {
+		// TODO Auto-generated method stub
+		return super.getImage();
+	}
 
 }

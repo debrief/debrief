@@ -1,8 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!--
+    Debrief - the Open Source Maritime Analysis Application
+    http://debrief.info
+     
+    (C) 2000-2020, Deep Blue C Technology Ltd
+     
+    This library is free software; you can redistribute it and/or
+    modify it under the terms of the Eclipse Public License v1.0
+    (http://www.eclipse.org/legal/epl-v10.html)
+     
+    This library is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ -->
+
 <feature
       id="org.mwc.cmap.combined.feature"
       label="%featureName"
-      version="1.0.363"
+      version="1.1.14"
       provider-name="MWC"
       plugin="org.mwc.cmap.core">
 
@@ -202,7 +217,7 @@ Library.
       <import plugin="org.eclipse.help"/>
       <import plugin="org.eclipse.ui.ide" version="3.5.2" match="greaterOrEqual"/>
       <import plugin="org.eclipse.core.resources" version="3.5.0" match="greaterOrEqual"/>
-      <import plugin="org.hamcrest.core" version="1.1.0" match="greaterOrEqual"/>
+      <import plugin="org.hamcrest.core" version="1.1.1" match="greaterOrEqual"/>
       <import plugin="org.mwc.cmap.legacy" version="1.0.50" match="greaterOrEqual"/>
    </requires>
 
@@ -271,13 +286,6 @@ Library.
          unpack="false"/>
 
    <plugin
-         id="org.mwc.cmap.gt2Plot"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
          id="org.mwc.cmap.jfreechart"
          download-size="0"
          install-size="0"
@@ -286,13 +294,6 @@ Library.
 
    <plugin
          id="org.mwc.cmap.openmap"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.geotools"
          download-size="0"
          install-size="0"
          version="0.0.0"
@@ -327,6 +328,13 @@ Library.
 
    <plugin
          id="org.mwc.cmap.media"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.mwc.cmap.geotools"
          download-size="0"
          install-size="0"
          version="0.0.0"

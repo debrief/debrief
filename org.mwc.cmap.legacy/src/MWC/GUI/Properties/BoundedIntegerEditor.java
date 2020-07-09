@@ -1,20 +1,22 @@
-/*
- *    Debrief - the Open Source Maritime Analysis Application
- *    http://debrief.info
+/*******************************************************************************
+ * Debrief - the Open Source Maritime Analysis Application
+ * http://debrief.info
  *
- *    (C) 2000-2014, PlanetMayo Ltd
+ * (C) 2000-2020, Deep Blue C Technology Ltd
  *
- *    This library is free software; you can redistribute it and/or
- *    modify it under the terms of the Eclipse Public License v1.0
- *    (http://www.eclipse.org/legal/epl-v10.html)
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the Eclipse Public License v1.0
+ * (http://www.eclipse.org/legal/epl-v10.html)
  *
- *    This library is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
- */
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *******************************************************************************/
+
 package MWC.GUI.Properties;
 
 // Copyright MWC 1999, Debrief 3 Project
+
 // $RCSfile: BoundedIntegerEditor.java,v $
 // @author $Author: Ian.Mayo $
 // @version $Revision: 1.2 $
@@ -50,84 +52,85 @@ package MWC.GUI.Properties;
 // Initial revision
 //
 
-
 import java.beans.PropertyEditorSupport;
 
-abstract public class BoundedIntegerEditor extends 
-           PropertyEditorSupport 
-{
-  /////////////////////////////////////////////////////////////
-  // member variables
-  ////////////////////////////////////////////////////////////
-	/** the value we are editing
+abstract public class BoundedIntegerEditor extends PropertyEditorSupport {
+	/////////////////////////////////////////////////////////////
+	// member variables
+	////////////////////////////////////////////////////////////
+	/**
+	 * the value we are editing
 	 */
-  protected BoundedInteger _myVal;
-	
-  /////////////////////////////////////////////////////////////
-  // constructor
-  ////////////////////////////////////////////////////////////
-  
-  /////////////////////////////////////////////////////////////
-  // member functions
-  ////////////////////////////////////////////////////////////
+	protected BoundedInteger _myVal;
 
-  /** indicate that we can't just be painted, we've got to be edited
-   */
-  public boolean isPaintable()
-  {
-    return false;
-  }
+	/////////////////////////////////////////////////////////////
+	// constructor
+	////////////////////////////////////////////////////////////
 
-	/** build the editor
+	/////////////////////////////////////////////////////////////
+	// member functions
+	////////////////////////////////////////////////////////////
+
+	/**
+	 * build the editor
 	 */
-  abstract public java.awt.Component getCustomEditor();
+	@Override
+	abstract public java.awt.Component getCustomEditor();
 
-	/** store the new value
+	/**
+	 * extract the values currently stored in the text boxes
 	 */
-
-  public void setValue(final Object p1)
-  {
-	  Object obj = p1;
-	  
-		// try to catch if we are receiving a null (uninitialised) value
-		if(obj == null)
-			obj = new BoundedInteger(1, 1, 10);
-		
-    if(obj instanceof BoundedInteger)
-    {
-      final BoundedInteger val = (BoundedInteger)obj;
-			// take duplicate of bounded integer value - so that we are not editing
-			// the original one
-      _myVal = new BoundedInteger(val.getCurrent(), val.getMin(), val.getMax());
-      
-      // also trigger a reset data - to update the GUI
-      resetData();
-      
-    }
-    else
-      return;
-  }
-
-
-	/** return flag to say that we'd rather use our own (custom) editor
-	 */
-  public boolean supportsCustomEditor()
-  {
-    return true;
-  }
-
-	/** extract the values currently stored in the text boxes
-	 */
-  public Object getValue()
-  {
+	@Override
+	public Object getValue() {
 		BoundedInteger res = null;
 		res = _myVal;
-    return res;
-  }
+		return res;
+	}
 
-	/** put the data into the text fields, if they have been
-	 * created yet
+	/**
+	 * indicate that we can't just be painted, we've got to be edited
 	 */
-  abstract public void resetData();
-  
+	@Override
+	public boolean isPaintable() {
+		return false;
+	}
+
+	/**
+	 * put the data into the text fields, if they have been created yet
+	 */
+	abstract public void resetData();
+
+	/**
+	 * store the new value
+	 */
+
+	@Override
+	public void setValue(final Object p1) {
+		Object obj = p1;
+
+		// try to catch if we are receiving a null (uninitialised) value
+		if (obj == null)
+			obj = new BoundedInteger(1, 1, 10);
+
+		if (obj instanceof BoundedInteger) {
+			final BoundedInteger val = (BoundedInteger) obj;
+			// take duplicate of bounded integer value - so that we are not editing
+			// the original one
+			_myVal = new BoundedInteger(val.getCurrent(), val.getMin(), val.getMax());
+
+			// also trigger a reset data - to update the GUI
+			resetData();
+
+		} else
+			return;
+	}
+
+	/**
+	 * return flag to say that we'd rather use our own (custom) editor
+	 */
+	@Override
+	public boolean supportsCustomEditor() {
+		return true;
+	}
+
 }

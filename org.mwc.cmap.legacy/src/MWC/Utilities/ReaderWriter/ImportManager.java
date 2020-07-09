@@ -1,17 +1,18 @@
-/*
- *    Debrief - the Open Source Maritime Analysis Application
- *    http://debrief.info
+/*******************************************************************************
+ * Debrief - the Open Source Maritime Analysis Application
+ * http://debrief.info
  *
- *    (C) 2000-2014, PlanetMayo Ltd
+ * (C) 2000-2020, Deep Blue C Technology Ltd
  *
- *    This library is free software; you can redistribute it and/or
- *    modify it under the terms of the Eclipse Public License v1.0
- *    (http://www.eclipse.org/legal/epl-v10.html)
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the Eclipse Public License v1.0
+ * (http://www.eclipse.org/legal/epl-v10.html)
  *
- *    This library is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
- */
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *******************************************************************************/
+
 // $RCSfile: ImportManager.java,v $
 // @author $Author: ian.mayo $
 // @version $Revision: 1.6 $
@@ -102,9 +103,7 @@
 // Revision 1.2  1999-02-01 16:08:48+00  sm11td
 // creating new sessions & panes, starting import management
 
-
 package MWC.Utilities.ReaderWriter;
-
 
 import java.io.File;
 import java.util.Enumeration;
@@ -116,339 +115,294 @@ import MWC.GUI.Layers;
 import MWC.GUI.Plottable;
 
 /**
- * Factory for the types of file which may be imported into Debrief,
- * as you can see for yourself this stores the types of importer available
+ * Factory for the types of file which may be imported into Debrief, as you can
+ * see for yourself this stores the types of importer available
  * <p/>
- * <B><P>Import Manager</P>
- * </B><P>This is a factory class, using ready-created instances of import filters. </P>
- * <P>An import is initiated by calling the "Import This" method of this class,
- * passing the filename, an {importThis() InputStream} based on the file,
- * and a Layers object to con.  The class then determines the correct type of
- * filter to employ, and passes the @see MWC.Layers to it.</P>
- * The filter then imports the data.  If a session is open,
- * the new layers are added to the session,
- * else a default session is opened.
+ * <B>
+ * <P>
+ * Import Manager
+ * </P>
+ * </B>
+ * <P>
+ * This is a factory class, using ready-created instances of import filters.
+ * </P>
+ * <P>
+ * An import is initiated by calling the "Import This" method of this class,
+ * passing the filename, an {importThis() InputStream} based on the file, and a
+ * Layers object to con. The class then determines the correct type of filter to
+ * employ, and passes the @see MWC.Layers to it.
+ * </P>
+ * The filter then imports the data. If a session is open, the new layers are
+ * added to the session, else a default session is opened.
  * <p/>
  * Uses patterns: Singleton, Factory,
  */
-public class ImportManager
-{
+public class ImportManager {
 
-  ////////////////////////////////////////
-  // member variables
-  ////////////////////////////////////////
-  /**
-   * static copy of manager
-   */
-  static ImportManager theManager = null;
-  /**
-   * the list of import operators
-   */
-  java.util.Vector<PlainImporter> _theImporters;
+	/**
+	 * default implementation import caller object - it's an abstract class just
+	 * begging to be completed by a child class
+	 */
+	static abstract public class BaseImportCaller implements ImportCaller {
+		/**
+		 * the list of files to open
+		 */
+		java.io.File[] _fileNames;
 
-  ////////////////////////////////////////
-  // constructor
-  ////////////////////////////////////////
-  public ImportManager()
-  {
-    // create the array of import handlers, by
-    _theImporters = new Vector<PlainImporter>(0, 1);
+		/**
+		 * the list of layers to drop into
+		 */
+		Layers _theData;
 
-  }
+		/**
+		 * constructor, get ready to pass the data to the child
+		 */
+		public BaseImportCaller(final java.io.File[] fileNames, final Layers theData) {
+			_fileNames = fileNames;
+			_theData = theData;
+		}
 
-  ////////////////////////////////////////
-  // member functions
-  ////////////////////////////////////////
+		/**
+		 * ok, thread has been constructed, etc. we must now be ready to go for it
+		 */
+		public void start() {
+			MWC.Utilities.ReaderWriter.ImportManager.importThese(_fileNames, _theData, this);
 
-  /**
-   * find the current exporter, and export the item
-   */
-  static public void exportThis(final Plottable item)
-  {
-    if (theManager == null)
-    {
-      theManager = new ImportManager();
-    }
+			// and clear the local data
+			_theData = null;
+			_fileNames = null;
+		}
+	}
 
-    if (theManager._theImporters != null)
-    {
+	/**
+	 * Embedded interface which provides callbacks for the calling class
+	 */
+	public static interface ImportCaller {
+		public void allFilesFinished(java.io.File[] fNames, Layers newData);
 
-    	// NOTE: WE'RE NOT CLEARING THE CLIPBOARD AT THE START OF THE EXPORT PROCESS,
-    	//  - since this method is called multiple times when exporting a whole layer,
-    	//    and we don't want to only show the last item in the layer...
-    	
-      // this our "entry" method to exporting to the clipboard.  So, from this call we reset
-      // the contents of the clipboard to just contain our data
+		public void fileFinished(java.io.File fName, Layers newData);
+	}
+
+	private static class Importer {
+		protected String fName;
+		protected Layers theData;
+
+		Importer(final String _fName, final Layers _theData) {
+			fName = _fName;
+			theData = _theData;
+		}
+
+		public void run() {
+			// check we are alive!
+			if (theManager == null) {
+				theManager = new ImportManager();
+			}
+
+			// look through types of import handler
+			final Enumeration<PlainImporter> enumer = theManager._theImporters.elements();
+
+			while (enumer.hasMoreElements()) {
+				final PlainImporter thisImporter = enumer.nextElement();
+
+				// is this handler correct type?
+				if (thisImporter.canImportThisFile(fName)) {
+					// handle the import
+
+					importThisOne(thisImporter, fName, theData);
+
+					// finished, drop out of loop
+					break;
+				}
+
+			} // while we have more elements
+
+			// forget our local references
+			theData = null;
+			fName = null;
+		}
+	}
+
+	////////////////////////////////////////
+	// member functions
+	////////////////////////////////////////
+
+	////////////////////////////////////////
+	// member variables
+	////////////////////////////////////////
+	/**
+	 * static copy of manager
+	 */
+	static ImportManager theManager = null;
+
+	static public void addImporter(final PlainImporter newImporter) {
+		if (theManager == null) {
+			theManager = new ImportManager();
+		}
+
+		theManager.addThisImporter(newImporter);
+	}
+
+	/**
+	 * find the current exporter, and export the item
+	 */
+	static public void exportThis(final Plottable item) {
+		if (theManager == null) {
+			theManager = new ImportManager();
+		}
+
+		if (theManager._theImporters != null) {
+
+			// NOTE: WE'RE NOT CLEARING THE CLIPBOARD AT THE START OF THE EXPORT PROCESS,
+			// - since this method is called multiple times when exporting a whole layer,
+			// and we don't want to only show the last item in the layer...
+
+			// this our "entry" method to exporting to the clipboard. So, from this call we
+			// reset
+			// the contents of the clipboard to just contain our data
 //      java.awt.datatransfer.Clipboard cl = java.awt.Toolkit.getDefaultToolkit().getSystemClipboard();
 //      java.awt.datatransfer.StringSelection ss = new java.awt.datatransfer.StringSelection("");
 //      cl.setContents(ss, ss);
 
-      // just use the first exporter, for now
-      final PlainImporter pi = (PlainImporter) theManager._theImporters.elementAt(0);
-      
-      // get the export ready
-      pi.startExport(item);
-      
-      // do the export
-      pi.exportThis(item);
-      
-      // and finish the process
-      pi.endExport(item);
-      
-    }
+			// just use the first exporter, for now
+			final PlainImporter pi = theManager._theImporters.elementAt(0);
 
-  }
+			// get the export ready
+			pi.startExport(item);
 
-  /**
-   * find the current exporter, and export the item
-   */
-  static public void exportThis(final String item)
-  {
-    if (theManager == null)
-    {
-      theManager = new ImportManager();
-    }
+			// do the export
+			pi.exportThis(item);
 
-    if (theManager._theImporters != null)
-    {
-      // just use the first exporter, for now
-      final PlainImporter pi = (PlainImporter) theManager._theImporters.elementAt(0);
-      pi.exportThis(item);
-    }
+			// and finish the process
+			pi.endExport(item);
 
-  }
+		}
 
-  /**
-   * import the specified file into the data structure passed
-   *
-   * @param _theFiles the name of the file, we are to
-   *                  determine the type from the suffix
-   * @param theData   the Stream to read the data from
-   * @param theCaller the Destination for the data read in
-   */
-  public static void importThese(final java.io.File[] _theFiles,
-                                 final Layers theData,
-                                 final ImportCaller theCaller)
-  {
+	}
 
-    if (_theFiles == null)
-      return;
+	/**
+	 * find the current exporter, and export the item
+	 */
+	static public void exportThis(final String item) {
+		if (theManager == null) {
+			theManager = new ImportManager();
+		}
 
-    // work through the files
-    // loop through
-    for (int i = 0; i < _theFiles.length; i++)
-    {
-      final java.io.File fl = _theFiles[i];
+		if (theManager._theImporters != null) {
+			// just use the first exporter, for now
+			final PlainImporter pi = theManager._theImporters.elementAt(0);
+			pi.exportThis(item);
+		}
 
-      // have we got file?
-      if ((fl != null) &&
-        (!fl.getName().equals("nullnull")))
-      {
-        final Importer it = new Importer(fl.getPath(), theData);
+	}
 
-        it.run();
+	/**
+	 * import the specified file into the data structure passed
+	 *
+	 * @param _theFiles the name of the file, we are to determine the type from the
+	 *                  suffix
+	 * @param theData   the Stream to read the data from
+	 * @param theCaller the Destination for the data read in
+	 */
+	public static void importThese(final java.io.File[] _theFiles, final Layers theData, final ImportCaller theCaller) {
 
-        // ok, this one is done, now for the next!
-        if (theCaller != null)
-          theCaller.fileFinished(fl, theData);
+		if (_theFiles == null)
+			return;
 
-      }
-    }
+		// work through the files
+		// loop through
+		for (int i = 0; i < _theFiles.length; i++) {
+			final java.io.File fl = _theFiles[i];
 
-    // ok, this one is done, now for the next!
-    if (theCaller != null)
-      theCaller.allFilesFinished(_theFiles, theData);
+			// have we got file?
+			if ((fl != null) && (!fl.getName().equals("nullnull"))) {
+				final Importer it = new Importer(fl.getPath(), theData);
 
+				it.run();
 
-  }
+				// ok, this one is done, now for the next!
+				if (theCaller != null)
+					theCaller.fileFinished(fl, theData);
 
+			}
+		}
 
-  private static class Importer
-  {
-    protected String fName;
-    protected Layers theData;
+		// ok, this one is done, now for the next!
+		if (theCaller != null)
+			theCaller.allFilesFinished(_theFiles, theData);
 
-    Importer(final String _fName,
-                     final Layers _theData)
-    {
-      fName = _fName;
-      theData = _theData;
-    }
+	}
 
-    public void run()
-    {
-      // check we are alive!
-      if (theManager == null)
-      {
-        theManager = new ImportManager();
-      }
+	static void importThisOne(final PlainImporter theImporter, final String fName, final Layers theData) {
+		try {
+			// just check that we have a filename
+			if (fName != null) {
+				// get the file
+				final File theFile = new File(fName);
 
-      // look through types of import handler
-      final Enumeration<PlainImporter> enumer = theManager._theImporters.elements();
+				// first check if the file exists
+				if (!theFile.exists()) {
+					SwingUtilities.invokeLater(new Runnable() {
 
-      while (enumer.hasMoreElements())
-      {
-        final PlainImporter thisImporter = (PlainImporter) enumer.nextElement();
+						@Override
+						public void run() {
+							MWC.GUI.Dialogs.DialogFactory.showMessage("Read file",
+									"This file cannot be found. It may have been deleted.");
+						}
+					});
 
-        // is this handler correct type?
-        if (thisImporter.canImportThisFile(fName))
-        {
-          // handle the import
-          
-          importThisOne(thisImporter, fName, theData);
+					return;
+				}
 
-          // finished, drop out of loop
-          break;
-        }
+				// is it there?
+				if (theFile.length() == 0) {
+					SwingUtilities.invokeLater(new Runnable() {
 
-      } // while we have more elements
+						@Override
+						public void run() {
+							MWC.GUI.Dialogs.DialogFactory.showMessage("Read file",
+									"This file does not contain any data (zero size)");
+						}
+					});
 
-      // forget our local references
-      theData = null;
-      fName = null;
-    }
-  }
+					return;
+				}
 
+				// hey, create the input stream
+				final java.io.InputStream is = new java.io.FileInputStream(theFile);
+				final java.io.BufferedInputStream bs = new java.io.BufferedInputStream(is);
 
-  static void importThisOne(final PlainImporter theImporter, final String fName, final Layers theData)
-  {
-    try
-    {
-      // just check that we have a filename
-      if (fName != null)
-      {
-        // get the file
-        final File theFile = new File(fName);
+				// now get the import to continue with it's struggle!
+				theImporter.importThis(fName, bs, theData);
 
-        // first check if the file exists
-        if(!theFile.exists())
-        {
-          SwingUtilities.invokeLater(new Runnable()
-          {
-            
-            @Override
-            public void run()
-            {
-              MWC.GUI.Dialogs.DialogFactory.showMessage("Read file", "This file cannot be found. It may have been deleted.");    
-            }
-          });
-          
-          return;
-        }
+				// and finally close the streams
+				bs.close();
+				is.close();
+			}
 
-        // is it there?
-        if (theFile.length() == 0)
-        {
-          SwingUtilities.invokeLater(new Runnable()
-          {
-            
-            @Override
-            public void run()
-            {
-              MWC.GUI.Dialogs.DialogFactory.showMessage("Read file", "This file does not contain any data (zero size)");    
-            }
-          });
-          
-          return;
-        }
+		} catch (final java.io.FileNotFoundException fe) {
+			MWC.GUI.Dialogs.DialogFactory.showMessage("Open File", "Sorry file not found:" + fName);
+		} catch (final java.io.IOException ie) {
+			MWC.Utilities.Errors.Trace.trace(ie, "Failed to close file: " + fName);
+		}
 
-        // hey, create the input stream
-        final java.io.InputStream is = new java.io.FileInputStream(theFile);
-        final java.io.BufferedInputStream bs = new java.io.BufferedInputStream(is);
+	}
 
-        // now get the import to continue with it's struggle!
-        theImporter.importThis(fName, bs, theData);
+	/**
+	 * the list of import operators
+	 */
+	java.util.Vector<PlainImporter> _theImporters;
 
-        // and finally close the streams
-        bs.close();
-        is.close();
-      }
+	////////////////////////////////////////
+	// constructor
+	////////////////////////////////////////
+	public ImportManager() {
+		// create the array of import handlers, by
+		_theImporters = new Vector<PlainImporter>(0, 1);
 
-    }
-    catch (final java.io.FileNotFoundException fe)
-    {
-      MWC.GUI.Dialogs.DialogFactory.showMessage("Open File", "Sorry file not found:" + fName);
-    }
-    catch (final java.io.IOException ie)
-    {
-      MWC.Utilities.Errors.Trace.trace(ie, "Failed to close file: " + fName);
-    }
+	}
 
-  }
-
-  static public void addImporter(final PlainImporter newImporter)
-  {
-    if (theManager == null)
-    {
-      theManager = new ImportManager();
-    }
-
-    theManager.addThisImporter(newImporter);
-  }
-
-  public void addThisImporter(final PlainImporter newImporter)
-  {
-    _theImporters.addElement(newImporter);
-  }
-
-  /**
-   * Embedded interface which provides callbacks for the calling class
-   */
-  public static interface ImportCaller
-  {
-    public void fileFinished(java.io.File fName, Layers newData);
-
-    public void allFilesFinished(java.io.File[] fNames, Layers newData);
-  }
-
-
-  /**
-   * default implementation import caller object - it's an abstract class just begging
-   * to be completed by a child class
-   */
-  static abstract public class BaseImportCaller implements ImportCaller
-  {
-    /**
-     * the list of files to open
-     */
-    java.io.File[] _fileNames;
-
-    /**
-     * the list of layers to drop into
-     */
-    Layers _theData;
-
-    /**
-     * constructor, get ready to pass the data to the child
-     */
-    public BaseImportCaller(final java.io.File[] fileNames,
-                            final Layers theData)
-    {
-      _fileNames = fileNames;
-      _theData = theData;
-    }
-
-    /**
-     * ok, thread has been constructed, etc. we must now be ready to go for it
-     */
-    public void start()
-    {
-      MWC.Utilities.ReaderWriter.ImportManager.importThese(_fileNames,
-                                                           _theData,
-                                                           this);
-
-      // and clear the local data
-      _theData = null;
-      _fileNames = null;
-    }
-  }
+	public void addThisImporter(final PlainImporter newImporter) {
+		_theImporters.addElement(newImporter);
+	}
 
 }
-
-
-
-
-
-
-
-

@@ -1,237 +1,126 @@
-/*
- *    Debrief - the Open Source Maritime Analysis Application
- *    http://debrief.info
+/*******************************************************************************
+ * Debrief - the Open Source Maritime Analysis Application
+ * http://debrief.info
  *
- *    (C) 2000-2018, Deep Blue C Technology Ltd
+ * (C) 2000-2020, Deep Blue C Technology Ltd
  *
- *    This library is free software; you can redistribute it and/or
- *    modify it under the terms of the Eclipse Public License v1.0
- *    (http://www.eclipse.org/legal/epl-v10.html)
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the Eclipse Public License v1.0
+ * (http://www.eclipse.org/legal/epl-v10.html)
  *
- *    This library is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
- */
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *******************************************************************************/
+
 package org.mwc.debrief.lite.map;
 
 import java.awt.Component;
-import java.awt.Cursor;
 import java.awt.Graphics;
-import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.geotools.data.FileDataStore;
-import org.geotools.data.FileDataStoreFinder;
 import org.geotools.data.simple.SimpleFeatureSource;
-import org.geotools.map.FeatureLayer;
-import org.geotools.map.Layer;
 import org.geotools.map.MapContent;
 import org.geotools.referencing.CRS;
 import org.geotools.renderer.lite.StreamingRenderer;
-import org.geotools.styling.SLD;
-import org.geotools.styling.Style;
-import org.geotools.swing.JMapPane;
-import org.geotools.swing.data.JFileDataStoreChooser;
-import org.geotools.swing.tool.CursorTool;
 import org.opengis.feature.simple.SimpleFeatureType;
-//import org.geotools.swing.tool.ScrollWheelTool;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.operation.MathTransform;
+
+import Debrief.GUI.Frames.Application;
+import MWC.GUI.ToolParent;
 
 /**
  *
  * @author Unni Mana <unnivm@gmail.com>
  *
  */
-public class GeoToolMapRenderer implements BaseMap
-{
+public class GeoToolMapRenderer {
 
-  public static interface MapRenderer
-  {
-    public void paint(final Graphics gc);
-  }
+	public static interface MapRenderer {
+		public void paint(final Graphics gc);
+	}
 
-  private JMapPane mapPane;
-  private MapContent mapComponent;
+	private final LiteMapPane mapPane;
 
-  private Graphics graphics;
+	private final MapContent mapContent;
 
-  private SimpleFeatureSource featureSource;
+	private Graphics graphics;
 
-  private final List<MapRenderer> _myRenderers = new ArrayList<MapRenderer>();
+	private SimpleFeatureSource featureSource;
 
-  public void addRenderer(final MapRenderer renderer)
-  {
-    _myRenderers.add(renderer);
-  }
+	private final MathTransform _transform;
 
-  private static class CustomMapPane extends JMapPane
-  {
+	private final List<MapRenderer> _myRenderers = new ArrayList<MapRenderer>();
 
-    /**
-     *
-     */
-    private static final long serialVersionUID = 1L;
+	public GeoToolMapRenderer(final float alpha, final MapContent _mapContent, final MathTransform transform) {
+		super();
 
-    private final MouseDragLine dragLine;
+		// Create a map content and add our shape file to it
+		mapContent = _mapContent;
+		_transform = transform;
+		mapContent.setTitle("Debrief Lite");
 
-    private final GeoToolMapRenderer _renderer;
+		mapPane = new LiteMapPane(this, alpha);
+		final StreamingRenderer streamer = new StreamingRenderer();
+		mapPane.setRenderer(streamer);
+		mapPane.setMapContent(mapContent);
+	}
 
-    public CustomMapPane(GeoToolMapRenderer geoToolMapRenderer)
-    {
-      super();
-      _renderer = geoToolMapRenderer;
+	public void addRenderer(final MapRenderer renderer) {
+		_myRenderers.add(renderer);
+	}
 
-      dragLine = new MouseDragLine(this);
-      addMouseListener(dragLine);
-      addMouseMotionListener(dragLine);
-    }
+	/**
+	 * returns java.awt.Graphics object
+	 *
+	 * @return
+	 */
+	public Graphics getGraphicsContext() {
+		return graphics;
+	}
 
-    @Override
-    protected void paintComponent(final Graphics arg0)
-    {
-      super.paintComponent(arg0);
-      _renderer.paintEvent(arg0);
-    }
+	public Component getMap() {
+		return mapPane;
+	}
 
-    @Override
-    public void setCursorTool(CursorTool tool) {
-      paramsLock.writeLock().lock();
-      try {
-        if (currentCursorTool != null) {
-          mouseEventDispatcher.removeMouseListener(currentCursorTool);
-        }
+	/**
+	 * return map component
+	 *
+	 * @return
+	 */
+	public MapContent getMapComponent() {
+		return mapContent;
+	}
 
-        currentCursorTool = tool;
+	public MathTransform getTransform() {
+		return _transform;
+	}
 
-        if (currentCursorTool == null) {
-          setCursor(Cursor.getDefaultCursor());
-          dragBox.setEnabled(false);
-          dragLine.setEnabled(false);
-        } else {
-          setCursor(currentCursorTool.getCursor());
-          dragLine.setEnabled(currentCursorTool instanceof RangeBearingTool);
-          dragBox.setEnabled(currentCursorTool.drawDragBox());
-          currentCursorTool.setMapPane(this);
-          mouseEventDispatcher.addMouseListener(currentCursorTool);
-        }
+	/**
+	 * gets a MathTransform object
+	 *
+	 * @return MathTransform
+	 */
+	public MathTransform getTransformObject() {
+		final SimpleFeatureType schema = featureSource.getSchema();
+		final CoordinateReferenceSystem dataCRS = schema.getCoordinateReferenceSystem();
+		final CoordinateReferenceSystem worldCRS = mapContent.getCoordinateReferenceSystem();
+		MathTransform transform = null;
+		try {
+			transform = CRS.findMathTransform(dataCRS, worldCRS);
+		} catch (final FactoryException e) {
+			Application.logError2(ToolParent.ERROR, "Failure in projection transform", e);
+		}
+		return transform;
+	}
 
-      } finally {
-        paramsLock.writeLock().unlock();
-      }
-    }
-  }
+	public void paintEvent(final Graphics arg0) {
+		for (final MapRenderer r : _myRenderers) {
+			r.paint(arg0);
+		}
+	}
 
-  @Override
-  public void createMapLayout()
-  {
-    mapPane = new CustomMapPane(this);
-
-    final StreamingRenderer streamer = new StreamingRenderer();
-    mapPane.setRenderer(streamer);
-    mapPane.setMapContent(mapComponent);
-  }
-
-  /**
-   * returns java.awt.Graphics object
-   *
-   * @return
-   */
-  public Graphics getGraphicsContext()
-  {
-    return graphics;
-  }
-
-  public Component getMap()
-  {
-    return mapPane;
-  }
-
-  /**
-   * return map component
-   *
-   * @return
-   */
-  public MapContent getMapComponent()
-  {
-    return mapComponent;
-  }
-
-  /**
-   * gets a MathTransform object
-   *
-   * @return MathTransform
-   */
-  public MathTransform getTransformObject()
-  {
-    final SimpleFeatureType schema = featureSource.getSchema();
-    final CoordinateReferenceSystem dataCRS = schema
-        .getCoordinateReferenceSystem();
-    final CoordinateReferenceSystem worldCRS = mapComponent
-        .getCoordinateReferenceSystem();
-    MathTransform transform = null;
-    try
-    {
-      transform = CRS.findMathTransform(dataCRS, worldCRS);
-    }
-    catch (final FactoryException e)
-    {
-      e.printStackTrace();
-    }
-    return transform;
-  }
-
-  @Override
-  public void loadMapContent()
-  {
-
-    //this is for dev
-
-    String shape_path =
-        "data/ne_10M_admin0_countries_89S.shp";
-
-    File file = new File(shape_path);
-    //System.out.println("Checking for shape file at:"+file.getAbsolutePath());
-    if (!file.exists())
-    {
-      //      System.out.println("File does not exist");
-      file = JFileDataStoreChooser.showOpenFile("shp", null);
-    }
-    if (file == null)
-    {
-      return;
-    }
-
-    FileDataStore store;
-    featureSource = null;
-    try
-    {
-      store = FileDataStoreFinder.getDataStore(file);
-      featureSource = store.getFeatureSource();
-    }
-    catch (final IOException e)
-    {
-      e.printStackTrace();
-    }
-
-    // Create a map content and add our shape file to it
-    mapComponent = new MapContent();
-    mapComponent.setTitle("Debrief Lite");
-
-    final Style style = SLD.createSimpleStyle(featureSource.getSchema());
-    final Layer layer = new FeatureLayer(featureSource, style);
-    mapComponent.addLayer(layer);
-
-  }
-
-  private void paintEvent(final Graphics arg0)
-  {
-    for (final MapRenderer r : _myRenderers)
-    {
-      r.paint(arg0);
-    }
-  }
 }

@@ -1,17 +1,18 @@
-/*
- *    Debrief - the Open Source Maritime Analysis Application
- *    http://debrief.info
+/*******************************************************************************
+ * Debrief - the Open Source Maritime Analysis Application
+ * http://debrief.info
  *
- *    (C) 2000-2014, PlanetMayo Ltd
+ * (C) 2000-2020, Deep Blue C Technology Ltd
  *
- *    This library is free software; you can redistribute it and/or
- *    modify it under the terms of the Eclipse Public License v1.0
- *    (http://www.eclipse.org/legal/epl-v10.html)
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the Eclipse Public License v1.0
+ * (http://www.eclipse.org/legal/epl-v10.html)
  *
- *    This library is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
- */
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *******************************************************************************/
+
 package Debrief.ReaderWriter.FlatFile.DopplerShift;
 
 import java.text.DateFormat;
@@ -43,50 +44,52 @@ import MWC.Utilities.TextFormatting.GMTDateFormat;
 
 /**
  * exporter class to replicate old Strand export format
- * 
+ *
  * @author ianmayo
- * 
+ *
  */
-public class DopplerShiftExporter
-{
+public class DopplerShiftExporter {
 
 	/**
 	 * type of exception for when we fail to export
-	 * 
+	 *
 	 * @author ian
-	 * 
+	 *
 	 */
-	public static class ExportException extends Exception
-	{
+	public static class ExportException extends Exception {
 		/**
-		 * 
+		 *
 		 */
 		private static final long serialVersionUID = 1L;
 
-		public ExportException(final String message)
-		{
+		public ExportException(final String message) {
 			super(message);
 		}
 	}
 
 	/**
+	 * format this date in the prescribed format
+	 *
+	 * @param val the date to format
+	 * @return the formatted date
+	 */
+	static protected String formatThis(final Date val) {
+		final DateFormat df = new GMTDateFormat("HH:mm:ss	dd/MM/yyyy");
+		return df.format(val);
+	}
+
+	/**
 	 * export the dataset to a string
-	 * 
-	 * @param primaryTrack
-	 *          the ownship track
-	 * @param secondaryTracks
-	 *          sec tracks = presumed to be just one
-	 * @param period
-	 *          the time period to export
-	 * @param baseFreq 
-	 * @param sensorType
-	 *          what sensor type was specified
+	 *
+	 * @param primaryTrack    the ownship track
+	 * @param secondaryTracks sec tracks = presumed to be just one
+	 * @param period          the time period to export
+	 * @param baseFreq
+	 * @param sensorType      what sensor type was specified
 	 * @return
 	 */
-	public String export(final WatchableList primaryTrack,
-			final WatchableList[] secondaryTracks, final TimePeriod period, final double baseFreq)
-			throws ExportException
-	{
+	public String export(final WatchableList primaryTrack, final WatchableList[] secondaryTracks,
+			final TimePeriod period, final double baseFreq) throws ExportException {
 
 		String res2 = null;
 
@@ -98,84 +101,66 @@ public class DopplerShiftExporter
 		final TreeSet<Doublet> res = new TreeSet<Doublet>();
 
 		// friendly fix-wrapper to save us repeatedly creating it
-		final FixWrapper index = new FixWrapper(new Fix(null, new WorldLocation(0, 0, 0),
-				0.0, 0.0));
+		final FixWrapper index = new FixWrapper(new Fix(null, new WorldLocation(0, 0, 0), 0.0, 0.0));
 
 		// loop through our sensor data
 		final Enumeration<Editable> sensors = sensorHost.getSensors().elements();
-		if (sensors != null)
-		{
+		if (sensors != null) {
 			System.out.println("-------------------");
-			while (sensors.hasMoreElements())
-			{
+			while (sensors.hasMoreElements()) {
 				final SensorWrapper wrapper = (SensorWrapper) sensors.nextElement();
-				if (!onlyVis || (onlyVis && wrapper.getVisible()))
-				{
+				if (!onlyVis || (onlyVis && wrapper.getVisible())) {
 					final Enumeration<Editable> cuts = wrapper.elements();
-					while (cuts.hasMoreElements())
-					{
-						final SensorContactWrapper scw = (SensorContactWrapper) cuts
-								.nextElement();
-						if (!onlyVis || (onlyVis && scw.getVisible()))
-						{
+					while (cuts.hasMoreElements()) {
+						final SensorContactWrapper scw = (SensorContactWrapper) cuts.nextElement();
+						if (!onlyVis || (onlyVis && scw.getVisible())) {
 							FixWrapper targetFix = null;
 							TrackSegment targetParent = null;
 
-							if (targetTrack != null)
-							{
+							if (targetTrack != null) {
 								// right, get the track segment and fix nearest to
 								// this
 								// DTG
 								final Enumeration<Editable> trkData = targetTrack.elements();
 								final Vector<TrackSegment> _theSegments = new Vector<TrackSegment>();
 
-								while (trkData.hasMoreElements())
-								{
+								while (trkData.hasMoreElements()) {
 
 									final Editable thisI = trkData.nextElement();
-									if (thisI instanceof SegmentList)
-									{
+									if (thisI instanceof SegmentList) {
 										final SegmentList thisList = (SegmentList) thisI;
 										final Enumeration<Editable> theElements = thisList.elements();
-										while (theElements.hasMoreElements())
-										{
+										while (theElements.hasMoreElements()) {
 
-											final TrackSegment ts = (TrackSegment) theElements
-													.nextElement();
-											
+											final TrackSegment ts = (TrackSegment) theElements.nextElement();
+
 											// check it's in our period
 											final BaseTimePeriod bp = new BaseTimePeriod(ts.startDTG(), ts.endDTG());
-											if(bp.overlaps(period))
+											if (bp.overlaps(period))
 												_theSegments.add(ts);
 										}
 
 									}
-									if (thisI instanceof TrackSegment)
-									{
+									if (thisI instanceof TrackSegment) {
 										final TrackSegment ts = (TrackSegment) thisI;
-										
+
 										// check it's in our period
 										final BaseTimePeriod bp = new BaseTimePeriod(ts.startDTG(), ts.endDTG());
-										if(bp.overlaps(period))
+										if (bp.overlaps(period))
 											_theSegments.add(ts);
 									}
 								}
 
-								if (_theSegments.size() == 0)
-								{
+								if (_theSegments.size() == 0) {
 									throw new ExportException("Target track is not present in specified time period");
-								}
-								else
-								{
+								} else {
 									final Iterator<TrackSegment> iter = _theSegments.iterator();
-									while (iter.hasNext())
-									{
+									while (iter.hasNext()) {
 										final TrackSegment ts = iter.next();
 
-										final TimePeriod validPeriod = new TimePeriod.BaseTimePeriod(
-												ts.startDTG(), ts.endDTG());
-										if (validPeriod.contains(scw.getDTG()))
-										{
+										final TimePeriod validPeriod = new TimePeriod.BaseTimePeriod(ts.startDTG(),
+												ts.endDTG());
+										if (validPeriod.contains(scw.getDTG())) {
 											// sorted. here we go
 											targetParent = ts;
 
@@ -191,47 +176,39 @@ public class DopplerShiftExporter
 							}
 
 							final Watchable[] matches = sensorHost.getNearestTo(scw.getDTG(), false);
-							if ((matches != null) && (matches.length > 0))
-							{
-                // put the sensor location into the
-                final FixWrapper hostFix =
-                    sensorHost.getBacktraceTo(scw.getDTG(), wrapper
-                        .getSensorOffset(), wrapper.getArrayCentreMode()
-                        .equals(LegacyArrayOffsetModes.WORM));
-								
-								final Doublet thisDub = new Doublet(scw, targetFix,
-										targetParent, hostFix);
+							if ((matches != null) && (matches.length > 0)) {
+								// put the sensor location into the
+								final FixWrapper hostFix = sensorHost.getBacktraceTo(scw.getDTG(),
+										wrapper.getSensorOffset(),
+										wrapper.getArrayCentreMode().equals(LegacyArrayOffsetModes.WORM));
+
+								final Doublet thisDub = new Doublet(scw, targetFix, targetParent, hostFix);
 
 								// if we've no target track add all the points
-								if (targetTrack == null)
-								{
+								if (targetTrack == null) {
 									// store our data
 									res.add(thisDub);
-								}
-								else
-								{
+								} else {
 									// if we've got a target track we only add points
 									// for which we
 									// have
 									// a target location
-									if (targetFix != null)
-									{
+									if (targetFix != null) {
 										// store our data
 										res.add(thisDub);
 									}
 								} // if we know the track
 							} // if there are any matching items
-							// if we find a match
+								// if we find a match
 						} // if cut is visible
 					} // loop through cuts
 				} // if sensor is visible
 			} // loop through sensors
-		}// if there are sensors
+		} // if there are sensors
 
 		// ok, ready to dump data - do some checks
 		if (baseFreq == -1)
-			throw new ExportException(
-					"Target track does not have base frequency assigned");
+			throw new ExportException("Target track does not have base frequency assigned");
 
 		// have we found some cust
 		if (res.size() == 0)
@@ -244,23 +221,19 @@ public class DopplerShiftExporter
 		// and the header
 		res2 += "time, measured frequency, predicted frequency";
 		res2 += "\n";
-		
+
 		// sort out the speed of sound
-		String spdStr = Application.getThisProperty(FrequencyCalcs.SPEED_OF_SOUND_KTS_PROPERTY);
+		final String spdStr = Application.getThisProperty(FrequencyCalcs.SPEED_OF_SOUND_KTS_PROPERTY);
 		final double speedOfSound;
-		if(spdStr != null && spdStr.length() > 0)
-		{
-		  speedOfSound = Double.parseDouble(spdStr);
-		}
-		else
-		{
-		  speedOfSound = FrequencyCalcs.SpeedOfSoundKts;
+		if (spdStr != null && spdStr.length() > 0) {
+			speedOfSound = Double.parseDouble(spdStr);
+		} else {
+			speedOfSound = FrequencyCalcs.SpeedOfSoundKts;
 		}
 
 		// now the cuts
 		final Iterator<Doublet> iter = res.iterator();
-		while (iter.hasNext())
-		{
+		while (iter.hasNext()) {
 			res2 += exportThis(iter.next(), speedOfSound);
 			res2 += "\n";
 		}
@@ -268,27 +241,13 @@ public class DopplerShiftExporter
 		return res2;
 	}
 
-	private String exportThis(final Doublet doublet, final double speedOfSound)
-	{
+	private String exportThis(final Doublet doublet, final double speedOfSound) {
 		String res = formatThis(doublet.getDTG().getDate());
 		res += ",";
 		res += doublet.getMeasuredFrequency();
 		res += ",";
 		res += doublet.getPredictedFrequency(speedOfSound);
 		return res;
-	}
-
-	/**
-	 * format this date in the prescribed format
-	 * 
-	 * @param val
-	 *          the date to format
-	 * @return the formatted date
-	 */
-	static protected String formatThis(final Date val)
-	{
-		final DateFormat df = new GMTDateFormat("HH:mm:ss	dd/MM/yyyy");
-		return df.format(val);
 	}
 
 }

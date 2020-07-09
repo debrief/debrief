@@ -1,17 +1,18 @@
-/*
- *    Debrief - the Open Source Maritime Analysis Application
- *    http://debrief.info
+/*******************************************************************************
+ * Debrief - the Open Source Maritime Analysis Application
+ * http://debrief.info
  *
- *    (C) 2000-2014, PlanetMayo Ltd
+ * (C) 2000-2020, Deep Blue C Technology Ltd
  *
- *    This library is free software; you can redistribute it and/or
- *    modify it under the terms of the Eclipse Public License v1.0
- *    (http://www.eclipse.org/legal/epl-v10.html)
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the Eclipse Public License v1.0
+ * (http://www.eclipse.org/legal/epl-v10.html)
  *
- *    This library is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
- */
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *******************************************************************************/
+
 // $RCSfile: ImportSensor.java,v $
 // @author $Author: Ian.Mayo $
 // @version $Revision: 1.7 $
@@ -122,271 +123,250 @@ import junit.framework.TestCase;
 /**
  * class to parse a label from a line of text
  */
-final public class ImportPlanningLegOrigin extends AbstractPlainLineImporter
-{
+final public class ImportPlanningLegOrigin extends AbstractPlainLineImporter {
 
-  /**
-   * @author Administrator
-   * 
-   */
-  public static class PlanningLegImporterTest extends TestCase
-  {
+	/**
+	 * @author Administrator
+	 *
+	 */
+	public static class PlanningLegImporterTest extends TestCase {
 
-    private final static String tracks =
-        "../org.mwc.cmap.combined.feature/root_installs/sample_data/planning_tracks.rep";
+		private final static String tracks = "../org.mwc.cmap.combined.feature/root_installs/sample_data/planning_tracks.rep";
 
-    public void testImport() throws FileNotFoundException
-    {
-      final Layers tLayers = new Layers();
+		public void testImport() throws FileNotFoundException {
+			final Layers tLayers = new Layers();
 
-      // start off with the ownship track
-      final File boatFile = new File(tracks);
-      assertTrue(boatFile.exists());
-      final InputStream bs = new FileInputStream(boatFile);
+			// start off with the ownship track
+			final File boatFile = new File(tracks);
+			assertTrue(boatFile.exists());
+			final InputStream bs = new FileInputStream(boatFile);
 
-      final ImportReplay trackImporter = new ImportReplay();
-      ImportReplay.initialise(new ImportReplay.testImport.TestParent(
-          ImportReplay.IMPORT_AS_OTG, 0L));
-      trackImporter.importThis(tracks, bs, tLayers);
+			final ImportReplay trackImporter = new ImportReplay();
+			ImportReplay.initialise(new ImportReplay.testImport.TestParent(ImportReplay.IMPORT_AS_OTG, 0L));
+			trackImporter.importThis(tracks, bs, tLayers);
 
-      assertEquals("read in tracks", 2, tLayers.size());
-      
-      // ok, now export one of them
-      CompositeTrackWrapper ctw1 = (CompositeTrackWrapper) tLayers.findLayer("SENSOR_PLANNED");
-      assertNotNull("found planning leg", ctw1);
-      trackImporter.exportThis(ctw1);
-      
-      String output = trackImporter.getBuffer().toString();
-      assertNotNull("produced output");
-      assertTrue("has content", output.length() > 200);   // was originally 388 cgars
-      
-      SegmentList legs1 = ctw1.getSegments();
-      assertEquals("correct number of legs", 5, legs1.size());
-      
-      // and the other one
-      CompositeTrackWrapper ctw = (CompositeTrackWrapper) tLayers.findLayer("SENSOR_PLANNED2");
-      assertNotNull("found planning leg", ctw);
-      trackImporter.exportThis(ctw);
-      
-      SegmentList legs = ctw.getSegments();
-      assertEquals("correct number of legs", 6, legs.size());
-      
-      PlanningSegment closer = (PlanningSegment) legs.last();
-      assertTrue("is closing segment", closer instanceof PlanningSegment.ClosingSegment);
-    }
+			assertEquals("read in tracks", 2, tLayers.size());
 
-  }
+			// ok, now export one of them
+			final CompositeTrackWrapper ctw1 = (CompositeTrackWrapper) tLayers.findLayer("SENSOR_PLANNED");
+			assertNotNull("found planning leg", ctw1);
+			trackImporter.exportThis(ctw1);
 
-  public static final String CLOSING = "CLOSING";
-  /**
-   * the type for this string
-   */
-  private final String _myTypeOrigin = ";PLANNING_ORIGIN:";
-  public final String _myTypePlanning_spd_time = ";PLANNING_SPEED_TIME:";
-  public final String _myTypePlanning_rng_time = ";PLANNING_RANGE_TIME:";
-  public final String _myTypePlanning_rng_spd = ";PLANNING_RANGE_SPEED:";
+			final String output = trackImporter.getBuffer().toString();
+			assertNotNull("produced output");
+			assertTrue("has content", output.length() > 200); // was originally 388 cgars
 
-  /**
-   * read in this string and return a Label
-   * 
-   * @throws ParseException
-   */
-  public final Object readThisLine(final String theLine) throws ParseException
-  {
+			final SegmentList legs1 = ctw1.getSegments();
+			assertEquals("correct number of legs", 5, legs1.size());
 
-    // ;PLANNING_ORIGIN: YYMMDD HHMMSS AAAAAA @@ 22 12 10.28 N 21 32 40.33 W
+			// and the other one
+			final CompositeTrackWrapper ctw = (CompositeTrackWrapper) tLayers.findLayer("SENSOR_PLANNED2");
+			assertNotNull("found planning leg", ctw);
+			trackImporter.exportThis(ctw);
 
-    // get a stream from the string
-    final StringTokenizer st = new StringTokenizer(theLine);
+			final SegmentList legs = ctw.getSegments();
+			assertEquals("correct number of legs", 6, legs.size());
 
-    // skip the comment identifier
-    st.nextToken();
+			final PlanningSegment closer = (PlanningSegment) legs.last();
+			assertTrue("is closing segment", closer instanceof PlanningSegment.ClosingSegment);
+		}
 
-    // combine the date, a space, and the time
-    final String dateToken = st.nextToken();
-    final String timeToken = st.nextToken();
+	}
 
-    // and extract the date
-    HiResDate theDtg = DebriefFormatDateTime.parseThis(dateToken, timeToken);
+	public static final String CLOSING = "CLOSING";
+	/**
+	 * the type for this string
+	 */
+	private final String _myTypeOrigin = ";PLANNING_ORIGIN:";
+	public final String _myTypePlanning_spd_time = ";PLANNING_SPEED_TIME:";
+	public final String _myTypePlanning_rng_time = ";PLANNING_RANGE_TIME:";
+	public final String _myTypePlanning_rng_spd = ";PLANNING_RANGE_SPEED:";
 
-    // get the (possibly multi-word) track name
-    String theTrack = ImportFix.checkForQuotedName(st);
+	/**
+	 * indicate if you can export this type of object
+	 *
+	 * @param val the object to test
+	 * @return boolean saying whether you can do it
+	 */
+	@Override
+	public final boolean canExportThis(final Object val) {
+		return val instanceof CompositeTrackWrapper;
+	}
 
-    // start with the symbology
-    symbology = st.nextToken(normalDelimiters);
+	/**
+	 * export the specified shape as a string
+	 *
+	 * @param theWrapper the thing we are going to export
+	 * @return the shape in String form
+	 */
+	@Override
+	public final String exportThis(final MWC.GUI.Plottable theWrapper) {
+		final CompositeTrackWrapper track = (CompositeTrackWrapper) theWrapper;
 
-    double latDeg = MWCXMLReader.readThisDouble(st.nextToken());
-    double latMin = MWCXMLReader.readThisDouble(st.nextToken());
-    double latSec = MWCXMLReader.readThisDouble(st.nextToken());
+		final DecimalFormat sig6 = new DecimalFormat("0.######");
 
-    /**
-     * now, we may have trouble here, since there may not be a space between the hemisphere
-     * character and a 3-digit latitude value - so BE CAREFUL
-     */
-    final String vDiff = st.nextToken();
-    char latHem;
-    double longDeg;
-    if (vDiff.length() > 3)
-    {
-      // hmm, they are combined
-      latHem = vDiff.charAt(0);
-      final String secondPart = vDiff.substring(1, vDiff.length());
-      longDeg = MWCXMLReader.readThisDouble(secondPart);
-    }
-    else
-    {
-      // they are separate, so only the hem is in this one
-      latHem = vDiff.charAt(0);
-      longDeg = MWCXMLReader.readThisDouble(st.nextToken());
-    }
-    double longMin = MWCXMLReader.readThisDouble(st.nextToken());
-    double longSec = MWCXMLReader.readThisDouble(st.nextToken());
-    char longHem = st.nextToken().charAt(0);
+		// output the origin
+		String line = _myTypeOrigin + " ";
 
-    double theDepth = MWCXMLReader.readThisDouble(st.nextToken());
+		// export the origin
+		line += DebriefFormatDateTime.toStringHiRes(track.getStartDate());
 
-    WorldLocation theLoc = new WorldLocation(latDeg, latMin, latSec, latHem,
-        longDeg, longMin, longSec, longHem, theDepth);
+		// the track name may contain spaces - wrap in quotes if we have to
+		line += " " + ImportFix.wrapTrackName(track.getName());
 
-    Color theColor = ImportReplay.replayColorFor(symbology);
+		line += " " + ImportReplay.replaySymbolFor(track.getColor(), null);
 
-    final CompositeTrackWrapper data = new CompositeTrackWrapper(theDtg,
-        theLoc);
-    data.setColor(theColor);
-    data.setName(theTrack);
-    data.setNameVisible(false);
+		line += " " + MWC.Utilities.TextFormatting.DebriefFormatLocation.toString(track.getOrigin());
 
-    return data;
-  }
+		// finally the depth
+		final WorldDistance depth = new WorldDistance(track.getOrigin().getDepth(), WorldDistance.METRES);
+		line += " " + sig6.format(depth.getValueIn(WorldDistance.METRES));
 
-  /**
-   * determine the identifier returning this type of annotation
-   */
-  public final String getYourType()
-  {
-    return _myTypeOrigin;
-  }
+		// retrieve the track name
+		final String trackName = ImportFix.wrapTrackName(track.getName());
 
-  /**
-   * export the specified shape as a string
-   * 
-   * @param theWrapper
-   *          the thing we are going to export
-   * @return the shape in String form
-   */
-  public final String exportThis(final MWC.GUI.Plottable theWrapper)
-  {
-    CompositeTrackWrapper track = (CompositeTrackWrapper) theWrapper;
+		final String NULL = "NULL";
 
-    final DecimalFormat sig6 = new DecimalFormat("0.######");
+		// now work through the legs
+		final Enumeration<Editable> legs = track.elements();
+		while (legs.hasMoreElements()) {
+			// start on a new line
+			line += System.lineSeparator();
 
-    // output the origin
-    String line = _myTypeOrigin + " ";
+			final Editable next = legs.nextElement();
 
-    // export the origin
-    line += DebriefFormatDateTime.toStringHiRes(track.getStartDate());
+			if (next instanceof PlanningSegment) {
+				final PlanningSegment leg = (PlanningSegment) next;
 
-    // the track name may contain spaces - wrap in quotes if we have to
-    line += " " + ImportFix.wrapTrackName(track.getName());
+				// ok, now output this leg
+				line = outputThisLeg(sig6, line, trackName, NULL, leg);
+			}
+		}
+		line += System.lineSeparator();
 
-    line += " " + ImportReplay.replaySymbolFor(track.getColor(), null);
+		return line;
 
-    line += " " + MWC.Utilities.TextFormatting.DebriefFormatLocation.toString(
-        track.getOrigin());
+	}
 
-    // finally the depth
-    WorldDistance depth = new WorldDistance(track.getOrigin().getDepth(),
-        WorldDistance.METRES);
-    line += " " + sig6.format(depth.getValueIn(WorldDistance.METRES));
+	/**
+	 * determine the identifier returning this type of annotation
+	 */
+	@Override
+	public final String getYourType() {
+		return _myTypeOrigin;
+	}
 
-    // retrieve the track name
-    final String trackName = ImportFix.wrapTrackName(track.getName());
+	public String outputThisLeg(final DecimalFormat sig6, final String lineIn, final String trackName,
+			final String NULL, final PlanningSegment leg) {
+		String line = lineIn;
 
-    final String NULL = "NULL";
+		// is it the closing leg?
+		final boolean closing = leg instanceof ClosingSegment;
 
-    // now work through the legs
-    Enumeration<Editable> legs = track.elements();
-    while (legs.hasMoreElements())
-    {
-      // start on a new line
-      line += System.lineSeparator();
+		final String legName = ImportFix.wrapTrackName(leg.getName());
 
-      Editable next = legs.nextElement();
+		final WorldDistance rng = leg.getDistance();
+		final String rngStr = rng != null ? sig6.format(rng.getValueIn(WorldDistance.YARDS)) : NULL;
+		final Duration len = leg.getDuration();
+		final String durStr = len != null ? sig6.format(len.getValueIn(Duration.SECONDS)) : NULL;
+		final WorldSpeed spd = leg.getSpeed();
+		final String spdStr = spd != null ? sig6.format(spd.getValueIn(WorldSpeed.Kts)) : NULL;
 
-      if (next instanceof PlanningSegment)
-      {
-        PlanningSegment leg = (PlanningSegment) next;
+		final String legType;
+		final String fields;
+		switch (leg.getCalculation()) {
+		case PlanningLegCalcModelPropertyEditor.SPEED_TIME:
+			legType = _myTypePlanning_spd_time;
+			fields = spdStr + " " + durStr;
+			break;
+		case PlanningLegCalcModelPropertyEditor.RANGE_TIME:
+			legType = _myTypePlanning_rng_time;
+			fields = rngStr + " " + durStr;
+			break;
+		case PlanningLegCalcModelPropertyEditor.RANGE_SPEED:
+			legType = _myTypePlanning_rng_spd;
+			fields = rngStr + " " + spdStr;
+			break;
+		default:
+			legType = null;
+			fields = null;
+			break;
+		}
 
-        // ok, now output this leg
-        line = outputThisLeg(sig6, line, trackName, NULL, leg);
-      }
-    }
-    line += System.lineSeparator();
+		line += legType + " " + trackName + " " + legName + " " + fields + " " + sig6.format(leg.getCourse());
 
-    return line;
+		// append closing tag, if necessary
+		line += " " + (closing ? CLOSING : "");
+		return line;
+	}
 
-  }
+	/**
+	 * read in this string and return a Label
+	 *
+	 * @throws ParseException
+	 */
+	@Override
+	public final Object readThisLine(final String theLine) throws ParseException {
 
-  public String outputThisLeg(final DecimalFormat sig6, final String lineIn,
-      final String trackName, final String NULL, final PlanningSegment leg)
-  {
-    String line = lineIn;
-    
-    // is it the closing leg?
-    final boolean closing = leg instanceof ClosingSegment;
+		// ;PLANNING_ORIGIN: YYMMDD HHMMSS AAAAAA @@ 22 12 10.28 N 21 32 40.33 W
 
-    final String legName = ImportFix.wrapTrackName(leg.getName());
+		// get a stream from the string
+		final StringTokenizer st = new StringTokenizer(theLine);
 
-    final WorldDistance rng = leg.getDistance();
-    final String rngStr = rng != null ? sig6.format(rng.getValueIn(
-        WorldDistance.YARDS)) : NULL;
-    final Duration len = leg.getDuration();
-    final String durStr = len != null ? sig6.format(len.getValueIn(
-        Duration.SECONDS)) : NULL;
-    final WorldSpeed spd = leg.getSpeed();
-    final String spdStr = spd != null ? sig6.format(spd.getValueIn(
-        WorldSpeed.Kts)) : NULL;
+		// skip the comment identifier
+		st.nextToken();
 
-    final String legType;
-    final String fields;
-    switch (leg.getCalculation())
-    {
-      case PlanningLegCalcModelPropertyEditor.SPEED_TIME:
-        legType = _myTypePlanning_spd_time;
-        fields = spdStr + " " + durStr;
-        break;
-      case PlanningLegCalcModelPropertyEditor.RANGE_TIME:
-        legType = _myTypePlanning_rng_time;
-        fields = rngStr + " " + durStr;
-        break;
-      case PlanningLegCalcModelPropertyEditor.RANGE_SPEED:
-        legType = _myTypePlanning_rng_spd;
-        fields = rngStr + " " + spdStr;
-        break;
-      default:
-        legType = null;
-        fields = null;
-        break;
-    }
+		// combine the date, a space, and the time
+		final String dateToken = st.nextToken();
+		final String timeToken = st.nextToken();
 
-    line += legType + " " + trackName + " " + legName
-        + " " + fields + " " + sig6.format(leg.getCourse());
+		// and extract the date
+		final HiResDate theDtg = DebriefFormatDateTime.parseThis(dateToken, timeToken);
 
-    // append closing tag, if necessary
-    line += " " + (closing ? CLOSING : "");
-    return line;
-  }
+		// get the (possibly multi-word) track name
+		final String theTrack = AbstractPlainLineImporter.checkForQuotedName(st);
 
-  /**
-   * indicate if you can export this type of object
-   * 
-   * @param val
-   *          the object to test
-   * @return boolean saying whether you can do it
-   */
-  public final boolean canExportThis(final Object val)
-  {
-    return val instanceof CompositeTrackWrapper;
-  }
+		// start with the symbology
+		symbology = st.nextToken(normalDelimiters);
+
+		final double latDeg = MWCXMLReader.readThisDouble(st.nextToken());
+		final double latMin = MWCXMLReader.readThisDouble(st.nextToken());
+		final double latSec = MWCXMLReader.readThisDouble(st.nextToken());
+
+		/**
+		 * now, we may have trouble here, since there may not be a space between the
+		 * hemisphere character and a 3-digit latitude value - so BE CAREFUL
+		 */
+		final String vDiff = st.nextToken();
+		char latHem;
+		double longDeg;
+		if (vDiff.length() > 3) {
+			// hmm, they are combined
+			latHem = vDiff.charAt(0);
+			final String secondPart = vDiff.substring(1, vDiff.length());
+			longDeg = MWCXMLReader.readThisDouble(secondPart);
+		} else {
+			// they are separate, so only the hem is in this one
+			latHem = vDiff.charAt(0);
+			longDeg = MWCXMLReader.readThisDouble(st.nextToken());
+		}
+		final double longMin = MWCXMLReader.readThisDouble(st.nextToken());
+		final double longSec = MWCXMLReader.readThisDouble(st.nextToken());
+		final char longHem = st.nextToken().charAt(0);
+
+		final double theDepth = MWCXMLReader.readThisDouble(st.nextToken());
+
+		final WorldLocation theLoc = new WorldLocation(latDeg, latMin, latSec, latHem, longDeg, longMin, longSec,
+				longHem, theDepth);
+
+		final Color theColor = ImportReplay.replayColorFor(symbology);
+
+		final CompositeTrackWrapper data = new CompositeTrackWrapper(theDtg, theLoc);
+		data.setColor(theColor);
+		data.setName(theTrack);
+		data.setNameVisible(false);
+
+		return data;
+	}
 
 }

@@ -1,17 +1,18 @@
-/*
- *    Debrief - the Open Source Maritime Analysis Application
- *    http://debrief.info
+/*******************************************************************************
+ * Debrief - the Open Source Maritime Analysis Application
+ * http://debrief.info
  *
- *    (C) 2000-2014, PlanetMayo Ltd
+ * (C) 2000-2020, Deep Blue C Technology Ltd
  *
- *    This library is free software; you can redistribute it and/or
- *    modify it under the terms of the Eclipse Public License v1.0
- *    (http://www.eclipse.org/legal/epl-v10.html)
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the Eclipse Public License v1.0
+ * (http://www.eclipse.org/legal/epl-v10.html)
  *
- *    This library is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
- */
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *******************************************************************************/
+
 package MWC.GUI.Properties.AWT;
 
 // Copyright MWC 1999, Debrief 3 Project
@@ -62,39 +63,36 @@ import java.beans.PropertyChangeListener;
 
 import MWC.GUI.Properties.PropertiesPanel;
 
-abstract public class AWTCustomEditor extends Panel implements Customizer
-{
-  /**
-	 * 
+abstract public class AWTCustomEditor extends Panel implements Customizer {
+	/**
+	 *
 	 */
 	private static final long serialVersionUID = 1L;
 	/////////////////////////////////////////////////////////////
-  // member variables
-  ////////////////////////////////////////////////////////////
-  protected PropertiesPanel _thePanel;
-  
-  /////////////////////////////////////////////////////////////
-  // constructor
-  ////////////////////////////////////////////////////////////
-  
-  /////////////////////////////////////////////////////////////
-  // member functions
-  ////////////////////////////////////////////////////////////
-  public void setObject(final Object data, 
-                        final PropertiesPanel thePanel)
-  {
-    _thePanel = thePanel;
-    setObject(data);    
-  }
-  
+	// member variables
+	////////////////////////////////////////////////////////////
+	protected PropertiesPanel _thePanel;
 
-  abstract public void setObject(Object data);
+	/////////////////////////////////////////////////////////////
+	// constructor
+	////////////////////////////////////////////////////////////
 
-  public void addPropertyChangeListener(final PropertyChangeListener p1)
-  {
-  }
+	@Override
+	public void addPropertyChangeListener(final PropertyChangeListener p1) {
+	}
 
-  public void removePropertyChangeListener(final PropertyChangeListener p1)
-  {
-  }
+	@Override
+	public void removePropertyChangeListener(final PropertyChangeListener p1) {
+	}
+
+	@Override
+	abstract public void setObject(Object data);
+
+	/////////////////////////////////////////////////////////////
+	// member functions
+	////////////////////////////////////////////////////////////
+	public void setObject(final Object data, final PropertiesPanel thePanel) {
+		_thePanel = thePanel;
+		setObject(data);
+	}
 }

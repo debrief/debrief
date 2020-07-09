@@ -1,17 +1,18 @@
-/*
- *    Debrief - the Open Source Maritime Analysis Application
- *    http://debrief.info
+/*******************************************************************************
+ * Debrief - the Open Source Maritime Analysis Application
+ * http://debrief.info
  *
- *    (C) 2000-2014, PlanetMayo Ltd
+ * (C) 2000-2020, Deep Blue C Technology Ltd
  *
- *    This library is free software; you can redistribute it and/or
- *    modify it under the terms of the Eclipse Public License v1.0
- *    (http://www.eclipse.org/legal/epl-v10.html)
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the Eclipse Public License v1.0
+ * (http://www.eclipse.org/legal/epl-v10.html)
  *
- *    This library is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
- */
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *******************************************************************************/
+
 package ASSET.Scenario.Observers.Plotting;
 
 import java.awt.Point;
@@ -32,9 +33,8 @@ import MWC.GUI.CanvasType;
 import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldLocation;
 
-public class PlotInvestigationSubjectObserver extends CoreObserver
-{
-	private TargetType _watchType;
+public class PlotInvestigationSubjectObserver extends CoreObserver {
+	private final TargetType _watchType;
 
 	/***************************************************************
 	 * member variables
@@ -46,18 +46,13 @@ public class PlotInvestigationSubjectObserver extends CoreObserver
 
 	/**
 	 * create a detection observer
-	 * 
-	 * @param watchVessel
-	 *          the type of vessel we are monitoring
-	 * @param name
-	 *          the name of this observer
-	 * @param isActive
-	 *          whether this is observer is active
+	 *
+	 * @param watchVessel the type of vessel we are monitoring
+	 * @param name        the name of this observer
+	 * @param isActive    whether this is observer is active
 	 */
 
-	public PlotInvestigationSubjectObserver(final TargetType watchVessel,
-			final String name, final boolean isActive)
-	{
+	public PlotInvestigationSubjectObserver(final TargetType watchVessel, final String name, final boolean isActive) {
 		super(name, isActive);
 
 		_watchType = watchVessel;
@@ -68,66 +63,38 @@ public class PlotInvestigationSubjectObserver extends CoreObserver
 	 * *************************************************************
 	 */
 
+	@Override
+	protected void addListeners(final ScenarioType scenario) {
+	}
+
 	/**
-	 * whether this is a significant attribute, displayed by default
-	 * 
-	 * @return yes/no
+	 * is this one we're looking for? If so, get plotting
+	 *
+	 * @param dest     the screen
+	 * @param decision the decision to look at
+	 * @param myId     who I am
 	 */
-	public boolean isSignificant()
-	{
-		return false;
-	}
-
-	protected void doPlot(CanvasType dest, DecisionType decision, Integer myId)
-	{
-		if (decision instanceof BehaviourList)
-		{
-			BehaviourList list = (BehaviourList) decision;
-			Vector<DecisionType> models = list.getModels();
-			Iterator<DecisionType> dec = models.iterator();
-			while (dec.hasNext())
-			{
-				DecisionType thisD = dec.next();
-				doPlot(dest, thisD, myId);
-			}
-		}
-
-			checkThisBehaviour(dest, decision, myId);
-		
-	}
-
-	/** is this one we're looking for?
-	 * If so, get plotting
-	 * @param dest the screen
-	 * @param decision the decision to look at 
-	 * @param myId who I am
-	 */
-	private void checkThisBehaviour(CanvasType dest, DecisionType decision,
-			Integer myId)
-	{
-		if (decision instanceof Investigate)
-		{
+	private void checkThisBehaviour(final CanvasType dest, final DecisionType decision, final Integer myId) {
+		if (decision instanceof Investigate) {
 			// get my location
-			NetworkParticipant me = _myScenario.getThisParticipant(myId);
-			Status myStat = me.getStatus();
-			WorldLocation loc = myStat.getLocation();
+			final NetworkParticipant me = _myScenario.getThisParticipant(myId);
+			final Status myStat = me.getStatus();
+			final WorldLocation loc = myStat.getLocation();
 
 			// get the investigation-related bits
-			Investigate inv = (Investigate) decision;
-			Integer tgtId = inv.getCurrentTarget();
-			if (tgtId != null)
-			{
-				NetworkParticipant theTarget = _myScenario.getThisParticipant(tgtId);
-				if (theTarget != null)
-				{
-					Status hisStat = theTarget.getStatus();
-					WorldLocation hisLoc = hisStat.getLocation();
+			final Investigate inv = (Investigate) decision;
+			final Integer tgtId = inv.getCurrentTarget();
+			if (tgtId != null) {
+				final NetworkParticipant theTarget = _myScenario.getThisParticipant(tgtId);
+				if (theTarget != null) {
+					final Status hisStat = theTarget.getStatus();
+					final WorldLocation hisLoc = hisStat.getLocation();
 
-					Point pt1 = new Point(dest.toScreen(loc));
-					Point pt2 = new Point(dest.toScreen(hisLoc));
-					
+					final Point pt1 = new Point(dest.toScreen(loc));
+					final Point pt2 = new Point(dest.toScreen(hisLoc));
+
 					// get my color
-					String force = me.getCategory().getForce();
+					final String force = me.getCategory().getForce();
 					dest.setColor(ScenarioParticipantWrapper.getColorFor(force));
 					dest.setLineStyle(CanvasType.DOTTED);
 
@@ -137,28 +104,79 @@ public class PlotInvestigationSubjectObserver extends CoreObserver
 		}
 	}
 
+	protected void doPlot(final CanvasType dest, final DecisionType decision, final Integer myId) {
+		if (decision instanceof BehaviourList) {
+			final BehaviourList list = (BehaviourList) decision;
+			final Vector<DecisionType> models = list.getModels();
+			final Iterator<DecisionType> dec = models.iterator();
+			while (dec.hasNext()) {
+				final DecisionType thisD = dec.next();
+				doPlot(dest, thisD, myId);
+			}
+		}
+
+		checkThisBehaviour(dest, decision, myId);
+
+	}
+
+	/**
+	 * find the data area occupied by this item
+	 */
+	@Override
+	public WorldArea getBounds() {
+		return null;
+	}
+
+	@Override
+	public EditorType getInfo() {
+		return null;
+	}
+
+	public TargetType getWatchType() {
+		return _watchType;
+	}
+
+	/**
+	 * whether there is any edit information for this item this is a convenience
+	 * function to save creating the EditorType data first
+	 *
+	 * @return yes/no
+	 */
+	@Override
+	public boolean hasEditor() {
+		return true;
+	}
+
+	/**
+	 * whether this is a significant attribute, displayed by default
+	 *
+	 * @return yes/no
+	 */
+	public boolean isSignificant() {
+		return false;
+	}
+
 	/**
 	 * paint this object to the specified canvas
 	 */
-	public void paint(CanvasType dest)
-	{
+	@Override
+	public void paint(final CanvasType dest) {
 		if (!this.getVisible())
 			return;
 
 		if (_myScenario == null)
 			return;
 
-		Integer[] parts = _myScenario.getListOfParticipants();
-		for (int i = 0; i < parts.length; i++)
-		{
-			Integer theId = parts[i];
-			ParticipantType thisP = _myScenario.getThisParticipant(theId);
-			DecisionType dm = thisP.getDecisionModel();
+		final Integer[] parts = _myScenario.getListOfParticipants();
+		for (int i = 0; i < parts.length; i++) {
+			final Integer theId = parts[i];
+			final ParticipantType thisP = _myScenario.getThisParticipant(theId);
+			final DecisionType dm = thisP.getDecisionModel();
 			doPlot(dest, dm, theId);
 		}
 
 		// // loop
-		//		
+		//
 		// // loop through our selected vessels
 		// Vector<ParticipantType> parts = this.getWatchedVessels();
 		// for (Iterator<ParticipantType> iterator = parts.iterator(); iterator
@@ -203,7 +221,7 @@ public class PlotInvestigationSubjectObserver extends CoreObserver
 		// WorldLocation br2 = thisP.getStatus().getLocation().add(
 		// new WorldVector(MWC.Algorithms.Conversions.Degs2Rads(180),
 		// range, null));
-		//						
+		//
 		// WorldLocation tlW = new WorldLocation(tl2.getLat(), tl1.getLong(), 0);
 		// WorldLocation brW = new WorldLocation(br2.getLat(), br1.getLong(), 0);
 		//
@@ -279,62 +297,25 @@ public class PlotInvestigationSubjectObserver extends CoreObserver
 		// }
 	}
 
-	/**
-	 * find the data area occupied by this item
-	 */
-	public WorldArea getBounds()
-	{
-		return null;
+	@Override
+	protected void performCloseProcessing(final ScenarioType scenario) {
+	}
+
+	@Override
+	protected void performSetupProcessing(final ScenarioType scenario) {
 	}
 
 	/**
-	 * Determine how far away we are from this point. or return null if it can't
-	 * be calculated
+	 * Determine how far away we are from this point. or return null if it can't be
+	 * calculated
 	 */
-	public double rangeFrom(WorldLocation other)
-	{
+	@Override
+	public double rangeFrom(final WorldLocation other) {
 		return -1;
 	}
 
-	/**
-	 * whether there is any edit information for this item this is a convenience
-	 * function to save creating the EditorType data first
-	 * 
-	 * @return yes/no
-	 */
-	public boolean hasEditor()
-	{
-		return true;
-	}
-
 	@Override
-	protected void addListeners(ScenarioType scenario)
-	{
-	}
-
-	@Override
-	protected void performCloseProcessing(ScenarioType scenario)
-	{
-	}
-
-	@Override
-	protected void performSetupProcessing(ScenarioType scenario)
-	{
-	}
-
-	@Override
-	protected void removeListeners(ScenarioType scenario)
-	{
-	}
-
-	public EditorType getInfo()
-	{
-		return null;
-	}
-
-	public TargetType getWatchType()
-	{
-		return _watchType;
+	protected void removeListeners(final ScenarioType scenario) {
 	}
 
 	// ////////////////////////////////////////////////

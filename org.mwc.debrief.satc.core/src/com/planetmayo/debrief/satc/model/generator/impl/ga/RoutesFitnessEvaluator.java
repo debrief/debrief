@@ -1,17 +1,18 @@
-/*
- *    Debrief - the Open Source Maritime Analysis Application
- *    http://debrief.info
+/*******************************************************************************
+ * Debrief - the Open Source Maritime Analysis Application
+ * http://debrief.info
  *
- *    (C) 2000-2014, PlanetMayo Ltd
+ * (C) 2000-2020, Deep Blue C Technology Ltd
  *
- *    This library is free software; you can redistribute it and/or
- *    modify it under the terms of the Eclipse Public License v1.0
- *    (http://www.eclipse.org/legal/epl-v10.html)
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the Eclipse Public License v1.0
+ * (http://www.eclipse.org/legal/epl-v10.html)
  *
- *    This library is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
- */
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *******************************************************************************/
+
 package com.planetmayo.debrief.satc.model.generator.impl.ga;
 
 import java.util.List;
@@ -28,16 +29,14 @@ import com.planetmayo.debrief.satc.model.states.SafeProblemSpace;
 import com.planetmayo.debrief.satc.util.MathUtils;
 import com.vividsolutions.jts.geom.Point;
 
-public class RoutesFitnessEvaluator implements FitnessEvaluator<List<StraightRoute>>
-{	
+public class RoutesFitnessEvaluator implements FitnessEvaluator<List<StraightRoute>> {
 	private final List<StraightLeg> legs;
 	private final IContributions contributions;
 	private final SafeProblemSpace problemSpace;
 	private final boolean useAlterings;
-	
-	public RoutesFitnessEvaluator(List<StraightLeg> legs, boolean useAlterings, 
-			IContributions contributions, SafeProblemSpace problemSpace)
-	{
+
+	public RoutesFitnessEvaluator(final List<StraightLeg> legs, final boolean useAlterings,
+			final IContributions contributions, final SafeProblemSpace problemSpace) {
 		super();
 		this.useAlterings = useAlterings;
 		this.legs = legs;
@@ -45,51 +44,137 @@ public class RoutesFitnessEvaluator implements FitnessEvaluator<List<StraightRou
 		this.problemSpace = problemSpace;
 	}
 
+	private double alteringSpeedError(final double speedDiff) {
+		// make this error more prominent.
+		final double fudgeFactor = 3d;
+		final double x = 1 + speedDiff / problemSpace.getVehicleType().getMaxSpeed();
+		final double res = fudgeFactor * (x * x - 1);
+		return res;
+	}
+
+	private double calculateAlteringRouteScore(final AlteringRoute route, final StraightRoute previous,
+			final StraightRoute next) {
+		return calculateCompliantSpeedError(route, previous, next) + calculateSShapeScore(route);
+	}
+
+	private double calculateCompliantSpeedError(final AlteringRoute route, final StraightRoute previous,
+			final StraightRoute next) {
+		final double startSpeed = previous.getSpeed();
+		final double endSpeed = next.getSpeed();
+		final double minAlteringSpeed = route.getMinSpeed();
+		final double maxAlteringSpeed = route.getMaxSpeed();
+		double error = 0;
+		if (route.getExtremumsCount() == 0) {
+			error = 0;
+		} else if (route.getExtremumsCount() == 1) {
+			final double min = Math.min(startSpeed, endSpeed);
+			final double max = Math.max(startSpeed, endSpeed);
+
+			final double range = max - min;
+			final double scaleFactor = 10d;
+
+			if (minAlteringSpeed < min) {
+				final double diff = min - minAlteringSpeed;
+				error += scaleFactor * Math.pow(diff - range, 2);
+				// error += alteringSpeedError(min - minAlteringSpeed);
+			}
+			if (maxAlteringSpeed > max) {
+				final double diff = maxAlteringSpeed - max;
+				error += scaleFactor * Math.pow(diff - range, 2);
+				// error += alteringSpeedError(maxAlteringSpeed - max);
+			}
+		} else {
+			error += 1.5 * alteringSpeedError(maxAlteringSpeed - minAlteringSpeed);
+		}
+		return error;
+	}
+
+	public double calculateContributionsScore(final CoreRoute route) {
+		double score = 0;
+		for (final BaseContribution contribution : contributions) {
+			score += contribution.calculateErrorScoreFor(route);
+		}
+		route.setScore(score);
+		return score;
+	}
+
+	private double calculateSShapeScore(final AlteringRoute route) {
+		final Point[] pts = route.getBezierControlPoints();
+
+		// first line start-end in parametric form: B(t1) = start * (1 - t1) + end * t1
+		final double sx = route.getStartPoint().getX(), sy = route.getStartPoint().getY();
+		final double ex = route.getEndPoint().getX(), ey = route.getEndPoint().getY();
+
+		// second line control point 1-control point 2 in parametric form: C(t2) =
+		// pts[0] * (1 - t2) + pts[1] * t2
+		final double p0x = pts[0].getX(), p0y = pts[0].getY();
+		final double p1x = pts[1].getX(), p1y = pts[1].getY();
+
+		// if this two lines intersect - we have S shape, C shape otherwise
+		// solve linear eq system:
+		// ---- ----
+		// | Bx(t1) = Cx(t2) | sx * (1 - t1) + ex * t1 = p0x * (1-t2) + p1x * t2
+//   <                       =>     <
+		// | By(t1) = Cy(t2) | sy * (1 - t1) + ey * t1 = p0y * (1-t2) + p1y * t2
+		// ---- ----
+		if (Math.abs(ex - sx) < MathUtils.EPS) {
+			// C shape
+			return 0;
+		}
+		final double c1 = (p0x - sx) / (ex - sx);
+		final double c2 = (p1x - p0x) / (ex - sx);
+		final double d = (p1y - p0y) * (sy - ey) * c2;
+		if (Math.abs(d) < MathUtils.EPS) {
+			// C shape
+			return 0;
+		}
+		final double t2 = (sy - p0y + c1 * (ey - sy)) / d;
+		final double t1 = c1 + c2 * t2;
+		// check that two line intersect, so s-shape
+		if (t1 >= 0 && t1 <= 1 && t2 >= 0 && t2 <= 1) {
+			final Point intersection = MathUtils.calculateBezier(t2, pts[0], pts[1], null);
+			final double a = MathUtils.calcAbsoluteValue(pts[0].getX() - intersection.getX(),
+					pts[0].getY() - intersection.getY());
+			final double b = MathUtils.calcAbsoluteValue(pts[1].getX() - intersection.getX(),
+					pts[1].getY() - intersection.getY());
+			return Math.min(a, b);
+		}
+		return 0;
+	}
+
 	@Override
-	public double getFitness(List<StraightRoute> candidate,	List<? extends List<StraightRoute>> population)
-	{
-		int length = candidate.size();
+	public double getFitness(final List<StraightRoute> candidate,
+			final List<? extends List<StraightRoute>> population) {
+		final int length = candidate.size();
 		double error = 0;
 		boolean impossible = false;
-		for (int i = 0; i < length; i++)
-		{
-			StraightRoute route = candidate.get(i);
-			StraightLeg leg = legs.get(i);
-			if (route.isPossible())
-			{
-				if (route.getScore() == 0.)
-				{
+		for (int i = 0; i < length; i++) {
+			final StraightRoute route = candidate.get(i);
+			final StraightLeg leg = legs.get(i);
+			if (route.isPossible()) {
+				if (route.getScore() == 0.) {
 					leg.decideAchievableRoute(route);
-					if (route.isPossible())
-					{
+					if (route.isPossible()) {
 						error += calculateContributionsScore(route);
-					}
-					else 
-					{
+					} else {
 						impossible = true;
 					}
-				}
-				else
-				{
+				} else {
 					error += route.getScore();
 				}
-			}
-			else
-			{
+			} else {
 				impossible = true;
 			}
 		}
-		if (impossible)
-		{
+		if (impossible) {
 			return Double.MAX_VALUE;
 		}
-		if (useAlterings)
-		{
-			for (int i = 0; i < candidate.size() - 1; i++)
-			{
-				StraightRoute prev = candidate.get(i);
-				StraightRoute next = candidate.get(i + 1);
-				AlteringRoute route = new AlteringRoute("", prev.getEndPoint(), prev.getEndTime(), next.getStartPoint(), next.getStartTime());
+		if (useAlterings) {
+			for (int i = 0; i < candidate.size() - 1; i++) {
+				final StraightRoute prev = candidate.get(i);
+				final StraightRoute next = candidate.get(i + 1);
+				final AlteringRoute route = new AlteringRoute("", prev.getEndPoint(), prev.getEndTime(),
+						next.getStartPoint(), next.getStartTime());
 				route.generateSegments(problemSpace.getBoundedStatesBetween(prev.getEndTime(), next.getStartTime()));
 				route.constructRoute(prev, next);
 				error += calculateContributionsScore(route);
@@ -98,121 +183,9 @@ public class RoutesFitnessEvaluator implements FitnessEvaluator<List<StraightRou
 		}
 		return error;
 	}
-	
-	public double calculateContributionsScore(CoreRoute route)
-	{
-		double score = 0;
-		for (BaseContribution contribution : contributions)
-		{
-			score += contribution.calculateErrorScoreFor(route);
-		}
-		route.setScore(score);
-		return score;
-	}
-	
-	private double calculateAlteringRouteScore(AlteringRoute route, StraightRoute previous, StraightRoute next)
-	{
-		return calculateCompliantSpeedError(route, previous, next) + calculateSShapeScore(route);
-	}
-	
-  private double calculateCompliantSpeedError(AlteringRoute route,
-      StraightRoute previous, StraightRoute next)
-  {
-    double startSpeed = previous.getSpeed();
-    double endSpeed = next.getSpeed();
-    double minAlteringSpeed = route.getMinSpeed();
-    double maxAlteringSpeed = route.getMaxSpeed();
-    double error = 0;
-    if (route.getExtremumsCount() == 0)
-    {
-      error = 0;
-    }
-    else if (route.getExtremumsCount() == 1)
-    {
-      double min = Math.min(startSpeed, endSpeed);
-      double max = Math.max(startSpeed, endSpeed);
 
-      double range = max - min;
-      double scaleFactor = 10d;
-
-      if (minAlteringSpeed < min)
-      {
-        double diff = min - minAlteringSpeed;
-        error += scaleFactor * Math.pow(diff - range, 2);
-        // error += alteringSpeedError(min - minAlteringSpeed);
-      }
-      if (maxAlteringSpeed > max)
-      {
-        double diff = maxAlteringSpeed - max;
-        error += scaleFactor * Math.pow(diff - range, 2);
-        // error += alteringSpeedError(maxAlteringSpeed - max);
-      }
-    }
-    else
-    {
-      error += 1.5 * alteringSpeedError(maxAlteringSpeed - minAlteringSpeed);
-    }
-    return error;
-  }
-
-  private double alteringSpeedError(double speedDiff)
-  {
-    // make this error more prominent.
-    final double fudgeFactor = 3d;
-    final double x = 1 + speedDiff / problemSpace.getVehicleType()
-        .getMaxSpeed();
-    final double res = fudgeFactor * (x * x - 1);
-    return res;
-  }
-	
-	private double calculateSShapeScore(AlteringRoute route) 
-	{
-		Point[] pts = route.getBezierControlPoints();
-		
-		// first line start-end in parametric form: B(t1) = start * (1 - t1) + end * t1
-		double sx = route.getStartPoint().getX(), sy = route.getStartPoint().getY();
-		double ex = route.getEndPoint().getX(), ey = route.getEndPoint().getY();
-
-		// second line control point 1-control point 2 in parametric form: C(t2) = pts[0] * (1 - t2) + pts[1] * t2		
-		double p0x = pts[0].getX(), p0y = pts[0].getY();
-		double p1x = pts[1].getX(), p1y = pts[1].getY();
-		
-		// if this two lines intersect - we have S shape, C shape otherwise
-		// solve linear eq system:
-		//    ----                            ---- 
-		//    |    Bx(t1) = Cx(t2)           |  sx * (1 - t1) + ex * t1 = p0x * (1-t2) + p1x * t2
-    //   <                       =>     <
-		//    |    By(t1) = Cy(t2)           |  sy * (1 - t1) + ey * t1 = p0y * (1-t2) + p1y * t2
-		//    ----                           ----
-		if (Math.abs(ex - sx) < MathUtils.EPS) 
-		{
-			// C shape
-			return 0;
-		}
-		double c1 = (p0x - sx) / (ex - sx);
-		double c2 = (p1x - p0x) / (ex - sx);
-		double d = (p1y - p0y) * (sy - ey) * c2;
-		if (Math.abs(d) < MathUtils.EPS) 
-		{
-			// C shape
-			return 0;
-		}
-		double t2 = (sy - p0y + c1 * (ey - sy)) / d;
-		double t1 = c1 + c2 * t2;
-		// check that two line intersect, so s-shape
-		if (t1 >= 0 && t1 <= 1 && t2 >= 0 && t2 <= 1) 
-		{
-			Point intersection = MathUtils.calculateBezier(t2, pts[0], pts[1], null);
-			double a = MathUtils.calcAbsoluteValue(pts[0].getX() - intersection.getX(), pts[0].getY() - intersection.getY());
-			double b = MathUtils.calcAbsoluteValue(pts[1].getX() - intersection.getX(), pts[1].getY() - intersection.getY());
-			return Math.min(a, b);
-		}
-		return 0;
-	}
-	
 	@Override
-	public boolean isNatural()
-	{
+	public boolean isNatural() {
 		return false;
 	}
 }

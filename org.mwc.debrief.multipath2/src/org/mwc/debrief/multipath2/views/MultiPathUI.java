@@ -1,17 +1,18 @@
-/*
- *    Debrief - the Open Source Maritime Analysis Application
- *    http://debrief.info
+/*******************************************************************************
+ * Debrief - the Open Source Maritime Analysis Application
+ * http://debrief.info
  *
- *    (C) 2000-2014, PlanetMayo Ltd
+ * (C) 2000-2020, Deep Blue C Technology Ltd
  *
- *    This library is free software; you can redistribute it and/or
- *    modify it under the terms of the Eclipse Public License v1.0
- *    (http://www.eclipse.org/legal/epl-v10.html)
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the Eclipse Public License v1.0
+ * (http://www.eclipse.org/legal/epl-v10.html)
  *
- *    This library is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
- */
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *******************************************************************************/
+
 package org.mwc.debrief.multipath2.views;
 
 import org.eclipse.swt.SWT;
@@ -28,8 +29,7 @@ import org.eclipse.wb.swt.ResourceManager;
 import org.eclipse.wb.swt.SWTResourceManager;
 import org.jfree.experimental.chart.swt.ChartComposite;
 
-public class MultiPathUI extends Composite
-{
+public class MultiPathUI extends Composite {
 
 	private final Composite chartHolder;
 	private final Composite _cmpSVP;
@@ -42,18 +42,16 @@ public class MultiPathUI extends Composite
 
 	/**
 	 * Create the composite.
-	 * 
+	 *
 	 * @param parent
 	 * @param style
 	 */
-	public MultiPathUI(final Composite parent, final int style)
-	{
+	public MultiPathUI(final Composite parent, final int style) {
 		super(parent, style);
 		setLayout(new GridLayout(3, false));
 
 		final Composite cmpFiles = new Composite(this, SWT.NONE);
-		final GridData gd_cmpFiles = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1,
-				1);
+		final GridData gd_cmpFiles = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
 		gd_cmpFiles.widthHint = 190;
 		cmpFiles.setLayoutData(gd_cmpFiles);
 
@@ -77,15 +75,13 @@ public class MultiPathUI extends Composite
 		lblIntervals.setBounds(0, 0, 59, 14);
 
 		_lblIntervals = new Label(_cmpIntervals, SWT.NONE);
-		_lblIntervals.setFont(SWTResourceManager.getFont("Lucida Grande", 9,
-				SWT.BOLD));
+		_lblIntervals.setFont(SWTResourceManager.getFont("Lucida Grande", 9, SWT.BOLD));
 		_lblIntervals.setText("[pending]");
 		_lblIntervals.setBounds(0, 15, 90, 14);
 
 		final Composite cmpSlider = new Composite(this, SWT.NONE);
 		cmpSlider.setLayout(new FillLayout(SWT.VERTICAL));
-		final GridData gd_cmpSlider = new GridData(SWT.FILL, SWT.CENTER, true, false, 1,
-				1);
+		final GridData gd_cmpSlider = new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1);
 		gd_cmpSlider.heightHint = 32;
 		cmpSlider.setLayoutData(gd_cmpSlider);
 		cmpSlider.setBounds(144, 0, 294, 43);
@@ -98,8 +94,7 @@ public class MultiPathUI extends Composite
 		_slider.setMaximum(800);
 
 		final Composite cmpButton = new Composite(this, SWT.NONE);
-		final GridData gd_cmpButton = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1,
-				1);
+		final GridData gd_cmpButton = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
 		gd_cmpButton.widthHint = 60;
 		cmpButton.setLayoutData(gd_cmpButton);
 
@@ -109,10 +104,9 @@ public class MultiPathUI extends Composite
 		_btnMagic.setBounds(0, 0, 40, 40);
 
 		chartHolder = new ChartComposite(this, SWT.NONE);
-		GridData layoutData = new GridData(SWT.FILL, SWT.FILL, true, true);
-		layoutData.horizontalSpan =3;
-    chartHolder
-				.setLayoutData(layoutData);
+		final GridData layoutData = new GridData(SWT.FILL, SWT.FILL, true, true);
+		layoutData.horizontalSpan = 3;
+		chartHolder.setLayoutData(layoutData);
 		chartHolder.setLayout(new FillLayout());
 		new Label(this, SWT.NONE);
 		new Label(this, SWT.NONE);
@@ -120,67 +114,54 @@ public class MultiPathUI extends Composite
 
 	}
 
-	public Composite getSVPHolder()
-	{
-		return _cmpSVP;
-	}
-
-	public Composite getIntervalHolder()
-	{
-		return _cmpIntervals;
-	}
-	
-
-	public Control getRangeHolder()
-	{
-		return _sliderVal;
-	}
-
-	public void setSVPName(final String text)
-	{
-		_lblSVP.setText(text);
-	}
-
-	public void setIntervalName(final String text)
-	{
-		_lblIntervals.setText(text);
-	}
-
-	public Composite getChartHolder()
-	{
-		return chartHolder;
-	}
-
-	@Override
-	protected void checkSubclass()
-	{
-		// Disable the check that prevents subclassing of SWT components
-	}
-
-	public Slider getSlider()
-	{
-		return _slider;
-	}
-
-	public void addMagicHandler(final SelectionListener handler)
-	{
+	public void addMagicHandler(final SelectionListener handler) {
 		_btnMagic.addSelectionListener(handler);
 	}
 
-	public void setSliderValText(final String text)
-	{
-		_sliderVal.setText(text);
+	@Override
+	protected void checkSubclass() {
+		// Disable the check that prevents subclassing of SWT components
+	}
+
+	public Composite getChartHolder() {
+		return chartHolder;
+	}
+
+	public Composite getIntervalHolder() {
+		return _cmpIntervals;
+	}
+
+	public Control getRangeHolder() {
+		return _sliderVal;
+	}
+
+	public Slider getSlider() {
+		return _slider;
+	}
+
+	public Composite getSVPHolder() {
+		return _cmpSVP;
 	}
 
 	@Override
-	public void setEnabled(final boolean enabled)
-	{
+	public void setEnabled(final boolean enabled) {
 		_slider.setEnabled(enabled);
 
-		if (!enabled)
-		{
+		if (!enabled) {
 			setSliderValText("Disabled, pending data");
 		}
+	}
+
+	public void setIntervalName(final String text) {
+		_lblIntervals.setText(text);
+	}
+
+	public void setSliderValText(final String text) {
+		_sliderVal.setText(text);
+	}
+
+	public void setSVPName(final String text) {
+		_lblSVP.setText(text);
 	}
 
 }

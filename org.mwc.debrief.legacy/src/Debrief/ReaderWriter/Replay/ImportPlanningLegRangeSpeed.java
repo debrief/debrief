@@ -1,17 +1,18 @@
-/*
- *    Debrief - the Open Source Maritime Analysis Application
- *    http://debrief.info
+/*******************************************************************************
+ * Debrief - the Open Source Maritime Analysis Application
+ * http://debrief.info
  *
- *    (C) 2000-2014, PlanetMayo Ltd
+ * (C) 2000-2020, Deep Blue C Technology Ltd
  *
- *    This library is free software; you can redistribute it and/or
- *    modify it under the terms of the Eclipse Public License v1.0
- *    (http://www.eclipse.org/legal/epl-v10.html)
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the Eclipse Public License v1.0
+ * (http://www.eclipse.org/legal/epl-v10.html)
  *
- *    This library is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
- */
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *******************************************************************************/
+
 // $RCSfile: ImportSensor.java,v $
 // @author $Author: Ian.Mayo $
 // @version $Revision: 1.7 $
@@ -105,105 +106,88 @@ import MWC.Utilities.ReaderWriter.XML.MWCXMLReader;
 /**
  * class to parse a label from a line of text
  */
-final class ImportPlanningLegRangeSpeed extends AbstractPlainLineImporter
-{
-  /**
-   * the type for this string
-   */
-  // private final String _myTypeOrigin = ";PLANNING_ORIGIN:";
-  //public final String _myTypePlanning_spd_time = ";PLANNING_SPEED_TIME:";
-  // public final String _myTypePlanning_rng_time = ";PLANNING_RANGE_TIME:";
-  public final String _myTypePlanning_rng_spd = ";PLANNING_RANGE_SPEED:";
+final class ImportPlanningLegRangeSpeed extends AbstractPlainLineImporter {
+	/**
+	 * the type for this string
+	 */
+	// private final String _myTypeOrigin = ";PLANNING_ORIGIN:";
+	// public final String _myTypePlanning_spd_time = ";PLANNING_SPEED_TIME:";
+	// public final String _myTypePlanning_rng_time = ";PLANNING_RANGE_TIME:";
+	public final String _myTypePlanning_rng_spd = ";PLANNING_RANGE_SPEED:";
 
-  /**
-   * indicate if you can export this type of object
-   *
-   * @param val
-   *          the object to test
-   * @return boolean saying whether you can do it
-   */
-  @Override
-  public final boolean canExportThis(final Object val)
-  {
-    return false;
-  }
+	/**
+	 * indicate if you can export this type of object
+	 *
+	 * @param val the object to test
+	 * @return boolean saying whether you can do it
+	 */
+	@Override
+	public final boolean canExportThis(final Object val) {
+		return false;
+	}
 
-  /**
-   * export the specified shape as a string
-   *
-   * @param theWrapper
-   *          the thing we are going to export
-   * @return the shape in String form
-   */
-  @Override
-  public final String exportThis(final MWC.GUI.Plottable theWrapper)
-  {
-    throw new IllegalArgumentException(
-        "Don't export with this class, use ImportPlanningLegOrigin");
-  }
+	/**
+	 * export the specified shape as a string
+	 *
+	 * @param theWrapper the thing we are going to export
+	 * @return the shape in String form
+	 */
+	@Override
+	public final String exportThis(final MWC.GUI.Plottable theWrapper) {
+		throw new IllegalArgumentException("Don't export with this class, use ImportPlanningLegOrigin");
+	}
 
-  /**
-   * determine the identifier returning this type of annotation
-   */
-  @Override
-  public final String getYourType()
-  {
-    return _myTypePlanning_rng_spd;
-  }
+	/**
+	 * determine the identifier returning this type of annotation
+	 */
+	@Override
+	public final String getYourType() {
+		return _myTypePlanning_rng_spd;
+	}
 
-  /**
-   * read in this string and return a Label
-   *
-   * @throws ParseException
-   */
-  @Override
-  public final Object readThisLine(final String theLine) throws ParseException
-  {
+	/**
+	 * read in this string and return a Label
+	 *
+	 * @throws ParseException
+	 */
+	@Override
+	public final Object readThisLine(final String theLine) throws ParseException {
 
-    // ;PLANNING_RANGE_SPEED: AAAAAA BBBBBB RRRR SSS CCC
+		// ;PLANNING_RANGE_SPEED: AAAAAA BBBBBB RRRR SSS CCC
 
-    // get a stream from the string
-    final StringTokenizer st = new StringTokenizer(theLine);
+		// get a stream from the string
+		final StringTokenizer st = new StringTokenizer(theLine);
 
-    // skip the comment identifier
-    st.nextToken();
+		// skip the comment identifier
+		st.nextToken();
 
-    // get the (possibly multi-word) track name
-    final String theTrack = AbstractPlainLineImporter.checkForQuotedName(st);
-    final String theLeg = AbstractPlainLineImporter.checkForQuotedName(st);
+		// get the (possibly multi-word) track name
+		final String theTrack = AbstractPlainLineImporter.checkForQuotedName(st);
+		final String theLeg = AbstractPlainLineImporter.checkForQuotedName(st);
 
-    final WorldDistance range = new WorldDistance(MWCXMLReader.readThisDouble(st
-        .nextToken()), WorldDistance.YARDS);
-    final WorldSpeed speed = new WorldSpeed(MWCXMLReader.readThisDouble(st
-        .nextToken()), WorldSpeed.Kts);
-    final double course = MWCXMLReader.readThisDouble(st.nextToken());
-    
-    boolean closing = false;
-    if(st.hasMoreTokens())
-    {
-      String next = st.nextToken();
-      if(ImportPlanningLegOrigin.CLOSING.equals(next))
-      {
-        closing = true;
-      }
-    }
+		final WorldDistance range = new WorldDistance(MWCXMLReader.readThisDouble(st.nextToken()), WorldDistance.YARDS);
+		final WorldSpeed speed = new WorldSpeed(MWCXMLReader.readThisDouble(st.nextToken()), WorldSpeed.Kts);
+		final double course = MWCXMLReader.readThisDouble(st.nextToken());
 
-    final PlanningSegment res; 
-    if(closing)
-    {
-      res = new PlanningSegment.ClosingSegment(theLeg, course, speed,
-          range);
-    }
-    else
-    {
-      res = new PlanningSegment(theLeg, course, speed,
-          range);
-    }
+		boolean closing = false;
+		if (st.hasMoreTokens()) {
+			final String next = st.nextToken();
+			if (ImportPlanningLegOrigin.CLOSING.equals(next)) {
+				closing = true;
+			}
+		}
 
-    res.setParentName(theTrack);
-    res.setCalculation(PlanningLegCalcModelPropertyEditor.RANGE_SPEED);
+		final PlanningSegment res;
+		if (closing) {
+			res = new PlanningSegment.ClosingSegment(theLeg, course, speed, range);
+		} else {
+			res = new PlanningSegment(theLeg, course, speed, range);
+		}
 
-    return res;
-  }
+		res.setParentName(theTrack);
+		res.setCalculation(PlanningLegCalcModelPropertyEditor.RANGE_SPEED);
+
+		return res;
+	}
 
 }

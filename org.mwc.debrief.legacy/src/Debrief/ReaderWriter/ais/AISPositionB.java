@@ -33,7 +33,6 @@ package Debrief.ReaderWriter.ais;
 
 import java.sql.Timestamp;
 
-
 /**
  * This class represents an AIS position report
  *
@@ -43,15 +42,14 @@ import java.sql.Timestamp;
  */
 public class AISPositionB implements IAISMessage, IAISDecodable, Cloneable, IPositionMessage {
 
-
 	/** message id */
 	protected int msgId;
 
 	protected int mmsi;
 
 	/**
-	 * speed over ground in knots range 0-102.2 where 102.2knots denotes
-	 * 102.2knots and more
+	 * speed over ground in knots range 0-102.2 where 102.2knots denotes 102.2knots
+	 * and more
 	 */
 	protected double sog;
 
@@ -86,8 +84,8 @@ public class AISPositionB implements IAISMessage, IAISDecodable, Cloneable, IPos
 	 * @param trueHeading
 	 * @param msgTimestamp
 	 */
-	public AISPositionB(int msgId, int mmsi, double sog, double longitude,
-			double latitude, double cog, int trueHeading, Timestamp msgTimestamp) {
+	public AISPositionB(final int msgId, final int mmsi, final double sog, final double longitude,
+			final double latitude, final double cog, final int trueHeading, final Timestamp msgTimestamp) {
 		this.msgId = msgId;
 		this.mmsi = mmsi;
 		this.sog = sog;
@@ -99,13 +97,92 @@ public class AISPositionB implements IAISMessage, IAISDecodable, Cloneable, IPos
 	}
 
 	@Override
-	public double getCog() {
-		return cog;
+	public AISPositionB clone() {
+		try {
+			return (AISPositionB) super.clone();
+		} catch (final CloneNotSupportedException e) {
+			// this shouldn't happen, since we are Cloneable
+			throw new InternalError();
+		}
+	}
+
+	/**
+	 * Parse decoded bytes for the position data
+	 *
+	 * Message 18: Standard Class B equipment position report Usually will be sent
+	 * by small vessels
+	 *
+	 * ITU-R M.1371-1
+	 *
+	 * @param decBytes
+	 * @throws AISParseException
+	 */
+	@Override
+	public IAISMessage decode(final String decBytes) throws AISParseException {
+
+		if (decBytes.length() < 133)
+			throw new AISParseException(AISParseException.NOT_CONSISTENT_DECODED_STRING);
+		/* Possition Reports Message ID 18 bits 0-5 */
+		this.msgId = AISDecoder.getDecValueByBinStr(decBytes.substring(0, 6), false);
+
+		/* User ID mmsi bits 8-37 */
+		this.mmsi = AISDecoder.getDecValueByBinStr(decBytes.substring(8, 38), false);
+
+		/* Speed over ground bits 46-55 - 10 bits */
+		this.sog = AISDecoder.getDecValueByBinStr(decBytes.substring(46, 56), false) / 10.0;
+
+		/* Longitude bits 57-84 */
+		final int longitudeHour = AISDecoder.getDecValueByBinStr(decBytes.substring(57, 85), true);
+		this.longitude = longitudeHour / 600000.0;
+
+		if (this.longitude > 180.0 || this.longitude < -180.0)
+			throw new AISParseException(AISParseException.LONGITUDE_OUT_OF_RANGE + " " + longitude);
+
+		/* Latitude bits 85-111 */
+		final int latitudeHour = AISDecoder.getDecValueByBinStr(decBytes.substring(85, 112), true);
+		this.latitude = latitudeHour / 600000.0;
+
+		if (this.latitude > 90.0 || this.latitude < -90.0)
+			throw new AISParseException(AISParseException.LATITUDE_OUT_OF_RANGE + " " + latitude);
+
+		/* COG bits 112-123 */
+		this.cog = AISDecoder.getDecValueByBinStr(decBytes.substring(112, 124), false) / 10.0;
+
+		/* true heading bits 124-132 */
+		this.trueHeading = AISDecoder.getDecValueByBinStr(decBytes.substring(124, 133), false);
+
+		// time stamp bits 137-143
+		final int secs = AISDecoder.getDecValueByBinStr(decBytes.substring(137, 143), false);
+		this.msgTimestamp = new Timestamp(secs * 1000);
+
+//		/* time stamp bits 138-143 */
+//		// TODO: impelemt the rest bits
+//		Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+//		this.msgTimestamp = new Timestamp(cal.getTimeInMillis());
+
+		return this;
+
 	}
 
 	@Override
-	public int getMsgId() {
-		return msgId;
+	public boolean equals(final Object o) {
+		if (o == null)
+			return false;
+		if (o == this)
+			return true;
+		if (!o.getClass().equals(o.getClass()))
+			return false;
+
+		final AISPositionB that = (AISPositionB) o;
+		final boolean same = this.cog == that.cog && this.msgId == that.msgId && this.latitude == that.latitude
+				&& this.longitude == that.longitude && this.msgTimestamp.equals(that.msgTimestamp)
+				&& this.sog == that.sog && this.trueHeading == that.trueHeading && this.mmsi == that.mmsi;
+		return same;
+	}
+
+	@Override
+	public double getCog() {
+		return cog;
 	}
 
 	@Override
@@ -116,6 +193,16 @@ public class AISPositionB implements IAISMessage, IAISDecodable, Cloneable, IPos
 	@Override
 	public double getLongitude() {
 		return longitude;
+	}
+
+	@Override
+	public int getMmsi() {
+		return mmsi;
+	}
+
+	@Override
+	public int getMsgId() {
+		return msgId;
 	}
 
 	@Override
@@ -131,122 +218,6 @@ public class AISPositionB implements IAISMessage, IAISDecodable, Cloneable, IPos
 	@Override
 	public int getTrueHeading() {
 		return trueHeading;
-	}
-
-	@Override
-	public int getMmsi() {
-		return mmsi;
-	}
-
-	@Override
-	public String toString() {
-		StringBuffer sbuffer = new StringBuffer();
-		sbuffer.append("AISPositionB\n");
-		sbuffer.append("MSGID\t\t" + this.msgId + "\n");
-		sbuffer.append("MMSI\t\t" + this.mmsi + "\n");
-		sbuffer.append("SOG\t\t" + this.sog + "\n");
-		sbuffer.append("LONGITUTDE\t" + this.longitude + "\n");
-		sbuffer.append("LATITUDE\t" + this.latitude + "\n");
-		sbuffer.append("COG\t\t" + this.cog + "\n");
-		sbuffer.append("HEADING\t\t" + this.trueHeading + "\n");
-		sbuffer.append("MSGTIMESTAMP\t" + this.msgTimestamp + "\n");
-		return sbuffer.toString();
-	}
-
-	@Override
-	public boolean equals(Object o) {
-		if (o == null)
-			return false;
-		if (o == this)
-			return true;
-		if (!o.getClass().equals(o.getClass()))
-			return false;
-
-		AISPositionB that = (AISPositionB) o;
-		boolean same = this.cog == that.cog && this.msgId == that.msgId
-				&& this.latitude == that.latitude
-				&& this.longitude == that.longitude
-				&& this.msgTimestamp.equals(that.msgTimestamp)
-				&& this.sog == that.sog && this.trueHeading == that.trueHeading
-				&& this.mmsi == that.mmsi;
-		return same;
-	}
-
-	@Override
-	public AISPositionB clone() {
-		try {
-			return (AISPositionB) super.clone();
-		} catch (CloneNotSupportedException e) {
-			// this shouldn't happen, since we are Cloneable
-			throw new InternalError();
-		}
-	}
-
-	/**
-	 * Parse decoded bytes for the position data
-	 *
-	 * Message 18: Standard Class B equipment position report Usually will be
-	 * sent by small vessels
-	 *
-	 * ITU-R M.1371-1
-	 *
-	 * @param decBytes
-	 * @throws AISParseException
-	 */
-	public IAISMessage decode(String decBytes) throws AISParseException {
-
-		if (decBytes.length() < 133)
-			throw new AISParseException(
-					AISParseException.NOT_CONSISTENT_DECODED_STRING);
-		/* Possition Reports Message ID 18 bits 0-5 */
-		this.msgId = AISDecoder.getDecValueByBinStr(decBytes.substring(0, 6),
-				false);
-
-		/* User ID mmsi bits 8-37 */
-		this.mmsi = AISDecoder.getDecValueByBinStr(decBytes.substring(8, 38),
-				false);
-
-		/* Speed over ground bits 46-55 - 10 bits */
-		this.sog = AISDecoder.getDecValueByBinStr(decBytes.substring(46, 56),
-				false) / 10.0;
-
-		/* Longitude bits 57-84 */
-		int longitudeHour = AISDecoder.getDecValueByBinStr(
-				decBytes.substring(57, 85), true);
-		this.longitude = longitudeHour / 600000.0;
-
-		if (this.longitude > 180.0 || this.longitude < -180.0)
-			throw new AISParseException(
-					AISParseException.LONGITUDE_OUT_OF_RANGE + " " + longitude);
-
-		/* Latitude bits 85-111 */
-		int latitudeHour = AISDecoder.getDecValueByBinStr(
-				decBytes.substring(85, 112), true);
-		this.latitude = latitudeHour / 600000.0;
-
-		if (this.latitude > 90.0 || this.latitude < -90.0)
-			throw new AISParseException(AISParseException.LATITUDE_OUT_OF_RANGE
-					+ " " + latitude);
-
-		/* COG bits 112-123 */
-		this.cog = AISDecoder.getDecValueByBinStr(decBytes.substring(112, 124),
-				false) / 10.0;
-
-		/* true heading bits 124-132 */
-		this.trueHeading = AISDecoder.getDecValueByBinStr(
-				decBytes.substring(124, 133), false);
-
-		// time stamp bits 137-143		
-		int secs = AISDecoder.getDecValueByBinStr(decBytes.substring(137, 143), false);
-		this.msgTimestamp = new Timestamp(secs * 1000);
-		
-//		/* time stamp bits 138-143 */
-//		// TODO: impelemt the rest bits
-//		Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
-//		this.msgTimestamp = new Timestamp(cal.getTimeInMillis());
-
-		return this;
-
 	}
 
 	@Override
@@ -267,5 +238,20 @@ public class AISPositionB implements IAISMessage, IAISDecodable, Cloneable, IPos
 		result = prime * result + (int) (temp ^ temp >>> 32);
 		result = prime * result + trueHeading;
 		return result;
+	}
+
+	@Override
+	public String toString() {
+		final StringBuffer sbuffer = new StringBuffer();
+		sbuffer.append("AISPositionB\n");
+		sbuffer.append("MSGID\t\t" + this.msgId + "\n");
+		sbuffer.append("MMSI\t\t" + this.mmsi + "\n");
+		sbuffer.append("SOG\t\t" + this.sog + "\n");
+		sbuffer.append("LONGITUTDE\t" + this.longitude + "\n");
+		sbuffer.append("LATITUDE\t" + this.latitude + "\n");
+		sbuffer.append("COG\t\t" + this.cog + "\n");
+		sbuffer.append("HEADING\t\t" + this.trueHeading + "\n");
+		sbuffer.append("MSGTIMESTAMP\t" + this.msgTimestamp + "\n");
+		return sbuffer.toString();
 	}
 }

@@ -1,17 +1,18 @@
-/*
- *    Debrief - the Open Source Maritime Analysis Application
- *    http://debrief.info
+/*******************************************************************************
+ * Debrief - the Open Source Maritime Analysis Application
+ * http://debrief.info
  *
- *    (C) 2000-2014, PlanetMayo Ltd
+ * (C) 2000-2020, Deep Blue C Technology Ltd
  *
- *    This library is free software; you can redistribute it and/or
- *    modify it under the terms of the Eclipse Public License v1.0
- *    (http://www.eclipse.org/legal/epl-v10.html)
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the Eclipse Public License v1.0
+ * (http://www.eclipse.org/legal/epl-v10.html)
  *
- *    This library is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
- */
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *******************************************************************************/
+
 package org.mwc.cmap.core.property_support.lengtheditor;
 
 import java.util.List;
@@ -33,8 +34,9 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Listener;
 import org.mwc.cmap.core.property_support.lengtheditor.preferences.LengthsRegistry;
 
-
 public class LengthPropertyCellEditor extends TextCellEditor {
+
+	private static final double delta = 0.000001;
 
 	private CCombo comboBox;
 
@@ -49,9 +51,9 @@ public class LengthPropertyCellEditor extends TextCellEditor {
 	}
 
 	@Override
-	protected void doSetValue(final Object value) {
-		super.doSetValue(value);
-		populateComboBoxItems();
+	public void activate() {
+		super.activate();
+		initComboValue();
 	}
 
 	@Override
@@ -71,6 +73,7 @@ public class LengthPropertyCellEditor extends TextCellEditor {
 
 		comboBox.addKeyListener(new KeyAdapter() {
 
+			@Override
 			public void keyPressed(final KeyEvent e) {
 				keyReleaseOccured(e);
 			}
@@ -78,9 +81,11 @@ public class LengthPropertyCellEditor extends TextCellEditor {
 
 		comboBox.addSelectionListener(new SelectionAdapter() {
 
+			@Override
 			public void widgetDefaultSelected(final SelectionEvent event) {
 			}
 
+			@Override
 			public void widgetSelected(final SelectionEvent event) {
 				final int selection = comboBox.getSelectionIndex();
 				text.setText(LengthsRegistry.getRegistry().getLengths().get(selection).toString());
@@ -89,6 +94,7 @@ public class LengthPropertyCellEditor extends TextCellEditor {
 
 		final TraverseListener traverseListener = new TraverseListener() {
 
+			@Override
 			public void keyTraversed(final TraverseEvent e) {
 				if (e.detail == SWT.TRAVERSE_ESCAPE || e.detail == SWT.TRAVERSE_RETURN) {
 					e.doit = false;
@@ -108,6 +114,33 @@ public class LengthPropertyCellEditor extends TextCellEditor {
 		return wrapperComposite;
 	}
 
+	@Override
+	protected void doSetValue(final Object value) {
+		super.doSetValue(value);
+		populateComboBoxItems();
+	}
+
+	/**
+	 * find length from text field in registry
+	 *
+	 * @return position in list
+	 */
+	private int findValue() {
+		String val = text.getText();
+		if (val.contains("m")) {
+			val = val.replace("m", " ");
+		}
+		final Double value = new Double(val);
+		final List<Double> list = LengthsRegistry.getRegistry().getLengths();
+		for (int i = 0; i < list.size(); i++) {
+			final Double cur = list.get(i);
+			if (Math.abs(cur - value) < delta) {
+				return i;
+			}
+		}
+		return -1;
+	}
+
 	private void fixTextControl() {
 		Listener[] ls;
 		ls = text.getListeners(SWT.FocusOut);
@@ -120,18 +153,6 @@ public class LengthPropertyCellEditor extends TextCellEditor {
 			text.removeListener(SWT.Traverse, ls[ls.length - 1]);
 		}
 
-	}
-
-	@Override
-	public void activate() {
-		super.activate();
-		initComboValue();
-	}
-
-	@Override
-	protected void valueChanged(final boolean oldValidState, final boolean newValidState) {
-		super.valueChanged(oldValidState, newValidState);
-		initComboValue();
 	}
 
 	private void initComboValue() {
@@ -150,38 +171,6 @@ public class LengthPropertyCellEditor extends TextCellEditor {
 		}
 	}
 
-	private void setSelectMessageToCombo() {
-		comboBox.setText(Messages.LengthPropertyCellEditor_Select);
-	}
-
-	private void setNotLoadedMessageToCombo() {
-		comboBox.setText(Messages.LengthPropertyCellEditor_NotLoaded);
-	}
-
-	private static final double delta = 0.000001;
-
-	/**
-	 * find length from text field in registry
-	 * 
-	 * @return position in list
-	 */
-	private int findValue() {
-		String val = text.getText();
-		if(val.contains("m"))
-		{
-			val = val.replace("m"," ");
-		}
-		final Double value = new Double(val);
-		final List<Double> list = LengthsRegistry.getRegistry().getLengths();
-		for (int i = 0; i < list.size(); i++) {
-			final Double cur = list.get(i);
-			if (Math.abs(cur - value) < delta) {
-				return i;
-			}
-		}
-		return -1;
-	}
-
 	private void populateComboBoxItems() {
 		final LengthsRegistry registry = LengthsRegistry.getRegistry();
 		final int itemsCount = registry.getItemsCount();
@@ -195,5 +184,19 @@ public class LengthPropertyCellEditor extends TextCellEditor {
 			final String s = registry.getNames().get(i) + "(" + value + ")"; //$NON-NLS-1$ //$NON-NLS-2$
 			comboBox.add(s);
 		}
+	}
+
+	private void setNotLoadedMessageToCombo() {
+		comboBox.setText(Messages.LengthPropertyCellEditor_NotLoaded);
+	}
+
+	private void setSelectMessageToCombo() {
+		comboBox.setText(Messages.LengthPropertyCellEditor_Select);
+	}
+
+	@Override
+	protected void valueChanged(final boolean oldValidState, final boolean newValidState) {
+		super.valueChanged(oldValidState, newValidState);
+		initComboValue();
 	}
 }

@@ -1,0 +1,11 @@
+
+package org.mwc.debrief.lite;
+
+/**
+ * @author Ayesha
+ *
+ */
+public class BuildDate
+{
+  public static final String BUILD_DATE="$DATE_HERE$";
+}

@@ -1,17 +1,17 @@
-/*
- *    Debrief - the Open Source Maritime Analysis Application
- *    http://debrief.info
+/*******************************************************************************
+ * Debrief - the Open Source Maritime Analysis Application
+ * http://debrief.info
  *
- *    (C) 2000-2018, PlanetMayo Ltd
+ * (C) 2000-2020, Deep Blue C Technology Ltd
  *
- *    This library is free software; you can redistribute it and/or
- *    modify it under the terms of the Eclipse Public License v1.0
- *    (http://www.eclipse.org/legal/epl-v10.html)
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the Eclipse Public License v1.0
+ * (http://www.eclipse.org/legal/epl-v10.html)
  *
- *    This library is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
- */
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *******************************************************************************/
 package org.mwc.debrief.core.wizards;
 
 import java.io.File;
@@ -29,236 +29,211 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 import org.mwc.debrief.core.ContextOperations.ExportCSVPrefs.DropdownProvider;
 
-public class CSVExportPage3 extends CustomWizardPage
-{
+public class CSVExportPage3 extends CustomWizardPage {
 
-  private static final String CSV_EXPORT_STATEMENT = "CSV_EXPORT_statement";
+	private static final String CSV_EXPORT_STATEMENT = "CSV_EXPORT_statement";
 
-  private static final String CSV_EXPORT_PURPOSE = "CSV_EXPORT_purpose";
+	private static final String CSV_EXPORT_PURPOSE = "CSV_EXPORT_purpose";
 
-  private static final String CSV_EXPORT_EXPORT_FOLDER = "CSV_EXPORT_exportFolder";
-  
-  private static final String PURPOSE = "PURPOSE";
-  
-  private static final String DISTRIBUTION = "DISTRIBUTION";
-  
-  public static final String PAGE_ID = "3. Release";
+	private static final String CSV_EXPORT_EXPORT_FOLDER = "CSV_EXPORT_exportFolder";
 
-  private final DropdownProvider provider;
+	private static final String PURPOSE = "PURPOSE";
 
-  // Data Fields ---- TODO: change default values
-  private String purpose;
-  private String statement;
-  private String exportFolder = new File(System.getProperty("user.home"))
-      .getAbsolutePath();
-  // ------
+	private static final String DISTRIBUTION = "DISTRIBUTION";
 
-  // UI - Fields -----
-  private Text purposeTxt;
-  private Text statementTxt;
-  private Text folderTxt;
+	public static final String PAGE_ID = "3. Release";
 
-  // ------
+	private final DropdownProvider provider;
 
-  public CSVExportPage3(final DropdownProvider provider)
-  {
-    super(PAGE_ID);
-    setTitle(CSVExportWizard.TITLE);
-    setDescription(CSVExportWizard.DEC);
-    this.provider = provider;
-    readFormPref();
-    super.setImageDescriptor(CSVExportWizard.WIZ_IMG);
+	// Data Fields ---- TODO: change default values
+	private String purpose;
+	private String statement;
+	private String exportFolder = new File(System.getProperty("user.home")).getAbsolutePath();
+	// ------
 
-  }
+	// UI - Fields -----
+	private Text purposeTxt;
+	private Text statementTxt;
+	private Text folderTxt;
 
-  @Override
-  protected List<String> getPageNames()
-  {
-    return CSVExportWizard.PAGE_NAMES;
-  }
+	// ------
 
-  private void addFolderField(final Composite contents)
-  {
+	public CSVExportPage3(final DropdownProvider provider) {
+		super(PAGE_ID);
+		setTitle(CSVExportWizard.TITLE);
+		setDescription(CSVExportWizard.DEC);
+		this.provider = provider;
+		readFromPref();
+		super.setImageDescriptor(CSVExportWizard.WIZ_IMG);
 
-    final Label lbl = new Label(contents, SWT.NONE);
-    lbl.setText("Destination:");
-    lbl.setToolTipText("Where the data-file is to be stored");
-    lbl.setAlignment(SWT.RIGHT);
-    lbl.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_END));
+	}
 
-    folderTxt = new Text(contents, SWT.BORDER);
-    final GridData gridData = new GridData(GridData.FILL_HORIZONTAL
-        | GridData.GRAB_HORIZONTAL);
-    folderTxt.setLayoutData(gridData);
-    if (exportFolder != null)
-      folderTxt.setText(exportFolder);
-    folderTxt.setEditable(false);
-    final Button browse = new Button(contents, SWT.PUSH);
-    browse.setText("Browse");
-    browse.addSelectionListener(new SelectionAdapter()
-    {
-      @Override
-      public void widgetSelected(final SelectionEvent e)
-      {
-        final DirectoryDialog directoryDialog = new DirectoryDialog(getShell());
-        directoryDialog.setFilterPath(folderTxt.getText());
-        directoryDialog.setText("Destination");
-        final String path = directoryDialog.open();
-        if (path != null)
-        {
-          folderTxt.setText(path);
-          setPageComplete(true);
+	private void addFolderField(final Composite contents) {
 
-        }
+		final Label lbl = new Label(contents, SWT.NONE);
+		lbl.setText("Destination:");
+		lbl.setToolTipText("Where the data-file is to be stored");
+		lbl.setAlignment(SWT.RIGHT);
+		lbl.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_END));
 
-      }
-    });
+		folderTxt = new Text(contents, SWT.BORDER);
+		final GridData gridData = new GridData(GridData.FILL_HORIZONTAL | GridData.GRAB_HORIZONTAL);
+		folderTxt.setLayoutData(gridData);
+		if (exportFolder != null)
+			folderTxt.setText(exportFolder);
+		folderTxt.setEditable(false);
+		final Button browse = new Button(contents, SWT.PUSH);
+		browse.setText("Browse");
+		browse.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(final SelectionEvent e) {
+				final DirectoryDialog directoryDialog = new DirectoryDialog(getShell());
+				directoryDialog.setFilterPath(folderTxt.getText());
+				directoryDialog.setText("Destination");
+				final String path = directoryDialog.open();
+				if (path != null) {
+					folderTxt.setText(path);
+					setPageComplete(true);
 
-  }
+				}
 
-  private String getValueFor(final String field) {
-    List<String> values = provider.getValuesFor(field);
-    if(values!=null && !values.isEmpty()) {
-      return values.get(0);
-    }
-    setErrorMessage("No "+field.toLowerCase()+" has been specified, may be an invalid file");
-    setPageComplete(false);
+			}
+		});
 
-    return null;
-  }
-  private void addPurposeField(final Composite contents)
-  {
-    if (purpose == null) {
-      purpose = getValueFor(PURPOSE);
-    }
+	}
 
-    final Label lbl = new Label(contents, SWT.NONE);
-    lbl.setText("Purpose:");
-    lbl.setToolTipText("Acceptable uses for this information");
-    lbl.setAlignment(SWT.RIGHT);
-    lbl.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_END));
+	private void addPurposeField(final Composite contents) {
+		if (purpose == null) {
+			purpose = getValueFor(PURPOSE);
+		}
 
-    purposeTxt = new Text(contents, SWT.BORDER);
-    final GridData gridData = new GridData(GridData.FILL_HORIZONTAL);
-    gridData.widthHint = 200;
-    purposeTxt.setLayoutData(gridData);
-    if (purpose != null)
-      purposeTxt.setText(purpose);
+		final Label lbl = new Label(contents, SWT.NONE);
+		lbl.setText("Purpose:");
+		lbl.setToolTipText("Acceptable uses for this information");
+		lbl.setAlignment(SWT.RIGHT);
+		lbl.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_END));
 
-    new Label(contents, SWT.NONE);// empty for 3rd col
+		purposeTxt = new Text(contents, SWT.BORDER);
+		final GridData gridData = new GridData(GridData.FILL_HORIZONTAL);
+		gridData.widthHint = 200;
+		purposeTxt.setLayoutData(gridData);
+		if (purpose != null)
+			purposeTxt.setText(purpose);
 
-  }
+		new Label(contents, SWT.NONE);// empty for 3rd col
 
-  private void addStatementField(final Composite contents)
-  {
+	}
 
-    if (statement == null) {
-      statement = getValueFor(DISTRIBUTION);
-    }
+	private void addStatementField(final Composite contents) {
 
-    final Label lbl = new Label(contents, SWT.NONE);
-    lbl.setText("Distribution Statement:");
-    lbl.setToolTipText("Details on how this information can be used");
-    lbl.setAlignment(SWT.RIGHT);
-    lbl.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_END
-        | GridData.VERTICAL_ALIGN_BEGINNING));
+		if (statement == null) {
+			statement = getValueFor(DISTRIBUTION);
+		}
 
-    statementTxt = new Text(contents, SWT.BORDER | SWT.MULTI | SWT.WRAP);
-    final GridData gridData = new GridData(GridData.GRAB_VERTICAL
-        | GridData.FILL_BOTH);
-    gridData.horizontalSpan = 2;
-    gridData.widthHint = 200;
-    statementTxt.setLayoutData(gridData);
-    if (statement != null)
-      statementTxt.setText(statement);
+		final Label lbl = new Label(contents, SWT.NONE);
+		lbl.setText("Distribution Statement:");
+		lbl.setToolTipText("Details on how this information can be used");
+		lbl.setAlignment(SWT.RIGHT);
+		lbl.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_END | GridData.VERTICAL_ALIGN_BEGINNING));
 
-  }
+		statementTxt = new Text(contents, SWT.BORDER | SWT.MULTI | SWT.WRAP);
+		final GridData gridData = new GridData(GridData.GRAB_VERTICAL | GridData.FILL_BOTH);
+		gridData.horizontalSpan = 2;
+		gridData.widthHint = 200;
+		statementTxt.setLayoutData(gridData);
+		if (statement != null)
+			statementTxt.setText(statement);
 
-  @Override
-  protected Composite createDataSection(Composite parent)
-  {
-    final Composite contents = new Composite(parent, SWT.NONE);
-    contents.setLayout(new GridLayout(3, false));
+	}
 
-    addPurposeField(contents);
-    addStatementField(contents);
-    addFolderField(contents);
+	@Override
+	protected Composite createDataSection(final Composite parent) {
+		final Composite contents = new Composite(parent, SWT.NONE);
+		contents.setLayout(new GridLayout(3, false));
 
-    return (contents);
-  }
+		addPurposeField(contents);
+		addStatementField(contents);
+		addFolderField(contents);
 
-  public void readFormPref()
-  {
-    exportFolder = getPrefValue(CSV_EXPORT_EXPORT_FOLDER, exportFolder);
-    purpose = getPrefValue(CSV_EXPORT_PURPOSE, purpose);
-    statement = getPrefValue(CSV_EXPORT_STATEMENT, statement);
-  }
+		return (contents);
+	}
 
-  public void writeToPref()
-  {
-    exportFolder = setPrefValue(CSV_EXPORT_EXPORT_FOLDER, exportFolder);
-    purpose = setPrefValue(CSV_EXPORT_PURPOSE, purpose);
-    statement = setPrefValue(CSV_EXPORT_STATEMENT, statement);
-  }
+	public String getExportFolder() {
+		return exportFolder;
+	}
 
-  public String getExportFolder()
-  {
-    return exportFolder;
-  }
+	@Override
+	protected List<String> getPageNames() {
+		return CSVExportWizard.PAGE_NAMES;
+	}
 
-  public String getPurpose()
-  {
-    return purpose;
-  }
+	public String getPurpose() {
+		return purpose;
+	}
 
-  public String getStatement()
-  {
-    return statement;
-  }
+	public String getStatement() {
+		return statement;
+	}
 
-  public void readValues()
-  {
-    if (purposeTxt != null && !purposeTxt.isDisposed())
-      purpose = purposeTxt.getText().trim();
+	private String getValueFor(final String field) {
+		final List<String> values = provider.getValuesFor(field);
+		if (values != null && !values.isEmpty()) {
+			return values.get(0);
+		}
+		setErrorMessage("No " + field.toLowerCase() + " has been specified, may be an invalid file");
+		setPageComplete(false);
 
-    if (statementTxt != null && !statementTxt.isDisposed())
-      statement = statementTxt.getText().trim();
+		return null;
+	}
 
-    if (folderTxt != null && !folderTxt.isDisposed())
-      exportFolder = folderTxt.getText().trim();
+	public void readFromPref() {
+		exportFolder = getPrefValue(CSV_EXPORT_EXPORT_FOLDER, exportFolder);
+		purpose = getPrefValue(CSV_EXPORT_PURPOSE, purpose);
+		statement = getPrefValue(CSV_EXPORT_STATEMENT, statement);
+	}
 
-    if (exportFolder == null || exportFolder.isEmpty())
-    {
-      setErrorMessage("Please select valid Destination folder.");
+	public void readValues() {
+		if (purposeTxt != null && !purposeTxt.isDisposed())
+			purpose = purposeTxt.getText().trim();
 
-      return;
-    }
-    validate();
-  }
+		if (statementTxt != null && !statementTxt.isDisposed())
+			statement = statementTxt.getText().trim();
 
-  private void validate()
-  {
-    if (exportFolder == null || exportFolder.isEmpty())
-    {
-      setErrorMessage("Please select valid Destination folder.");
+		if (folderTxt != null && !folderTxt.isDisposed())
+			exportFolder = folderTxt.getText().trim();
 
-      setPageComplete(false);
+		if (exportFolder == null || exportFolder.isEmpty()) {
+			setErrorMessage("Please select valid Destination folder.");
 
-      return;
-    }
-    else if (!new File(exportFolder).exists() || !new File(exportFolder)
-        .isDirectory() || !new File(exportFolder).canWrite())
-    {
-      setErrorMessage(
-          "Please select valid Destination folder with write access.");
+			return;
+		}
+		validate();
+	}
 
-      setPageComplete(false);
+	private void validate() {
+		if (exportFolder == null || exportFolder.isEmpty()) {
+			setErrorMessage("Please select valid Destination folder.");
 
-      return;
-    }
-    writeToPref();
-    setErrorMessage(null);
-    setPageComplete(true);
-  }
+			setPageComplete(false);
+
+			return;
+		} else if (!new File(exportFolder).exists() || !new File(exportFolder).isDirectory()
+				|| !new File(exportFolder).canWrite()) {
+			setErrorMessage("Please select valid Destination folder with write access.");
+
+			setPageComplete(false);
+
+			return;
+		}
+		writeToPref();
+		setErrorMessage(null);
+		setPageComplete(true);
+	}
+
+	public void writeToPref() {
+		exportFolder = setPrefValue(CSV_EXPORT_EXPORT_FOLDER, exportFolder);
+		purpose = setPrefValue(CSV_EXPORT_PURPOSE, purpose);
+		statement = setPrefValue(CSV_EXPORT_STATEMENT, statement);
+	}
 
 }

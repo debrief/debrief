@@ -1,6 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?xml-model href="http://docbook.org/xml/5.0/rng/docbook.rng" schematypens="http://relaxng.org/ns/structure/1.0"?>
 <?xml-model href="http://docbook.org/xml/5.0/rng/docbook.rng" type="application/xml" schematypens="http://purl.oclc.org/dsdl/schematron"?>
+<!--
+    Debrief - the Open Source Maritime Analysis Application
+    http://debrief.info
+     
+    (C) 2000-2020, Deep Blue C Technology Ltd
+     
+    This library is free software; you can redistribute it and/or
+    modify it under the terms of the Eclipse Public License v1.0
+    (http://www.eclipse.org/legal/epl-v10.html)
+     
+    This library is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ -->
+
 <book xmlns="http://docbook.org/ns/docbook" xmlns:xlink="http://www.w3.org/1999/xlink" version="5.0">
   <info>
     <keywordset>
@@ -4550,7 +4565,7 @@ Platform C,-551</screen></para>
 <markup>;SENSOR: YYMMDD HHMMSS.SSS AAAAAA @@ DD MM SS.SS H DDD MM SS.SS  H BBB.B
  RRRR yy..yy xx..xx
 ;; date, ownship name, symbology, sensor lat/long (or the single word NULL),
- bearing (degs), range(yds) [or the single world NULL], sensor name, label (to end of line)</markup>
+ bearing (degs) [or the single world NULL], range(yds) [or the single world NULL], sensor name, label (to end of line)</markup>
             </screen> or <screen width="70">
 <markup>;SENSOR2: YYMMDD HHMMSS.SSS AAAAAA @@ DD MM SS.SS H DDD MM SS.SS H BBB.B
  CCC.C FFF.F RRRR yy..yy xx..xx
@@ -7487,6 +7502,11 @@ and entry type can be multi-word if surrounded by quotes (").
 ;FORMAT_TRACK_NAME_AT_END: format_name track_names
 ;; name for this formatter, list of track names for which the name 
 ;;     should be shown at the end, or empty to apply to all tracks
+
+;SPLIT_TRACK: One_Second 1000
+;SPLIT_TRACK: One_Hour 3600000 TRACK_NAME TRACK_TWO ...
+;; name for this formatter, interval in milliseconds that represents a 
+;; jump,  list of track names to apply to, or empty to apply to all tracks
             </markup>
             </screen>
             <note>

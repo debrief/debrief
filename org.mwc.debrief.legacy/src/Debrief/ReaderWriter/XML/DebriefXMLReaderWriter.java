@@ -1,17 +1,17 @@
-/*
- *    Debrief - the Open Source Maritime Analysis Application
- *    http://debrief.info
+/*******************************************************************************
+ * Debrief - the Open Source Maritime Analysis Application
+ * http://debrief.info
  *
- *    (C) 2000-2014, PlanetMayo Ltd
+ * (C) 2000-2020, Deep Blue C Technology Ltd
  *
- *    This library is free software; you can redistribute it and/or
- *    modify it under the terms of the Eclipse Public License v1.0
- *    (http://www.eclipse.org/legal/epl-v10.html)
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the Eclipse Public License v1.0
+ * (http://www.eclipse.org/legal/epl-v10.html)
  *
- *    This library is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
- */
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *******************************************************************************/
 
 package Debrief.ReaderWriter.XML;
 
@@ -29,126 +29,34 @@ import org.w3c.dom.Document;
 
 import Debrief.GUI.Frames.Application;
 import Debrief.GUI.Frames.Session;
+import MWC.GUI.ToolParent;
 import MWC.Utilities.ReaderWriter.XML.MWCXMLReader;
 
 /**
  * @author IAN MAYO
  * @version 1
  */
-public final class DebriefXMLReaderWriter extends
-		MWC.Utilities.ReaderWriter.XML.MWCXMLReaderWriter
-{
-	private final Application _theApplication;
-
-	/**
-	 * Creates new XMLReaderWriter
-	 */
-	public DebriefXMLReaderWriter(
-			final Application theApplication)
-	{
-		_theApplication = theApplication;
-	}
-
-	// ///////////////////////////////////////////////////////////////////
-	//
-	// ////////////////////////////////////////////////////////////////////
-
-	/**
-	 * handle the import of XML data into an existing session
-	 */
-	@Override
-	public final void importThis(final String fName,
-			final java.io.InputStream is, final MWC.GUI.Layers theData)
-	{
-		if (theData == null)
-		{
-			try
-			{
-				importThis(fName, is);
-			}
-			catch (final RuntimeException e)
-			{
-
-				MWC.Utilities.Errors.Trace.trace("Sorry, unable to read file:"
-						+ e.getMessage(), true);
-			}
-		}
-		else
-		{
-			final MWCXMLReader handler = new DebriefLayersHandler(theData);
-
-			// now, occasionally the user will try to load a complete plot file to an
-			// existing session.
-			// Debrief will have trouble with this, since we can only add a "layers"
-			// object to an existing
-			// session
-			// ==
-			// try to trap this occurence by trimming the file to just the contents of
-			// the "Layers" object
-			// and importing that.
-
-			// todo finish off this trapping
-
-			// do the import
-			importThis(fName, is, handler);
-
-			//
-			theData.fireModified(null);
-
-		}
-	}
-	
-	/**
-	 * handle the import of XML data, creating a new session for it
-	 */
-	@Override
-	public final void importThis(final String fName, final java.io.InputStream is)
-	{
-		importThis(fName, is, (Session) null);
-	}
-
-	/**
-	 * handle the import of XML data, possible including into the existing session
-	 */
-	public void importThis(final String fName, final java.io.InputStream is,
-			final Session theSession)
-	{
-		// create the handler for this type of data
-		final MWCXMLReader handler = new PlotHandler(_theApplication, theSession,
-				fName);
-
-		// import the datafile into this set of layers
-		importThis(fName, is, handler);
-	}
-
+public final class DebriefXMLReaderWriter extends MWC.Utilities.ReaderWriter.XML.MWCXMLReaderWriter {
 	/**
 	 * exporting the session
 	 */
-	static public void exportThis(final Debrief.GUI.Frames.Session session,
-			final java.io.OutputStream os)
-	{
-	  
-	   // first put the plot into an XML document
-    try
-    {
-      final Document doc = DocumentBuilderFactory.newInstance()
-          .newDocumentBuilder().newDocument();
-      final org.w3c.dom.Element plot = PlotHandler.exportPlot(session, doc);
-      doc.appendChild(plot);
+	static public void exportThis(final Debrief.GUI.Frames.Session session, final java.io.OutputStream os) {
 
-      outputContent(os, doc);
+		// first put the plot into an XML document
+		try {
+			final Document doc = DocumentBuilderFactory.newInstance().newDocumentBuilder().newDocument();
+			final org.w3c.dom.Element plot = PlotHandler.exportPlot(session, doc);
+			doc.appendChild(plot);
 
-    }
-    catch (final DOMException e)
-    {
-      Application.logError2(Application.ERROR, "Whilst export Debrief plot", e);
+			outputContent(os, doc);
 
-    }
-    catch (final ParserConfigurationException e)
-    {
-      Application.logError2(Application.ERROR, "Whilst exporting Debrief plot", e);
-    }
-	  
+		} catch (final DOMException e) {
+			Application.logError2(ToolParent.ERROR, "Whilst export Debrief plot", e);
+
+		} catch (final ParserConfigurationException e) {
+			Application.logError2(ToolParent.ERROR, "Whilst exporting Debrief plot", e);
+		}
+
 		// // first put the plot into an XML document
 		// final Document doc = new DocumentImpl();
 		// final org.w3c.dom.Element plot = PlotHandler.exportPlot(session, doc);
@@ -178,37 +86,98 @@ public final class DebriefXMLReaderWriter extends
 		// }
 	}
 
-	 /**
-   * ok - we've got our output in a doc, write it to the specified stream
-   * 
-   * @param os
-   *          - where we're writing to
-   * @param doc
-   *          - the content we're outputting
-   */
-  private static void outputContent(final java.io.OutputStream os,
-      final Document doc)
-  {
-    // and now export it.
-    // this way of exporting the dom came from sample code in the Xerces 2.6.2
-    // download
-    try
-    {
-      final TransformerFactory tF = TransformerFactory.newInstance();
-      final Transformer tr = tF.newTransformer();
-      tr.setOutputProperty(OutputKeys.INDENT, "yes");
+	/**
+	 * ok - we've got our output in a doc, write it to the specified stream
+	 *
+	 * @param os  - where we're writing to
+	 * @param doc - the content we're outputting
+	 */
+	private static void outputContent(final java.io.OutputStream os, final Document doc) {
+		// and now export it.
+		// this way of exporting the dom came from sample code in the Xerces 2.6.2
+		// download
+		try {
+			final TransformerFactory tF = TransformerFactory.newInstance();
+			final Transformer tr = tF.newTransformer();
+			tr.setOutputProperty(OutputKeys.INDENT, "yes");
 
-      final DOMSource source = new DOMSource(doc);
-      final StreamResult result = new StreamResult(os);
+			final DOMSource source = new DOMSource(doc);
+			final StreamResult result = new StreamResult(os);
 
-      tr.transform(source, result);
-    }
-    catch (final TransformerException e)
-    {
-      Application.logError2(Application.ERROR, "Failed to export document to file", e);
-    }
-  }
-	
+			tr.transform(source, result);
+		} catch (final TransformerException e) {
+			Application.logError2(ToolParent.ERROR, "Failed to export document to file", e);
+		}
+	}
+
+	// ///////////////////////////////////////////////////////////////////
+	//
+	// ////////////////////////////////////////////////////////////////////
+
+	private final Application _theApplication;
+
+	/**
+	 * Creates new XMLReaderWriter
+	 */
+	public DebriefXMLReaderWriter(final Application theApplication) {
+		_theApplication = theApplication;
+	}
+
+	/**
+	 * handle the import of XML data, creating a new session for it
+	 */
+	@Override
+	public final void importThis(final String fName, final java.io.InputStream is) {
+		importThis(fName, is, (Session) null);
+	}
+
+	/**
+	 * handle the import of XML data into an existing session
+	 */
+	@Override
+	public final void importThis(final String fName, final java.io.InputStream is, final MWC.GUI.Layers theData) {
+		if (theData == null) {
+			try {
+				importThis(fName, is);
+			} catch (final RuntimeException e) {
+
+				MWC.Utilities.Errors.Trace.trace("Sorry, unable to read file:" + e.getMessage(), true);
+			}
+		} else {
+			final MWCXMLReader handler = new DebriefLayersHandler(theData);
+
+			// now, occasionally the user will try to load a complete plot file to an
+			// existing session.
+			// Debrief will have trouble with this, since we can only add a "layers"
+			// object to an existing
+			// session
+			// ==
+			// try to trap this occurence by trimming the file to just the contents of
+			// the "Layers" object
+			// and importing that.
+
+			// todo finish off this trapping
+
+			// do the import
+			importThis(fName, is, handler);
+
+			//
+			theData.fireModified(null);
+
+		}
+	}
+
+	/**
+	 * handle the import of XML data, possible including into the existing session
+	 */
+	public void importThis(final String fName, final java.io.InputStream is, final Session theSession) {
+		// create the handler for this type of data
+		final MWCXMLReader handler = new PlotHandler(_theApplication, theSession, fName);
+
+		// import the datafile into this set of layers
+		importThis(fName, is, handler);
+	}
+
 	// ///////////////////////////////////////////////////////////////////////////////////////////
 	// testing for this class
 	// ////////////////////////////////////////////////////////////////////////////////////////////////

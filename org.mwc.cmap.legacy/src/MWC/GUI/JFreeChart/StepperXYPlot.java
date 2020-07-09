@@ -1,17 +1,18 @@
-/*
- *    Debrief - the Open Source Maritime Analysis Application
- *    http://debrief.info
+/*******************************************************************************
+ * Debrief - the Open Source Maritime Analysis Application
+ * http://debrief.info
  *
- *    (C) 2000-2014, PlanetMayo Ltd
+ * (C) 2000-2020, Deep Blue C Technology Ltd
  *
- *    This library is free software; you can redistribute it and/or
- *    modify it under the terms of the Eclipse Public License v1.0
- *    (http://www.eclipse.org/legal/epl-v10.html)
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the Eclipse Public License v1.0
+ * (http://www.eclipse.org/legal/epl-v10.html)
  *
- *    This library is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
- */
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *******************************************************************************/
+
 package MWC.GUI.JFreeChart;
 
 import java.awt.BasicStroke;
@@ -38,311 +39,290 @@ import MWC.GenericData.Duration;
 import MWC.GenericData.HiResDate;
 
 /**
- * ******************************************************************* embedded class which extends
- * free chart to give current DTG indication
+ * ******************************************************************* embedded
+ * class which extends free chart to give current DTG indication
  * *******************************************************************
  */
-public class StepperXYPlot extends XYPlot implements StepperListener
-{
-  /**
-   *
-   */
-  private static final long serialVersionUID = 1L;
+public class StepperXYPlot extends XYPlot implements StepperListener {
+	/**
+	 *
+	 */
+	private static final long serialVersionUID = 1L;
 
-  /**
-   * the step control we monitor
-   */
-  private final StepperListener.StepperController _myStepper;
+	/**
+	 * the step control we monitor
+	 */
+	private final StepperListener.StepperController _myStepper;
 
-  /**
-   * the current time we are looking at (or -1 for null) (micros)
-   */
-  protected HiResDate _currentTime = null;
+	/**
+	 * the current time we are looking at (or -1 for null) (micros)
+	 */
+	protected HiResDate _currentTime = null;
 
-  /**
-   * whether to grow the axis with time
-   *
-   */
-  protected boolean _growWithTime = false;
+	/**
+	 * whether to grow the axis with time
+	 *
+	 */
+	protected boolean _growWithTime = false;
 
-  /**
-   * flag for if we need to reset the axes, after a grow setting
-   *
-   */
-  private boolean _resetAxes = false;
+	/**
+	 * flag for if we need to reset the axes, after a grow setting
+	 *
+	 */
+	private boolean _resetAxes = false;
 
-  /**
-   * whether to actually show the line
-   *
-   */
-  private boolean _showLine = true;
+	/**
+	 * whether to actually show the line
+	 *
+	 */
+	private boolean _showLine = true;
 
-  private Duration _fixedDuration;
+	/**
+	 * Time frame in case we are using a fix Duration.
+	 */
+	private Duration _fixedDuration;
+	
+	/**
+	 * whether to see window of time "around" the current time,
+	 * using the _fixedDuration time frame.
+	 */
+	private boolean _centreWindow;
 
-  // ////////////////////////////////////////////////
-  // constructor
-  // ////////////////////////////////////////////////
+	// ////////////////////////////////////////////////
+	// constructor
+	// ////////////////////////////////////////////////
 
-  /**
-   * Constructs an XYPlot with the specified axes (other attributes take default values).
-   *
-   * @param data
-   *          The dataset.
-   * @param domainAxis
-   *          The domain axis.
-   * @param rangeAxis
-   *          The range axis.
-   * @param theRenderer
-   */
-  public StepperXYPlot(final XYDataset data, final RelativeDateAxis domainAxis,
-      final ValueAxis rangeAxis,
-      final StepperListener.StepperController stepper,
-      final XYItemRenderer theRenderer)
-  {
-    super(data, domainAxis, rangeAxis, theRenderer);
-    this._myStepper = stepper;
+	// ////////////////////////////////////////////////
+	// over-ride painting support
+	// ////////////////////////////////////////////////
 
-    if (_myStepper != null)
-    {
-      _myStepper.addStepperListener(this);
-    }
-  }
+	/**
+	 * Constructs an XYPlot with the specified axes (other attributes take default
+	 * values).
+	 *
+	 * @param data        The dataset.
+	 * @param domainAxis  The domain axis.
+	 * @param rangeAxis   The range axis.
+	 * @param theRenderer
+	 */
+	public StepperXYPlot(final XYDataset data, final RelativeDateAxis domainAxis, final ValueAxis rangeAxis,
+			final StepperListener.StepperController stepper, final XYItemRenderer theRenderer) {
+		super(data, domainAxis, rangeAxis, theRenderer);
+		this._myStepper = stepper;
 
-  // ////////////////////////////////////////////////
-  // over-ride painting support
-  // ////////////////////////////////////////////////
+		if (_myStepper != null) {
+			_myStepper.addStepperListener(this);
+		}
+	}
 
-  /**
-   * Draws the XY plot on a Java 2D graphics device (such as the screen or a printer), together with
-   * a current time marker
-   * <P>
-   * XYPlot relies on an XYItemRenderer to draw each item in the plot. This allows the visual
-   * representation of the data to be changed easily.
-   * <P>
-   * The optional info argument collects information about the rendering of the plot (dimensions,
-   * tooltip information etc). Just pass in null if you do not need this information.
-   *
-   * @param g2
-   *          The graphics device.
-   * @param plotArea
-   *          The area within which the plot (including axis labels) should be drawn.
-   * @param info
-   *          Collects chart drawing information (null permitted).
-   */
-  @Override
-  public final void draw(final Graphics2D g2, final Rectangle2D plotArea,
-      final Point2D anchor, final PlotState state, final PlotRenderingInfo info)
-  {
-    super.draw(g2, plotArea, anchor, state, info);
+	/**
+	 * Draws the XY plot on a Java 2D graphics device (such as the screen or a
+	 * printer), together with a current time marker
+	 * <P>
+	 * XYPlot relies on an XYItemRenderer to draw each item in the plot. This allows
+	 * the visual representation of the data to be changed easily.
+	 * <P>
+	 * The optional info argument collects information about the rendering of the
+	 * plot (dimensions, tooltip information etc). Just pass in null if you do not
+	 * need this information.
+	 *
+	 * @param g2       The graphics device.
+	 * @param plotArea The area within which the plot (including axis labels) should
+	 *                 be drawn.
+	 * @param info     Collects chart drawing information (null permitted).
+	 */
+	@Override
+	public final void draw(final Graphics2D g2, final Rectangle2D plotArea, final Point2D anchor, final PlotState state,
+			final PlotRenderingInfo info) {
+		super.draw(g2, plotArea, anchor, state, info);
 
-    // do we want to view the line?
-    if (!_showLine)
-      return;
+		// do we want to view the line?
+		if (!_showLine)
+			return;
 
-    // do we have a time?
-    if (_currentTime != null)
-    {
-      // find the screen area for the dataset
-      final Rectangle2D dataArea = info.getDataArea();
+		// do we have a time?
+		if (_currentTime != null) {
+			// find the screen area for the dataset
+			final Rectangle2D dataArea = info.getDataArea();
 
-      // determine the time we are plotting the line at
-      long theTime = _currentTime.getMicros();
+			// determine the time we are plotting the line at
+			long theTime = _currentTime.getMicros();
 
-      // hmmm, how do we format the date
-      final CanBeRelativeToTimeStepper axis = (CanBeRelativeToTimeStepper) this
-          .getDomainAxis();
+			// hmmm, how do we format the date
+			final CanBeRelativeToTimeStepper axis = (CanBeRelativeToTimeStepper) this.getDomainAxis();
 
-      // are we working in relative time mode?
-      if (axis.isRelativeTimes())
-      {
-        if (_myStepper != null)
-        {
-          // yes, we now need to offset the time
-          theTime = theTime - _myStepper.getTimeZero().getMicros();
-        }
-      }
+			// are we working in relative time mode?
+			if (axis.isRelativeTimes()) {
+				if (_myStepper != null) {
+					// yes, we now need to offset the time
+					theTime = theTime - _myStepper.getTimeZero().getMicros();
+				}
+			}
 
-      // hmm, see if we are wroking with a date or number axis
-      double linePosition = 0;
-      if (axis instanceof DateAxis)
-      {
-        // ok, now scale the time to graph units
-        final DateAxis dateAxis = (DateAxis) axis;
+			// hmm, see if we are wroking with a date or number axis
+			double linePosition = 0;
+			if (axis instanceof DateAxis) {
+				// ok, now scale the time to graph units
+				final DateAxis dateAxis = (DateAxis) axis;
 
-        // find the new x value
-        linePosition = dateAxis.dateToJava2D(new Date(theTime / 1000), dataArea,
-            this.getDomainAxisEdge());
+				// find the new x value
+				linePosition = dateAxis.dateToJava2D(new Date(theTime / 1000), dataArea, this.getDomainAxisEdge());
 
-        if (_resetAxes)
-        {
-          dateAxis.setAutoRange(true);
-          _resetAxes = false;
-        }
+				if (_resetAxes) {
+					dateAxis.setAutoRange(true);
+					_resetAxes = false;
+				}
 
-        if (isGrowWithTime())
-        {
-          final long endMillis = theTime / 1000;
-          long startMillis;
+				if (isGrowWithTime()) {
+					long endMillis = theTime / 1000;
+					long startMillis;
 
-          if (_fixedDuration != null)
-          {
-            startMillis = endMillis - _fixedDuration.getMillis();
-          }
-          else
-          {
-            startMillis = (long) dateAxis.getLowerBound();
-          }
+					if (_fixedDuration != null) {
+						startMillis = endMillis - _fixedDuration.getMillis();
+					} else {
+						startMillis = (long) dateAxis.getLowerBound();
+					}
 
-          final Date startDate = new Date(startMillis);
-          final Date endDate = new Date(endMillis);
+					// In case we need to centre it, we simply add the difference
+					if (isCentreWindow()) {
+						final long halfDuration = _fixedDuration.getMillis() / 2L;
+						startMillis += halfDuration;
+						endMillis += halfDuration;
+					}
 
-          dateAxis.setRange(startDate, endDate);
-        }
-        else
-        {
-        }
+					final Date startDate = new Date(startMillis);
+					final Date endDate = new Date(endMillis);
 
-      }
-      else
-      {
-        if (axis instanceof NumberAxis)
-        {
-          final NumberAxis numberAxis = (NumberAxis) axis;
-          linePosition = numberAxis.valueToJava2D(theTime, dataArea, this
-              .getDomainAxisEdge());
+					dateAxis.setRange(startDate, endDate);
+				} else {
+				}
 
-          if (isGrowWithTime())
-            numberAxis.setRange(numberAxis.getRange().getLowerBound(), theTime);
-          else
-          {
-            if (_resetAxes)
-            {
-              numberAxis.setAutoRange(true);
-              _resetAxes = false;
-            }
-          }
+			} else {
+				if (axis instanceof NumberAxis) {
+					final NumberAxis numberAxis = (NumberAxis) axis;
+					linePosition = numberAxis.valueToJava2D(theTime, dataArea, this.getDomainAxisEdge());
 
-        }
-      }
+					if (isGrowWithTime())
+						numberAxis.setRange(numberAxis.getRange().getLowerBound(), theTime);
+					else {
+						if (_resetAxes) {
+							numberAxis.setAutoRange(true);
+							_resetAxes = false;
+						}
+					}
 
-      // ok, finally draw the line - if we're not showing the growing plot
-      if (!isGrowWithTime())
-        plotStepperLine(g2, linePosition, dataArea);
+				}
+			}
 
-    }
-  }
+			// ok, finally draw the line - if we're not showing the growing plot
+			if (!isGrowWithTime() || (isGrowWithTime() && isCentreWindow()))
+				plotStepperLine(g2, linePosition, dataArea);
 
-  public Duration getFixedDuration()
-  {
-    return _fixedDuration;
-  }
+		}
+	}
 
-  public boolean isGrowWithTime()
-  {
-    return _growWithTime;
-  }
+	public Duration getFixedDuration() {
+		return _fixedDuration;
+	}
 
-  /**
-   * the current time has changed
-   */
-  @Override
-  public final void newTime(final HiResDate oldDTG, final HiResDate newDTG,
-      final CanvasType canvas)
-  {
-    _currentTime = newDTG;
-  }
+	public HiResDate getTimeZero() {
+		if (_myStepper == null) {
+			return null;
+		}
+		return _myStepper.getTimeZero();
+	}
 
-  /**
-   * draw the new stepper line into the plot
-   *
-   * @param g2
-   * @param linePosition
-   * @param dataArea
-   */
-  protected void plotStepperLine(final Graphics2D g2, final double linePosition,
-      final Rectangle2D dataArea)
-  {
-    // prepare to draw
-    final Stroke oldStroke = g2.getStroke();
-    g2.setXORMode(Color.darkGray);
+	public boolean isCentreWindow() {
+		return _centreWindow;
+	}
 
-    // thicken up the line
-    g2.setStroke(new BasicStroke(3));
+	public boolean isGrowWithTime() {
+		return _growWithTime;
+	}
 
-    if (this.getOrientation() == PlotOrientation.VERTICAL)
-    {
-      // draw the line
-      g2.drawLine((int) linePosition - 1, (int) dataArea.getY() + 1,
-          (int) linePosition - 1, (int) dataArea.getY() + (int) dataArea
-              .getHeight() - 1);
-    }
-    else
-    {
-      // draw the line
-      g2.drawLine((int) dataArea.getX() + 1, (int) linePosition - 1,
-          (int) dataArea.getX() + (int) dataArea.getWidth() - 1,
-          (int) linePosition - 1);
+	/**
+	 * the current time has changed
+	 */
+	@Override
+	public final void newTime(final HiResDate oldDTG, final HiResDate newDTG, final CanvasType canvas) {
+		_currentTime = newDTG;
+	}
 
-    }
+	/**
+	 * draw the new stepper line into the plot
+	 *
+	 * @param g2
+	 * @param linePosition
+	 * @param dataArea
+	 */
+	protected void plotStepperLine(final Graphics2D g2, final double linePosition, final Rectangle2D dataArea) {
+		// prepare to draw
+		final Stroke oldStroke = g2.getStroke();
+		g2.setXORMode(Color.darkGray);
 
-    // and restore everything
-    g2.setStroke(oldStroke);
-    g2.setPaintMode();
-  }
+		// thicken up the line
+		g2.setStroke(new BasicStroke(3));
 
-  @Override
-  public void reset()
-  {
-    // don't worry about it, ignore
-  }
+		if (this.getOrientation() == PlotOrientation.VERTICAL) {
+			// draw the line
+			g2.drawLine((int) linePosition - 1, (int) dataArea.getY() + 1, (int) linePosition - 1,
+					(int) dataArea.getY() + (int) dataArea.getHeight() - 1);
+		} else {
+			// draw the line
+			g2.drawLine((int) dataArea.getX() + 1, (int) linePosition - 1,
+					(int) dataArea.getX() + (int) dataArea.getWidth() - 1, (int) linePosition - 1);
 
-  public void setFixedDuration(final Duration dur)
-  {
-    _fixedDuration = dur;
+		}
 
-    // do we need to reset the axes?
-    if (_fixedDuration == null)
-      _resetAxes = true;
-  }
+		// and restore everything
+		g2.setStroke(oldStroke);
+		g2.setPaintMode();
+	}
 
-  public void setGrowWithTime(final boolean growWithTime)
-  {
-    // do we need to reset the bounds?
-    if (!growWithTime && isGrowWithTime())
-    {
-      _resetAxes = true;
-    }
+	@Override
+	public void reset() {
+		// don't worry about it, ignore
+	}
 
-    this._growWithTime = growWithTime;
+	public void setCentreWindow(final boolean val) {
+		this._centreWindow = val;
+	}
 
-  }
+	public void setFixedDuration(final Duration dur) {
+		_fixedDuration = dur;
 
-  /**
-   * @param line
-   *          whether to actually show the line
-   */
-  public void setShowLine(final boolean line)
-  {
-    _showLine = line;
-  }
+		// do we need to reset the axes?
+		if (_fixedDuration == null)
+			_resetAxes = true;
+	}
 
-  /**
-   * the mode for stepping has changed
-   */
-  @Override
-  public final void steppingModeChanged(final boolean on)
-  {
-  }
+	public void setGrowWithTime(final boolean growWithTime) {
+		// do we need to reset the bounds?
+		if (!growWithTime && isGrowWithTime()) {
+			_resetAxes = true;
+		}
 
-  @Override
-  public void zoom(final double percent)
-  {
-    this.getDomainAxis().setAutoRange(true);
-    this.getRangeAxis().setAutoRange(true);
-  }
+		this._growWithTime = growWithTime;
 
-	public HiResDate getTimeZero()
-	{
-	  return _myStepper.getTimeZero();
+	}
+
+	/**
+	 * @param line whether to actually show the line
+	 */
+	public void setShowLine(final boolean line) {
+		_showLine = line;
+	}
+
+	/**
+	 * the mode for stepping has changed
+	 */
+	@Override
+	public final void steppingModeChanged(final boolean on) {
+	}
+
+	@Override
+	public void zoom(final double percent) {
+		this.getDomainAxis().setAutoRange(true);
+		this.getRangeAxis().setAutoRange(true);
 	}
 }

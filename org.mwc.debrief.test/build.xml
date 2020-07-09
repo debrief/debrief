@@ -1,3 +1,17 @@
+<!--
+    Debrief - the Open Source Maritime Analysis Application
+    http://debrief.info
+     
+    (C) 2000-2020, Deep Blue C Technology Ltd
+     
+    This library is free software; you can redistribute it and/or
+    modify it under the terms of the Eclipse Public License v1.0
+    (http://www.eclipse.org/legal/epl-v10.html)
+     
+    This library is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ -->
 <project default="runTests">
 	
 	<property file="${basedir}/build.properties"/>
@@ -24,8 +38,6 @@
 		<pathelement location="../org.mwc.asset.VesselMonitor/bin"/>
 		<pathelement location="../org.mwc.cmap.core/bin"/>
 		<pathelement location="../org.mwc.cmap.grideditor/bin"/>
-		<pathelement location="../org.mwc.cmap.gt2Plot/bin"/>
-		<pathelement location="../org.mwc.cmap.layer_manager/bin"/>
 		<pathelement location="../org.mwc.cmap.legacy/bin"/>
 		<pathelement location="../org.mwc.cmap.LiveDataMonitor/bin"/>
 		<pathelement location="../org.mwc.cmap.NarrativeViewer/bin"/>

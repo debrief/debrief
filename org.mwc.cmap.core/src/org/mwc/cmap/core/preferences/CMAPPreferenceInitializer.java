@@ -1,17 +1,18 @@
-/*
- *    Debrief - the Open Source Maritime Analysis Application
- *    http://debrief.info
+/*******************************************************************************
+ * Debrief - the Open Source Maritime Analysis Application
+ * http://debrief.info
  *
- *    (C) 2000-2014, PlanetMayo Ltd
+ * (C) 2000-2020, Deep Blue C Technology Ltd
  *
- *    This library is free software; you can redistribute it and/or
- *    modify it under the terms of the Eclipse Public License v1.0
- *    (http://www.eclipse.org/legal/epl-v10.html)
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the Eclipse Public License v1.0
+ * (http://www.eclipse.org/legal/epl-v10.html)
  *
- *    This library is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
- */
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *******************************************************************************/
+
 package org.mwc.cmap.core.preferences;
 
 import org.eclipse.core.runtime.preferences.AbstractPreferenceInitializer;
@@ -22,17 +23,16 @@ import org.mwc.cmap.core.preferences.CMAPPrefsPage.PreferenceConstants;
 import Debrief.ReaderWriter.Replay.ImportReplay;
 import Debrief.Tools.Tote.Calculations.relBearingCalc;
 
-public class CMAPPreferenceInitializer extends
-		AbstractPreferenceInitializer
-{
+public class CMAPPreferenceInitializer extends AbstractPreferenceInitializer {
 
 	/*
 	 * (non-Javadoc)
-	 * 
-	 * @see org.eclipse.core.runtime.preferences.AbstractPreferenceInitializer#initializeDefaultPreferences()
+	 *
+	 * @see org.eclipse.core.runtime.preferences.AbstractPreferenceInitializer#
+	 * initializeDefaultPreferences()
 	 */
-	public void initializeDefaultPreferences()
-	{
+	@Override
+	public void initializeDefaultPreferences() {
 		final IPreferenceStore store = CorePlugin.getDefault().getPreferenceStore();
 		store.setDefault(PreferenceConstants.REL_BEARING_FORMAT, relBearingCalc.UK_REL_BEARING_FORMAT);
 		store.setDefault(PreferenceConstants.RNG_UNITS, MWC.GUI.Properties.UnitsPropertyEditor.YDS_UNITS);

@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: SensorMonitor Plug-in
 Bundle-SymbolicName: org.mwc.asset.SensorMonitor; singleton:=true
-Bundle-Version: 1.0.4
+Bundle-Version: 1.0.6
 Bundle-Activator: org.mwc.asset.sensormonitor.Activator
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
@@ -11,4 +11,4 @@ Require-Bundle: org.eclipse.ui,
  org.mwc.cmap.core,
  org.mwc.cmap.legacy
 Bundle-ActivationPolicy: lazy
-Bundle-RequiredExecutionEnvironment: JavaSE-1.7
+Bundle-RequiredExecutionEnvironment: JavaSE-11

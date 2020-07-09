@@ -1,17 +1,18 @@
-/*
- *    Debrief - the Open Source Maritime Analysis Application
- *    http://debrief.info
+/*******************************************************************************
+ * Debrief - the Open Source Maritime Analysis Application
+ * http://debrief.info
  *
- *    (C) 2000-2014, PlanetMayo Ltd
+ * (C) 2000-2020, Deep Blue C Technology Ltd
  *
- *    This library is free software; you can redistribute it and/or
- *    modify it under the terms of the Eclipse Public License v1.0
- *    (http://www.eclipse.org/legal/epl-v10.html)
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the Eclipse Public License v1.0
+ * (http://www.eclipse.org/legal/epl-v10.html)
  *
- *    This library is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
- */
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *******************************************************************************/
+
 package org.mwc.cmap.grideditor.table;
 
 import java.util.Date;
@@ -29,7 +30,6 @@ import org.mwc.cmap.gridharness.data.GriddableSeries;
 import MWC.GUI.TimeStampedDataItem;
 import MWC.GenericData.HiResDate;
 
-
 public class DateTimeEditingSupportRich extends EditingSupport {
 
 	private EditableTarget myTabTraverseTarget;
@@ -39,10 +39,6 @@ public class DateTimeEditingSupportRich extends EditingSupport {
 	public DateTimeEditingSupportRich(final TableModel tableModel) {
 		super(tableModel.getViewer());
 		myUndoSupport = tableModel.getUndoSupport();
-	}
-
-	public void setTabTraverseTarget(final EditableTarget tabTraverseTarget) {
-		myTabTraverseTarget = tabTraverseTarget;
 	}
 
 	@Override
@@ -59,11 +55,20 @@ public class DateTimeEditingSupportRich extends EditingSupport {
 		return cellEditor;
 	}
 
+	protected final Composite getCellEditorParent() {
+		final TableViewer viewer = (TableViewer) getViewer();
+		return viewer.getTable();
+	}
+
 	@Override
 	protected Object getValue(final Object element) {
 		final TimeStampedDataItem dataItem = (TimeStampedDataItem) element;
 		final Date date = dataItem.getDTG().getDate();
 		return date;
+	}
+
+	public void setTabTraverseTarget(final EditableTarget tabTraverseTarget) {
+		myTabTraverseTarget = tabTraverseTarget;
 	}
 
 	@Override
@@ -72,7 +77,8 @@ public class DateTimeEditingSupportRich extends EditingSupport {
 		final Date valueImpl = (Date) value;
 		if (valueImpl != null && !valueImpl.equals(dataItem.getDTG().getDate())) {
 			final GriddableSeries series = (GriddableSeries) getViewer().getInput();
-			final OperationEnvironment environment = new OperationEnvironment(myUndoSupport.getUndoContext(), series, dataItem);
+			final OperationEnvironment environment = new OperationEnvironment(myUndoSupport.getUndoContext(), series,
+					dataItem);
 			final SetTimeStampOperation update = new SetTimeStampOperation(environment, new HiResDate(valueImpl));
 			try {
 				myUndoSupport.getOperationHistory().execute(update, null, null);
@@ -81,11 +87,6 @@ public class DateTimeEditingSupportRich extends EditingSupport {
 						" for item " + dataItem, e);
 			}
 		}
-	}
-
-	protected final Composite getCellEditorParent() {
-		final TableViewer viewer = (TableViewer) getViewer();
-		return viewer.getTable();
 	}
 
 }

@@ -1,17 +1,18 @@
-/*
- *    Debrief - the Open Source Maritime Analysis Application
- *    http://debrief.info
+/*******************************************************************************
+ * Debrief - the Open Source Maritime Analysis Application
+ * http://debrief.info
  *
- *    (C) 2000-2014, PlanetMayo Ltd
+ * (C) 2000-2020, Deep Blue C Technology Ltd
  *
- *    This library is free software; you can redistribute it and/or
- *    modify it under the terms of the Eclipse Public License v1.0
- *    (http://www.eclipse.org/legal/epl-v10.html)
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the Eclipse Public License v1.0
+ * (http://www.eclipse.org/legal/epl-v10.html)
  *
- *    This library is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
- */
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *******************************************************************************/
+
 package Debrief.ReaderWriter.Replay;
 
 // Copyright MWC 1999
@@ -57,35 +58,36 @@ package Debrief.ReaderWriter.Replay;
 // Revision 1.1  1999-06-04 08:45:30+01  sm11td
 // Initial revision
 //
+import MWC.TacticalData.Fix;
 
-import MWC.TacticalData.*;
-
-/** helper class to allow an import function to return a real fix plus
- * it's supporting data
+/**
+ * helper class to allow an import function to return a real fix plus it's
+ * supporting data
  */
-public final class ReplayFix
-{
-  //////////////////////////////////////////////////
-  // member variables
-  //////////////////////////////////////////////////
-  public Fix theFix;
-  public String theTrackName;
-  public String theSymbology;
-  /** the (optional) label
-   * 
-   */
-	public String label;
-	/** the (optional) comment
-	 * 
+public final class ReplayFix {
+	//////////////////////////////////////////////////
+	// member variables
+	//////////////////////////////////////////////////
+	public Fix theFix;
+	public String theTrackName;
+	public String theSymbology;
+	/**
+	 * the (optional) label
+	 *
 	 */
-  public String comment;
-  
-  //////////////////////////////////////////////////
-  // constructor
-  //////////////////////////////////////////////////
+	public String label;
+	/**
+	 * the (optional) comment
+	 *
+	 */
+	public String comment;
 
-  //////////////////////////////////////////////////
-  // member functions
-  //////////////////////////////////////////////////
+	//////////////////////////////////////////////////
+	// constructor
+	//////////////////////////////////////////////////
+
+	//////////////////////////////////////////////////
+	// member functions
+	//////////////////////////////////////////////////
 
 }

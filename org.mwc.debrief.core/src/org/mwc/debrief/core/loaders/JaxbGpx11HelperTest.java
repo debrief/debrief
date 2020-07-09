@@ -1,20 +1,24 @@
-/*
- *    Debrief - the Open Source Maritime Analysis Application
- *    http://debrief.info
+/*******************************************************************************
+ * Debrief - the Open Source Maritime Analysis Application
+ * http://debrief.info
  *
- *    (C) 2000-2014, PlanetMayo Ltd
+ * (C) 2000-2020, Deep Blue C Technology Ltd
  *
- *    This library is free software; you can redistribute it and/or
- *    modify it under the terms of the Eclipse Public License v1.0
- *    (http://www.eclipse.org/legal/epl-v10.html)
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the Eclipse Public License v1.0
+ * (http://www.eclipse.org/legal/epl-v10.html)
  *
- *    This library is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
- */
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *******************************************************************************/
+
 package org.mwc.debrief.core.loaders;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.util.Enumeration;
 
@@ -31,19 +35,73 @@ import MWC.GenericData.WorldLocation;
 
 /**
  * Tests the GPX 1.1 version
- * 
+ *
  * @author Aravind R. Yarram <yaravind@gmail.com>
  * @date August 21, 2012
  * @category gpx
- * 
+ *
  */
-public class JaxbGpx11HelperTest
-{
+public class JaxbGpx11HelperTest {
 	private final JaxbGpxHelper helper = new JaxbGpxHelper();
 
+	/**
+	 * Unmarshaller should use the default values specified in the schema
+	 */
 	@Test
-	public void unmarshallTrackWithAllData()
-	{
+	public void unmarshallShouldNotFailWhenOptionalDataMissing() {
+		final Layers layers = helper.unmarshall(getClass().getResourceAsStream("gpx-1.1-missing-optional-data.xml"),
+				null);
+		assertEquals("Only 1 track is present in the gpx xml", 1, layers.size());
+
+		// assert track
+		final TrackWrapper track = (TrackWrapper) layers.findLayer("NELSON");
+		assertNotNull(track);
+		assertEquals("NELSON", track.getName());
+		assertTrue(track.getNameAtStart());
+		assertEquals(1, track.getLineThickness());
+		assertTrue(track.getInterpolatePoints());
+		assertTrue(track.getLinkPositions());
+		assertEquals(1, track.getLineStyle());
+		assertEquals(Integer.valueOf(LocationPropertyEditor.RIGHT), track.getNameLocation());
+		assertTrue(track.getNameVisible());
+		assertTrue(track.getPlotArrayCentre());
+		assertTrue(track.getLinkPositions());
+		assertTrue(track.getSensors().getVisible());
+		assertTrue(track.getSolutions().getVisible());
+		assertTrue(track.getPositionsVisible());
+		assertEquals("Square", track.getSymbolType());
+		assertTrue(track.getVisible());
+
+		// assert segment
+		final SegmentList segments = track.getSegments();
+		assertNotNull(segments);
+		assertEquals("Only 1 segment is present in the gpx xml", 1, segments.size());
+
+		final TrackSegment segment = (TrackSegment) segments.getData().iterator().next();
+
+		// assert Fix
+		final WorldLocation trackStart = segment.getTrackStart();
+		assertNotNull("The first track should be start of the track", trackStart);
+
+		assertEquals(22.1862861, trackStart.getLat(), 0.0000001);
+		assertEquals(-21.6978806, trackStart.getLong(), 0.0000001);
+		assertEquals(0.000, trackStart.getDepth(), 0.0000001);
+
+		int trackPointCount = 0;
+		final Enumeration<Editable> elements = segment.elements();
+		while (elements.hasMoreElements()) {
+			trackPointCount++;
+			elements.nextElement();
+
+		}
+		assertEquals("1 track point is present in the gpx xml", 1, trackPointCount);
+
+		final FixWrapper fix = (FixWrapper) segment.elements().nextElement();
+		assertNotNull(fix.getTime());
+	}
+
+	@Test
+	public void unmarshallTrackWithAllData() {
 		final Layers layers = helper.unmarshall(getClass().getResourceAsStream("gpx-1.1-data.xml"), null);
 		assertEquals("Only 1 track is present in the gpx xml", 1, layers.size());
 
@@ -83,8 +141,7 @@ public class JaxbGpx11HelperTest
 
 		int trackPointCount = 0;
 		final Enumeration<Editable> elements = segment.elements();
-		while (elements.hasMoreElements())
-		{
+		while (elements.hasMoreElements()) {
 			trackPointCount++;
 			elements.nextElement();
 
@@ -103,62 +160,5 @@ public class JaxbGpx11HelperTest
 		assertEquals("120500", fix.getLabel());
 		assertEquals(2.000, fix.getSpeed(), 0.001);
 		assertEquals(Integer.valueOf(LocationPropertyEditor.LEFT), fix.getLabelLocation());
-	}
-
-	/**
-	 * Unmarshaller should use the default values specified in the schema
-	 */
-	@Test
-	public void unmarshallShouldNotFailWhenOptionalDataMissing()
-	{
-		final Layers layers = helper.unmarshall(getClass().getResourceAsStream("gpx-1.1-missing-optional-data.xml"), null);
-		assertEquals("Only 1 track is present in the gpx xml", 1, layers.size());
-
-		// assert track
-		final TrackWrapper track = (TrackWrapper) layers.findLayer("NELSON");
-		assertNotNull(track);
-		assertEquals("NELSON", track.getName());
-		assertTrue(track.getNameAtStart());
-		assertEquals(1, track.getLineThickness());
-		assertTrue(track.getInterpolatePoints());
-		assertTrue(track.getLinkPositions());
-		assertEquals(1, track.getLineStyle());
-		assertEquals(Integer.valueOf(LocationPropertyEditor.RIGHT), track.getNameLocation());
-		assertTrue(track.getNameVisible());
-		assertTrue(track.getPlotArrayCentre());
-		assertTrue(track.getLinkPositions());
-		assertTrue(track.getSensors().getVisible());
-		assertTrue(track.getSolutions().getVisible());
-		assertTrue(track.getPositionsVisible());
-		assertEquals("Square", track.getSymbolType());
-		assertTrue(track.getVisible());
-
-		// assert segment
-		final SegmentList segments = track.getSegments();
-		assertNotNull(segments);
-		assertEquals("Only 1 segment is present in the gpx xml", 1, segments.size());
-
-		final TrackSegment segment = (TrackSegment) segments.getData().iterator().next();
-
-		// assert Fix
-		final WorldLocation trackStart = segment.getTrackStart();
-		assertNotNull("The first track should be start of the track", trackStart);
-
-		assertEquals(22.1862861, trackStart.getLat(), 0.0000001);
-		assertEquals(-21.6978806, trackStart.getLong(), 0.0000001);
-		assertEquals(0.000, trackStart.getDepth(), 0.0000001);
-
-		int trackPointCount = 0;
-		final Enumeration<Editable> elements = segment.elements();
-		while (elements.hasMoreElements())
-		{
-			trackPointCount++;
-			elements.nextElement();
-
-		}
-		assertEquals("1 track point is present in the gpx xml", 1, trackPointCount);
-
-		final FixWrapper fix = (FixWrapper) segment.elements().nextElement();
-		assertNotNull(fix.getTime());
 	}
 }

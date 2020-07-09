@@ -1,17 +1,18 @@
-/*
- *    Debrief - the Open Source Maritime Analysis Application
- *    http://debrief.info
+/*******************************************************************************
+ * Debrief - the Open Source Maritime Analysis Application
+ * http://debrief.info
  *
- *    (C) 2000-2014, PlanetMayo Ltd
+ * (C) 2000-2020, Deep Blue C Technology Ltd
  *
- *    This library is free software; you can redistribute it and/or
- *    modify it under the terms of the Eclipse Public License v1.0
- *    (http://www.eclipse.org/legal/epl-v10.html)
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the Eclipse Public License v1.0
+ * (http://www.eclipse.org/legal/epl-v10.html)
  *
- *    This library is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
- */
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *******************************************************************************/
+
 package com.borlander.rac525791.dashboard;
 
 import org.eclipse.swt.widgets.Canvas;
@@ -25,7 +26,7 @@ public class DashboardUpdater implements DashboardListener, ThresholdListener {
 	private final DashboardFigure myDashboard;
 	private final Canvas myHost;
 
-	public DashboardUpdater(DashboardDataModel model, DashboardFigure dashboard, Canvas control){
+	public DashboardUpdater(final DashboardDataModel model, final DashboardFigure dashboard, final Canvas control) {
 		myModel = model;
 		myDashboard = dashboard;
 		myHost = control;
@@ -33,71 +34,84 @@ public class DashboardUpdater implements DashboardListener, ThresholdListener {
 		myModel.setThresholdListener(this);
 	}
 
-	public void statusChanged() {
-		myDashboard.setVesselStatus(myModel.getVesselStatus());
-		myHost.redraw();
-	}
-	
-	public void nameChanged() {
-		myDashboard.setVesselName(myModel.getVesselName());
-		myHost.redraw();
-	}
-
+	@Override
 	public void actualDepthChanged() {
 		myDashboard.setDepth(myModel.getActualDepth());
 		myHost.redraw();
 	}
-	
-	public void demandedDepthChanged() {
-		myDashboard.setDemandedDepth(myModel.getDemandedDepth());
-		myDashboard.setIgnoreDemandedDepth(myModel.isIgnoreDemandedDepth());
-		myHost.redraw();
-	}
-	
-	public void actualSpeedChanged() {
-		myDashboard.setSpeed(myModel.getActualSpeed());
-		myHost.redraw();
-	}
 
-	public void demandedSpeedChanged() {
-		myDashboard.setDemandedSpeed(myModel.getDemandedSpeed());
-		myDashboard.setIgnoreDemandedSpeed(myModel.isIgnoreDemandedSpeed());
-		myHost.redraw();
-	}
-
+	@Override
 	public void actualDirectionChanged() {
 		myDashboard.setDirection(myModel.getActualDirection());
 		myHost.redraw();
 	}
 
+	@Override
+	public void actualSpeedChanged() {
+		myDashboard.setSpeed(myModel.getActualSpeed());
+		myHost.redraw();
+	}
+
+	@Override
+	public void demandedDepthChanged() {
+		myDashboard.setDemandedDepth(myModel.getDemandedDepth());
+		myDashboard.setIgnoreDemandedDepth(myModel.isIgnoreDemandedDepth());
+		myHost.redraw();
+	}
+
+	@Override
 	public void demandedDirectionChanged() {
 		myDashboard.setDemandedDirection(myModel.getDemandedDirection());
 		myDashboard.setIgnoreDemandedDirection(myModel.isIgnoreDemandedDirection());
 		myHost.redraw();
 	}
 
+	@Override
+	public void demandedSpeedChanged() {
+		myDashboard.setDemandedSpeed(myModel.getDemandedSpeed());
+		myDashboard.setIgnoreDemandedSpeed(myModel.isIgnoreDemandedSpeed());
+		myHost.redraw();
+	}
+
+	@Override
+	public void depthOnThresholdChanged(final boolean isOkNow) {
+		myDashboard.updateDepthOnThreshold(isOkNow);
+		myHost.redraw();
+	}
+
+	@Override
 	public void depthUnitsChanged() {
 		myDashboard.setDepthUnits(myModel.getDepthUnits());
 		myHost.redraw();
 	}
 
-	public void speedUnitsChanged() {
-		myDashboard.setSpeedUnits(myModel.getSpeedUnits());
-		myHost.redraw();
-	}
-	
-	public void depthOnThresholdChanged(boolean isOkNow) {
-		myDashboard.updateDepthOnThreshold(isOkNow);
-		myHost.redraw();
-	}
-	
-	public void directionOnThresholdChanged(boolean isOkNow) {
+	@Override
+	public void directionOnThresholdChanged(final boolean isOkNow) {
 		myDashboard.updateDirectionOnThreshold(isOkNow);
 		myHost.redraw();
 	}
 
-	public void speedOnThresholdChanged(boolean isOkNow) {
+	@Override
+	public void nameChanged() {
+		myDashboard.setVesselName(myModel.getVesselName());
+		myHost.redraw();
+	}
+
+	@Override
+	public void speedOnThresholdChanged(final boolean isOkNow) {
 		myDashboard.updateSpeedOnThreshold(isOkNow);
+		myHost.redraw();
+	}
+
+	@Override
+	public void speedUnitsChanged() {
+		myDashboard.setSpeedUnits(myModel.getSpeedUnits());
+		myHost.redraw();
+	}
+
+	@Override
+	public void statusChanged() {
+		myDashboard.setVesselStatus(myModel.getVesselStatus());
 		myHost.redraw();
 	}
 }

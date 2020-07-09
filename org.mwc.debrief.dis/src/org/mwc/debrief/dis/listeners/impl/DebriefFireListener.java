@@ -14,67 +14,53 @@ import MWC.TacticalData.NarrativeEntry;
 import MWC.TacticalData.NarrativeWrapper;
 import MWC.Utilities.ReaderWriter.XML.LayerHandler;
 
-public class DebriefFireListener extends DebriefCoreListener implements
-    IDISFireListener
-{
+public class DebriefFireListener extends DebriefCoreListener implements IDISFireListener {
 
-  final private String MY_LAYER = "WPN RELEASE";
+	final private String MY_LAYER = "WPN RELEASE";
 
-  public DebriefFireListener(IDISContext context)
-  {
-    super(context);
-  }
+	public DebriefFireListener(final IDISContext context) {
+		super(context);
+	}
 
-  @Override
-  public void add(final long time, final short eid, int hisId, final String hisName,
-      int tgtId, final String tgtName, final double dLat, final double dLon,
-      final double depth)
-  {
-    final String message =
-        "Launch of new weapon from:" + hisName + " at:" + tgtName;
+	@Override
+	public void add(final long time, final short eid, final int hisId, final String hisName, final int tgtId,
+			final String tgtName, final double dLat, final double dLon, final double depth) {
+		final String message = "Launch of new weapon from:" + hisName + " at:" + tgtName;
 
-    // create the text marker
-    addNewItem(eid, MY_LAYER, new ListenerHelper()
-    {
+		// create the text marker
+		addNewItem(eid, MY_LAYER, new ListenerHelper() {
 
-      @Override
-      public Layer createLayer()
-      {
-        Layer newB = new BaseLayer();
-        newB.setName(MY_LAYER);
-        return newB;
-      }
+			@Override
+			public Plottable createItem() {
+				final WorldLocation newLoc = new WorldLocation(dLat, dLon, depth);
+				final Color theColor = colorFor(eid, hisName);
+				return new LabelWrapper(message, newLoc, theColor);
+			}
 
-      @Override
-      public Plottable createItem()
-      {
-        WorldLocation newLoc = new WorldLocation(dLat, dLon, depth);
-        Color theColor = colorFor(eid, hisName);
-        return new LabelWrapper(message, newLoc, theColor);
-      }
-    });
+			@Override
+			public Layer createLayer() {
+				final Layer newB = new BaseLayer();
+				newB.setName(MY_LAYER);
+				return newB;
+			}
+		});
 
-    // and the narrative entry
-    addNewItem(eid, LayerHandler.NARRATIVE_LAYER, new ListenerHelper()
-    {
+		// and the narrative entry
+		addNewItem(eid, LayerHandler.NARRATIVE_LAYER, new ListenerHelper() {
 
-      @Override
-      public Layer createLayer()
-      {
-        return new NarrativeWrapper(LayerHandler.NARRATIVE_LAYER);
-      }
+			@Override
+			public Plottable createItem() {
+				final NarrativeEntry newE = new NarrativeEntry(hisName, MY_LAYER, new HiResDate(time), message);
+				final Color theColor = colorFor(eid, hisName);
+				newE.setColor(theColor);
+				return newE;
+			}
 
-      @Override
-      public Plottable createItem()
-      {
-        NarrativeEntry newE =
-            new NarrativeEntry(hisName, MY_LAYER, new HiResDate(time),
-                message);
-        Color theColor = colorFor(eid, hisName);
-        newE.setColor(theColor);
-        return newE;
-      }
-    });
-  }
+			@Override
+			public Layer createLayer() {
+				return new NarrativeWrapper(LayerHandler.NARRATIVE_LAYER);
+			}
+		});
+	}
 
 }

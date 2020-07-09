@@ -1,8 +1,18 @@
+/*******************************************************************************
+ * Debrief - the Open Source Maritime Analysis Application
+ * http://debrief.info
+ *
+ * (C) 2000-2020, Deep Blue C Technology Ltd
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the Eclipse Public License v1.0
+ * (http://www.eclipse.org/legal/epl-v10.html)
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *******************************************************************************/
 package info.limpet.impl;
-
-import info.limpet.ICommand;
-import info.limpet.operations.spatial.GeoSupport;
-import info.limpet.operations.spatial.IGeoCalculator;
 
 import java.awt.geom.Point2D;
 import java.util.Arrays;
@@ -16,347 +26,298 @@ import org.eclipse.january.dataset.IndexIterator;
 import org.eclipse.january.dataset.ObjectDataset;
 import org.eclipse.january.metadata.AxesMetadata;
 
-public class LocationDocument extends Document<Point2D>
-{
-  
-  private Unit<?> _distanceUnits;
+import info.limpet.ICommand;
+import info.limpet.operations.spatial.GeoSupport;
+import info.limpet.operations.spatial.IGeoCalculator;
 
-  public LocationDocument(ObjectDataset dataset, ICommand predecessor)
-  {
-    this(dataset, predecessor, SampleData.DEGREE_ANGLE);
-  }
+public class LocationDocument extends Document<Point2D> {
 
-  public LocationDocument(ObjectDataset dataset, ICommand predecessor, Unit<?> units)
-  {
-    super(dataset, predecessor);
-    _distanceUnits = units;
-  }
+	public class MyStats {
+		public double max() {
+			final DoubleDataset ds = (DoubleDataset) dataset;
+			return (Double) ds.max();
 
-  public IGeoCalculator getCalculator()
-  {
-    return GeoSupport.calculatorFor(_distanceUnits);
-  }
-  
-  public boolean isQuantity()
-  {
-    return false;
-  }
+		}
 
-  /**
-   * we've introduced this method as a workaround. The "visibleWhen" operator for getRange doesn't
-   * work with "size==1". Numerical comparisions don't seem to work. So, we're wrapping the
-   * numberical comparison in this boolean method.
-   * 
-   * @return
-   */
-  public boolean getShowRange()
-  {
-    return size() == 1;
-  }
+		public double mean() {
+			final DoubleDataset ds = (DoubleDataset) dataset;
+			return (Double) ds.mean(true);
+		}
 
-  @Override
-  public void setDataset(IDataset dataset)
-  {
-    if (dataset instanceof ObjectDataset)
-    {
-      super.setDataset(dataset);
-    }
-    else
-    {
-      throw new IllegalArgumentException("We only store object datasets");
-    }
-  }
+		public double min() {
+			final DoubleDataset ds = (DoubleDataset) dataset;
+			return (Double) ds.min(true);
+		}
 
-  @UIProperty(name = "Value", category = UIProperty.CATEGORY_VALUE,
-      visibleWhen = "showRange == true")
-  public String getValue()
-  {
-    ObjectDataset data = (ObjectDataset) getDataset();
-    Point2D point = (Point2D) data.get();
-    return point.getY() + "," + point.getX();
-  }
+		public double sd() {
+			final DoubleDataset ds = (DoubleDataset) dataset;
+			return ds.stdDeviation(true);
+		}
 
-  public void setValue(String val)
-  {
-    // try to parse it
-    String[] items = val.split(",");
-    if (items.length == 2)
-    {
-      try
-      {
-        double y = Double.parseDouble(items[0]);
-        double x = Double.parseDouble(items[1]);
-        ObjectDataset data = (ObjectDataset) getDataset();
-        Point2D point = (Point2D) data.get();
-        point.setLocation(x, y);
-        
-        // successful, fire modified
-        this.fireDataChanged();
+		public double variance() {
+			final DoubleDataset ds = (DoubleDataset) dataset;
+			return ds.variance(true);
+		}
+	}
 
-      }
-      catch (NumberFormatException dd)
-      {
-        dd.printStackTrace();
-      }
-    }
-    
-  }
+	private final Unit<?> _distanceUnits;
 
-  public String toListing()
-  {
-    StringBuffer res = new StringBuffer();
+	public LocationDocument(final ObjectDataset dataset, final ICommand predecessor) {
+		this(dataset, predecessor, SampleData.DEGREE_ANGLE);
+	}
 
-    ObjectDataset dataset = (ObjectDataset) this.getDataset();
-    final AxesMetadata axesMetadata =
-        dataset.getFirstMetadata(AxesMetadata.class);
-    final IndexIterator iterator = dataset.getIterator();
+	public LocationDocument(final ObjectDataset dataset, final ICommand predecessor, final Unit<?> units) {
+		super(dataset, predecessor);
+		_distanceUnits = units;
+	}
 
-    final DoubleDataset axisDataset;
-    if (axesMetadata != null && axesMetadata.getAxes().length > 0)
-    {
-      DoubleDataset doubleAxis = (DoubleDataset) axesMetadata.getAxes()[0];
-      axisDataset = doubleAxis != null ? doubleAxis : null;
-    }
-    else
-    {
-      axisDataset = null;
-    }
+	public IGeoCalculator getCalculator() {
+		return GeoSupport.calculatorFor(_distanceUnits);
+	}
 
-    res.append(dataset.getName() + ":\n");
-    while (iterator.hasNext())
-    {
-      final String indexVal;
-      if (axisDataset != null)
-      {
-        indexVal = "" + axisDataset.getElementDoubleAbs(iterator.index);
-      }
-      else
-      {
-        indexVal = "N/A";
-      }
+	@Override
+	public Iterator<Point2D> getIterator() {
+		return getLocationIterator();
+	}
 
-      res.append(indexVal + " : " + dataset.get(iterator.index));
-      res.append(";");
-    }
-    res.append("\n");
+	public Iterator<Point2D> getLocationIterator() {
+		final Iterator<?> oIter = getObjectIterator();
+		return new Iterator<Point2D>() {
 
-    return res.toString();
-  }
+			@Override
+			public boolean hasNext() {
+				return oIter.hasNext();
+			}
 
-  /**
-   * retrieve the location at the specified time (even if it's a non-temporal collection)
-   * 
-   * @param iCollection
-   *          set of locations to use
-   * @param thisTime
-   *          time we're need a location for
-   * @return
-   */
-  public Point2D locationAt(double thisTime)
-  {
-    Point2D res = null;
-    if (isIndexed())
-    {
-      res = interpolateValue(thisTime);
-    }
-    else
-    {
-      res = getLocationIterator().next();
-    }
-    return res;
-  }
+			@Override
+			public Point2D next() {
+				return (Point2D) oIter.next();
+			}
 
-  //
-  // public Point2D interpolateValue(long i, InterpMethod linear)
-  // {
-  // Point2D res = null;
-  //
-  // // do we have axes?
-  // AxesMetadata index = dataset.getFirstMetadata(AxesMetadata.class);
-  // ILazyDataset indexDataLazy = index.getAxes()[0];
-  // try
-  // {
-  // Dataset indexData = DatasetUtils.sliceAndConvertLazyDataset(indexDataLazy);
-  //
-  // // check the target index is within the range
-  // double lowerIndex = indexData.getDouble(0);
-  // int indexSize = indexData.getSize();
-  // double upperVal = indexData.getDouble(indexSize - 1);
-  // if(i >= lowerIndex && i <= upperVal)
-  // {
-  // // ok, create an dataset that captures this specific time
-  // LongDataset indexes = (LongDataset) DatasetFactory.createFromObject(new Long[]{i});
-  //
-  // // perform the interpolation
-  // Dataset dOut = Maths.interpolate(indexData, ds, indexes, 0, 0);
-  //
-  // // get the single matching value out
-  // res = dOut.getDouble(0);
-  // }
-  // }
-  // catch (DatasetException e)
-  // {
-  // e.printStackTrace();
-  // }
-  //
-  // return res;
-  // }
+			@Override
+			public void remove() {
+				oIter.remove();
+			}
+		};
+	}
 
-  private Point2D interpolateValue(double time)
-  {
-    final Point2D res;
-    
-    final IGeoCalculator calculator = getCalculator();
+	public Iterator<?> getObjectIterator() {
+		final ObjectDataset od = (ObjectDataset) dataset;
+		final Object[] strings = od.getData();
+		final Iterable<Object> iterable = Arrays.asList(strings);
+		return iterable.iterator();
+	}
 
-    // ok, find the values either side
-    int beforeIndex = -1, afterIndex = -1;
-    double beforeTime = 0, afterTime = 0;
+	/**
+	 * we've introduced this method as a workaround. The "visibleWhen" operator
+	 * for getRange doesn't work with "size==1". Numerical comparisions don't
+	 * seem to work. So, we're wrapping the numberical comparison in this
+	 * boolean method.
+	 *
+	 * @return
+	 */
+	public boolean getShowRange() {
+		return size() == 1;
+	}
 
-    Iterator<Double> tIter = getIndexIterator();
-    int ctr = 0;
-    while (tIter.hasNext())
-    {
-      Double thisT = tIter.next();
-      if (thisT <= time)
-      {
-        beforeIndex = ctr;
-        beforeTime = thisT;
-      }
-      if (thisT >= time)
-      {
-        afterIndex = ctr;
-        afterTime = thisT;
-        break;
-      }
+	public Unit<?> getUnits() {
+		return _distanceUnits;
+	}
 
-      ctr++;
-    }
+	@UIProperty(name = "Value", category = UIProperty.CATEGORY_VALUE, visibleWhen = "showRange == true")
+	public String getValue() {
+		final ObjectDataset data = (ObjectDataset) getDataset();
+		final Point2D point = (Point2D) data.get();
+		return point.getY() + "," + point.getX();
+	}
 
-    if (beforeIndex >= 0 && afterIndex == 0)
-    {
-      ObjectDataset od = (ObjectDataset) getDataset();
-      res = (Point2D) od.get(beforeIndex);
-    }
-    else if (beforeIndex >= 0 && afterIndex >= 0)
-    {
-      if (beforeIndex == afterIndex)
-      {
-        // special case - it falls on one of our values
-        ObjectDataset od = (ObjectDataset) getDataset();
-        res = (Point2D) od.get(beforeIndex);
-      }
-      else
-      {
-        final ObjectDataset od = (ObjectDataset) getDataset();
-        final Point2D beforeVal = (Point2D) od.get(beforeIndex);
-        final Point2D afterVal = (Point2D) od.get(afterIndex);
+	//
+	// public Point2D interpolateValue(long i, InterpMethod linear)
+	// {
+	// Point2D res = null;
+	//
+	// // do we have axes?
+	// AxesMetadata index = dataset.getFirstMetadata(AxesMetadata.class);
+	// ILazyDataset indexDataLazy = index.getAxes()[0];
+	// try
+	// {
+	// Dataset indexData =
+	// DatasetUtils.sliceAndConvertLazyDataset(indexDataLazy);
+	//
+	// // check the target index is within the range
+	// double lowerIndex = indexData.getDouble(0);
+	// int indexSize = indexData.getSize();
+	// double upperVal = indexData.getDouble(indexSize - 1);
+	// if(i >= lowerIndex && i <= upperVal)
+	// {
+	// // ok, create an dataset that captures this specific time
+	// LongDataset indexes = (LongDataset) DatasetFactory.createFromObject(new
+	// Long[]{i});
+	//
+	// // perform the interpolation
+	// Dataset dOut = Maths.interpolate(indexData, ds, indexes, 0, 0);
+	//
+	// // get the single matching value out
+	// res = dOut.getDouble(0);
+	// }
+	// }
+	// catch (DatasetException e)
+	// {
+	// e.printStackTrace();
+	// }
+	//
+	// return res;
+	// }
 
-        double latY0 = beforeVal.getY();
-        double latY1 = afterVal.getY();
+	private Point2D interpolateValue(final double time) {
+		final Point2D res;
 
-        double longY0 = beforeVal.getX();
-        double longY1 = afterVal.getX();
+		final IGeoCalculator calculator = getCalculator();
 
-        double x0 = beforeTime;
-        double x1 = afterTime;
-        double x = time;
+		// ok, find the values either side
+		int beforeIndex = -1, afterIndex = -1;
+		double beforeTime = 0, afterTime = 0;
 
-        double newResLat = latY0 + (latY1 - latY0) * (x - x0) / (x1 - x0);
-        double newResLong = longY0 + (longY1 - longY0) * (x - x0) / (x1 - x0);
+		final Iterator<Double> tIter = getIndexIterator();
+		int ctr = 0;
+		while (tIter.hasNext()) {
+			final Double thisT = tIter.next();
+			if (thisT <= time) {
+				beforeIndex = ctr;
+				beforeTime = thisT;
+			}
+			if (thisT >= time) {
+				afterIndex = ctr;
+				afterTime = thisT;
+				break;
+			}
 
-        // ok, we can do the calc
-        res = calculator.createPoint(newResLong, newResLat);
-      }
-    }
-    else
-    {
-      res = null;
-    }
+			ctr++;
+		}
 
-    return res;
-  }
+		if (beforeIndex >= 0 && afterIndex == 0) {
+			final ObjectDataset od = (ObjectDataset) getDataset();
+			res = (Point2D) od.get(beforeIndex);
+		} else if (beforeIndex >= 0 && afterIndex >= 0) {
+			if (beforeIndex == afterIndex) {
+				// special case - it falls on one of our values
+				final ObjectDataset od = (ObjectDataset) getDataset();
+				res = (Point2D) od.get(beforeIndex);
+			} else {
+				final ObjectDataset od = (ObjectDataset) getDataset();
+				final Point2D beforeVal = (Point2D) od.get(beforeIndex);
+				final Point2D afterVal = (Point2D) od.get(afterIndex);
 
-  public MyStats stats()
-  {
-    return new MyStats();
-  }
+				final double latY0 = beforeVal.getY();
+				final double latY1 = afterVal.getY();
 
-  public class MyStats
-  {
-    public double min()
-    {
-      DoubleDataset ds = (DoubleDataset) dataset;
-      return (Double) ds.min(true);
-    }
+				final double longY0 = beforeVal.getX();
+				final double longY1 = afterVal.getX();
 
-    public double max()
-    {
-      DoubleDataset ds = (DoubleDataset) dataset;
-      return (Double) ds.max();
+				final double x0 = beforeTime;
+				final double x1 = afterTime;
+				final double x = time;
 
-    }
+				final double newResLat = latY0 + (latY1 - latY0) * (x - x0) / (x1 - x0);
+				final double newResLong = longY0 + (longY1 - longY0) * (x - x0) / (x1 - x0);
 
-    public double mean()
-    {
-      DoubleDataset ds = (DoubleDataset) dataset;
-      return (Double) ds.mean(true);
-    }
+				// ok, we can do the calc
+				res = calculator.createPoint(newResLong, newResLat);
+			}
+		} else {
+			res = null;
+		}
 
-    public double variance()
-    {
-      DoubleDataset ds = (DoubleDataset) dataset;
-      return (Double) ds.variance(true);
-    }
+		return res;
+	}
 
-    public double sd()
-    {
-      DoubleDataset ds = (DoubleDataset) dataset;
-      return (Double) ds.stdDeviation(true);
-    }
-  }
+	@Override
+	public boolean isQuantity() {
+		return false;
+	}
 
-  public Iterator<Point2D> getLocationIterator()
-  {
-    final Iterator<?> oIter = getObjectIterator();
-    return new Iterator<Point2D>()
-    {
+	/**
+	 * retrieve the location at the specified time (even if it's a non-temporal
+	 * collection)
+	 *
+	 * @param iCollection set of locations to use
+	 * @param thisTime time we're need a location for
+	 * @return
+	 */
+	public Point2D locationAt(final double thisTime) {
+		Point2D res = null;
+		if (isIndexed()) {
+			res = interpolateValue(thisTime);
+		} else {
+			res = getLocationIterator().next();
+		}
+		return res;
+	}
 
-      @Override
-      public boolean hasNext()
-      {
-        return oIter.hasNext();
-      }
+	@Override
+	public void setDataset(final IDataset dataset) {
+		if (dataset instanceof ObjectDataset) {
+			super.setDataset(dataset);
+		} else {
+			throw new IllegalArgumentException("We only store object datasets");
+		}
+	}
 
-      @Override
-      public Point2D next()
-      {
-        return (Point2D) oIter.next();
-      }
+	public void setValue(final String val) {
+		// try to parse it
+		final String[] items = val.split(",");
+		if (items.length == 2) {
+			try {
+				final double y = Double.parseDouble(items[0]);
+				final double x = Double.parseDouble(items[1]);
+				final ObjectDataset data = (ObjectDataset) getDataset();
+				final Point2D point = (Point2D) data.get();
+				point.setLocation(x, y);
 
-      @Override
-      public void remove()
-      {
-        oIter.remove();
-      }
-    };
-  }
+				// successful, fire modified
+				this.fireDataChanged();
 
-  public Iterator<?> getObjectIterator()
-  {
-    ObjectDataset od = (ObjectDataset) dataset;
-    Object[] strings = od.getData();
-    Iterable<Object> iterable = Arrays.asList(strings);
-    return iterable.iterator();
-  }
+			} catch (final NumberFormatException dd) {
+				dd.printStackTrace();
+			}
+		}
 
-  @Override
-  public Iterator<Point2D> getIterator()
-  {
-    return getLocationIterator();
-  }
+	}
 
-  public Unit<?> getUnits()
-  {
-    return _distanceUnits;
-  }
+	public MyStats stats() {
+		return new MyStats();
+	}
+
+	@Override
+	public String toListing() {
+		final StringBuffer res = new StringBuffer();
+
+		final ObjectDataset dataset = (ObjectDataset) this.getDataset();
+		final AxesMetadata axesMetadata = dataset.getFirstMetadata(AxesMetadata.class);
+		final IndexIterator iterator = dataset.getIterator();
+
+		final DoubleDataset axisDataset;
+		if (axesMetadata != null && axesMetadata.getAxes().length > 0) {
+			final DoubleDataset doubleAxis = (DoubleDataset) axesMetadata.getAxes()[0];
+			axisDataset = doubleAxis != null ? doubleAxis : null;
+		} else {
+			axisDataset = null;
+		}
+
+		res.append(dataset.getName() + ":\n");
+		while (iterator.hasNext()) {
+			final String indexVal;
+			if (axisDataset != null) {
+				indexVal = "" + axisDataset.getElementDoubleAbs(iterator.index);
+			} else {
+				indexVal = "N/A";
+			}
+
+			res.append(indexVal + " : " + dataset.get(iterator.index));
+			res.append(";");
+		}
+		res.append("\n");
+
+		return res.toString();
+	}
 }

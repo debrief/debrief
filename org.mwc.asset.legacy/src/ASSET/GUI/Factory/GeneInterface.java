@@ -1,237 +1,230 @@
-/*
- *    Debrief - the Open Source Maritime Analysis Application
- *    http://debrief.info
+/*******************************************************************************
+ * Debrief - the Open Source Maritime Analysis Application
+ * http://debrief.info
  *
- *    (C) 2000-2014, PlanetMayo Ltd
+ * (C) 2000-2020, Deep Blue C Technology Ltd
  *
- *    This library is free software; you can redistribute it and/or
- *    modify it under the terms of the Eclipse Public License v1.0
- *    (http://www.eclipse.org/legal/epl-v10.html)
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the Eclipse Public License v1.0
+ * (http://www.eclipse.org/legal/epl-v10.html)
  *
- *    This library is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
- */
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *******************************************************************************/
+
 package ASSET.GUI.Factory;
+
+import java.awt.BorderLayout;
+import java.awt.Component;
+import java.awt.FlowLayout;
+import java.util.Iterator;
+import java.util.Vector;
+
+import javax.swing.BoxLayout;
+import javax.swing.JComponent;
+import javax.swing.JLabel;
+import javax.swing.JList;
+import javax.swing.JPanel;
 
 import ASSET.Scenario.Genetic.Gene;
 import ASSET.Util.MonteCarlo.XMLVariance;
 import ASSET.Util.MonteCarlo.XMLVarianceList;
 
-import javax.swing.*;
-import java.util.Iterator;
-import java.util.Vector;
-import java.awt.*;
-
-public class GeneInterface extends JComponent
-{
-  /**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
+public class GeneInterface extends JComponent {
 	/***************************************************************
-   *  member variables
-   ***************************************************************/
-  /** the gene we are plotting
-   *
-   */
-  protected Gene _myGene = null;
+	 * list of genes
+	 ***************************************************************/
+	static public class GeneList extends JList {
 
-  /***************************************************************
-   *  constructor
-   ***************************************************************/
-  GeneInterface(final Gene baseGene)
-  {
-    initForm(baseGene);
-  }
+		class GeneRenderer extends JPanel implements javax.swing.ListCellRenderer {
+			/**
+			 *
+			 */
+			private static final long serialVersionUID = 1L;
 
-  /***************************************************************
-   *  member methods
-   ***************************************************************/
+			@Override
+			public Component getListCellRendererComponent(final JList list, final Object value, final int index,
+					final boolean isSelected, final boolean cellHasFocus) {
+				final Gene gene = (Gene) value;
+				final GeneInterface gi = new GeneInterface(gene);
 
-  /** construct the panel
-   *
-   */
-  private void initForm(final Gene baseGene)
-  {
- //   setLayout(new GridLayout(1,0));
-    final BoxLayout bl = new BoxLayout(this, BoxLayout.X_AXIS);
-    setLayout(bl);
+				System.out.println(".");
+				gi.setGene(gene);
 
+				// setText("bing");
+				// this.setLayout(new BorderLayout());
+				this.setLayout(new FlowLayout(FlowLayout.CENTER, 0, 0));
+				add(new JLabel("other"));
+				add(new JLabel("otherb"));
 
-    // output the fitness
-    this.add(new JLabel("" + (int)baseGene.getFitness()));
+				// add("North", gi);
+				return this;
+			}
+		}
 
-    // go through the gene
-    final XMLVarianceList vl = baseGene.getChromosomes();
+		/**
+		 *
+		 */
+		private static final long serialVersionUID = 1L;
 
-    final Iterator<XMLVariance> it = vl.getIterator();
-    while (it.hasNext())
-    {
-      final XMLVariance variable = (XMLVariance) it.next();
-      this.add(new VariableWrapper(variable));
-    }
-  }
+		public GeneList() {
+			this.setCellRenderer(new GeneRenderer());
+		}
 
-  /** change the gene we are plotting
-   *
-   */
-  void setGene(final Gene newGene)
-  {
-    _myGene = newGene;
-  }
+		public void setGenes(final Iterator<Gene> iter) {
+			// remove the existing
+			this.removeAll();
 
-  /** update the data we are plotting
-   *
-   */
-  public void updateData()
-  {
+			final Vector<Gene> data = new Vector<Gene>(0, 1);
 
-  }
+			// pass through, adding the genes
+			while (iter.hasNext()) {
+				final Gene gene = iter.next();
+				data.add(gene);
+			}
 
-  /***************************************************************
-   *  embedded class which shows the contents of a particular gene
-   * variable
-   ***************************************************************/
-  static class VariableWrapper extends JComponent
-  {
-    /**
-		 * 
+			this.setListData(data);
+		}
+
+	}
+
+	/***************************************************************
+	 * embedded class which shows the contents of a particular gene variable
+	 ***************************************************************/
+	static class VariableWrapper extends JComponent {
+		/**
+		 *
 		 */
 		private static final long serialVersionUID = 1L;
 
 		final XMLVariance _var;
 
-    JLabel _curVal = null;
+		JLabel _curVal = null;
 
-    public VariableWrapper(final XMLVariance var)
-    {
-      _var = var;
+		public VariableWrapper(final XMLVariance var) {
+			_var = var;
 
-      initForm();
+			initForm();
 
-    }
+		}
 
-    private void initForm()
-    {
-      setLayout(new BorderLayout(1,0));
+		private void initForm() {
+			setLayout(new BorderLayout(1, 0));
 
-      this.setBorder(new javax.swing.border.EtchedBorder());
+			this.setBorder(new javax.swing.border.EtchedBorder());
 
-      // put in the variable name
-      final JLabel name = new JLabel(_var.getName());
+			// put in the variable name
+			final JLabel name = new JLabel(_var.getName());
 
-      // put in the value
-      _curVal = new JLabel(_var.getValue());
+			// put in the value
+			_curVal = new JLabel(_var.getValue());
 
-      add("Center", name);
-      add("East", _curVal);
+			add("Center", name);
+			add("East", _curVal);
 
-    }
-  }
+		}
+	}
 
-  /***************************************************************
-   *  list of genes
-   ***************************************************************/
-  static public class GeneList extends JList
-  {
+	/**
+	 *
+	 */
+	private static final long serialVersionUID = 1L;
 
-    /**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
+	/***************************************************************
+	 * member methods
+	 ***************************************************************/
 
-		public GeneList()
-    {
-      this.setCellRenderer(new GeneRenderer());
-    }
+	public static void main(final String[] args) {
+		// final JFrame holder = new JFrame("holder");
+		// holder.setSize(300, 300);
+		// holder.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		// holder.getContentPane().setLayout(new FlowLayout());
+		//
+		// try
+		// {
+		// final Gene gene = new Gene(new
+		// java.io.FileInputStream(System.getProperty("TEST_ROOT") +
+		// "factory_scenario.xml"),
+		// new java.io.FileInputStream(System.getProperty("TEST_ROOT") +
+		// "factory_variables.xml")) ;
+		//
+		// final Vector genes = new Vector(0,1);
+		// // create the list
+		// for(int i=0;i<10;i++)
+		// {
+		// final Gene otherGene = gene.createRandom();
+		// genes.add(otherGene);
+		// }
+		//
+		// final GeneList gl = new GeneList();
+		// final Iterator iter = genes.iterator();
+		// gl.setGenes(iter);
+		// holder.getContentPane().add(gl);
+		//
+		// holder.getContentPane().add(new GeneInterface(gene));
+		// }
+		// catch (FileNotFoundException e)
+		// {
+		// e.printStackTrace();
+		// }
+		//
+		// holder.setVisible(true);
+		// todo: reinstate these tests
+	}
 
-    public void setGenes(final Iterator<Gene> iter)
-    {
-      // remove the existing
-      this.removeAll();
+	/***************************************************************
+	 * member variables
+	 ***************************************************************/
+	/**
+	 * the gene we are plotting
+	 *
+	 */
+	protected Gene _myGene = null;
 
-      final Vector<Gene> data = new Vector<Gene>(0,1);
+	/***************************************************************
+	 * constructor
+	 ***************************************************************/
+	GeneInterface(final Gene baseGene) {
+		initForm(baseGene);
+	}
 
-      // pass through, adding the genes
-      while (iter.hasNext())
-      {
-        final Gene gene = (Gene) iter.next();
-        data.add(gene);
-      }
+	/**
+	 * construct the panel
+	 *
+	 */
+	private void initForm(final Gene baseGene) {
+		// setLayout(new GridLayout(1,0));
+		final BoxLayout bl = new BoxLayout(this, BoxLayout.X_AXIS);
+		setLayout(bl);
 
-      this.setListData(data);
-    }
+		// output the fitness
+		this.add(new JLabel("" + (int) baseGene.getFitness()));
 
-    class GeneRenderer extends JPanel implements javax.swing.ListCellRenderer
-    {
-			/**
-			 * 
-			 */
-			private static final long serialVersionUID = 1L;
+		// go through the gene
+		final XMLVarianceList vl = baseGene.getChromosomes();
 
-			public Component getListCellRendererComponent(
-           JList list,
-           final Object value,
-           int index,
-           boolean isSelected,
-           boolean cellHasFocus)
-      {
-        final Gene gene = (Gene)value;
-        final GeneInterface gi = new GeneInterface(gene);
+		final Iterator<XMLVariance> it = vl.getIterator();
+		while (it.hasNext()) {
+			final XMLVariance variable = it.next();
+			this.add(new VariableWrapper(variable));
+		}
+	}
 
-        System.out.println(".");
-        gi.setGene(gene);
+	/**
+	 * change the gene we are plotting
+	 *
+	 */
+	void setGene(final Gene newGene) {
+		_myGene = newGene;
+	}
 
-  //      setText("bing");
-//        this.setLayout(new BorderLayout());
-        this.setLayout(new FlowLayout(FlowLayout.CENTER, 0,0));
-        add(new JLabel("other"));
-        add(new JLabel("otherb"));
+	/**
+	 * update the data we are plotting
+	 *
+	 */
+	public void updateData() {
 
-     //   add("North", gi);
-        return this;
-      }
-    }
-
-  }
-
-
-  public static void main(String[] args)
-  {
-//    final JFrame holder = new JFrame("holder");
-//    holder.setSize(300, 300);
-//    holder.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-//    holder.getContentPane().setLayout(new FlowLayout());
-//
-//    try
-//    {
-//      final Gene gene = new Gene(new java.io.FileInputStream(System.getProperty("TEST_ROOT") + "factory_scenario.xml"),
-//                         new java.io.FileInputStream(System.getProperty("TEST_ROOT") + "factory_variables.xml")) ;
-//
-//      final Vector genes = new Vector(0,1);
-//      // create the list
-//      for(int i=0;i<10;i++)
-//      {
-//        final Gene otherGene = gene.createRandom();
-//        genes.add(otherGene);
-//      }
-//
-//      final GeneList gl = new GeneList();
-//      final Iterator iter = genes.iterator();
-//      gl.setGenes(iter);
-//      holder.getContentPane().add(gl);
-//
-//      holder.getContentPane().add(new GeneInterface(gene));
-//    }
-//    catch (FileNotFoundException e)
-//    {
-//      e.printStackTrace();
-//    }
-//
-//    holder.setVisible(true);
-     // todo: reinstate these tests
-  }
-
+	}
 
 }

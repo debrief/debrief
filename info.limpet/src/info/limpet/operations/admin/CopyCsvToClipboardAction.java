@@ -14,6 +14,9 @@
  *****************************************************************************/
 package info.limpet.operations.admin;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import info.limpet.ICommand;
 import info.limpet.IContext;
 import info.limpet.IDocument;
@@ -23,86 +26,64 @@ import info.limpet.IStoreItem;
 import info.limpet.operations.AbstractCommand;
 import info.limpet.persistence.csv.CsvGenerator;
 
-import java.util.ArrayList;
-import java.util.List;
+public class CopyCsvToClipboardAction implements IOperation {
 
-public class CopyCsvToClipboardAction implements IOperation
-{
+	/**
+	 * encapsulate command
+	 *
+	 * @author ian
+	 *
+	 */
+	public static class CopyCsvToClipboardCommand extends AbstractCommand {
+		public static String getCsvString(final List<IStoreItem> selection) {
+			if (selection.size() == 1 && selection.get(0) instanceof IDocument) {
+				return CsvGenerator.generate(selection.get(0));
+			}
+			return null;
+		}
 
-  /**
-   * encapsulate command
-   * 
-   * @author ian
-   * 
-   */
-  public static class CopyCsvToClipboardCommand extends
-      AbstractCommand
-  {
-    private List<IStoreItem> _selection;
+		private final List<IStoreItem> _selection;
 
-    public static String getCsvString(List<IStoreItem> selection)
-    {
-      if (selection.size() == 1 && selection.get(0) instanceof IDocument)
-      {
-        return CsvGenerator.generate(selection.get(0));
-      }
-      return null;
-    }
+		public CopyCsvToClipboardCommand(final String title, final List<IStoreItem> selection, final IStoreGroup store,
+				final IContext context) {
+			super(title, "Export selection to clipboard as CSV", store, false, false, null, context);
+			_selection = selection;
+		}
 
-    public CopyCsvToClipboardCommand(String title, List<IStoreItem> selection,
-        IStoreGroup store, IContext context)
-    {
-      super(title, "Export selection to clipboard as CSV", store, false, false,
-          null, context);
-      _selection = selection;
-    }
+		@Override
+		public void execute() {
+			final String csv = getCsvString(_selection);
+			if (csv != null && !csv.isEmpty()) {
+				getContext().placeOnClipboard(csv);
+			} else {
+				getContext().openInformation("Data Manager Editor", "Cannot copy current selection");
+			}
+		}
 
-    @Override
-    public void execute()
-    {
-      String csv = getCsvString(_selection);
-      if (csv != null && !csv.isEmpty())
-      {
-        getContext().placeOnClipboard(csv);
-      }
-      else
-      {
-        getContext().openInformation("Data Manager Editor",
-            "Cannot copy current selection");
-      }
-    }
+		@Override
+		protected void recalculate(final IStoreItem subject) {
+			// don't worry
+		}
+	}
 
-    @Override
-    protected void recalculate(IStoreItem subject)
-    {
-      // don't worry
-    }
-  }
+	@Override
+	public List<ICommand> actionsFor(final List<IStoreItem> selection, final IStoreGroup destination,
+			final IContext context) {
+		final List<ICommand> res = new ArrayList<ICommand>();
+		if (appliesTo(selection)) {
+			// hmm, see if we have a single collection selected
+			ICommand newC = null;
+			if (selection.size() == 1) {
+				newC = new CopyCsvToClipboardCommand("Copy CSV to clipboard", selection, destination, context);
+				res.add(newC);
+			}
+		}
 
-  public List<ICommand> actionsFor(
-      List<IStoreItem> selection, IStoreGroup destination, IContext context)
-  {
-    List<ICommand> res =
-        new ArrayList<ICommand>();
-    if (appliesTo(selection))
-    {
-      // hmm, see if we have a single collection selected
-      ICommand newC = null;
-      if (selection.size() == 1)
-      {
-        newC =
-            new CopyCsvToClipboardCommand("Copy CSV to clipboard", selection,
-                destination, context);
-        res.add(newC);
-      }
-    }
+		return res;
+	}
 
-    return res;
-  }
-
-  private boolean appliesTo(List<IStoreItem> selection)
-  {
-    return selection.size() == 1 && selection.get(0) instanceof IDocument;
-  }
+	private boolean appliesTo(final List<IStoreItem> selection) {
+		return selection.size() == 1 && selection.get(0) instanceof IDocument;
+	}
 
 }

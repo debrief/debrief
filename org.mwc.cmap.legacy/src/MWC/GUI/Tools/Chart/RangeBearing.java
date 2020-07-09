@@ -1,17 +1,18 @@
-/*
- *    Debrief - the Open Source Maritime Analysis Application
- *    http://debrief.info
+/*******************************************************************************
+ * Debrief - the Open Source Maritime Analysis Application
+ * http://debrief.info
  *
- *    (C) 2000-2014, PlanetMayo Ltd
+ * (C) 2000-2020, Deep Blue C Technology Ltd
  *
- *    This library is free software; you can redistribute it and/or
- *    modify it under the terms of the Eclipse Public License v1.0
- *    (http://www.eclipse.org/legal/epl-v10.html)
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the Eclipse Public License v1.0
+ * (http://www.eclipse.org/legal/epl-v10.html)
  *
- *    This library is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
- */
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *******************************************************************************/
+
 package MWC.GUI.Tools.Chart;
 
 // Copyright MWC 1999
@@ -87,74 +88,69 @@ import MWC.GUI.Tools.PlainDragTool;
 import MWC.GenericData.WorldLocation;
 import MWC.GenericData.WorldVector;
 
-public class RangeBearing extends PlainDragTool implements java.io.Serializable
-{
-  /**
-	 * 
+public class RangeBearing extends PlainDragTool implements java.io.Serializable {
+	/**
+	 *
 	 */
 	private static final long serialVersionUID = 1L;
 	//////////////////////////////////////////////////
-  // member variables
-  //////////////////////////////////////////////////
-  WorldLocation _startLocation;
-  StatusBar _theBar;
+	// member variables
+	//////////////////////////////////////////////////
+	WorldLocation _startLocation;
+	StatusBar _theBar;
 
-  protected Rubberband _myRubber=new MWC.GUI.RubberBanding.RubberbandLine();
+	protected Rubberband _myRubber = new MWC.GUI.RubberBanding.RubberbandLine();
 
-  //////////////////////////////////////////////////
-  // constructor
-  //////////////////////////////////////////////////
-  public RangeBearing(final PlainChart theChart,
-                      final ToolParent theParent,
-                      final StatusBar theBar){
-    super(theChart, theParent, "Range Brg", "images/rng_brg.png");
-    _theBar = theBar;
+	//////////////////////////////////////////////////
+	// constructor
+	//////////////////////////////////////////////////
+	public RangeBearing(final PlainChart theChart, final ToolParent theParent, final StatusBar theBar) {
+		super(theChart, theParent, "Range Brg", "images/rng_brg.png");
+		_theBar = theBar;
 
-  }
+	}
 
+	//////////////////////////////////////////////////
+	// member functions
+	//////////////////////////////////////////////////
 
-  //////////////////////////////////////////////////
-  // member functions
-  //////////////////////////////////////////////////
+	@Override
+	public void dragging(final WorldLocation theLocation, final Point thePoint) {
+		// right, now sort out the range and bearing back to
+		// the origin
+		final WorldVector wv = theLocation.subtract(_theStart);
 
-  public Rubberband getRubberband(){
-    return _myRubber;
-  }
+		// get the data
+		final double rng = wv.getRange();
+		final double brg = wv.getBearing();
 
+		// we don't format the results anymore, since the status bar knows how to
+		// plot range and bearing information
+		_theBar.setRngBearing(rng, brg);
 
-  public void startMotion(){
-    // pop up the window?
-  }
+	}
 
+	@Override
+	public Action getData() {
+		return null;
+	}
 
-  public void dragging(final WorldLocation theLocation, final Point thePoint)
-  {
-    // right, now sort out the range and bearing back to
-    // the origin
-    final WorldVector wv = theLocation.subtract(_theStart);
+	public String getName() {
+		return "Zoom tool";
+	}
 
-    // get the data
-    final double rng = wv.getRange();
-    final double brg = wv.getBearing();
+	@Override
+	public Rubberband getRubberband() {
+		return _myRubber;
+	}
 
+	public void showResults(final String val) {
+		_theBar.setText(val);
+	}
 
-    // we don't format the results anymore, since the status bar knows how to
-    // plot range and bearing information
-    _theBar.setRngBearing(rng, brg);
-
-  }
-
-  public String getName(){
-    return "Zoom tool";
-  }
-
-  public Action getData(){
-    return null;
-  }
-
-  public void showResults(final String val)
-  {
-    _theBar.setText(val);
-  }
+	@Override
+	public void startMotion() {
+		// pop up the window?
+	}
 
 }

@@ -1,83 +1,94 @@
-/*
- *    Debrief - the Open Source Maritime Analysis Application
- *    http://debrief.info
+/*******************************************************************************
+ * Debrief - the Open Source Maritime Analysis Application
+ * http://debrief.info
  *
- *    (C) 2000-2014, PlanetMayo Ltd
+ * (C) 2000-2020, Deep Blue C Technology Ltd
  *
- *    This library is free software; you can redistribute it and/or
- *    modify it under the terms of the Eclipse Public License v1.0
- *    (http://www.eclipse.org/legal/epl-v10.html)
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the Eclipse Public License v1.0
+ * (http://www.eclipse.org/legal/epl-v10.html)
  *
- *    This library is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
- */
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *******************************************************************************/
+
 package com.borlander.rac525791.dashboard.data;
 
 public interface DashboardListener {
 
-	void statusChanged();
+	public static final DashboardListener NULL = new DashboardListener() {
 
-	void nameChanged();
+		@Override
+		public void actualDepthChanged() {
+			//
+		}
 
-	void speedUnitsChanged();
+		@Override
+		public void actualDirectionChanged() {
+			//
+		}
 
-	void depthUnitsChanged();
+		@Override
+		public void actualSpeedChanged() {
+			//
+		}
 
-	void demandedSpeedChanged();
+		@Override
+		public void demandedDepthChanged() {
+			//
+		}
 
-	void demandedDirectionChanged();
+		@Override
+		public void demandedDirectionChanged() {
+			//
+		}
 
-	void demandedDepthChanged();
+		@Override
+		public void demandedSpeedChanged() {
+			//
+		}
+
+		@Override
+		public void depthUnitsChanged() {
+			//
+		}
+
+		@Override
+		public void nameChanged() {
+			//
+		}
+
+		@Override
+		public void speedUnitsChanged() {
+			//
+		}
+
+		@Override
+		public void statusChanged() {
+			//
+		}
+
+	};
 
 	void actualDepthChanged();
 
 	void actualDirectionChanged();
 
 	void actualSpeedChanged();
-	
-	public static final DashboardListener NULL = new DashboardListener(){
-	
-		public void statusChanged() {
-			// 
-		}
-	
-		public void speedUnitsChanged() {
-			// 
-		}
-	
-		public void nameChanged() {
-			// 
-		}
-	
-		public void depthUnitsChanged() {
-			// 
-		}
-	
-		public void demandedSpeedChanged() {
-			// 
-		}
-	
-		public void demandedDirectionChanged() {
-			// 
-		}
-	
-		public void demandedDepthChanged() {
-			// 
-		}
-	
-		public void actualSpeedChanged() {
-			// 
-		}
-	
-		public void actualDirectionChanged() {
-			// 
-		}
-	
-		public void actualDepthChanged() {
-			// 
-		}
-		
-	};
+
+	void demandedDepthChanged();
+
+	void demandedDirectionChanged();
+
+	void demandedSpeedChanged();
+
+	void depthUnitsChanged();
+
+	void nameChanged();
+
+	void speedUnitsChanged();
+
+	void statusChanged();
 
 }

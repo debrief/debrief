@@ -1,17 +1,18 @@
-/*
- *    Debrief - the Open Source Maritime Analysis Application
- *    http://debrief.info
+/*******************************************************************************
+ * Debrief - the Open Source Maritime Analysis Application
+ * http://debrief.info
  *
- *    (C) 2000-2014, PlanetMayo Ltd
+ * (C) 2000-2020, Deep Blue C Technology Ltd
  *
- *    This library is free software; you can redistribute it and/or
- *    modify it under the terms of the Eclipse Public License v1.0
- *    (http://www.eclipse.org/legal/epl-v10.html)
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the Eclipse Public License v1.0
+ * (http://www.eclipse.org/legal/epl-v10.html)
  *
- *    This library is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
- */
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *******************************************************************************/
+
 // $RCSfile: ReferenceSym.java,v $
 // @author $Author: Ian.Mayo $
 // @version $Revision: 1.3 $
@@ -71,136 +72,123 @@ import MWC.GUI.Editable;
 import MWC.GUI.Shapes.Symbols.PlainSymbol;
 import MWC.GenericData.WorldLocation;
 
-public class WreckSym extends PlainSymbol
-{
+public class WreckSym extends PlainSymbol {
 
-  ////////////////////////////////
-  // member objects
-  ////////////////////////////////
+	////////////////////////////////
+	// member objects
+	////////////////////////////////
 
-  /**
-	 * 
+	//////////////////////////////////////////////////////
+	// bean info for this class
+	/////////////////////////////////////////////////////
+	public class WreckInfo extends Editable.EditorType {
+
+		public WreckInfo(final WreckSym data, final String theName) {
+			super(data, theName, "");
+		}
+
+		@Override
+		public PropertyDescriptor[] getPropertyDescriptors() {
+			final PropertyDescriptor[] res = {};
+			return res;
+		}
+
+	}
+
+	//////////////////////////////////////////////////////////////////////////////////////////////////
+	// testing for this class
+	//////////////////////////////////////////////////////////////////////////////////////////////////
+	static public class WreckTest extends junit.framework.TestCase {
+		static public final String TEST_ALL_TEST_TYPE = "UNIT";
+
+		public WreckTest(final String val) {
+			super(val);
+		}
+
+		public void testMyParams() {
+			MWC.GUI.Editable ed = new WreckSym();
+			editableTesterSupport.testParams(ed, this);
+			ed = null;
+		}
+	}
+
+	////////////////////////////////
+	// member functions
+	////////////////////////////////
+
+	/**
+	 *
 	 */
 	private static final long serialVersionUID = 1L;
 
-  /**
-   * our editor
-   */
-  transient private Editable.EditorType _myEditor = null;
+	/**
+	 * our editor
+	 */
+	transient private Editable.EditorType _myEditor = null;
 
-  ////////////////////////////////
-  // member functions
-  ////////////////////////////////
+	@Override
+	public PlainSymbol create() {
+		return new WreckSym();
+	}
 
-  @Override
-  public PlainSymbol create()
-  {
-    return new WreckSym();
-  }
+	@Override
+	public java.awt.Dimension getBounds() {
+		// sort out the size of the symbol at the current scale factor
+		final java.awt.Dimension res = new java.awt.Dimension((int) (15 * getScaleVal() / 11 * 10),
+				(int) (15 * getScaleVal() / 11 * 5));
+		return res;
+	}
 
-  public java.awt.Dimension getBounds()
-  {
-    // sort out the size of the symbol at the current scale factor
-    final java.awt.Dimension res = new java.awt.Dimension((int) (15 * getScaleVal() / 11 * 10), (int) (15 * getScaleVal() / 11 * 5));
-    return res;
-  }
+	@Override
+	public Editable.EditorType getInfo() {
+		if (_myEditor == null)
+			_myEditor = new WreckInfo(this, this.getName());
 
-  public void paint(final CanvasType dest, final WorldLocation centre)
-  {
-    paint(dest, centre, 0.0);
-  }
+		return _myEditor;
+	}
 
+	@Override
+	public String getType() {
+		return "Wreck";
+	}
 
-  public void paint(final CanvasType dest, final WorldLocation theLocation, final double direction)
-  {
+	////////////////////////////////////////////
+	// editable support
+	////////////////////////////////////////////
+	@Override
+	public boolean hasEditor() {
+		return true;
+	}
 
-    // set the colour
-    dest.setColor(getColor());
+	@Override
+	public void paint(final CanvasType dest, final WorldLocation centre) {
+		paint(dest, centre, 0.0);
+	}
 
-    // create our centre point
-    final java.awt.Point centre = dest.toScreen(theLocation);
+	@Override
+	public void paint(final CanvasType dest, final WorldLocation theLocation, final double direction) {
 
-    // calculate the dimensions
-    final double unit = (15d * getScaleVal()) / 11d;
-    final int unit_11_over_2 = (int) (unit * 10d / 2);
-    final int unit_4_5_over_2 = (int) (unit * 5d / 2) ;
-    final int unit_3_over_2 = (int) (unit * 3d / 2);
-    final int unit_2_75 = (int) (unit * 2.75d);
+		// set the colour
+		dest.setColor(getColor());
 
-    // start with the centre object
-    dest.drawLine(centre.x - unit_11_over_2, centre.y, centre.x + unit_11_over_2, centre.y);
-    dest.drawLine(centre.x, centre.y - unit_4_5_over_2, centre.x, centre.y + unit_4_5_over_2);
-    dest.drawLine(centre.x - unit_2_75, centre.y - unit_3_over_2, centre.x - unit_2_75, centre.y + unit_3_over_2);
-    dest.drawLine(centre.x + unit_2_75, centre.y - unit_3_over_2, centre.x + unit_2_75, centre.y + unit_3_over_2);
-  }
+		// create our centre point
+		final java.awt.Point centre = dest.toScreen(theLocation);
 
-  public String getType()
-  {
-    return "Wreck";
-  }
+		// handle unable to gen screen coords (if off visible area)
+		if (centre == null)
+			return;
 
+		// calculate the dimensions
+		final double unit = (15d * getScaleVal()) / 11d;
+		final int unit_11_over_2 = (int) (unit * 10d / 2);
+		final int unit_4_5_over_2 = (int) (unit * 5d / 2);
+		final int unit_3_over_2 = (int) (unit * 3d / 2);
+		final int unit_2_75 = (int) (unit * 2.75d);
 
-  public Editable.EditorType getInfo()
-  {
-    if (_myEditor == null)
-      _myEditor = new WreckInfo(this, this.getName());
-
-    return _myEditor;
-  }
-
-  ////////////////////////////////////////////
-  // editable support
-  ////////////////////////////////////////////
-  public boolean hasEditor()
-  {
-    return true;
-  }
-
-  //////////////////////////////////////////////////////
-  // bean info for this class
-  /////////////////////////////////////////////////////
-  public class WreckInfo extends Editable.EditorType
-  {
-
-    public WreckInfo(final WreckSym data,
-                         final String theName)
-    {
-      super(data, theName, "");
-    }
-
-
-    public PropertyDescriptor[] getPropertyDescriptors()
-    {
-        final PropertyDescriptor[] res = {
-        };
-        return res;
-    }
-
-
-  }
-
-
-  //////////////////////////////////////////////////////////////////////////////////////////////////
-  // testing for this class
-  //////////////////////////////////////////////////////////////////////////////////////////////////
-  static public class WreckTest extends junit.framework.TestCase
-  {
-    static public final String TEST_ALL_TEST_TYPE = "UNIT";
-
-    public WreckTest(final String val)
-    {
-      super(val);
-    }
-
-    public void testMyParams()
-    {
-      MWC.GUI.Editable ed = new WreckSym();
-      editableTesterSupport.testParams(ed, this);
-      ed = null;
-    }
-  }
+		// start with the centre object
+		dest.drawLine(centre.x - unit_11_over_2, centre.y, centre.x + unit_11_over_2, centre.y);
+		dest.drawLine(centre.x, centre.y - unit_4_5_over_2, centre.x, centre.y + unit_4_5_over_2);
+		dest.drawLine(centre.x - unit_2_75, centre.y - unit_3_over_2, centre.x - unit_2_75, centre.y + unit_3_over_2);
+		dest.drawLine(centre.x + unit_2_75, centre.y - unit_3_over_2, centre.x + unit_2_75, centre.y + unit_3_over_2);
+	}
 }
-
-
-
-

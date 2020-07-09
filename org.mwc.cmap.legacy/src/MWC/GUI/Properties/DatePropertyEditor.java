@@ -1,17 +1,18 @@
-/*
- *    Debrief - the Open Source Maritime Analysis Application
- *    http://debrief.info
+/*******************************************************************************
+ * Debrief - the Open Source Maritime Analysis Application
+ * http://debrief.info
  *
- *    (C) 2000-2014, PlanetMayo Ltd
+ * (C) 2000-2020, Deep Blue C Technology Ltd
  *
- *    This library is free software; you can redistribute it and/or
- *    modify it under the terms of the Eclipse Public License v1.0
- *    (http://www.eclipse.org/legal/epl-v10.html)
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the Eclipse Public License v1.0
+ * (http://www.eclipse.org/legal/epl-v10.html)
  *
- *    This library is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
- */
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *******************************************************************************/
+
 package MWC.GUI.Properties;
 
 // Copyright MWC 1999, Debrief 3 Project
@@ -108,194 +109,184 @@ import java.util.Date;
 import MWC.GenericData.HiResDate;
 import MWC.Utilities.TextFormatting.GMTDateFormat;
 
-abstract public class DatePropertyEditor extends
-  PropertyEditorSupport
-{
-  /////////////////////////////////////////////////////////////
-  // member variables
-  ////////////////////////////////////////////////////////////
-  /**
-   * the value we are editing
-   */
-  protected Date _myVal;
+abstract public class DatePropertyEditor extends PropertyEditorSupport {
+	static protected final String NULL_DATE = "dd/MM/yy";
 
-  /**
-   * the microsecond portion of the date
-   */
-  protected int _theMicros;
+	static protected final String NULL_TIME = "HH:mm:ss";
 
-  /**
-   * field to edit the date
-   */
-  protected TextField _theDate;
+	/////////////////////////////////////////////////////////////
+	// member variables
+	////////////////////////////////////////////////////////////
+	/**
+	 * the value we are editing
+	 */
+	protected Date _myVal;
 
-  /**
-   * field to edit the time
-   */
-  protected TextField _theTime;
+	/**
+	 * the microsecond portion of the date
+	 */
+	protected int _theMicros;
 
-  /**
-   * panel to hold everything
-   */
-  protected Panel _theHolder;
+	/**
+	 * field to edit the date
+	 */
+	protected TextField _theDate;
+	/**
+	 * field to edit the time
+	 */
+	protected TextField _theTime;
+	/**
+	 * panel to hold everything
+	 */
+	protected Panel _theHolder;
 
-  static protected final String NULL_DATE = "dd/MM/yy";
-  static protected final String NULL_TIME = "HH:mm:ss";
+	/**
+	 * date formats
+	 */
+	protected DateFormat _dateF = new GMTDateFormat(NULL_DATE);
+	protected DateFormat _timeF = new GMTDateFormat(NULL_TIME);
 
-  /**
-   * date formats
-   */
-  protected DateFormat _dateF = new GMTDateFormat(NULL_DATE);
-  protected DateFormat _timeF = new GMTDateFormat(NULL_TIME);
+	/////////////////////////////////////////////////////////////
+	// constructor
+	////////////////////////////////////////////////////////////
 
+	/////////////////////////////////////////////////////////////
+	// member functions
+	////////////////////////////////////////////////////////////
 
-  /////////////////////////////////////////////////////////////
-  // constructor
-  ////////////////////////////////////////////////////////////
+	/**
+	 * build the editor
+	 */
+	@Override
+	abstract public java.awt.Component getCustomEditor();
 
-  /////////////////////////////////////////////////////////////
-  // member functions
-  ////////////////////////////////////////////////////////////
+	/**
+	 * get the date text as a string
+	 */
+	abstract protected String getDateText();
 
-  /**
-   * indicate that we can't just be painted, we've got to be edited
-   */
-  public boolean isPaintable()
-  {
-    return false;
-  }
+	/**
+	 * get the date text as a string
+	 */
+	abstract protected String getTimeText();
 
-  /**
-   * build the editor
-   */
-  abstract public java.awt.Component getCustomEditor();
+	/**
+	 * extract the values currently stored in the text boxes
+	 */
+	@Override
+	public synchronized Object getValue() {
+		HiResDate res = null;
 
-  /**
-   * store the new value
-   */
-  public synchronized void setValue(final Object p1)
-  {
-    // reset value
-    _myVal = null;
+		// see if we still have null values
+		final String dateVal = getDateText();
+		final String timeVal = getTimeText();
 
-    // try to catch if we are receiving a null (uninitialised) value
-    if (p1 != null)
-    {
-      // check it's a date
-      if (p1 instanceof HiResDate)
-      {
-        final HiResDate val = (HiResDate) p1;
+		long theTime = 0;
 
-        // extract the date portion
-        _myVal = val.getDate();
+		try {
+			if (dateVal.isEmpty() || dateVal.equals(NULL_DATE)) {
+				theTime = -1000;
+			} else {
+				if (!dateVal.equals(NULL_DATE))
+					theTime += _dateF.parse(dateVal).getTime() * 1000;
 
-        // just check if the date contains a duff micros
-        if (val.getMicros() != -1000)
-        {
-          // and the microsecond portion
-          _theMicros = (int) (val.getMicros() % 1000000);
-        }
+				if (!timeVal.isEmpty() && !timeVal.equals(NULL_TIME))
+					theTime += _timeF.parse(timeVal).getTime() * 1000;
 
-        // @@ we're no longer checking whether the date has been set.
-        // check that the date value has been set
-        //        long timeVal = val.getDate().getTime();
-        //        if(timeVal != -1)
-      }
-    }
-  }
+				// also add any micros
+				theTime += _theMicros;
+			}
+		} catch (final ParseException e) {
+			theTime = 0;
+		}
 
-  /**
-   * return flag to say that we'd rather use our own (custom) editor
-   */
-  public boolean supportsCustomEditor()
-  {
-    return true;
-  }
+		if (theTime != 0)
+			res = new HiResDate(0, theTime);
+		else
+			res = null;
 
-  /**
-   * extract the values currently stored in the text boxes
-   */
-  public synchronized Object getValue()
-  {
-    HiResDate res = null;
+		return res;
+	}
 
-    // see if we still have null values
-    final String dateVal = getDateText();
-    final String timeVal = getTimeText();
+	/**
+	 * indicate that we can't just be painted, we've got to be edited
+	 */
+	@Override
+	public boolean isPaintable() {
+		return false;
+	}
 
-    long theTime = 0;
+	/**
+	 * put the data into the text fields, if they have been created yet
+	 */
+	public synchronized void resetData() {
+		if (_myVal == null || _myVal.getTime() == -1) {
+			setDateText(NULL_DATE);
+			setTimeText(NULL_TIME);
+		} else {
+			setDateText(_dateF.format(_myVal));
+			setTimeText(_timeF.format(_myVal));
 
-    try
-    {
-      if (!dateVal.equals(NULL_DATE))
-        theTime += _dateF.parse(dateVal).getTime() * 1000;
+			// are we in hi-res mode?
+			if (HiResDate.inHiResProcessingMode())
+				setMicroText(_theMicros);
+		}
+	}
 
-      if (!timeVal.equals(NULL_TIME))
-        theTime += _timeF.parse(timeVal).getTime() * 1000;
+	/**
+	 * set the date text in string form
+	 */
+	abstract protected void setDateText(String val);
 
-      // also add any micros
-      theTime += _theMicros;
-    }
-    catch (final ParseException e)
-    {
-      theTime = 0;
-    }
+	/**
+	 * show the user how many microseconds there are
+	 *
+	 * @param val
+	 */
+	abstract protected void setMicroText(long val);
 
-    if (theTime != 0)
-      res = new HiResDate(0, theTime);
-    else
-      res = null;
+	/**
+	 * set the time text in string form
+	 */
+	abstract protected void setTimeText(String val);
 
-    return res;
-  }
+	/**
+	 * store the new value
+	 */
+	@Override
+	public synchronized void setValue(final Object p1) {
+		// reset value
+		_myVal = null;
 
-  /**
-   * put the data into the text fields, if they have been
-   * created yet
-   */
-  public synchronized void resetData()
-  {
-    if (_myVal == null)
-    {
-      setDateText(NULL_DATE);
-      setTimeText(NULL_TIME);
-    }
-    else
-    {
-      setDateText(_dateF.format(_myVal));
-      setTimeText(_timeF.format(_myVal));
+		// try to catch if we are receiving a null (uninitialised) value
+		if (p1 != null) {
+			// check it's a date
+			if (p1 instanceof HiResDate) {
+				final HiResDate val = (HiResDate) p1;
 
-      // are we in hi-res mode?
-      if (HiResDate.inHiResProcessingMode())
-        setMicroText(_theMicros);
-    }
-  }
+				// extract the date portion
+				_myVal = val.getDate();
 
-  /**
-   * show the user how many microseconds there are
-   *
-   * @param val
-   */
-  abstract protected void setMicroText(long val);
+				// just check if the date contains a duff micros
+				if (val.getMicros() != -1000) {
+					// and the microsecond portion
+					_theMicros = (int) (val.getMicros() % 1000000);
+				}
 
-  /**
-   * get the date text as a string
-   */
-  abstract protected String getDateText();
+				// @@ we're no longer checking whether the date has been set.
+				// check that the date value has been set
+				// long timeVal = val.getDate().getTime();
+				// if(timeVal != -1)
+			}
+		}
+	}
 
-  /**
-   * get the date text as a string
-   */
-  abstract protected String getTimeText();
-
-  /**
-   * set the date text in string form
-   */
-  abstract protected void setDateText(String val);
-
-  /**
-   * set the time text in string form
-   */
-  abstract protected void setTimeText(String val);
+	/**
+	 * return flag to say that we'd rather use our own (custom) editor
+	 */
+	@Override
+	public boolean supportsCustomEditor() {
+		return true;
+	}
 
 }

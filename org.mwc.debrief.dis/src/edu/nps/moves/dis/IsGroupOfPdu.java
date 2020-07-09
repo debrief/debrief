@@ -1,277 +1,284 @@
 package edu.nps.moves.dis;
 
-import java.util.*;
-import java.io.*;
-import edu.nps.moves.disenum.*;
-import edu.nps.moves.disutil.*;
-
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
- * Section 5.3.9.2 Information about a particular group of entities grouped together for the purposes of netowrk bandwidth         reduction or aggregation. Needs manual cleanup. The GED size requires a database lookup. UNFINISHED
+ * Section 5.3.9.2 Information about a particular group of entities grouped
+ * together for the purposes of netowrk bandwidth reduction or aggregation.
+ * Needs manual cleanup. The GED size requires a database lookup. UNFINISHED
  *
- * Copyright (c) 2008-2016, MOVES Institute, Naval Postgraduate School. All rights reserved.
- * This work is licensed under the BSD open source license, available at https://www.movesinstitute.org/licenses/bsd.html
+ * Copyright (c) 2008-2016, MOVES Institute, Naval Postgraduate School. All
+ * rights reserved. This work is licensed under the BSD open source license,
+ * available at https://www.movesinstitute.org/licenses/bsd.html
  *
  * @author DMcG
  */
-public class IsGroupOfPdu extends EntityManagementFamilyPdu implements Serializable
-{
-   /** ID of aggregated entities */
-   protected EntityID  groupEntityID = new EntityID(); 
+public class IsGroupOfPdu extends EntityManagementFamilyPdu implements Serializable {
+	/**
+	 *
+	 */
+	private static final long serialVersionUID = 1L;
 
-   /** type of entities constituting the group */
-   protected short  groupedEntityCategory;
+	/** ID of aggregated entities */
+	protected EntityID groupEntityID = new EntityID();
 
-   /** Number of individual entities constituting the group */
-   protected short  numberOfGroupedEntities;
+	/** type of entities constituting the group */
+	protected short groupedEntityCategory;
 
-   /** padding */
-   protected long  pad2;
+	/** Number of individual entities constituting the group */
+	protected short numberOfGroupedEntities;
 
-   /** latitude */
-   protected double  latitude;
+	/** padding */
+	protected long pad2;
 
-   /** longitude */
-   protected double  longitude;
+	/** latitude */
+	protected double latitude;
 
-   /** GED records about each individual entity in the group. ^^^this is wrong--need a database lookup to find the actual size of the list elements */
-   protected List< VariableDatum > groupedEntityDescriptions = new ArrayList< VariableDatum >(); 
+	/** longitude */
+	protected double longitude;
 
-/** Constructor */
- public IsGroupOfPdu()
- {
-    setPduType( (short)34 );
- }
+	/**
+	 * GED records about each individual entity in the group. ^^^this is wrong--need
+	 * a database lookup to find the actual size of the list elements
+	 */
+	protected List<VariableDatum> groupedEntityDescriptions = new ArrayList<VariableDatum>();
 
-public int getMarshalledSize()
-{
-   int marshalSize = 0; 
+	/** Constructor */
+	public IsGroupOfPdu() {
+		setPduType((short) 34);
+	}
 
-   marshalSize = super.getMarshalledSize();
-   marshalSize = marshalSize + groupEntityID.getMarshalledSize();  // groupEntityID
-   marshalSize = marshalSize + 1;  // groupedEntityCategory
-   marshalSize = marshalSize + 1;  // numberOfGroupedEntities
-   marshalSize = marshalSize + 4;  // pad2
-   marshalSize = marshalSize + 8;  // latitude
-   marshalSize = marshalSize + 8;  // longitude
-   for(int idx=0; idx < groupedEntityDescriptions.size(); idx++)
-   {
-        VariableDatum listElement = groupedEntityDescriptions.get(idx);
-        marshalSize = marshalSize + listElement.getMarshalledSize();
-   }
+	/*
+	 * The equals method doesn't always work--mostly it works only on classes that
+	 * consist only of primitives. Be careful.
+	 */
+	@Override
+	public boolean equals(final Object obj) {
 
-   return marshalSize;
-}
+		if (this == obj) {
+			return true;
+		}
 
+		if (obj == null) {
+			return false;
+		}
 
-public void setGroupEntityID(EntityID pGroupEntityID)
-{ groupEntityID = pGroupEntityID;
-}
+		if (getClass() != obj.getClass())
+			return false;
 
-public EntityID getGroupEntityID()
-{ return groupEntityID; 
-}
+		return equalsImpl(obj);
+	}
 
-public void setGroupedEntityCategory(short pGroupedEntityCategory)
-{ groupedEntityCategory = pGroupedEntityCategory;
-}
+	@Override
+	public boolean equalsImpl(final Object obj) {
+		boolean ivarsEqual = true;
 
-public short getGroupedEntityCategory()
-{ return groupedEntityCategory; 
-}
+		if (!(obj instanceof IsGroupOfPdu))
+			return false;
 
-public short getNumberOfGroupedEntities()
-{ return (short)groupedEntityDescriptions.size();
-}
+		final IsGroupOfPdu rhs = (IsGroupOfPdu) obj;
 
-/** Note that setting this value will not change the marshalled value. The list whose length this describes is used for that purpose.
- * The getnumberOfGroupedEntities method will also be based on the actual list length rather than this value. 
- * The method is simply here for java bean completeness.
- */
-public void setNumberOfGroupedEntities(short pNumberOfGroupedEntities)
-{ numberOfGroupedEntities = pNumberOfGroupedEntities;
-}
+		if (!(groupEntityID.equals(rhs.groupEntityID)))
+			ivarsEqual = false;
+		if (!(groupedEntityCategory == rhs.groupedEntityCategory))
+			ivarsEqual = false;
+		if (!(numberOfGroupedEntities == rhs.numberOfGroupedEntities))
+			ivarsEqual = false;
+		if (!(pad2 == rhs.pad2))
+			ivarsEqual = false;
+		if (!(latitude == rhs.latitude))
+			ivarsEqual = false;
+		if (!(longitude == rhs.longitude))
+			ivarsEqual = false;
 
-public void setPad2(long pPad2)
-{ pad2 = pPad2;
-}
+		for (int idx = 0; idx < groupedEntityDescriptions.size(); idx++) {
+			if (!(groupedEntityDescriptions.get(idx).equals(rhs.groupedEntityDescriptions.get(idx))))
+				ivarsEqual = false;
+		}
 
-public long getPad2()
-{ return pad2; 
-}
+		return ivarsEqual && super.equalsImpl(rhs);
+	}
 
-public void setLatitude(double pLatitude)
-{ latitude = pLatitude;
-}
+	public short getGroupedEntityCategory() {
+		return groupedEntityCategory;
+	}
 
-public double getLatitude()
-{ return latitude; 
-}
+	public List<VariableDatum> getGroupedEntityDescriptions() {
+		return groupedEntityDescriptions;
+	}
 
-public void setLongitude(double pLongitude)
-{ longitude = pLongitude;
-}
+	public EntityID getGroupEntityID() {
+		return groupEntityID;
+	}
 
-public double getLongitude()
-{ return longitude; 
-}
+	public double getLatitude() {
+		return latitude;
+	}
 
-public void setGroupedEntityDescriptions(List<VariableDatum> pGroupedEntityDescriptions)
-{ groupedEntityDescriptions = pGroupedEntityDescriptions;
-}
+	public double getLongitude() {
+		return longitude;
+	}
 
-public List<VariableDatum> getGroupedEntityDescriptions()
-{ return groupedEntityDescriptions; }
+	@Override
+	public int getMarshalledSize() {
+		int marshalSize = 0;
 
+		marshalSize = super.getMarshalledSize();
+		marshalSize = marshalSize + groupEntityID.getMarshalledSize(); // groupEntityID
+		marshalSize = marshalSize + 1; // groupedEntityCategory
+		marshalSize = marshalSize + 1; // numberOfGroupedEntities
+		marshalSize = marshalSize + 4; // pad2
+		marshalSize = marshalSize + 8; // latitude
+		marshalSize = marshalSize + 8; // longitude
+		for (int idx = 0; idx < groupedEntityDescriptions.size(); idx++) {
+			final VariableDatum listElement = groupedEntityDescriptions.get(idx);
+			marshalSize = marshalSize + listElement.getMarshalledSize();
+		}
 
-public void marshal(DataOutputStream dos)
-{
-    super.marshal(dos);
-    try 
-    {
-       groupEntityID.marshal(dos);
-       dos.writeByte( (byte)groupedEntityCategory);
-       dos.writeByte( (byte)groupedEntityDescriptions.size());
-       dos.writeInt( (int)pad2);
-       dos.writeDouble( (double)latitude);
-       dos.writeDouble( (double)longitude);
+		return marshalSize;
+	}
 
-       for(int idx = 0; idx < groupedEntityDescriptions.size(); idx++)
-       {
-            VariableDatum aVariableDatum = groupedEntityDescriptions.get(idx);
-            aVariableDatum.marshal(dos);
-       } // end of list marshalling
+	public short getNumberOfGroupedEntities() {
+		return (short) groupedEntityDescriptions.size();
+	}
 
-    } // end try 
-    catch(Exception e)
-    { 
-      System.out.println(e);}
-    } // end of marshal method
+	public long getPad2() {
+		return pad2;
+	}
 
-public void unmarshal(DataInputStream dis)
-{
-     super.unmarshal(dis);
+	@Override
+	public void marshal(final DataOutputStream dos) {
+		super.marshal(dos);
+		try {
+			groupEntityID.marshal(dos);
+			dos.writeByte((byte) groupedEntityCategory);
+			dos.writeByte((byte) groupedEntityDescriptions.size());
+			dos.writeInt((int) pad2);
+			dos.writeDouble(latitude);
+			dos.writeDouble(longitude);
 
-    try 
-    {
-       groupEntityID.unmarshal(dis);
-       groupedEntityCategory = (short)dis.readUnsignedByte();
-       numberOfGroupedEntities = (short)dis.readUnsignedByte();
-       pad2 = dis.readInt();
-       latitude = dis.readDouble();
-       longitude = dis.readDouble();
-       for(int idx = 0; idx < numberOfGroupedEntities; idx++)
-       {
-           VariableDatum anX = new VariableDatum();
-           anX.unmarshal(dis);
-           groupedEntityDescriptions.add(anX);
-       }
+			for (int idx = 0; idx < groupedEntityDescriptions.size(); idx++) {
+				final VariableDatum aVariableDatum = groupedEntityDescriptions.get(idx);
+				aVariableDatum.marshal(dos);
+			} // end of list marshalling
 
-    } // end try 
-   catch(Exception e)
-    { 
-      System.out.println(e); 
-    }
- } // end of unmarshal method 
+		} // end try
+		catch (final Exception e) {
+			System.out.println(e);
+		}
+	} // end of marshal method
 
+	/**
+	 * Packs a Pdu into the ByteBuffer.
+	 *
+	 * @throws java.nio.BufferOverflowException if buff is too small
+	 * @throws java.nio.ReadOnlyBufferException if buff is read only
+	 * @see java.nio.ByteBuffer
+	 * @param buff The ByteBuffer at the position to begin writing
+	 * @since ??
+	 */
+	@Override
+	public void marshal(final java.nio.ByteBuffer buff) {
+		super.marshal(buff);
+		groupEntityID.marshal(buff);
+		buff.put((byte) groupedEntityCategory);
+		buff.put((byte) groupedEntityDescriptions.size());
+		buff.putInt((int) pad2);
+		buff.putDouble(latitude);
+		buff.putDouble(longitude);
 
-/**
- * Packs a Pdu into the ByteBuffer.
- * @throws java.nio.BufferOverflowException if buff is too small
- * @throws java.nio.ReadOnlyBufferException if buff is read only
- * @see java.nio.ByteBuffer
- * @param buff The ByteBuffer at the position to begin writing
- * @since ??
- */
-public void marshal(java.nio.ByteBuffer buff)
-{
-       super.marshal(buff);
-       groupEntityID.marshal(buff);
-       buff.put( (byte)groupedEntityCategory);
-       buff.put( (byte)groupedEntityDescriptions.size());
-       buff.putInt( (int)pad2);
-       buff.putDouble( (double)latitude);
-       buff.putDouble( (double)longitude);
+		for (int idx = 0; idx < groupedEntityDescriptions.size(); idx++) {
+			final VariableDatum aVariableDatum = groupedEntityDescriptions.get(idx);
+			aVariableDatum.marshal(buff);
+		} // end of list marshalling
 
-       for(int idx = 0; idx < groupedEntityDescriptions.size(); idx++)
-       {
-            VariableDatum aVariableDatum = (VariableDatum)groupedEntityDescriptions.get(idx);
-            aVariableDatum.marshal(buff);
-       } // end of list marshalling
+	} // end of marshal method
 
-    } // end of marshal method
+	public void setGroupedEntityCategory(final short pGroupedEntityCategory) {
+		groupedEntityCategory = pGroupedEntityCategory;
+	}
 
-/**
- * Unpacks a Pdu from the underlying data.
- * @throws java.nio.BufferUnderflowException if buff is too small
- * @see java.nio.ByteBuffer
- * @param buff The ByteBuffer at the position to begin reading
- * @since ??
- */
-public void unmarshal(java.nio.ByteBuffer buff)
-{
-       super.unmarshal(buff);
+	public void setGroupedEntityDescriptions(final List<VariableDatum> pGroupedEntityDescriptions) {
+		groupedEntityDescriptions = pGroupedEntityDescriptions;
+	}
 
-       groupEntityID.unmarshal(buff);
-       groupedEntityCategory = (short)(buff.get() & 0xFF);
-       numberOfGroupedEntities = (short)(buff.get() & 0xFF);
-       pad2 = buff.getInt();
-       latitude = buff.getDouble();
-       longitude = buff.getDouble();
-       for(int idx = 0; idx < numberOfGroupedEntities; idx++)
-       {
-            VariableDatum anX = new VariableDatum();
-            anX.unmarshal(buff);
-            groupedEntityDescriptions.add(anX);
-       }
+	public void setGroupEntityID(final EntityID pGroupEntityID) {
+		groupEntityID = pGroupEntityID;
+	}
 
- } // end of unmarshal method 
+	public void setLatitude(final double pLatitude) {
+		latitude = pLatitude;
+	}
 
+	public void setLongitude(final double pLongitude) {
+		longitude = pLongitude;
+	}
 
- /*
-  * The equals method doesn't always work--mostly it works only on classes that consist only of primitives. Be careful.
-  */
-@Override
- public boolean equals(Object obj)
- {
+	/**
+	 * Note that setting this value will not change the marshalled value. The list
+	 * whose length this describes is used for that purpose. The
+	 * getnumberOfGroupedEntities method will also be based on the actual list
+	 * length rather than this value. The method is simply here for java bean
+	 * completeness.
+	 */
+	public void setNumberOfGroupedEntities(final short pNumberOfGroupedEntities) {
+		numberOfGroupedEntities = pNumberOfGroupedEntities;
+	}
 
-    if(this == obj){
-      return true;
-    }
+	public void setPad2(final long pPad2) {
+		pad2 = pPad2;
+	}
 
-    if(obj == null){
-       return false;
-    }
+	@Override
+	public void unmarshal(final DataInputStream dis) {
+		super.unmarshal(dis);
 
-    if(getClass() != obj.getClass())
-        return false;
+		try {
+			groupEntityID.unmarshal(dis);
+			groupedEntityCategory = (short) dis.readUnsignedByte();
+			numberOfGroupedEntities = (short) dis.readUnsignedByte();
+			pad2 = dis.readInt();
+			latitude = dis.readDouble();
+			longitude = dis.readDouble();
+			for (int idx = 0; idx < numberOfGroupedEntities; idx++) {
+				final VariableDatum anX = new VariableDatum();
+				anX.unmarshal(dis);
+				groupedEntityDescriptions.add(anX);
+			}
 
-    return equalsImpl(obj);
- }
+		} // end try
+		catch (final Exception e) {
+			System.out.println(e);
+		}
+	} // end of unmarshal method
 
-@Override
- public boolean equalsImpl(Object obj)
- {
-     boolean ivarsEqual = true;
+	/**
+	 * Unpacks a Pdu from the underlying data.
+	 *
+	 * @throws java.nio.BufferUnderflowException if buff is too small
+	 * @see java.nio.ByteBuffer
+	 * @param buff The ByteBuffer at the position to begin reading
+	 * @since ??
+	 */
+	@Override
+	public void unmarshal(final java.nio.ByteBuffer buff) {
+		super.unmarshal(buff);
 
-    if(!(obj instanceof IsGroupOfPdu))
-        return false;
+		groupEntityID.unmarshal(buff);
+		groupedEntityCategory = (short) (buff.get() & 0xFF);
+		numberOfGroupedEntities = (short) (buff.get() & 0xFF);
+		pad2 = buff.getInt();
+		latitude = buff.getDouble();
+		longitude = buff.getDouble();
+		for (int idx = 0; idx < numberOfGroupedEntities; idx++) {
+			final VariableDatum anX = new VariableDatum();
+			anX.unmarshal(buff);
+			groupedEntityDescriptions.add(anX);
+		}
 
-     final IsGroupOfPdu rhs = (IsGroupOfPdu)obj;
-
-     if( ! (groupEntityID.equals( rhs.groupEntityID) )) ivarsEqual = false;
-     if( ! (groupedEntityCategory == rhs.groupedEntityCategory)) ivarsEqual = false;
-     if( ! (numberOfGroupedEntities == rhs.numberOfGroupedEntities)) ivarsEqual = false;
-     if( ! (pad2 == rhs.pad2)) ivarsEqual = false;
-     if( ! (latitude == rhs.latitude)) ivarsEqual = false;
-     if( ! (longitude == rhs.longitude)) ivarsEqual = false;
-
-     for(int idx = 0; idx < groupedEntityDescriptions.size(); idx++)
-     {
-        if( ! ( groupedEntityDescriptions.get(idx).equals(rhs.groupedEntityDescriptions.get(idx)))) ivarsEqual = false;
-     }
-
-
-    return ivarsEqual && super.equalsImpl(rhs);
- }
+	} // end of unmarshal method
 } // end of class

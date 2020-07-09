@@ -1,3 +1,17 @@
+/*******************************************************************************
+ * Debrief - the Open Source Maritime Analysis Application
+ * http://debrief.info
+ *
+ * (C) 2000-2020, Deep Blue C Technology Ltd
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the Eclipse Public License v1.0
+ * (http://www.eclipse.org/legal/epl-v10.html)
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *******************************************************************************/
 /*****************************************************************************
  *  Limpet - the Lightweight InforMation ProcEssing Toolkit
  *  http://limpet.info
@@ -23,6 +37,23 @@ import static javax.measure.unit.SI.METRES_PER_SECOND;
 import static javax.measure.unit.SI.METRES_PER_SQUARE_SECOND;
 import static javax.measure.unit.SI.RADIAN;
 import static javax.measure.unit.SI.SECOND;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+
+import javax.measure.quantity.Angle;
+import javax.measure.quantity.Dimensionless;
+import javax.measure.quantity.Duration;
+import javax.measure.quantity.Frequency;
+import javax.measure.quantity.Velocity;
+import javax.measure.unit.NonSI;
+import javax.measure.unit.SI;
+import javax.measure.unit.Unit;
+
+import org.eclipse.january.dataset.Dataset;
+import org.eclipse.january.dataset.Maths;
+
 import info.limpet.IOperation;
 import info.limpet.IStoreItem;
 import info.limpet.impl.SampleData;
@@ -51,353 +82,277 @@ import info.limpet.operations.spatial.GenerateCourseAndSpeedOperation;
 import info.limpet.operations.spatial.ProplossBetweenTwoTracksOperation;
 import info.limpet.operations.spatial.msa.BistaticAngleOperation;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+public class OperationsLibrary {
+	public abstract static class UnitaryAngleOperation extends UnaryQuantityOperation {
+		public UnitaryAngleOperation(final String opName) {
+			super(opName);
+		}
 
-import javax.measure.quantity.Duration;
-import javax.measure.quantity.Angle;
-import javax.measure.quantity.Dimensionless;
-import javax.measure.quantity.Frequency;
-import javax.measure.quantity.Velocity;
-import javax.measure.unit.NonSI;
-import javax.measure.unit.SI;
-import javax.measure.unit.Unit;
+		@Override
+		protected final boolean appliesTo(final List<IStoreItem> selection) {
+			return selection.size() > 0 && getATests().allHaveDimension(selection, SI.RADIAN.getDimension())
+					&& getATests().allOneDim(selection);
+		}
+	}
 
-import org.eclipse.january.dataset.Dataset;
-import org.eclipse.january.dataset.Maths;
+	public static final String SPATIAL = "Spatial";
 
-public class OperationsLibrary
-{
-  /**
-   * use protected constructor to prevent accidental declaration
-   * 
-   */
-  protected OperationsLibrary()
-  {
+	public static final String ADMINISTRATION = "Administration";
+	public static final String FILTER = "Filter";
+	public static final String CONVERSIONS = "Conversions";
+	public static final String ARITHMETIC = "Arithmetic";
+	public static final String CREATE = "Create";
 
-  }
+	private static List<IOperation> getAdmin() {
+		final List<IOperation> admin = new ArrayList<IOperation>();
+		admin.add(new GenerateDummyDataOperation("small", 20));
+		admin.add(new GenerateDummyDataOperation("large", 1000));
+		admin.add(new GenerateDummyDataOperation("monster", 1000000));
+		admin.add(new CreateNewIndexedDatafileOperation());
+		admin.add(new CreateNewLookupDatafileOperation());
+		admin.add(new UnaryQuantityOperation("Clear units") {
+			@Override
+			protected boolean appliesTo(final List<IStoreItem> selection) {
+				return true;
+			}
 
-  public abstract static class UnitaryAngleOperation extends
-      UnaryQuantityOperation
-  {
-    public UnitaryAngleOperation(String opName)
-    {
-      super(opName);
-    }
+			@Override
+			public Dataset calculate(final Dataset input) {
+				throw new RuntimeException("Not implemented");
+			}
 
-    @Override
-    protected final boolean appliesTo(List<IStoreItem> selection)
-    {
-      return selection.size() > 0
-          && getATests().allHaveDimension(selection, SI.RADIAN.getDimension())
-          && getATests().allOneDim(selection);
-    }
-  }
+			@Override
+			protected String getUnaryNameFor(final String name) {
+				return "Clear units";
+			}
 
-  public static final String SPATIAL = "Spatial";
-  public static final String ADMINISTRATION = "Administration";
-  public static final String FILTER = "Filter";
-  public static final String CONVERSIONS = "Conversions";
-  public static final String ARITHMETIC = "Arithmetic";
-  public static final String CREATE = "Create";
+			@Override
+			protected Unit<?> getUnaryOutputUnit(final Unit<?> first) {
+				return Dimensionless.UNIT;
+			}
+		});
 
-  public static HashMap<String, List<IOperation>> getOperations()
-  {
-    HashMap<String, List<IOperation>> res =
-        new HashMap<String, List<IOperation>>();
+		// and the export operations
+		admin.add(new ExportCsvToFileAction());
+		admin.add(new CopyCsvToClipboardAction());
 
-    res.put(ARITHMETIC, getArithmetic());
-    res.put(CONVERSIONS, getConversions());
-    res.put(ADMINISTRATION, getAdmin());
-    res.put(SPATIAL, getSpatial());
-    res.put(CREATE, getCreate());
-    res.put(FILTER, getFilter());
-    return res;
-  }
+		return admin;
+	}
 
-  public static List<IOperation> getTopLevel()
-  {
-    List<IOperation> topLevel = new ArrayList<IOperation>();
-    topLevel.add(new DeleteCollectionOperation());
-    return topLevel;
-  }
+	private static List<IOperation> getArithmetic() {
+		final List<IOperation> arithmetic = new ArrayList<IOperation>();
+		arithmetic.add(new MultiplyQuantityOperation());
+		arithmetic.add(new AddQuantityOperation());
+		arithmetic.add(new SubtractQuantityOperation());
+		arithmetic.add(new DivideQuantityOperation());
+		arithmetic.add(new SimpleMovingAverageOperation(3));
+		arithmetic.add(new RateOfChangeOperation());
 
-  private static List<IOperation> getAdmin()
-  {
-    List<IOperation> admin = new ArrayList<IOperation>();
-    admin.add(new GenerateDummyDataOperation("small", 20));
-    admin.add(new GenerateDummyDataOperation("large", 1000));
-    admin.add(new GenerateDummyDataOperation("monster", 1000000));
-    admin.add(new CreateNewIndexedDatafileOperation());
-    admin.add(new CreateNewLookupDatafileOperation());
-    admin.add(new UnaryQuantityOperation("Clear units")
-    {
-      @Override
-      protected boolean appliesTo(List<IStoreItem> selection)
-      {
-        return true;
-      }
+		// also our generic maths operators
+		arithmetic.add(new UnaryQuantityOperation("Abs") {
+			@Override
+			protected boolean appliesTo(final List<IStoreItem> selection) {
+				return getATests().allQuantity(selection) && getATests().allOneDim(selection);
+			}
 
-      @Override
-      protected Unit<?> getUnaryOutputUnit(Unit<?> first)
-      {
-        return Dimensionless.UNIT;
-      }
+			@Override
+			public Dataset calculate(final Dataset input) {
+				return Maths.abs(input);
+			}
 
-      @Override
-      protected String getUnaryNameFor(String name)
-      {
-        return "Clear units";
-      }
+			@Override
+			protected Unit<?> getUnaryOutputUnit(final Unit<?> first) {
+				return first;
+			}
+		});
+		arithmetic.add(new UnitaryAngleOperation("Sin") {
+			@Override
+			public Dataset calculate(final Dataset input) {
+				return Maths.sin(input);
+			}
 
-      @Override
-      public Dataset calculate(Dataset input)
-      {
-        throw new RuntimeException("Not implemented");
-      }
-    });
+			@Override
+			protected Unit<?> getUnaryOutputUnit(final Unit<?> first) {
+				return first;
+			}
+		});
+		arithmetic.add(new UnitaryAngleOperation("Cos") {
+			@Override
+			public Dataset calculate(final Dataset input) {
+				return Maths.cos(input);
+			}
 
-    // and the export operations
-    admin.add(new ExportCsvToFileAction());
-    admin.add(new CopyCsvToClipboardAction());
+			@Override
+			protected Unit<?> getUnaryOutputUnit(final Unit<?> first) {
+				return first;
+			}
+		});
+		arithmetic.add(new UnitaryAngleOperation("Tan") {
+			@Override
+			public Dataset calculate(final Dataset input) {
+				return Maths.tan(input);
+			}
 
-    return admin;
-  }
+			@Override
+			protected Unit<?> getUnaryOutputUnit(final Unit<?> first) {
+				return first;
+			}
+		});
+		arithmetic.add(new UnaryQuantityOperation("Inv") {
+			@Override
+			protected boolean appliesTo(final List<IStoreItem> selection) {
+				return getATests().allQuantity(selection) && getATests().allOneDim(selection);
+			}
 
-  private static List<IOperation> getArithmetic()
-  {
-    List<IOperation> arithmetic = new ArrayList<IOperation>();
-    arithmetic.add(new MultiplyQuantityOperation());
-    arithmetic.add(new AddQuantityOperation());
-    arithmetic.add(new SubtractQuantityOperation());
-    arithmetic.add(new DivideQuantityOperation());
-    arithmetic.add(new SimpleMovingAverageOperation(3));
-    arithmetic.add(new RateOfChangeOperation());
+			@Override
+			public Dataset calculate(final Dataset input) {
+				return Maths.divide(1, input);
+			}
 
-    // also our generic maths operators
-    arithmetic.add(new UnaryQuantityOperation("Abs")
-    {
-      @Override
-      protected boolean appliesTo(List<IStoreItem> selection)
-      {
-        return getATests().allQuantity(selection)
-            && getATests().allOneDim(selection);
-      }
+			@Override
+			protected Unit<?> getUnaryOutputUnit(final Unit<?> first) {
+				return first;
+			}
+		});
+		arithmetic.add(new UnaryQuantityOperation("Sqrt") {
+			@Override
+			protected boolean appliesTo(final List<IStoreItem> selection) {
+				return getATests().allQuantity(selection) && getATests().allOneDim(selection);
+			}
 
-      @Override
-      protected Unit<?> getUnaryOutputUnit(Unit<?> first)
-      {
-        return first;
-      }
+			@Override
+			public Dataset calculate(final Dataset input) {
+				return Maths.sqrt(input);
+			}
 
-      @Override
-      public Dataset calculate(Dataset input)
-      {
-        return Maths.abs(input);
-      }
-    });
-    arithmetic.add(new UnitaryAngleOperation("Sin")
-    {
-      @Override
-      protected Unit<?> getUnaryOutputUnit(Unit<?> first)
-      {
-        return first;
-      }
+			@Override
+			protected Unit<?> getUnaryOutputUnit(final Unit<?> first) {
+				return first;
+			}
+		});
+		arithmetic.add(new UnaryQuantityOperation("Sqr") {
+			@Override
+			protected boolean appliesTo(final List<IStoreItem> selection) {
+				return getATests().allQuantity(selection) && getATests().allOneDim(selection);
+			}
 
-      @Override
-      public Dataset calculate(Dataset input)
-      {
-        return Maths.sin(input);
-      }
-    });
-    arithmetic.add(new UnitaryAngleOperation("Cos")
-    {
-      @Override
-      protected Unit<?> getUnaryOutputUnit(Unit<?> first)
-      {
-        return first;
-      }
+			@Override
+			public Dataset calculate(final Dataset input) {
+				return Maths.square(input);
+			}
 
-      @Override
-      public Dataset calculate(Dataset input)
-      {
-        return Maths.cos(input);
-      }
-    });
-    arithmetic.add(new UnitaryAngleOperation("Tan")
-    {
-      @Override
-      protected Unit<?> getUnaryOutputUnit(Unit<?> first)
-      {
-        return first;
-      }
+			@Override
+			protected Unit<?> getUnaryOutputUnit(final Unit<?> first) {
+				return first;
+			}
+		});
+		arithmetic.add(new UnaryQuantityOperation("Log") {
+			@Override
+			protected boolean appliesTo(final List<IStoreItem> selection) {
+				return getATests().allQuantity(selection) && getATests().allOneDim(selection);
+			}
 
-      @Override
-      public Dataset calculate(Dataset input)
-      {
-        return Maths.tan(input);
-      }
-    });
-    arithmetic.add(new UnaryQuantityOperation("Inv")
-    {
-      @Override
-      protected boolean appliesTo(List<IStoreItem> selection)
-      {
-        return getATests().allQuantity(selection)
-            && getATests().allOneDim(selection);
-      }
+			@Override
+			public Dataset calculate(final Dataset input) {
+				return Maths.log(input);
+			}
 
-      @Override
-      protected Unit<?> getUnaryOutputUnit(Unit<?> first)
-      {
-        return first;
-      }
+			@Override
+			protected Unit<?> getUnaryOutputUnit(final Unit<?> first) {
+				return first;
+			}
+		});
 
-      @Override
-      public Dataset calculate(Dataset input)
-      {
-        return Maths.divide(1, input);
-      }
-    });
-    arithmetic.add(new UnaryQuantityOperation("Sqrt")
-    {
-      @Override
-      protected boolean appliesTo(List<IStoreItem> selection)
-      {
-        return getATests().allQuantity(selection)
-            && getATests().allOneDim(selection);
-      }
+		return arithmetic;
+	}
 
-      @Override
-      protected Unit<?> getUnaryOutputUnit(Unit<?> first)
-      {
-        return first;
-      }
+	private static List<IOperation> getConversions() {
+		final List<IOperation> conversions = new ArrayList<IOperation>();
 
-      @Override
-      public Dataset calculate(Dataset input)
-      {
-        return Maths.sqrt(input);
-      }
-    });
-    arithmetic.add(new UnaryQuantityOperation("Sqr")
-    {
-      @Override
-      protected boolean appliesTo(List<IStoreItem> selection)
-      {
-        return getATests().allQuantity(selection)
-            && getATests().allOneDim(selection);
-      }
+		// Length
+		conversions.add(new UnitConversionOperation(METRE));
 
-      @Override
-      protected Unit<?> getUnaryOutputUnit(Unit<?> first)
-      {
-        return first;
-      }
+		// Time
+		conversions.add(new UnitConversionOperation(SECOND));
+		conversions.add(new UnitConversionOperation(MINUTE));
 
-      @Override
-      public Dataset calculate(Dataset input)
-      {
-        return Maths.square(input);
-      }
-    });
-    arithmetic.add(new UnaryQuantityOperation("Log")
-    {
-      @Override
-      protected boolean appliesTo(List<IStoreItem> selection)
-      {
-        return getATests().allQuantity(selection)
-            && getATests().allOneDim(selection);
-      }
+		// Speed
+		conversions.add(new UnitConversionOperation(METRES_PER_SECOND));
+		conversions.add(new UnitConversionOperation(NAUTICAL_MILE.divide(SECOND.times(3600)).asType(Velocity.class)));
 
-      @Override
-      protected Unit<?> getUnaryOutputUnit(Unit<?> first)
-      {
-        return first;
-      }
+		// Acceleration
+		conversions.add(new UnitConversionOperation(METRES_PER_SQUARE_SECOND));
 
-      @Override
-      public Dataset calculate(Dataset input)
-      {
-        return Maths.log(input);
-      }
-    });
+		// Temperature
+		conversions.add(new UnitConversionOperation(CELSIUS));
 
-    return arithmetic;
-  }
+		// Angle
+		conversions.add(new UnitConversionOperation(RADIAN));
+		conversions.add(new UnitConversionOperation(SampleData.DEGREE_ANGLE));
+		return conversions;
+	}
 
-  private static List<IOperation> getSpatial()
-  {
-    List<IOperation> spatial = new ArrayList<IOperation>();
-    spatial.add(new DistanceBetweenTracksOperation());
-    spatial.add(new BearingBetweenTracksOperation());
-    spatial.add(new GenerateCourseAndSpeedOperation());
-    spatial.add(new DopplerShiftBetweenTracksOperation());
-    spatial.add(new ProplossBetweenTwoTracksOperation());
-    spatial.add(new BistaticAngleOperation());
-    return spatial;
-  }
+	private static List<IOperation> getCreate() {
+		final List<IOperation> create = new ArrayList<IOperation>();
 
-  private static List<IOperation> getConversions()
-  {
-    List<IOperation> conversions = new ArrayList<IOperation>();
+		create.add(new AddLayerOperation());
 
-    // Length
-    conversions.add(new UnitConversionOperation(METRE));
+		create.add(new CreateSingletonGenerator("dimensionless", Dimensionless.UNIT));
 
-    // Time
-    conversions.add(new UnitConversionOperation(SECOND));
-    conversions.add(new UnitConversionOperation(MINUTE));
+		create.add(new CreateSingletonGenerator("frequency", HERTZ.asType(Frequency.class)));
 
-    // Speed
-    conversions.add(new UnitConversionOperation(METRES_PER_SECOND));
-    conversions.add(new UnitConversionOperation(NAUTICAL_MILE.divide(
-        SECOND.times(3600)).asType(Velocity.class)));
+		create.add(new CreateSingletonGenerator("decibels", NonSI.DECIBEL));
 
-    // Acceleration
-    conversions.add(new UnitConversionOperation(METRES_PER_SQUARE_SECOND));
+		create.add(new CreateSingletonGenerator("speed (m/s)", METRE.divide(SECOND).asType(Velocity.class)));
 
-    // Temperature
-    conversions.add(new UnitConversionOperation(CELSIUS));
+		create.add(new CreateSingletonGenerator("course (degs)", SampleData.DEGREE_ANGLE.asType(Angle.class)));
+		create.add(new CreateSingletonGenerator("time (secs)", SI.SECOND.asType(Duration.class)));
+		// create.add(new CreateLocationAction());
+		create.add(new GenerateGrid());
 
-    // Angle
-    conversions.add(new UnitConversionOperation(RADIAN));
-    conversions.add(new UnitConversionOperation(SampleData.DEGREE_ANGLE));
-    return conversions;
-  }
+		return create;
+	}
 
-  private static List<IOperation> getFilter()
-  {
-    List<IOperation> filter = new ArrayList<IOperation>();
-    filter.add(new MaxMinFilterOperation());
-    return filter;
-  }
-  
-  private static List<IOperation> getCreate()
-  {
-    List<IOperation> create = new ArrayList<IOperation>();
+	private static List<IOperation> getFilter() {
+		final List<IOperation> filter = new ArrayList<IOperation>();
+		filter.add(new MaxMinFilterOperation());
+		return filter;
+	}
 
-    create.add(new AddLayerOperation());
+	public static HashMap<String, List<IOperation>> getOperations() {
+		final HashMap<String, List<IOperation>> res = new HashMap<String, List<IOperation>>();
 
-    create
-        .add(new CreateSingletonGenerator("dimensionless", Dimensionless.UNIT));
+		res.put(ARITHMETIC, getArithmetic());
+		res.put(CONVERSIONS, getConversions());
+		res.put(ADMINISTRATION, getAdmin());
+		res.put(SPATIAL, getSpatial());
+		res.put(CREATE, getCreate());
+		res.put(FILTER, getFilter());
+		return res;
+	}
 
-    create.add(new CreateSingletonGenerator("frequency", HERTZ
-        .asType(Frequency.class)));
+	private static List<IOperation> getSpatial() {
+		final List<IOperation> spatial = new ArrayList<IOperation>();
+		spatial.add(new DistanceBetweenTracksOperation());
+		spatial.add(new BearingBetweenTracksOperation());
+		spatial.add(new GenerateCourseAndSpeedOperation());
+		spatial.add(new DopplerShiftBetweenTracksOperation());
+		spatial.add(new ProplossBetweenTwoTracksOperation());
+		spatial.add(new BistaticAngleOperation());
+		return spatial;
+	}
 
-    create.add(new CreateSingletonGenerator("decibels", NonSI.DECIBEL));
+	public static List<IOperation> getTopLevel() {
+		final List<IOperation> topLevel = new ArrayList<IOperation>();
+		topLevel.add(new DeleteCollectionOperation());
+		return topLevel;
+	}
 
-    create.add(new CreateSingletonGenerator("speed (m/s)", METRE.divide(SECOND)
-        .asType(Velocity.class)));
+	/**
+	 * use protected constructor to prevent accidental declaration
+	 *
+	 */
+	protected OperationsLibrary() {
 
-    create.add(new CreateSingletonGenerator("course (degs)",
-        SampleData.DEGREE_ANGLE.asType(Angle.class)));
-    create.add(new CreateSingletonGenerator("time (secs)",
-        SI.SECOND.asType(Duration.class)));
-    // create.add(new CreateLocationAction());
-    create.add(new GenerateGrid());
-
-    return create;
-  }
+	}
 }

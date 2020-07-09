@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Editable Tests
 Bundle-SymbolicName: org.mwc.debrief.editable.test
-Bundle-Version: 1.0.10
+Bundle-Version: 1.0.14
 Bundle-Activator: org.mwc.debrief.editable.test.Activator
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
@@ -17,7 +17,7 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.jdt.core;bundle-version="3.8.3",
  org.eclipse.draw2d,
  org.mwc.asset.core,
- org.mwc.cmap.gt2Plot;bundle-version="1.0.18"
-Bundle-RequiredExecutionEnvironment: JavaSE-1.7
+ org.mwc.cmap.geotools
+Bundle-RequiredExecutionEnvironment: JavaSE-11
 Bundle-ActivationPolicy: lazy
 Bundle-Vendor: MWC

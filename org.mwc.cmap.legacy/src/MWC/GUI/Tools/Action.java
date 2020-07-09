@@ -1,17 +1,18 @@
-/*
- *    Debrief - the Open Source Maritime Analysis Application
- *    http://debrief.info
+/*******************************************************************************
+ * Debrief - the Open Source Maritime Analysis Application
+ * http://debrief.info
  *
- *    (C) 2000-2014, PlanetMayo Ltd
+ * (C) 2000-2020, Deep Blue C Technology Ltd
  *
- *    This library is free software; you can redistribute it and/or
- *    modify it under the terms of the Eclipse Public License v1.0
- *    (http://www.eclipse.org/legal/epl-v10.html)
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the Eclipse Public License v1.0
+ * (http://www.eclipse.org/legal/epl-v10.html)
  *
- *    This library is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
- */
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *******************************************************************************/
+
 // $RCSfile: Action.java,v $
 // @author $Author: Ian.Mayo $
 // @version $Revision: 1.3 $
@@ -67,40 +68,36 @@
 
 package MWC.GUI.Tools;
 
-
-
 /**
  * parent class defining behavior of a tool, either on a toolbar or menu
  */
 public interface Action {
 	/**
-	 * @return boolean flag to describe whether this operation may be undone
-	 */
-  boolean isUndoable();
-  /**
-	 * @return boolean flag to indicate whether this action may be redone
-	 */
-  boolean isRedoable();
-  /**
-	 * method to produce string describing the activity waiting on the buffer
-	 */
-  String toString();
-  /**
-	 * this method calls the 'undo' event in the parent tool, passing the
-	 * necessary data to it
-	 */
-  void undo();
-  /**
 	 * this method calls the 'do' event in the parent tool, passing the necessary
 	 * data to it
 	 */
-  void execute();
+	void execute();
+
+	/**
+	 * @return boolean flag to indicate whether this action may be redone
+	 */
+	boolean isRedoable();
+
+	/**
+	 * @return boolean flag to describe whether this operation may be undone
+	 */
+	boolean isUndoable();
+
+	/**
+	 * method to produce string describing the activity waiting on the buffer
+	 */
+	@Override
+	String toString();
+
+	/**
+	 * this method calls the 'undo' event in the parent tool, passing the necessary
+	 * data to it
+	 */
+	void undo();
 
 }
-
-
-
-
-
-
-

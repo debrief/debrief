@@ -1,17 +1,17 @@
-/*
- *    Debrief - the Open Source Maritime Analysis Application
- *    http://debrief.info
+/*******************************************************************************
+ * Debrief - the Open Source Maritime Analysis Application
+ * http://debrief.info
  *
- *    (C) 2000-2014, PlanetMayo Ltd
+ * (C) 2000-2020, Deep Blue C Technology Ltd
  *
- *    This library is free software; you can redistribute it and/or
- *    modify it under the terms of the Eclipse Public License v1.0
- *    (http://www.eclipse.org/legal/epl-v10.html)
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the Eclipse Public License v1.0
+ * (http://www.eclipse.org/legal/epl-v10.html)
  *
- *    This library is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
- */
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *******************************************************************************/
 package org.mwc.debrief.core.editors.painters;
 
 import java.awt.Color;
@@ -29,22 +29,78 @@ import MWC.GenericData.WorldArea;
 /**
  * painter which plots all data, and draws a square rectangle around tactical
  * items at the current dtg
- * 
+ *
  * @author ian.mayo
  */
-public class PlainHighlighter implements TemporalLayerPainter
-{
+public class PlainHighlighter implements TemporalLayerPainter {
+	/////////////////////////////////////////////////////////////
+	// nested class describing how to edit this class
+	////////////////////////////////////////////////////////////
+	/**
+	 * the set of editable details for the painter
+	 */
+	public static final class PlainHighlighterInfo extends Editable.EditorType {
+
+		/**
+		 * constructor for editable
+		 *
+		 * @param data the object we are editing
+		 */
+		public PlainHighlighterInfo(final PlainHighlighter data) {
+			super(data, "Normal", "Normal Highlighter");
+		}
+
+		/**
+		 * the set of descriptions for this object
+		 *
+		 * @return the properties
+		 */
+		@Override
+		public final PropertyDescriptor[] getPropertyDescriptors() {
+			try {
+				final PropertyDescriptor[] res = { prop("Color", "Color to paint highlight"),
+						prop("Size", "size to paint highlight (pixels"), };
+				return res;
+			} catch (final Exception e) {
+				MWC.Utilities.Errors.Trace.trace(e);
+				return super.getPropertyDescriptors();
+			}
+
+		}
+	}
+
 	private Color _myColor = Color.white;
 
 	private int _mySize = 5;
 
-	public final void highlightIt(final MWC.Algorithms.PlainProjection proj,
-			final CanvasType dest, final MWC.GenericData.Watchable watch)
-	{
+	public Color getColor() {
+		return _myColor;
+	}
+
+	@Override
+	public EditorType getInfo() {
+		return new PlainHighlighterInfo(this);
+	}
+
+	@Override
+	public String getName() {
+		return toString();
+	}
+
+	public BoundedInteger getSize() {
+		return new BoundedInteger(_mySize, 1, 10);
+	}
+
+	@Override
+	public boolean hasEditor() {
+		return true;
+	}
+
+	public final void highlightIt(final MWC.Algorithms.PlainProjection proj, final CanvasType dest,
+			final MWC.GenericData.Watchable watch) {
 		// check that our graphics context is still valid -
 		// we can't, so we will just have to trap any exceptions it raises
-		try
-		{
+		try {
 
 			// set the highlight colour
 			dest.setColor(_myColor);
@@ -64,139 +120,71 @@ public class PlainHighlighter implements TemporalLayerPainter
 			final int ht = (br.y - tly) + _mySize * 2;
 
 			boolean lineStyleOverridden = false;
-			
+
 			// hey, just see if this is an interpolated data item
-			if(watch instanceof PlainWrapper.InterpolatedData)
-			{
+			if (watch instanceof PlainWrapper.InterpolatedData) {
 				// make the line dotted
 				dest.setLineStyle(CanvasType.DOTTED);
-				
+
 				lineStyleOverridden = true;
 			}
 
 			// plot the rectangle
 			dest.drawRect(x, y, wid, ht);
-			
+
 			// and restore
-			if(lineStyleOverridden)
+			if (lineStyleOverridden)
 				dest.setLineStyle(CanvasType.SOLID);
-		}
-		catch (final IllegalStateException e)
-		{
+		} catch (final IllegalStateException e) {
 			MWC.Utilities.Errors.Trace.trace(e);
 		}
 
 	}
 
-	/** ok, paint this layer, adding highlights where applicable
-	 * 
+	/**
+	 * ok, paint this layer, adding highlights where applicable
+	 *
 	 * @param theLayer
 	 * @param dest
 	 * @param dtg
 	 */
-	public void paintThisLayer(final Layer theLayer, final CanvasType dest, final HiResDate dtg)
-	{
+	@Override
+	public void paintThisLayer(final Layer theLayer, final CanvasType dest, final HiResDate dtg) {
 		// paint it, to start off with
 		theLayer.paint(dest);
-			
+
 		// now think about the highlight
 
 		// do we have a dtg?
-//		if (dtg != null)
-//		{
-//			if (theLayer instanceof TrackWrapper)
-//			{
-//				TrackWrapper tw = (TrackWrapper) theLayer;
-//				Watchable[] list = tw.getNearestTo(dtg);
-//				if (list != null)
-//				{
-//					for (int i = 0; i < list.length; i++)
-//					{
-//						Watchable thisW = list[i];
-//
-//						highlightIt(dest.getProjection(), dest, thisW);
-//					}
-//				}
-//			}
-//		}
+		// if (dtg != null)
+		// {
+		// if (theLayer instanceof TrackWrapper)
+		// {
+		// TrackWrapper tw = (TrackWrapper) theLayer;
+		// Watchable[] list = tw.getNearestTo(dtg);
+		// if (list != null)
+		// {
+		// for (int i = 0; i < list.length; i++)
+		// {
+		// Watchable thisW = list[i];
+		//
+		// highlightIt(dest.getProjection(), dest, thisW);
+		// }
+		// }
+		// }
+		// }
 	}
 
-	
-	
-	public Color getColor()
-	{
-		return _myColor;
-	}
-
-	public void setColor(final Color color)
-	{
+	public void setColor(final Color color) {
 		_myColor = color;
 	}
 
-	public BoundedInteger getSize()
-	{
-		return new BoundedInteger(_mySize, 1, 10);
-	}
-
-	public void setSize(final BoundedInteger size)
-	{
+	public void setSize(final BoundedInteger size) {
 		_mySize = size.getCurrent();
 	}
 
-	public String toString()
-	{
+	@Override
+	public String toString() {
 		return "Normal";
 	}
-
-	public String getName()
-	{
-		return toString();
-	}
-
-	public boolean hasEditor()
-	{
-		return true;
-	}
-
-	public EditorType getInfo()
-	{
-		return new PlainHighlighterInfo(this);
-	}
-
-	 /////////////////////////////////////////////////////////////
-  // nested class describing how to edit this class
-  ////////////////////////////////////////////////////////////
-/** the set of editable details for the painter
- */
-  public static final class PlainHighlighterInfo extends Editable.EditorType
-  {
-
-/** constructor for editable
- * @param data the object we are editing
- */
-    public PlainHighlighterInfo(final PlainHighlighter data)
-    {
-      super(data, "Normal", "");
-    }
-
-/** the set of descriptions for this object
- * @return the properties
- */
-    public final PropertyDescriptor[] getPropertyDescriptors()
-    {
-      try{
-        final PropertyDescriptor[] res={
-          prop("Color", "Color to paint highlight"),
-          prop("Size", "size to paint highlight (pixels"),
-        };
-        return res;
-      }
-      catch(final Exception e)
-      {
-        MWC.Utilities.Errors.Trace.trace(e);
-        return super.getPropertyDescriptors();
-      }
-
-    }
-  }	
 }

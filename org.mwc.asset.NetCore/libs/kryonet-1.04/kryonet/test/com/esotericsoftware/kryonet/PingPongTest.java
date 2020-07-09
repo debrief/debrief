@@ -1,3 +1,17 @@
+/*******************************************************************************
+ * Debrief - the Open Source Maritime Analysis Application
+ * http://debrief.info
+ *  
+ * (C) 2000-2020, Deep Blue C Technology Ltd
+ *  
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the Eclipse Public License v1.0
+ * (http://www.eclipse.org/legal/epl-v10.html)
+ *  
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ *******************************************************************************/
 
 package com.esotericsoftware.kryonet;
 
@@ -82,7 +96,7 @@ public class PingPongTest extends KryoNetTestCase {
 	}
 
 	static public class Data {
-		public String[] strings = {"abcdefghijklmnopqrstuvwxyz0123456789", "", null, "!@#$", "áéíóú"};
+		public String[] strings = {"abcdefghijklmnopqrstuvwxyz0123456789", "", null, "!@#$", "ï¿½ï¿½ï¿½ï¿½ï¿½"};
 		public int[] ints = {-1234567, 1234567, -1, 0, 1, Integer.MAX_VALUE, Integer.MIN_VALUE};
 		public short[] shorts = {-12345, 12345, -1, 0, 1, Short.MAX_VALUE, Short.MIN_VALUE};
 		public float[] floats = {0, -0, 1, -1, 123456, -123456, 0.1f, 0.2f, -0.3f, (float)Math.PI, Float.MAX_VALUE, Float.MIN_VALUE};

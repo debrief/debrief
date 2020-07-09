@@ -1,17 +1,18 @@
-/*
- *    Debrief - the Open Source Maritime Analysis Application
- *    http://debrief.info
+/*******************************************************************************
+ * Debrief - the Open Source Maritime Analysis Application
+ * http://debrief.info
  *
- *    (C) 2000-2014, PlanetMayo Ltd
+ * (C) 2000-2020, Deep Blue C Technology Ltd
  *
- *    This library is free software; you can redistribute it and/or
- *    modify it under the terms of the Eclipse Public License v1.0
- *    (http://www.eclipse.org/legal/epl-v10.html)
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the Eclipse Public License v1.0
+ * (http://www.eclipse.org/legal/epl-v10.html)
  *
- *    This library is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
- */
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *******************************************************************************/
+
 package org.mwc.cmap.grideditor.table.actons;
 
 import java.util.List;
@@ -24,7 +25,6 @@ import org.mwc.cmap.grideditor.command.OperationEnvironment;
 import org.mwc.cmap.gridharness.data.GriddableSeries;
 
 import MWC.GUI.TimeStampedDataItem;
-
 
 /**
  * Action that copies selected {@link TimeStampedDataItem} (or the last item if
@@ -39,10 +39,10 @@ public class InsertRowAction extends AbstractSingleItemAction {
 	}
 
 	@Override
-	protected IUndoableOperation createUndoableOperation(final IUndoContext undoContext, 
-			final GriddableSeries series, final TimeStampedDataItem selected) {
+	protected IUndoableOperation createUndoableOperation(final IUndoContext undoContext, final GriddableSeries series,
+			final TimeStampedDataItem selected) {
 		TimeStampedDataItem theSelected = selected;
-		
+
 		if (theSelected == null) {
 			final List<TimeStampedDataItem> allItems = series.getItems();
 			theSelected = allItems.get(allItems.size() - 1);
@@ -50,7 +50,7 @@ public class InsertRowAction extends AbstractSingleItemAction {
 
 		int selectedIndex = series.getItems().indexOf(theSelected);
 		if (selectedIndex < 0) {
-			//wow
+			// wow
 			selectedIndex = series.getItems().size() - 1;
 		}
 		final TimeStampedDataItem copy = series.makeCopy(theSelected);

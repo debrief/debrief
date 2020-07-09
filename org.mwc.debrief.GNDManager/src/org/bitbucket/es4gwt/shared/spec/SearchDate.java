@@ -1,17 +1,18 @@
-/*
- *    Debrief - the Open Source Maritime Analysis Application
- *    http://debrief.info
+/*******************************************************************************
+ * Debrief - the Open Source Maritime Analysis Application
+ * http://debrief.info
  *
- *    (C) 2000-2014, PlanetMayo Ltd
+ * (C) 2000-2020, Deep Blue C Technology Ltd
  *
- *    This library is free software; you can redistribute it and/or
- *    modify it under the terms of the Eclipse Public License v1.0
- *    (http://www.eclipse.org/legal/epl-v10.html)
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the Eclipse Public License v1.0
+ * (http://www.eclipse.org/legal/epl-v10.html)
  *
- *    This library is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
- */
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *******************************************************************************/
+
 package org.bitbucket.es4gwt.shared.spec;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -28,24 +29,27 @@ public class SearchDate {
 	private final String dateString;
 
 	/**
-	 * @param dateString
-	 *            The formatted date (for example : 2001-01-01 or 2011-12-31)
+	 * @param dateString The formatted date (for example : 2001-01-01 or 2011-12-31)
 	 */
-	public SearchDate(Date date, String dateString) {
+	public SearchDate(final Date date, final String dateString) {
 		checkNotNull(date);
 		checkNotNull(dateString);
 		this.date = date;
 		this.dateString = dateString;
 	}
 
+	public Date asDate() {
+		return (Date) date.clone();
+	}
+
 	@SuppressWarnings("deprecation")
 	@Override
-	public boolean equals(Object object) {
+	public boolean equals(final Object object) {
 		if (object == this) {
 			return true;
 		}
 		if (object instanceof SearchDate) {
-			SearchDate that = (SearchDate) object;
+			final SearchDate that = (SearchDate) object;
 			return this.date.getYear() == that.date.getYear() && this.date.getMonth() == that.date.getMonth()
 					&& this.date.getDate() == that.date.getDate();
 		}
@@ -61,9 +65,5 @@ public class SearchDate {
 	@Override
 	public String toString() {
 		return dateString;
-	}
-
-	public Date asDate() {
-		return (Date) date.clone();
 	}
 }

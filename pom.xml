@@ -9,8 +9,8 @@
   <packaging>pom</packaging>
 
   <properties>
-    <tycho.version>1.2.0</tycho.version>
-    <tycho-extras.version>1.2.0</tycho-extras.version>
+    <tycho.version>1.5.0</tycho.version>
+    <tycho-extras.version>1.5.0</tycho-extras.version>
 
     <tycho-repo.url>https://oss.sonatype.org/content/groups/public/</tycho-repo.url>
 
@@ -23,6 +23,7 @@
     <debrief.keystore.alias>business</debrief.keystore.alias>
     <debrief.keystore.store.password>store123</debrief.keystore.store.password>
     <debrief.keystore.key.password>key123</debrief.keystore.key.password>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
   </properties>
 
@@ -30,7 +31,9 @@
 
 
     <module>org.freehep</module>
+    <!--
     <module>info.limpet</module>
+    -->
     <module>info.limpet.libs</module>
     <module>info.limpet.stackedcharts.model</module>
     <module>info.limpet.stackedcharts.ui</module>
@@ -54,13 +57,12 @@
     <module>org.mwc.cmap.LiveDataMonitor</module>
     <module>org.mwc.cmap.NarrativeViewer</module>
     <module>org.mwc.cmap.openmap</module>
-    <module>org.geotools</module>
+    <module>org.mwc.cmap.geotools</module>
     <module>org.mwc.cmap.NaturalEarth</module>
     <module>org.mwc.cmap.TimeController</module>
     <module>org.mwc.cmap.combined.feature</module>
     <module>org.mwc.cmap.core</module>
     <module>org.mwc.cmap.grideditor</module>
-    <module>org.mwc.cmap.gt2Plot</module>
 <!--    <module>org.mwc.cmap.installer</module>
     <module>org.mwc.cmap.layer_manager</module> -->
     <module>org.mwc.cmap.legacy</module>
@@ -81,6 +83,7 @@
     <module>org.mwc.debrief.data_feed</module>
     <module>org.mwc.debrief.data_feed_dummy</module>
     <module>org.mwc.debrief.legacy</module>
+    <module>org.mwc.debrief.pepys</module>
     <module>org.mwc.debrief.lite</module>
     <module>org.mwc.debrief.multipath2</module>
     <module>org.mwc.debrief.track_shift</module>
@@ -89,6 +92,7 @@
     <module>org.mwc.debrief.scripting</module>
     <module>org.mwc.debrief.test2</module>
     <module>org.mwc.debrief.editable.test</module>
+    
     <module>org.mwc.debrief.targetplatforms</module>
 <!--
     <module>org.mwc.debrief.site</module>
@@ -97,7 +101,7 @@
     <module>org.mwc.debrief.satc.core</module>
     <module>org.mwc.debrief.satc.integration</module>
     <module>org.mwc.debrief.limpet_integration</module>
- <!--
+<!--
     <module>org.mwc.debrief.ui_test</module>
 -->
   </modules>
@@ -123,7 +127,7 @@
          <target>
            <artifact>
              <groupId>org.mwc.debrief</groupId>
-             <artifactId>eclipse48</artifactId>
+             <artifactId>eclipse-latest</artifactId>
              <version>0.0.1-SNAPSHOT</version>
            </artifact>
          </target>
@@ -139,11 +143,6 @@
               <os>linux</os>
               <ws>gtk</ws>
               <arch>x86_64</arch>
-            </environment>
-            <environment>
-              <os>win32</os>
-              <ws>win32</ws>
-              <arch>x86</arch>
             </environment>
             <environment>
               <os>win32</os>
@@ -204,8 +203,8 @@
 		<version>${tycho.version}</version>
 		<configuration>
 			<encoding>UTF-8</encoding>
-			<source>1.7</source>
-			<target>1.7</target>
+			<source>11</source>
+			<target>11</target>
 			<compilerArgument>-warn:+discouraged,forbidden</compilerArgument>
 		</configuration>
 	</plugin>

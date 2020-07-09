@@ -1,17 +1,18 @@
-/*
- *    Debrief - the Open Source Maritime Analysis Application
- *    http://debrief.info
+/*******************************************************************************
+ * Debrief - the Open Source Maritime Analysis Application
+ * http://debrief.info
  *
- *    (C) 2000-2014, PlanetMayo Ltd
+ * (C) 2000-2020, Deep Blue C Technology Ltd
  *
- *    This library is free software; you can redistribute it and/or
- *    modify it under the terms of the Eclipse Public License v1.0
- *    (http://www.eclipse.org/legal/epl-v10.html)
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the Eclipse Public License v1.0
+ * (http://www.eclipse.org/legal/epl-v10.html)
  *
- *    This library is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
- */
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *******************************************************************************/
+
 package Debrief.GUI.Tote.Swing;
 
 // Copyright MWC 1999, Debrief 3 Project
@@ -260,6 +261,7 @@ import javax.swing.JSlider;
 import javax.swing.JToggleButton;
 import javax.swing.JToolBar;
 import javax.swing.KeyStroke;
+import javax.swing.SwingConstants;
 import javax.swing.border.CompoundBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -279,9 +281,202 @@ import MWC.GUI.Tools.Swing.RepeaterButton;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.WorldLocation;
 
-public final class SwingStepControl extends StepControl implements
-		java.awt.event.ActionListener
-{
+public final class SwingStepControl extends StepControl implements java.awt.event.ActionListener {
+	static final class FakeEvent extends AbstractAction {
+		/**
+		 *
+		 */
+		private static final long serialVersionUID = 1L;
+
+		final JButton _mySource;
+
+		public FakeEvent(final JButton source) {
+			_mySource = source;
+		}
+
+		@Override
+		public final void actionPerformed(final ActionEvent e) {
+			_mySource.doClick();
+		}
+
+	}
+
+	public static final class ImageCheckbox extends JCheckBox {
+		/**
+		 *
+		 */
+		private static final long serialVersionUID = 1L;
+
+		public ImageCheckbox(final String name, final String theIcon, final String selectedIcon) {
+
+			final java.lang.ClassLoader loader = getClass().getClassLoader();
+			java.net.URL iconURL = null;
+			java.net.URL selectedIconURL = null;
+
+			if (loader != null) {
+				iconURL = loader.getResource(theIcon);
+				selectedIconURL = loader.getResource(selectedIcon);
+				if (iconURL != null)
+					setIcon(new ImageIcon(iconURL));
+				if (selectedIconURL != null)
+					setSelectedIcon(new ImageIcon(selectedIconURL));
+			}
+
+			// see if we failed to find icon
+			if (iconURL == null)
+				setText(name);
+
+			setBorderPainted(false);
+			setToolTipText(name);
+
+			this.setName(name);
+
+			// update the UI to show just a line instead of a raised border
+			setBorder(new CompoundBorder(BorderFactory.createEtchedBorder(),
+					BorderFactory.createEmptyBorder(1, 1, 1, 1)));
+
+			addMouseListener(new MouseAdapter() {
+				@Override
+				public void mouseEntered(final MouseEvent e) {
+					setBorderPainted(true);
+				}
+
+				@Override
+				public void mouseExited(final MouseEvent e) {
+					setBorderPainted(false);
+				}
+			});
+		}
+	}
+
+	public static final class ImageToggleButton extends JToggleButton {
+		/**
+		 *
+		 */
+		private static final long serialVersionUID = 1L;
+
+		public ImageToggleButton(final String name, final String theIcon) {
+
+			final java.lang.ClassLoader loader = getClass().getClassLoader();
+			java.net.URL iconURL = null;
+
+			if (loader != null) {
+				iconURL = loader.getResource(theIcon);
+				if (iconURL != null)
+					setIcon(new ImageIcon(iconURL));
+
+			}
+
+			// see if we failed to find icon
+			if (iconURL == null)
+				setText(name);
+
+			setBorderPainted(false);
+			setToolTipText(name);
+
+			this.setName(name);
+
+			// update the UI to show just a line instead of a raised border
+			setBorder(new CompoundBorder(BorderFactory.createEtchedBorder(),
+					BorderFactory.createEmptyBorder(1, 1, 1, 1)));
+
+			addMouseListener(new MouseAdapter() {
+				@Override
+				public void mouseEntered(final MouseEvent e) {
+					setBorderPainted(true);
+				}
+
+				@Override
+				public void mouseExited(final MouseEvent e) {
+					setBorderPainted(false);
+				}
+			});
+		}
+	}
+
+	// ///////////////////////////////////////////////////////////
+	// nested classes
+	// ///////////////////////////////////////////////////////////
+	static final class myJButton extends JButton {
+		/**
+		 *
+		 */
+		private static final long serialVersionUID = 1L;
+
+		public myJButton(final String name, final String theIcon) {
+			// load the icon first
+			final java.lang.ClassLoader loader = getClass().getClassLoader();
+			java.net.URL myURL = null;
+			if (loader != null) {
+				myURL = loader.getResource(theIcon);
+				if (myURL != null)
+					setIcon(new ImageIcon(myURL));
+			}
+
+			super.setName(name);
+
+			// see if we failed to find icon
+			if (myURL == null)
+				setText(name);
+
+			setBorderPainted(false);
+			setToolTipText(name);
+			setMargin(new Insets(0, 0, 0, 0));
+			addMouseListener(new MouseAdapter() {
+				@Override
+				public void mouseEntered(final MouseEvent e) {
+					setBorderPainted(true);
+				}
+
+				@Override
+				public void mouseExited(final MouseEvent e) {
+					setBorderPainted(false);
+				}
+			});
+		}
+	}
+
+	// ////////////////////////////////////////////////////////////////////////////////////////////////
+	// testing for this class
+	// ////////////////////////////////////////////////////////////////////////////////////////////////
+	static public final class testStepper extends junit.framework.TestCase {
+		static public final String TEST_ALL_TEST_TYPE = "UNIT";
+
+		public testStepper(final String val) {
+			super(val);
+		}
+
+		public final void testStepperFormatting() {
+
+			// create some dummy data so the panel has start/stop times
+			final Layers layers = new Layers();
+			final BaseLayer base = new BaseLayer();
+			base.setName("Ian's layer");
+			layers.addThisLayer(base);
+			final LabelWrapper label = new LabelWrapper("my label", new WorldLocation(12, 12, 100), Color.red,
+					new HiResDate(120000000), new HiResDate(150000000));
+			base.add(label);
+
+			// ok, create a new SwingStepControl
+			final SwingStepControl ssc = new SwingStepControl(null, layers, null, null, null, null);
+
+			// check this is valid
+			final MWC.GUI.Properties.DateFormatPropertyEditor pe = new MyDateEditor();
+
+			final String[] tags = pe.getTags();
+
+			// check we found tags
+			assertNotNull("tags got found from property editor", tags);
+			assertEquals("tags found from property editor", 7, tags.length);
+
+			// and ditch the stuff
+			ssc.closeMe();
+
+		}
+	}
+
+	private static boolean amRunning = false;
+
 	// ///////////////////////////////////////////////////////////
 	// member variables
 	// //////////////////////////////////////////////////////////
@@ -324,20 +519,20 @@ public final class SwingStepControl extends StepControl implements
 	private ActionListener _comboListener;
 
 	/**
-	 * keep a reference to the listener for the button, so that we can later
-	 * delete it
+	 * keep a reference to the listener for the button, so that we can later delete
+	 * it
 	 */
 	private ActionListener _stepActionListener;
 
 	/**
-	 * keep a reference to the listener for the button, so that we can later
-	 * delete it
+	 * keep a reference to the listener for the button, so that we can later delete
+	 * it
 	 */
 	private ActionListener _paintActionListener;
 
 	/**
-	 * keep a reference to the listener for the button, so that we can later
-	 * delete it
+	 * keep a reference to the listener for the button, so that we can later delete
+	 * it
 	 */
 	private ActionListener _filterActionListener;
 
@@ -377,22 +572,25 @@ public final class SwingStepControl extends StepControl implements
 
 	/**
 	 * busy flag. When we get a newTime instruction, we update the time and the
-	 * slider position. Updating the slider position was firing a time-changed
-	 * type event - so time gets called twice. we don't want that. So, when we are
+	 * slider position. Updating the slider position was firing a time-changed type
+	 * event - so time gets called twice. we don't want that. So, when we are
 	 * processing a time change we set _updatingForm to true, so that we know to
 	 * ignore any slider position updates. cool.
 	 */
 	boolean _updatingForm = false;
 
+	/*****************************************************************************
+	 * TIME SLIDER MANAGEMENT BITS
+	 ****************************************************************************/
+
 	// ///////////////////////////////////////////////////////////
 	// constructor
 	// //////////////////////////////////////////////////////////
-	public SwingStepControl(final SwingPropertiesPanel theEditor, final Layers theData,
-			final PlainChart theChart, final MWC.GUI.Undo.UndoBuffer theBuffer,
-			final MyMetalToolBarUI.ToolbarOwner owner, final ToolParent theParent)
-	{
+	public SwingStepControl(final SwingPropertiesPanel theEditor, final Layers theData, final PlainChart theChart,
+			final MWC.GUI.Undo.UndoBuffer theBuffer, final MyMetalToolBarUI.ToolbarOwner owner,
+			final ToolParent theParent) {
 
-		super(theParent);
+		super(theParent, Color.white);
 
 		_theEditor = theEditor;
 
@@ -410,24 +608,91 @@ public final class SwingStepControl extends StepControl implements
 
 	}
 
+	/**
+	 * one of our edit buttons has been pressed
+	 */
+	@Override
+	public final void actionPerformed(final java.awt.event.ActionEvent p1) {
+
+		if (amRunning) {
+			MWC.Utilities.Errors.Trace.trace("Hey, we're busy!");
+			return;
+		}
+
+		// indicate that we are busy
+		amRunning = true;
+
+		try {
+
+			// get the name of the control
+			boolean fwd = true;
+			boolean large = true;
+			final JButton b = (JButton) p1.getSource();
+
+			// first sort out which set it is
+			if ((b == _startBtn) || (b == _endBtn)) {
+				if (b == _startBtn) {
+					super.gotoStart();
+				} else
+					super.gotoEnd();
+			} else {
+				if (b == _largeBwd) {
+					fwd = false;
+					large = true;
+				}
+				if (b == _smallBwd) {
+					fwd = false;
+					large = false;
+				}
+				if (b == _smallFwd) {
+					fwd = true;
+					large = false;
+				}
+				if (b == _largeFwd) {
+					fwd = true;
+					large = true;
+				}
+
+				_goingForward = fwd;
+				_largeSteps = large;
+
+				super.doStep(fwd, large);
+			}
+
+		} catch (final Exception e) {
+			MWC.Utilities.Errors.Trace.trace(e);
+		}
+
+		amRunning = false;
+	}
+
+	/**
+	 * add a single keystroke handler
+	 */
+	private void assignThisKeystrokeHandler(final JComponent component, final JButton source, final int keyCode,
+			final int modifier) {
+		final KeyStroke newKeyStroke = KeyStroke.getKeyStroke(keyCode, modifier);
+		component.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(newKeyStroke, source);
+		component.getActionMap().put(source, new FakeEvent(source));
+
+	}
+
 	// ///////////////////////////////////////////////////////////
 	// member functions
 	// //////////////////////////////////////////////////////////
-	public final void closeMe()
-	{
+	@Override
+	public final void closeMe() {
 		// get the parent to close itself
 		super.closeMe();
 
 		// and clear the dangling references to the undo buffer
-		if (_theUndoBuffer != null)
-		{
+		if (_theUndoBuffer != null) {
 			_theUndoBuffer.close();
 			_theUndoBuffer = null;
 		}
 
 		// now the GUI components
-		if (_theToolbar != null)
-		{
+		if (_theToolbar != null) {
 			_theToolbar.removeAll();
 			_theToolbar = null;
 		}
@@ -461,9 +726,173 @@ public final class SwingStepControl extends StepControl implements
 
 	}
 
+	/**
+	 * add keystroke handlers
+	 */
+	private void createKeystrokeHandlers() {
+		assignThisKeystrokeHandler(_theToolbar, _startBtn, KeyEvent.VK_HOME, InputEvent.SHIFT_MASK);
+		assignThisKeystrokeHandler(_theToolbar, _largeBwd, KeyEvent.VK_PAGE_UP, InputEvent.SHIFT_MASK);
+		assignThisKeystrokeHandler(_theToolbar, _smallBwd, KeyEvent.VK_PAGE_UP, 0);
+		assignThisKeystrokeHandler(_theToolbar, _endBtn, KeyEvent.VK_END, InputEvent.SHIFT_MASK);
+		assignThisKeystrokeHandler(_theToolbar, _largeFwd, KeyEvent.VK_PAGE_DOWN, InputEvent.SHIFT_MASK);
+		assignThisKeystrokeHandler(_theToolbar, _smallFwd, KeyEvent.VK_PAGE_DOWN, 0);
+
+		// assignThisKeystrokeHandler(_theToolbar, _startBtn, KeyEvent.VK_HOME);
+		// assignThisKeystrokeHandler(_theToolbar, _largeBwd, KeyEvent.VK_UP);
+		// assignThisKeystrokeHandler(_theToolbar, _smallBwd, KeyEvent.VK_LEFT);
+		// assignThisKeystrokeHandler(_theToolbar, _endBtn, KeyEvent.VK_END);
+		// assignThisKeystrokeHandler(_theToolbar, _largeFwd, KeyEvent.VK_DOWN);
+		// assignThisKeystrokeHandler(_theToolbar, _smallFwd, KeyEvent.VK_RIGHT);
+
+	}
+
+	/**
+	 * actually create the time toolbox#
+	 */
+	private void createToolbox() {
+		if (_timeFilter == null) {
+			// create the filter panel
+			_timeFilter = new Debrief.GUI.Tote.Swing.TimeFilter.TimeEditorPanel(_theEditor, _theData, _theChart, this,
+					_theUndoBuffer);
+		}
+	}
+
+	/**
+	 * set the automatic mode as indicated
+	 *
+	 * @param go boolean whether to go auto or not
+	 */
+	private void doAuto(final boolean go) {
+
+		if (go)
+			startTimer();
+		else
+			stopTimer();
+	}
+
+	/**
+	 * edit step button has been pressed (even though we don't actually implement
+	 * this button any more
+	 */
+	@Override
+	public void doEditPainter() {
+		// has the editor been assigned?
+		if (_theToolbar != null) {
+			// can we get the painter
+			final StepperListener painter = super.getCurrentPainter();
+			if (painter instanceof Editable) {
+				final Editable el = (Editable) painter;
+				if (el.hasEditor()) {
+					final Editable.EditorType et = el.getInfo();
+					_theEditor.addEditor(et, null);
+				}
+			}
+
+		}
+	}
+
+	/**
+	 * edit step button has been pressed
+	 */
+	void doEditStep() {
+		// has the editor been assigned?
+		if (_theToolbar != null) {
+			// get our edit info
+			final Editable.EditorType et2 = getInfo();
+			// and open it in the panel
+			_theEditor.addEditor(et2, null);
+		}
+	}
+
+	/**
+	 * handler for filter button being pressed
+	 */
+	void doFilter() {
+		createToolbox();
+
+		// and show it
+		_theEditor.show(_timeFilter);
+
+	}
+
+	/**
+	 * edit step button has been pressed
+	 */
+	void doShowLayerManager() {
+		// do we have our information?
+		final MWC.GUI.Tools.Operations.ShowLayers shower = new MWC.GUI.Tools.Operations.ShowLayers(null, null,
+				_theEditor, _theData);
+
+		shower.execute();
+	}
+
+	/**
+	 * method to reformat stepper text
+	 */
+	@Override
+	protected final void formatTimeText() {
+		final Font ft = _timeTxt.getFont();
+		final Font fNew = new Font(ft.getName(), ft.getStyle(), _fontSize);
+		_timeTxt.setFont(fNew);
+	}
+
+	public final java.awt.Component getPanel() {
+		return _theToolbar;
+	}
+
+	/**
+	 * return the property panel we were informed about at initialisation
+	 */
+	@Override
+	protected final MWC.GUI.Properties.PropertiesPanel getPropertiesPanel() {
+		return _theEditor;
+	}
+
+	/**
+	 * find out what the current time is, according to the slider
+	 *
+	 * @return hi-res date value
+	 */
+	private HiResDate getSliderDate() {
+		HiResDate res = null;
+
+		if ((_timeSlider != null) && (getStartTime() != null)) {
+			long curValue = _timeSlider.getValue();
+
+			if (!_sliderInMicros) {
+				curValue *= 1000;
+			}
+
+			final long newDate = getStartTime().getMicros() + curValue;
+
+			res = new HiResDate(0, newDate);
+		}
+		return res;
+	}
+
+	// retrieve the time currently set in the toolbox
+	@Override
+	public final HiResDate getToolboxEndTime() {
+		HiResDate res = null;
+		if (_timeFilter != null) {
+			res = _timeFilter.getEndTime();
+		}
+		return res;
+	}
+
+	// retrieve the time currently set in the toolbox
+	@Override
+	public final HiResDate getToolboxStartTime() {
+		HiResDate res = null;
+		if (_timeFilter != null) {
+			res = _timeFilter.getStartTime();
+		}
+		return res;
+	}
+
+	@Override
 	@SuppressWarnings("rawtypes")
-	protected final void initForm()
-	{
+	protected final void initForm() {
 		_theToolbar = new JToolBar();
 		_theToolbar.setFloatable(true);
 		// correct the UI for the component - the real one doesn't make the toolbar
@@ -488,12 +917,10 @@ public final class SwingStepControl extends StepControl implements
 		_timeSlider.setMinimum(0);
 
 		_middleRow.add("Center", _timeSlider);
-		_timeSlider.addChangeListener(new ChangeListener()
-		{
-			public void stateChanged(final ChangeEvent e)
-			{
-				if (!_updatingForm)
-				{
+		_timeSlider.addChangeListener(new ChangeListener() {
+			@Override
+			public void stateChanged(final ChangeEvent e) {
+				if (!_updatingForm) {
 					// process the slider
 					newSliderTime();
 				}
@@ -516,10 +943,9 @@ public final class SwingStepControl extends StepControl implements
 
 		// create the edit button
 		_editStepBtn = new myJButton("Properties", "images/list.png");
-		_stepActionListener = new ActionListener()
-		{
-			public void actionPerformed(final ActionEvent e)
-			{
+		_stepActionListener = new ActionListener() {
+			@Override
+			public void actionPerformed(final ActionEvent e) {
 				doEditStep();
 			}
 		};
@@ -528,10 +954,9 @@ public final class SwingStepControl extends StepControl implements
 		// create the manual/auto button
 		_autoBtn = new ImageToggleButton("Auto", "images/clock.png");
 		_autoBtn.setSelected(false);
-		_itemListener = new ItemListener()
-		{
-			public void itemStateChanged(final ItemEvent e)
-			{
+		_itemListener = new ItemListener() {
+			@Override
+			public void itemStateChanged(final ItemEvent e) {
 				doAuto(_autoBtn.isSelected());
 			}
 		};
@@ -540,10 +965,9 @@ public final class SwingStepControl extends StepControl implements
 
 		// create the layer manager viewer button
 		_showLayerMgrBtn = new myJButton("View Layer Manager", "images/outline.png");
-		_paintActionListener = new ActionListener()
-		{
-			public void actionPerformed(final ActionEvent e)
-			{
+		_paintActionListener = new ActionListener() {
+			@Override
+			public void actionPerformed(final ActionEvent e) {
 				doShowLayerManager();
 			}
 		};
@@ -554,7 +978,7 @@ public final class SwingStepControl extends StepControl implements
 		_largeBwd = new RepeaterButton("Large bwd", "images/media_back.png");
 		_smallBwd = new RepeaterButton("Step bwd", "images/media_rewind.png");
 
-		_timeTxt = new JLabel("-----", JLabel.CENTER);
+		_timeTxt = new JLabel("-----", SwingConstants.CENTER);
 		_timeTxt.setName("Time Text");
 		_smallFwd = new RepeaterButton("Step fwd", ("images/media_fast_forward.png"));
 		_largeFwd = new RepeaterButton("Large fwd", "images/media_forward.png");
@@ -567,10 +991,9 @@ public final class SwingStepControl extends StepControl implements
 		_thePainterSelector = new JComboBox();
 		_thePainterSelector.setName("PainterSelector");
 		// create our own (internal listener) for the combo box
-		_comboListener = new ActionListener()
-		{
-			public void actionPerformed(final ActionEvent e)
-			{
+		_comboListener = new ActionListener() {
+			@Override
+			public void actionPerformed(final ActionEvent e) {
 				setPainter((String) _thePainterSelector.getSelectedItem());
 			}
 		};
@@ -580,10 +1003,9 @@ public final class SwingStepControl extends StepControl implements
 		// the filtering support
 		_filterBtn = new myJButton("Filter", "images/filter.png");
 		_filterBtn.setToolTipText("Track & Time toolbox");
-		_filterActionListener = new ActionListener()
-		{
-			public void actionPerformed(final ActionEvent e)
-			{
+		_filterActionListener = new ActionListener() {
+			@Override
+			public void actionPerformed(final ActionEvent e) {
 				doFilter();
 			}
 		};
@@ -619,193 +1041,21 @@ public final class SwingStepControl extends StepControl implements
 
 	}
 
-	/**
-	 * add a single keystroke handler
-	 */
-	private void assignThisKeystrokeHandler(final JComponent component, final JButton source,
-			final int keyCode, final int modifier)
-	{
-		final KeyStroke newKeyStroke = KeyStroke.getKeyStroke(keyCode, modifier);
-		component.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(newKeyStroke, source);
-		component.getActionMap().put(source, new FakeEvent(source));
-
-	}
-
-	/**
-	 * add keystroke handlers
-	 */
-	private void createKeystrokeHandlers()
-	{
-		assignThisKeystrokeHandler(_theToolbar, _startBtn, KeyEvent.VK_HOME,
-				InputEvent.SHIFT_MASK);
-		assignThisKeystrokeHandler(_theToolbar, _largeBwd, KeyEvent.VK_PAGE_UP,
-				InputEvent.SHIFT_MASK);
-		assignThisKeystrokeHandler(_theToolbar, _smallBwd, KeyEvent.VK_PAGE_UP, 0);
-		assignThisKeystrokeHandler(_theToolbar, _endBtn, KeyEvent.VK_END,
-				InputEvent.SHIFT_MASK);
-		assignThisKeystrokeHandler(_theToolbar, _largeFwd, KeyEvent.VK_PAGE_DOWN,
-				InputEvent.SHIFT_MASK);
-		assignThisKeystrokeHandler(_theToolbar, _smallFwd, KeyEvent.VK_PAGE_DOWN, 0);
-
-		// assignThisKeystrokeHandler(_theToolbar, _startBtn, KeyEvent.VK_HOME);
-		// assignThisKeystrokeHandler(_theToolbar, _largeBwd, KeyEvent.VK_UP);
-		// assignThisKeystrokeHandler(_theToolbar, _smallBwd, KeyEvent.VK_LEFT);
-		// assignThisKeystrokeHandler(_theToolbar, _endBtn, KeyEvent.VK_END);
-		// assignThisKeystrokeHandler(_theToolbar, _largeFwd, KeyEvent.VK_DOWN);
-		// assignThisKeystrokeHandler(_theToolbar, _smallFwd, KeyEvent.VK_RIGHT);
-
-	}
-
-	void newSliderTime()
-	{
+	void newSliderTime() {
 		// calculate the new time
 		final HiResDate currentSliderTime = getSliderDate();
 
-		if (currentSliderTime != null)
-		{
+		if (currentSliderTime != null) {
 			// and update our control to reflect this
 			changeTime(currentSliderTime);
-		}
-	}
-
-	/*****************************************************************************
-	 * TIME SLIDER MANAGEMENT BITS
-	 ****************************************************************************/
-
-	/**
-	 * find out what the current time is, according to the slider
-	 * 
-	 * @return hi-res date value
-	 */
-	private HiResDate getSliderDate()
-	{
-		HiResDate res = null;
-
-		if ((_timeSlider != null) && (getStartTime() != null))
-		{
-			long curValue = _timeSlider.getValue();
-
-			if (!_sliderInMicros)
-			{
-				curValue *= 1000;
-			}
-
-			final long newDate = getStartTime().getMicros() + curValue;
-
-			res = new HiResDate(0, newDate);
-		}
-		return res;
-	}
-
-	private void setSliderDate(final HiResDate newDate)
-	{
-
-		long offset = newDate.getMicros() - getStartTime().getMicros();
-
-		if (!_sliderInMicros)
-		{
-			offset /= 1000;
-		}
-
-		_timeSlider.setValue((int) offset);
-
-	}
-
-	/**
-	 * have a look at the range, and decide if we are running in milli or micro
-	 * second resolution
-	 */
-	private final void resetTimeSlider()
-	{
-		// do we know our limits?
-		if ((getStartTime() != null) && (getEndTime() != null))
-		{
-			// yes - initialise the ranges
-			final long range = getEndTime().getMicros() - getStartTime().getMicros();
-
-			if (range > 0)
-			{
-				// remember that we are updating the form. don't bother processing state
-				// changed events for a bit
-				_updatingForm = true;
-
-				if (range < Integer.MAX_VALUE)
-				{
-					_timeSlider.setMaximum((int) range);
-					_timeSlider.setEnabled(true);
-					_sliderInMicros = true;
-				}
-				else
-				{
-					final long rangeMillis = range / 1000;
-					if (rangeMillis < Integer.MAX_VALUE)
-					{
-						// ok, we're going to run in millisecond resolution
-						_timeSlider.setMaximum((int) rangeMillis);
-						_sliderInMicros = false;
-						_timeSlider.setEnabled(true);
-					}
-					else
-					{
-						// hey, we must be running in microseconds
-						_timeSlider.setEnabled(false);
-					}
-				}
-
-				// ok. just sort out the step size when the user clicks on the slider
-				int smallTick;
-				int largeTick;
-				int NUM_MILLIS_FOR_STEP;
-				if (_sliderInMicros)
-				{
-					NUM_MILLIS_FOR_STEP = 500;
-					smallTick = NUM_MILLIS_FOR_STEP * 1000;
-				}
-				else
-				{
-					NUM_MILLIS_FOR_STEP = 1000 * 60 * 1;
-					smallTick = NUM_MILLIS_FOR_STEP * 1000;
-				}
-				largeTick = smallTick * 10;
-
-				_timeSlider.setMinorTickSpacing(smallTick);
-				_timeSlider.setMajorTickSpacing(largeTick);
-
-				// ok, we've finished updating the form. back to normal processing
-				_updatingForm = false;
-			}
-		}
-	}
-
-	/**
-	 * edit step button has been pressed (even though we don't actually implement
-	 * this button any more
-	 */
-	public void doEditPainter()
-	{
-		// has the editor been assigned?
-		if (_theToolbar != null)
-		{
-			// can we get the painter
-			final StepperListener painter = super.getCurrentPainter();
-			if (painter instanceof Editable)
-			{
-				final Editable el = (Editable) painter;
-				if (el.hasEditor())
-				{
-					final Editable.EditorType et = el.getInfo();
-					_theEditor.addEditor(et, null);
-				}
-			}
-
 		}
 	}
 
 	/**
 	 * register with the painter manager
 	 */
-	protected final void painterIsDefined()
-	{
+	@Override
+	protected final void painterIsDefined() {
 		_thePainterManager.addPropertyChangeListener(this);
 
 		// add ourselves as a listener to the Editable object, which is favoured
@@ -818,10 +1068,8 @@ public final class SwingStepControl extends StepControl implements
 	 * prepare the list of painters in the ComboBox
 	 */
 	@SuppressWarnings("unchecked")
-	private void prepareComboBox()
-	{
-		if (_thePainterSelector.getItemCount() > 0)
-		{
+	private void prepareComboBox() {
+		if (_thePainterSelector.getItemCount() > 0) {
 			// clear the list
 			_thePainterSelector.removeAllItems();
 		}
@@ -837,10 +1085,8 @@ public final class SwingStepControl extends StepControl implements
 		final String[] items = PainterManager.getListeners();
 
 		// step through the list
-		if (items != null)
-		{
-			for (int i = 0; i < items.length; i++)
-			{
+		if (items != null) {
+			for (int i = 0; i < items.length; i++) {
 				// add the items
 				_thePainterSelector.addItem(items[i]);
 			}
@@ -853,182 +1099,115 @@ public final class SwingStepControl extends StepControl implements
 		_thePainterSelector.addActionListener(_comboListener);
 	}
 
-	/**
-	 * method to reformat stepper text
-	 */
-	protected final void formatTimeText()
-	{
-		final Font ft = _timeTxt.getFont();
-		final Font fNew = new Font(ft.getName(), ft.getStyle(), _fontSize);
-		_timeTxt.setFont(fNew);
-	}
+	@Override
+	public final void propertyChange(final java.beans.PropertyChangeEvent p1) {
+		// pass to the arent
+		super.propertyChange(p1);
 
-	public final java.awt.Component getPanel()
-	{
-		return _theToolbar;
+		// update the combo box: refresh the list and reset the currently
+		// selected item
+		prepareComboBox();
 	}
 
 	/**
-	 * respond to update event as triggered by GUI-independent parent
+	 * have a look at the range, and decide if we are running in milli or micro
+	 * second resolution
 	 */
-	public final void updateForm(final HiResDate DTG)
-	{
-		final String newTime = getNewTime(DTG);
-		_timeTxt.setText(newTime);
+	private final void resetTimeSlider() {
+		// do we know our limits?
+		if ((getStartTime() != null) && (getEndTime() != null)) {
+			// yes - initialise the ranges
+			final long range = getEndTime().getMicros() - getStartTime().getMicros();
 
-		// and update the slider to reflect this new time
-		if (!_timeSlider.getValueIsAdjusting())
-		{
-			// do we know our start time yet?
-			if (getStartTime() != null)
-			{
+			if (range > 0) {
+				// remember that we are updating the form. don't bother processing state
+				// changed events for a bit
 				_updatingForm = true;
-				setSliderDate(DTG);
+
+				if (range < Integer.MAX_VALUE) {
+					_timeSlider.setMaximum((int) range);
+					_timeSlider.setEnabled(true);
+					_sliderInMicros = true;
+				} else {
+					final long rangeMillis = range / 1000;
+					if (rangeMillis < Integer.MAX_VALUE) {
+						// ok, we're going to run in millisecond resolution
+						_timeSlider.setMaximum((int) rangeMillis);
+						_sliderInMicros = false;
+						_timeSlider.setEnabled(true);
+					} else {
+						// hey, we must be running in microseconds
+						_timeSlider.setEnabled(false);
+					}
+				}
+
+				// ok. just sort out the step size when the user clicks on the slider
+				int smallTick;
+				int largeTick;
+				int NUM_MILLIS_FOR_STEP;
+				if (_sliderInMicros) {
+					NUM_MILLIS_FOR_STEP = 500;
+					smallTick = NUM_MILLIS_FOR_STEP * 1000;
+				} else {
+					NUM_MILLIS_FOR_STEP = 1000 * 60 * 1;
+					smallTick = NUM_MILLIS_FOR_STEP * 1000;
+				}
+				largeTick = smallTick * 10;
+
+				_timeSlider.setMinorTickSpacing(smallTick);
+				_timeSlider.setMajorTickSpacing(largeTick);
+
+				// ok, we've finished updating the form. back to normal processing
 				_updatingForm = false;
 			}
 		}
 	}
 
-	private static boolean amRunning = false;
+	@Override
+	public void setEndTime(final HiResDate val) {
+		super.setEndTime(val);
 
-	/**
-	 * one of our edit buttons has been pressed
-	 */
-	public final void actionPerformed(final java.awt.event.ActionEvent p1)
-	{
-
-		if (amRunning)
-		{
-			MWC.Utilities.Errors.Trace.trace("Hey, we're busy!");
-			return;
-		}
-
-		// indicate that we are busy
-		amRunning = true;
-
-		try
-		{
-
-			// get the name of the control
-			boolean fwd = true;
-			boolean large = true;
-			final JButton b = (JButton) p1.getSource();
-
-			// first sort out which set it is
-			if ((b == _startBtn) || (b == _endBtn))
-			{
-				if (b == _startBtn)
-				{
-					super.gotoStart();
-				}
-				else
-					super.gotoEnd();
-			}
-			else
-			{
-				if (b == _largeBwd)
-				{
-					fwd = false;
-					large = true;
-				}
-				if (b == _smallBwd)
-				{
-					fwd = false;
-					large = false;
-				}
-				if (b == _smallFwd)
-				{
-					fwd = true;
-					large = false;
-				}
-				if (b == _largeFwd)
-				{
-					fwd = true;
-					large = true;
-				}
-
-				_goingForward = fwd;
-				_largeSteps = large;
-
-				super.doStep(fwd, large);
-			}
-
-		}
-		catch (final Exception e)
-		{
-			MWC.Utilities.Errors.Trace.trace(e);
-		}
-
-		amRunning = false;
+		resetTimeSlider();
 	}
 
-	/**
-	 * edit step button has been pressed
-	 */
-	void doEditStep()
-	{
-		// has the editor been assigned?
-		if (_theToolbar != null)
-		{
-			// get our edit info
-			final Editable.EditorType et2 = getInfo();
-			// and open it in the panel
-			_theEditor.addEditor(et2, null);
+	private void setSliderDate(final HiResDate newDate) {
+
+		long offset = newDate.getMicros() - getStartTime().getMicros();
+
+		if (!_sliderInMicros) {
+			offset /= 1000;
 		}
-	}
 
-	/**
-	 * actually create the time toolbox#
-	 */
-	private void createToolbox()
-	{
-		if (_timeFilter == null)
-		{
-			// create the filter panel
-			_timeFilter = new Debrief.GUI.Tote.Swing.TimeFilter.TimeEditorPanel(_theEditor,
-					_theData, _theChart, this, _theUndoBuffer);
-		}
-	}
-
-	/**
-	 * handler for filter button being pressed
-	 */
-	void doFilter()
-	{
-		createToolbox();
-
-		// and show it
-		_theEditor.show(_timeFilter);
+		_timeSlider.setValue((int) offset);
 
 	}
 
-	// retrieve the time currently set in the toolbox
-	public final HiResDate getToolboxStartTime()
-	{
-		HiResDate res = null;
-		if (_timeFilter != null)
-		{
-			res = _timeFilter.getStartTime();
-		}
-		return res;
-	}
+	@Override
+	public void setStartTime(final HiResDate val) {
+		super.setStartTime(val);
 
-	// retrieve the time currently set in the toolbox
-	public final HiResDate getToolboxEndTime()
-	{
-		HiResDate res = null;
-		if (_timeFilter != null)
-		{
-			res = _timeFilter.getEndTime();
-		}
-		return res;
+		resetTimeSlider();
 	}
 
 	/**
 	 * set the time in the start slider in the toolbox
 	 */
-	public final void setToolboxStartTime(final HiResDate val)
-	{
+	@Override
+	public final void setToolboxEndTime(final HiResDate val) {
+		// do we have our toolbox?
+		createToolbox();
+
+		_timeFilter.setFinishTime(val);
+
+		// and remember
+		this.setEndTime(val);
+	}
+
+	/**
+	 * set the time in the start slider in the toolbox
+	 */
+	@Override
+	public final void setToolboxStartTime(final HiResDate val) {
 		// do we have our filter?
 		createToolbox();
 
@@ -1039,286 +1218,21 @@ public final class SwingStepControl extends StepControl implements
 	}
 
 	/**
-	 * set the time in the start slider in the toolbox
+	 * respond to update event as triggered by GUI-independent parent
 	 */
-	public final void setToolboxEndTime(final HiResDate val)
-	{
-		// do we have our toolbox?
-		createToolbox();
+	@Override
+	public final void updateForm(final HiResDate DTG) {
+		final String newTime = getNewTime(DTG);
+		_timeTxt.setText(newTime);
 
-		_timeFilter.setFinishTime(val);
-
-		// and remember
-		this.setEndTime(val);
-	}
-
-	public void setEndTime(final HiResDate val)
-	{
-		super.setEndTime(val);
-
-		resetTimeSlider();
-	}
-
-	public void setStartTime(final HiResDate val)
-	{
-		super.setStartTime(val);
-
-		resetTimeSlider();
-	}
-
-	/**
-	 * edit step button has been pressed
-	 */
-	void doShowLayerManager()
-	{
-		// do we have our information?
-		final MWC.GUI.Tools.Operations.ShowLayers shower = new MWC.GUI.Tools.Operations.ShowLayers(
-				null, null, _theEditor, _theData);
-
-		shower.execute();
-	}
-
-	/**
-	 * return the property panel we were informed about at initialisation
-	 */
-	protected final MWC.GUI.Properties.PropertiesPanel getPropertiesPanel()
-	{
-		return _theEditor;
-	}
-
-	/**
-	 * set the automatic mode as indicated
-	 * 
-	 * @param go
-	 *          boolean whether to go auto or not
-	 */
-	private void doAuto(final boolean go)
-	{
-
-		if (go)
-			startTimer();
-		else
-			stopTimer();
-	}
-
-	static final class FakeEvent extends AbstractAction
-	{
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
-
-		final JButton _mySource;
-
-		public FakeEvent(final JButton source)
-		{
-			_mySource = source;
-		}
-
-		public final void actionPerformed(final ActionEvent e)
-		{
-			_mySource.doClick();
-		}
-
-	}
-
-	public final void propertyChange(final java.beans.PropertyChangeEvent p1)
-	{
-		// pass to the arent
-		super.propertyChange(p1);
-
-		// update the combo box: refresh the list and reset the currently
-		// selected item
-		prepareComboBox();
-	}
-
-	// ///////////////////////////////////////////////////////////
-	// nested classes
-	// ///////////////////////////////////////////////////////////
-	static final class myJButton extends JButton
-	{
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
-
-		public myJButton(final String name, final String theIcon)
-		{
-			// load the icon first
-			final java.lang.ClassLoader loader = getClass().getClassLoader();
-			java.net.URL myURL = null;
-			if (loader != null)
-			{
-				myURL = loader.getResource(theIcon);
-				if (myURL != null)
-					setIcon(new ImageIcon(myURL));
+		// and update the slider to reflect this new time
+		if (!_timeSlider.getValueIsAdjusting()) {
+			// do we know our start time yet?
+			if (getStartTime() != null) {
+				_updatingForm = true;
+				setSliderDate(DTG);
+				_updatingForm = false;
 			}
-
-			super.setName(name);
-
-			// see if we failed to find icon
-			if (myURL == null)
-				setText(name);
-
-			setBorderPainted(false);
-			setToolTipText(name);
-			setMargin(new Insets(0, 0, 0, 0));
-			addMouseListener(new MouseAdapter()
-			{
-				public void mouseEntered(final MouseEvent e)
-				{
-					setBorderPainted(true);
-				}
-
-				public void mouseExited(final MouseEvent e)
-				{
-					setBorderPainted(false);
-				}
-			});
-		}
-	}
-
-	public static final class ImageCheckbox extends JCheckBox
-	{
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
-
-		public ImageCheckbox(final String name, final String theIcon,
-				final String selectedIcon)
-		{
-
-			final java.lang.ClassLoader loader = getClass().getClassLoader();
-			java.net.URL iconURL = null;
-			java.net.URL selectedIconURL = null;
-
-			if (loader != null)
-			{
-				iconURL = loader.getResource(theIcon);
-				selectedIconURL = loader.getResource(selectedIcon);
-				if (iconURL != null)
-					setIcon(new ImageIcon(iconURL));
-				if (selectedIconURL != null)
-					setSelectedIcon(new ImageIcon(selectedIconURL));
-			}
-
-			// see if we failed to find icon
-			if (iconURL == null)
-				setText(name);
-
-			setBorderPainted(false);
-			setToolTipText(name);
-
-			this.setName(name);
-
-			// update the UI to show just a line instead of a raised border
-			setBorder(new CompoundBorder(BorderFactory.createEtchedBorder(), BorderFactory
-					.createEmptyBorder(1, 1, 1, 1)));
-
-			addMouseListener(new MouseAdapter()
-			{
-				public void mouseEntered(final MouseEvent e)
-				{
-					setBorderPainted(true);
-				}
-
-				public void mouseExited(final MouseEvent e)
-				{
-					setBorderPainted(false);
-				}
-			});
-		}
-	}
-	public static final class ImageToggleButton extends JToggleButton
-	{
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
-		
-		public ImageToggleButton(final String name, final String theIcon)
-		{
-			
-			final java.lang.ClassLoader loader = getClass().getClassLoader();
-			java.net.URL iconURL = null;
-		
-			if (loader != null)
-			{
-				iconURL = loader.getResource(theIcon);
-				if (iconURL != null)
-					setIcon(new ImageIcon(iconURL));
-				
-			}
-			
-			// see if we failed to find icon
-			if (iconURL == null)
-				setText(name);
-			
-			setBorderPainted(false);
-			setToolTipText(name);
-			
-			this.setName(name);
-			
-			// update the UI to show just a line instead of a raised border
-			setBorder(new CompoundBorder(BorderFactory.createEtchedBorder(), BorderFactory
-					.createEmptyBorder(1, 1, 1, 1)));
-			
-			addMouseListener(new MouseAdapter()
-			{
-				public void mouseEntered(final MouseEvent e)
-				{
-					setBorderPainted(true);
-				}
-				
-				public void mouseExited(final MouseEvent e)
-				{
-					setBorderPainted(false);
-				}
-			});
-		}
-	}
-
-	// ////////////////////////////////////////////////////////////////////////////////////////////////
-	// testing for this class
-	// ////////////////////////////////////////////////////////////////////////////////////////////////
-	static public final class testStepper extends junit.framework.TestCase
-	{
-		static public final String TEST_ALL_TEST_TYPE = "UNIT";
-
-		public testStepper(final String val)
-		{
-			super(val);
-		}
-
-		public final void testStepperFormatting()
-		{
-
-			// create some dummy data so the panel has start/stop times
-			final Layers layers = new Layers();
-			final BaseLayer base = new BaseLayer();
-			base.setName("Ian's layer");
-			layers.addThisLayer(base);
-			final LabelWrapper label = new LabelWrapper("my label", new WorldLocation(12, 12, 100),
-					Color.red, new HiResDate(120000000), new HiResDate(150000000));
-			base.add(label);
-
-			// ok, create a new SwingStepControl
-			final SwingStepControl ssc = new SwingStepControl(null, layers, null, null, null,
-					null);
-
-			// check this is valid
-			final MWC.GUI.Properties.DateFormatPropertyEditor pe = new MyDateEditor();
-
-			final String[] tags = pe.getTags();
-
-			// check we found tags
-			assertNotNull("tags got found from property editor", tags);
-			assertEquals("tags found from property editor", 7, tags.length);
-
-			// and ditch the stuff
-			ssc.closeMe();
-
 		}
 	}
 }

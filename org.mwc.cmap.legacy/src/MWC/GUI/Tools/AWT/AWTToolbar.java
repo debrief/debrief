@@ -1,17 +1,18 @@
-/*
- *    Debrief - the Open Source Maritime Analysis Application
- *    http://debrief.info
+/*******************************************************************************
+ * Debrief - the Open Source Maritime Analysis Application
+ * http://debrief.info
  *
- *    (C) 2000-2014, PlanetMayo Ltd
+ * (C) 2000-2020, Deep Blue C Technology Ltd
  *
- *    This library is free software; you can redistribute it and/or
- *    modify it under the terms of the Eclipse Public License v1.0
- *    (http://www.eclipse.org/legal/epl-v10.html)
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the Eclipse Public License v1.0
+ * (http://www.eclipse.org/legal/epl-v10.html)
  *
- *    This library is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
- */
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *******************************************************************************/
+
 // $RCSfile: AWTToolbar.java,v $
 // @author $Author: Ian.Mayo $
 // @version $Revision: 1.2 $
@@ -80,7 +81,6 @@
 // Initial revision
 //
 
-
 package MWC.GUI.Tools.AWT;
 
 import java.awt.Color;
@@ -91,92 +91,78 @@ import java.awt.Panel;
 import MWC.GUI.Tool;
 import MWC.GUI.Toolbar;
 
-/** implementation of toolbar using AWT controls 
- * @stereotype AWT*/
-public class AWTToolbar extends Panel implements Toolbar 
-{
-  /**
-	 * 
+/**
+ * implementation of toolbar using AWT controls
+ *
+ * @stereotype AWT
+ */
+public class AWTToolbar extends Panel implements Toolbar {
+	/**
+	 *
 	 */
 	private static final long serialVersionUID = 1L;
 
 	/////////////////////////////////////////////////////////
-  // member variables
-  /////////////////////////////////////////////////////////
-	
-  /////////////////////////////////////////////////////////
-  // constructor
-  /////////////////////////////////////////////////////////
-  public AWTToolbar(final int theDirection){
-    // set the layout manager, & align the buttons
-    
-    if(theDirection == HORIZONTAL)
-      this.setLayout(new FlowLayout(FlowLayout.LEFT, 1, 3));
-    else
-      this.setLayout(new GridLayout(0, 2));
-    
-    // set the background colour
-    setBackground(Color.lightGray);
-		
-  }
-  
-  /////////////////////////////////////////////////
-  // member functions
-  //////////////////////////////////////////////////
+	// member variables
+	/////////////////////////////////////////////////////////
 
-	/** method to remove tools from toolbar
-	 */
-	public void close()
-	{
-		//
-		this.removeAll();
-	}
-	
-	
-	
-	public void addTool(final Tool theTool)
-	{
-    // cast the tool back to the correct type
-    final AWTToolbarButton theBtn = new AWTToolbarButton(theTool);
-    this.add(theBtn);
-    this.doLayout();
- //   this.getParent().doLayout();
-	}
-	
-  public void addTool(final Tool theTool,
-											final java.awt.MenuShortcut theShortcut,
-											final char theMnemonic)
-	{
-		addTool(theTool);
-  }
+	/////////////////////////////////////////////////////////
+	// constructor
+	/////////////////////////////////////////////////////////
+	public AWTToolbar(final int theDirection) {
+		// set the layout manager, & align the buttons
 
-	public void addToggleTool(final String group, 
-														final Tool theTool)
-	{
+		if (theDirection == HORIZONTAL)
+			this.setLayout(new FlowLayout(FlowLayout.LEFT, 1, 3));
+		else
+			this.setLayout(new GridLayout(0, 2));
+
+		// set the background colour
+		setBackground(Color.lightGray);
+
+	}
+
+	/////////////////////////////////////////////////
+	// member functions
+	//////////////////////////////////////////////////
+
+	@Override
+	public void addToggleTool(final String group, final Tool theTool) {
 		// hmm, we can't really do this, since AWT doesn't have toggle buttons
 		addTool(theTool);
 	}
-	
-	/** create a toggling control, which is part of the named group
+
+	/**
+	 * create a toggling control, which is part of the named group
 	 */
-	public void addToggleTool(final String group, 
-														final Tool theTool,
-														final java.awt.MenuShortcut theShortcut,
-														final char theMnemonic)
-	{
+	@Override
+	public void addToggleTool(final String group, final Tool theTool, final java.awt.MenuShortcut theShortcut,
+			final char theMnemonic) {
 		// hmm, we can't really do this, since AWT doesn't have toggle buttons
 		addTool(theTool, theShortcut, theMnemonic);
 	}
-	
-  
+
+	@Override
+	public void addTool(final Tool theTool) {
+// cast the tool back to the correct type
+		final AWTToolbarButton theBtn = new AWTToolbarButton(theTool);
+		this.add(theBtn);
+		this.doLayout();
+		// this.getParent().doLayout();
+	}
+
+	@Override
+	public void addTool(final Tool theTool, final java.awt.MenuShortcut theShortcut, final char theMnemonic) {
+		addTool(theTool);
+	}
+
+	/**
+	 * method to remove tools from toolbar
+	 */
+	@Override
+	public void close() {
+		//
+		this.removeAll();
+	}
+
 }
-
-
-
-
-
-
-
-
-
-

@@ -1,24 +1,25 @@
-/*
- *    Debrief - the Open Source Maritime Analysis Application
- *    http://debrief.info
+/*******************************************************************************
+ * Debrief - the Open Source Maritime Analysis Application
+ * http://debrief.info
  *
- *    (C) 2000-2014, PlanetMayo Ltd
+ * (C) 2000-2020, Deep Blue C Technology Ltd
  *
- *    This library is free software; you can redistribute it and/or
- *    modify it under the terms of the Eclipse Public License v1.0
- *    (http://www.eclipse.org/legal/epl-v10.html)
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the Eclipse Public License v1.0
+ * (http://www.eclipse.org/legal/epl-v10.html)
  *
- *    This library is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
- */
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *******************************************************************************/
+
 package org.mwc.cmap.core.property_support;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.jface.viewers.LabelProvider;
@@ -30,324 +31,275 @@ import org.eclipse.ui.views.properties.TextPropertyDescriptor;
 import org.mwc.cmap.core.CorePlugin;
 
 import MWC.GenericData.HiResDate;
+import MWC.TacticalData.NarrativeWrapper.GetHiResValue;
 import MWC.Utilities.TextFormatting.GMTDateFormat;
 
-public class DTGHelper extends EditorHelper
-{
+public class DTGHelper extends EditorHelper {
 
-  protected static SimpleDateFormat _longDateFormat;
+	public static class DTGPropertySource implements IPropertySource2, GetHiResValue {
 
-  protected static SimpleDateFormat _shortDateFormat;
+		/**
+		 * name for the date property
+		 *
+		 */
+		public static String ID_DATE = "Date";
+		/**
+		 * name for the time property
+		 *
+		 */
+		public static String ID_TIME = "Time";
 
-  protected static SimpleDateFormat _longTimeFormat;
+		protected static IPropertyDescriptor[] descriptors;
 
-  protected static SimpleDateFormat _shortTimeFormat;
+		static {
+			descriptors = new IPropertyDescriptor[] { new TextPropertyDescriptor(ID_DATE, "date (dd/mmm/yyyy)"),
+					new TextPropertyDescriptor(ID_TIME, "time (hh:mm:ss)"), };
+		}
 
-  protected static SimpleDateFormat _fullFormat;
+		protected String _date, _time;
 
-  protected final static String LONG_DATE_FORMAT_DEFN = "dd/MMM/yyyy";
-  protected final static String SHORT_DATE_FORMAT_DEFN = "dd/MM/yyyy";
+		protected String _originalDate, _originalTime;
 
-  protected final static String LONG_TIME_FORMAT_DEFN = "HH:mm:ss";
+		protected HiResDate _originalVal;
 
-  protected final static String SHORT_TIME_FORMAT_DEFN = "HH:mm";
+		public DTGPropertySource(final HiResDate dtg) {
 
-  protected final static String UNSET = "unset";
+			checkDateFormat();
 
-  protected synchronized static void checkDateFormat()
-  {
-    if (_longDateFormat == null)
-    {
-      _shortDateFormat = new GMTDateFormat(SHORT_DATE_FORMAT_DEFN);
-      _longDateFormat = new GMTDateFormat(LONG_DATE_FORMAT_DEFN);
-      _longTimeFormat = new GMTDateFormat(LONG_TIME_FORMAT_DEFN);
-      _shortTimeFormat = new GMTDateFormat(SHORT_TIME_FORMAT_DEFN);
-      _fullFormat = new GMTDateFormat(LONG_DATE_FORMAT_DEFN + "Z"
-          + LONG_TIME_FORMAT_DEFN);
-    }
-  }
+			if (dtg == null) {
+				_originalVal = null;
+				_date = UNSET;
+				_time = UNSET;
+			} else {
+				_originalVal = new HiResDate(dtg);
+				_date = _longDateFormat.format(dtg.getDate());
+				_time = _longTimeFormat.format(dtg.getDate());
+			}
 
-  public static class DTGPropertySource implements IPropertySource2
-  {
+			_originalDate = _date;
+			_originalTime = _time;
+		}
 
-    protected String _date, _time;
-    protected String _originalDate, _originalTime;
+		@Override
+		public boolean equals(final Object obj) {
+			final boolean res;
 
-    protected HiResDate _originalVal;
+			if (obj instanceof DTGPropertySource) {
+				final DTGPropertySource o = (DTGPropertySource) obj;
+				res = this.getValue().compareTo(o.getValue()) == 0;
+			} else {
+				res = false;
+			}
 
-    /**
-     * name for the date property
-     * 
-     */
-    public static String ID_DATE = "Date";
+			return res;
+		}
 
-    /**
-     * name for the time property
-     * 
-     */
-    public static String ID_TIME = "Time";
+		protected void firePropertyChanged(final String propName) {
+		}
 
-    protected static IPropertyDescriptor[] descriptors;
+		@Override
+		public Object getEditableValue() {
+			return this;
+		}
 
-    static
-    {
-      descriptors = new IPropertyDescriptor[]
-      {new TextPropertyDescriptor(ID_DATE, "date (dd/mmm/yyyy)"),
-          new TextPropertyDescriptor(ID_TIME, "time (hh:mm:ss)"),};
-    }
+		@Override
+		public IPropertyDescriptor[] getPropertyDescriptors() {
+			return descriptors;
+		}
 
-    public DTGPropertySource(final HiResDate dtg)
-    {
+		@Override
+		public Object getPropertyValue(final Object propName) {
+			final String res;
+			final boolean null_date = _originalVal.equals(HiResDate.NULL_DATE);
+			if (ID_DATE.equals(propName)) {
+				res = null_date ? LONG_DATE_FORMAT_DEFN : _date;
+			} else if (ID_TIME.equals(propName)) {
+				res = null_date ? LONG_TIME_FORMAT_DEFN : _time;
+			} else {
+				throw new IllegalArgumentException("We're not expecting property titled:" + propName);
+			}
 
-      checkDateFormat();
+			return res;
+		}
 
-      if (dtg == null)
-      {
-        _originalVal = null;
-        _date = UNSET;
-        _time = UNSET;
-      }
-      else
-      {
-        _originalVal = new HiResDate(dtg);
-        _date = _longDateFormat.format(dtg.getDate());
-        _time = _longTimeFormat.format(dtg.getDate());
-      }
+		@Override
+		public synchronized HiResDate getValue() {
+			HiResDate res = _originalVal;
+			try {
+				long millis = 0;
 
-      _originalDate = _date;
-      _originalTime = _time;
-    }
+				// see if they have been set yet
+				if (!_date.equals(UNSET) && _date.length() > 0) {
+					try {
+						final Date date = _longDateFormat.parse(_date);
+						millis += date.getTime();
+					} catch (final ParseException pe) {
+						final Date date = _shortDateFormat.parse(_date);
+						millis += date.getTime();
+					}
+				}
 
-    @Override
-    public boolean equals(Object obj)
-    {
-      final boolean res;
+				if (!_time.equals(UNSET) && _time.length() > 0) {
+					// first try with the long format
+					Date time = null;
 
-      if (obj instanceof DTGPropertySource)
-      {
-        DTGPropertySource o = (DTGPropertySource) obj;
-        res = this.getValue().compareTo(o.getValue()) == 0;
-      }
-      else
-      {
-        res = false;
-      }
+					try {
+						time = _longTimeFormat.parse(_time);
+					} catch (final ParseException e) {
+						time = _shortTimeFormat.parse(_time);
+					}
 
-      return res;
-    }
+					if (time != null)
+						millis += time.getTime();
+				}
 
-    protected void firePropertyChanged(final String propName)
-    {
-    }
+				if (millis != 0) {
+					res = new HiResDate(millis, 0);
+				}
+			} catch (final ParseException e) {
+				// fall back on the original value
+				CorePlugin.logError(IStatus.ERROR, "Failed to produce dtg from date/time strings", e);
+				res = _originalVal;
+			}
+			return res;
+		}
 
-    public Object getEditableValue()
-    {
-      return this;
-    }
+		@Override
+		public boolean isPropertyResettable(final Object id) {
+			// both parameters are resettable. cool.
+			return true;
+		}
 
-    public IPropertyDescriptor[] getPropertyDescriptors()
-    {
-      return descriptors;
-    }
+		/**
+		 * @see org.eclipse.ui.views.properties.IPropertySource#isPropertySet(Object)
+		 */
+		@Override
+		public boolean isPropertySet(final Object propName) {
+			// always return true; so we can offer "reset" behaviour
+			// return true;
+			boolean res = false;
+			if (ID_DATE.equals(propName)) {
+				res = !_date.equals(_originalDate);
+			}
+			if (ID_TIME.equals(propName)) {
+				res = !_time.equals(_originalTime);
+			}
+			return res;
+		}
 
-    public Object getPropertyValue(final Object propName)
-    {
-      final String res;
-      final boolean null_date = _originalVal.equals(HiResDate.NULL_DATE);
-      if (ID_DATE.equals(propName))
-      {
-        res = null_date ? LONG_DATE_FORMAT_DEFN : _date;
-      }
-      else if (ID_TIME.equals(propName))
-      {
-        res = null_date ? LONG_TIME_FORMAT_DEFN : _time;
-      }
-      else
-      {
-        throw new IllegalArgumentException(
-            "We're not expecting property titled:" + propName);
-      }
-      
-      return res;
-    }
+		@Override
+		public void resetPropertyValue(final Object propName) {
+			if (ID_DATE.equals(propName)) {
+				_date = _originalDate;
+			}
+			if (ID_TIME.equals(propName)) {
+				_time = _originalTime;
+			}
+		}
 
-    public synchronized HiResDate getValue()
-    {
-      HiResDate res = _originalVal;
-      try
-      {
-        long millis = 0;
+		@Override
+		public void setPropertyValue(final Object propName, final Object value) {
+			if (ID_DATE.equals(propName)) {
+				_date = (String) value;
+			}
+			if (ID_TIME.equals(propName)) {
+				_time = (String) value;
+			}
+			firePropertyChanged((String) propName);
+		}
 
-        // see if they have been set yet
-        if (!_date.equals(UNSET) && _date.length() > 0)
-        {
-          try
-          {
-            final Date date = _longDateFormat.parse(_date);
-            millis += date.getTime();
-          }
-          catch (ParseException pe)
-          {
-            final Date date = _shortDateFormat.parse(_date);
-            millis += date.getTime();
-          }
-        }
+		@Override
+		public String toString() {
+			String res;
+			if ((_date == UNSET) || (_time == UNSET)) {
+				res = "unset";
+			} else {
+				res = "" + _date + "Z" + _time;
+			}
+			return res;
+		}
 
-        if (!_time.equals(UNSET) && _time.length() > 0)
-        {
-          // first try with the long format
-          Date time = null;
+	}
 
-          try
-          {
-            time = _longTimeFormat.parse(_time);
-          }
-          catch (final ParseException e)
-          {
-            time = _shortTimeFormat.parse(_time);
-          }
+	protected static SimpleDateFormat _longDateFormat;
 
-          if (time != null)
-            millis += time.getTime();
-        }
+	protected static SimpleDateFormat _shortDateFormat;
 
-        if (millis != 0)
-        {
-          res = new HiResDate(millis, 0);
-        }
-      }
-      catch (final ParseException e)
-      {
-        // fall back on the original value
-        CorePlugin.logError(Status.ERROR,
-            "Failed to produce dtg from date/time strings", e);
-        res = _originalVal;
-      }
-      return res;
-    }
+	protected static SimpleDateFormat _longTimeFormat;
 
-    /**
-     * @see org.eclipse.ui.views.properties.IPropertySource#isPropertySet(Object)
-     */
-    public boolean isPropertySet(final Object propName)
-    {
-      // always return true; so we can offer "reset" behaviour
-      // return true;
-      boolean res = false;
-      if (ID_DATE.equals(propName))
-      {
-        res = !_date.equals(_originalDate);
-      }
-      if (ID_TIME.equals(propName))
-      {
-        res = !_time.equals(_originalTime);
-      }
-      return res;
-    }
+	protected static SimpleDateFormat _shortTimeFormat;
 
-    public void resetPropertyValue(final Object propName)
-    {
-      if (ID_DATE.equals(propName))
-      {
-        _date = _originalDate;
-      }
-      if (ID_TIME.equals(propName))
-      {
-        _time = _originalTime;
-      }
-    }
+	protected static SimpleDateFormat _fullFormat;
+	protected final static String LONG_DATE_FORMAT_DEFN = "dd/MMM/yyyy";
 
-    public void setPropertyValue(final Object propName, final Object value)
-    {
-      if (ID_DATE.equals(propName))
-      {
-        _date = (String) value;
-      }
-      if (ID_TIME.equals(propName))
-      {
-        _time = (String) value;
-      }
-      firePropertyChanged((String) propName);
-    }
+	protected final static String SHORT_DATE_FORMAT_DEFN = "dd/MM/yyyy";
 
-    public String toString()
-    {
-      String res;
-      if ((_date == UNSET) || (_time == UNSET))
-      {
-        res = "unset";
-      }
-      else
-      {
-        res = "" + _date + "Z" + _time;
-      }
-      return res;
-    }
+	protected final static String LONG_TIME_FORMAT_DEFN = "HH:mm:ss";
 
-    public boolean isPropertyResettable(final Object id)
-    {
-      // both parameters are resettable. cool.
-      return true;
-    }
+	protected final static String SHORT_TIME_FORMAT_DEFN = "HH:mm";
 
-  }
+	protected final static String UNSET = "unset";
 
-  public DTGHelper()
-  {
-    super(HiResDate.class);
-  }
+	protected synchronized static void checkDateFormat() {
+		if (_longDateFormat == null) {
+			_shortDateFormat = new GMTDateFormat(SHORT_DATE_FORMAT_DEFN);
+			_longDateFormat = new GMTDateFormat(LONG_DATE_FORMAT_DEFN);
+			_longTimeFormat = new GMTDateFormat(LONG_TIME_FORMAT_DEFN);
+			_shortTimeFormat = new GMTDateFormat(SHORT_TIME_FORMAT_DEFN);
+			_fullFormat = new GMTDateFormat(LONG_DATE_FORMAT_DEFN + "Z" + LONG_TIME_FORMAT_DEFN);
+		}
+	}
 
-  public CellEditor getCellEditorFor(final Composite parent)
-  {
-    return null;
-  }
+	public DTGHelper() {
+		super(HiResDate.class);
+	}
 
-  @SuppressWarnings(
-  {"rawtypes"})
-  public boolean editsThis(final Class target)
-  {
-    return (target == HiResDate.class);
-  }
+	@Override
+	@SuppressWarnings({ "rawtypes" })
+	public boolean editsThis(final Class target) {
+		return (target == HiResDate.class);
+	}
 
-  public Object translateToSWT(final Object value)
-  {
-    // ok, we've received a DTG. Return our new property source representing a
-    // DTG
-    return new DTGPropertySource((HiResDate) value);
-  }
+	@Override
+	public CellEditor getCellEditorFor(final Composite parent) {
+		return null;
+	}
 
-  public Object translateFromSWT(final Object value)
-  {
-    final DTGPropertySource res = (DTGPropertySource) value;
-    return res.getValue();
-  }
+	@Override
+	public ILabelProvider getLabelFor(final Object currentValue) {
+		final ILabelProvider label1 = new LabelProvider() {
+			@Override
+			public Image getImage(final Object element) {
+				return null;
+			}
 
-  public ILabelProvider getLabelFor(final Object currentValue)
-  {
-    final ILabelProvider label1 = new LabelProvider()
-    {
-      public String getText(final Object element)
-      {
-        final DTGPropertySource val = (DTGPropertySource) element;
-        checkDateFormat();
-        final String res;
-        if (HiResDate.NULL_DATE.equals(val._originalVal))
-        {
-          res = "Unset";
-        }
-        else
-        {
-          res = val.toString();
-        }
-        return res;
-      }
+			@Override
+			public String getText(final Object element) {
+				final DTGPropertySource val = (DTGPropertySource) element;
+				checkDateFormat();
+				final String res;
+				if (HiResDate.NULL_DATE.equals(val._originalVal)) {
+					res = "Unset";
+				} else {
+					res = val.toString();
+				}
+				return res;
+			}
 
-      public Image getImage(final Object element)
-      {
-        return null;
-      }
+		};
+		return label1;
+	}
 
-    };
-    return label1;
-  }
+	@Override
+	public Object translateFromSWT(final Object value) {
+		final DTGPropertySource res = (DTGPropertySource) value;
+		return res.getValue();
+	}
+
+	@Override
+	public Object translateToSWT(final Object value) {
+		// ok, we've received a DTG. Return our new property source representing a
+		// DTG
+		return new DTGPropertySource((HiResDate) value);
+	}
 }

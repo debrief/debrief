@@ -33,7 +33,6 @@ package Debrief.ReaderWriter.ais;
 
 import java.util.regex.Pattern;
 
-
 /**
  * This class parses an AIS message. <br>
  * AIS-Message format:<br>
@@ -52,16 +51,92 @@ import java.util.regex.Pattern;
  */
 public class AISParser {
 
+	/** Regular expression for AIS-Messages */
+	private static final Pattern pattern = Pattern.compile(
+			"!AIVDM\\,[1-9]{1}\\,[1-9]{1}\\,([0-9]{0,1})\\,[0-3A-B]{1}\\,([0-9\\:\\;\\<\\=\\>\\?\\@A-W\\`a-w]+)\\,[0-5]\\*[A-F0-9]{2}");
 
 	/**
-	 * previous total number of sentences needed to transfer the message, in
-	 * case the message was sent in multiparts
+	 * This method calculates the checksum for a plain AIS string AIVDM,,,,,,0 or
+	 * fullfletched string !AIVDM,,,,,,0*11
+	 */
+	public static String calcCRC(final String ais) {
+
+		byte[] data = null;
+		if (ais.contains("!") && ais.contains("*")) {
+			data = ais.substring(1, ais.indexOf("*")).getBytes();
+		} else {
+			data = ais.getBytes();
+		}
+		int crc = 0;
+		for (final byte pos : data) {
+			if (crc == 0) {
+				crc = pos;
+			} else {
+				crc ^= pos;
+			}
+		}
+		final String result = String.format("%1$02X", crc);
+
+		return result;
+	}
+
+	/**
+	 * This method extracts the checksum of a AIS string and returns it in hex
+	 * notation.
+	 *
+	 * @param ais AIS string to extract the checksum from
+	 * @return checksum
+	 */
+	public static String extractCRC(final String ais) {
+
+		final String crc = ais.substring(ais.indexOf('*') + 1);
+
+		return crc;
+	}
+
+	/**
+	 * Validation of an AIS-Message
+	 *
+	 * @param ais encoded AIS-Message
+	 * @return true if message is valid false if message is invalid
+	 */
+	public static boolean isValidAIS(final String ais) {
+		boolean isValid;
+		final int index = ais.indexOf("!AIVDM");
+		String msg = ais;
+		if (index != -1) {
+			msg = ais.substring(index, ais.length());
+		}
+		if (!validCRC(msg)) {
+			isValid = false;
+		} else {
+			isValid = pattern.matcher(msg).matches();
+		}
+		return isValid;
+	}
+
+	/**
+	 * Proof whether the checksum of an AIS string is valid.
+	 *
+	 * @param ais AIS message to check for correct CRC.
+	 * @return true if CRC checksum is correct
+	 */
+	public static boolean validCRC(final String ais) {
+
+		final boolean result = extractCRC(ais).equals(calcCRC(ais));
+
+		return result;
+	}
+
+	/**
+	 * previous total number of sentences needed to transfer the message, in case
+	 * the message was sent in multiparts
 	 */
 	private int oldTotalNumOfMsgs = 0;
 
 	/**
-	 * current total number of sentences needed to transfer the message, in case
-	 * the message was sent in multiparts
+	 * current total number of sentences needed to transfer the message, in case the
+	 * message was sent in multiparts
 	 */
 	private int currTotalNumOfMsgs = 0;
 
@@ -94,9 +169,16 @@ public class AISParser {
 
 	private boolean isWholeMsg = false;
 
-	/** Regular expression for AIS-Messages */
-	private static final Pattern pattern = Pattern
-			.compile("!AIVDM\\,[1-9]{1}\\,[1-9]{1}\\,([0-9]{0,1})\\,[0-3A-B]{1}\\,([0-9\\:\\;\\<\\=\\>\\?\\@A-W\\`a-w]+)\\,[0-5]\\*[A-F0-9]{2}");
+	/**
+	 * Prepare parser for a new raw AIS-Message to parse.
+	 */
+	private void initMsgParams() {
+
+		oldTotalNumOfMsgs = 0;
+		oldSentenceNumber = 0;
+		oldSequenceNumber = 0;
+
+	}
 
 	/**
 	 * Method for parsing encoded AIS-Messages. All messages are passed to the
@@ -106,22 +188,20 @@ public class AISParser {
 	 * @return decoded object of a type IAISMessage
 	 * @throws AISParseException
 	 */
-	public IAISMessage parse(String encodedMsg) throws AISParseException {
+	public IAISMessage parse(final String encodedMsg) throws AISParseException {
 
 		if (isValidAIS(encodedMsg)) {
 
-			String[] msgTokens = new String[6];
+			final String[] msgTokens = new String[6];
 			int tokenCnt = 0;
 			int index = 5;
 			while ((index = encodedMsg.indexOf(",", index)) != -1) {
 
-				int currIndex = encodedMsg.indexOf(",", index + 1);
+				final int currIndex = encodedMsg.indexOf(",", index + 1);
 				if (currIndex != -1) {
-					msgTokens[tokenCnt] = encodedMsg.substring(index + 1,
-							currIndex);
+					msgTokens[tokenCnt] = encodedMsg.substring(index + 1, currIndex);
 				} else {
-					msgTokens[tokenCnt] = encodedMsg.substring(index + 1,
-							encodedMsg.length());
+					msgTokens[tokenCnt] = encodedMsg.substring(index + 1, encodedMsg.length());
 				}
 				tokenCnt++;
 				index++;
@@ -141,8 +221,7 @@ public class AISParser {
 					oldSequenceNumber = currSequenceNumber;
 					currMsg = msgTokens[4];
 				} else {
-					if (currTotalNumOfMsgs > oldTotalNumOfMsgs
-							|| currSentenceNumber != oldSentenceNumber + 1
+					if (currTotalNumOfMsgs > oldTotalNumOfMsgs || currSentenceNumber != oldSentenceNumber + 1
 							|| currSequenceNumber != oldSequenceNumber) {
 						initMsgParams();
 						return null;
@@ -156,97 +235,13 @@ public class AISParser {
 			}
 			if (isWholeMsg) {
 				initMsgParams();
-				IAISMessage aisMessage = AISDecoder.decode(currMsg);
+				final IAISMessage aisMessage = AISDecoder.decode(currMsg);
 				return aisMessage;
 			}
 			return null;
 		}
 		throw new AISParseException(AISParseException.NO_AIS_MESSAGE);
 
-	}
-
-	/**
-	 * Prepare parser for a new raw AIS-Message to parse.
-	 */
-	private void initMsgParams() {
-
-		oldTotalNumOfMsgs = 0;
-		oldSentenceNumber = 0;
-		oldSequenceNumber = 0;
-
-	}
-
-	/**
-	 * Validation of an AIS-Message
-	 *
-	 * @param ais encoded AIS-Message
-	 * @return true if message is valid false if message is invalid
-	 */
-	public static boolean isValidAIS(String ais) {
-		boolean isValid;
-		int index = ais.indexOf("!AIVDM");
-		String msg = ais;
-		if (index != -1) {
-			msg = ais.substring(index, ais.length());
-		}
-		if (!validCRC(msg)) {
-			isValid = false;
-		} else {
-			isValid = pattern.matcher(msg).matches();
-		}
-		return isValid;
-	}
-
-	/**
-	 * This method calculates the checksum for a plain AIS string AIVDM,,,,,,0
-	 * or fullfletched string !AIVDM,,,,,,0*11
-	 */
-	public static String calcCRC(String ais) {
-
-		byte[] data = null;
-		if (ais.contains("!") && ais.contains("*")) {
-			data = ais.substring(1, ais.indexOf("*")).getBytes();
-		} else {
-			data = ais.getBytes();
-		}
-		int crc = 0;
-		for (byte pos : data) {
-			if (crc == 0) {
-				crc = pos;
-			} else {
-				crc ^= pos;
-			}
-		}
-		String result = String.format("%1$02X", crc);
-
-		return result;
-	}
-
-	/**
-	 * This method extracts the checksum of a AIS string and returns it in hex
-	 * notation.
-	 *
-	 * @param ais AIS string to extract the checksum from
-	 * @return checksum
-	 */
-	public static String extractCRC(String ais) {
-
-		String crc = ais.substring(ais.indexOf('*') + 1);
-
-		return crc;
-	}
-
-	/**
-	 * Proof whether the checksum of an AIS string is valid.
-	 *
-	 * @param ais AIS message to check for correct CRC.
-	 * @return true if CRC checksum is correct
-	 */
-	public static boolean validCRC(String ais) {
-
-		boolean result = extractCRC(ais).equals(calcCRC(ais));
-
-		return result;
 	}
 
 }

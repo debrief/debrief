@@ -1,17 +1,18 @@
-/*
- *    Debrief - the Open Source Maritime Analysis Application
- *    http://debrief.info
+/*******************************************************************************
+ * Debrief - the Open Source Maritime Analysis Application
+ * http://debrief.info
  *
- *    (C) 2000-2014, PlanetMayo Ltd
+ * (C) 2000-2020, Deep Blue C Technology Ltd
  *
- *    This library is free software; you can redistribute it and/or
- *    modify it under the terms of the Eclipse Public License v1.0
- *    (http://www.eclipse.org/legal/epl-v10.html)
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the Eclipse Public License v1.0
+ * (http://www.eclipse.org/legal/epl-v10.html)
  *
- *    This library is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
- */
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *******************************************************************************/
+
 package MWC.TacticalData.GND;
 
 import java.io.IOException;
@@ -32,27 +33,23 @@ import MWC.GUI.BaseLayer;
 import MWC.GUI.Editable;
 import MWC.GUI.SupportsPropertyListeners;
 
-public class GPackage extends BaseLayer
-{
+public class GPackage extends BaseLayer {
 
 	/**
-	 * 
+	 *
 	 */
 	private static final long serialVersionUID = 1L;
 
-	public GPackage(final String name, final String dbUrl, final ArrayList<String> ids)
-	{
+	public GPackage(final String name, final String dbUrl, final ArrayList<String> ids) {
 		super(false);
 		super.setName(name);
 		super.setVisible(false);
 
 		// populate ourselves in a separate thread?
-		final Thread doer = new Thread()
-		{
+		final Thread doer = new Thread() {
 
 			@Override
-			public void run()
-			{
+			public void run() {
 				loadMe(dbUrl, ids);
 				super.run();
 			}
@@ -60,31 +57,35 @@ public class GPackage extends BaseLayer
 
 		doer.start();
 	}
-	/** whether this type of BaseLayer is able to have shapes added to it
-	 * 
+
+	/**
+	 * whether this type of BaseLayer is able to have shapes added to it
+	 *
 	 * @return
 	 */
 	@Override
-	public boolean canTakeShapes()
-	{
+	public boolean canTakeShapes() {
 		return false;
 	}
-	private void loadMe(final String dbUrl, final ArrayList<String> ids)
-	{
+
+	@Override
+	public Enumeration<Editable> elements() {
+		return super.elements();
+	}
+
+	private void loadMe(final String dbUrl, final ArrayList<String> ids) {
 		// collate the ids
 		final ObjectMapper mapper = new ObjectMapper();
 		final ObjectNode root = mapper.createObjectNode();
 		final ArrayNode keys = mapper.createArrayNode();
 		final Iterator<String> iter = ids.iterator();
-		while (iter.hasNext())
-		{
-			final String id = (String) iter.next();
+		while (iter.hasNext()) {
+			final String id = iter.next();
 			keys.add(id);
 		}
 		root.put("keys", keys);
 
-		try
-		{
+		try {
 			final String uri = dbUrl + "/_all_docs?include_docs=true";
 			final URL databaseURL = new URL(dbUrl);
 			System.err.println("to:" + uri);
@@ -93,18 +94,15 @@ public class GPackage extends BaseLayer
 			final Post doIt = new Post(uri, content, 1000, 10000);
 			doIt.header("Content-Type", "application/json");
 			final int result = doIt.responseCode();
-			if (result == 200)
-			{
+			if (result == 200) {
 				final byte[] resB = doIt.bytes();
 				final JsonNode list = mapper.readValue(resB, JsonNode.class);
 
 				// ok, what happens next?
 				final JsonNode tmpRows = list.get("rows");
-				if (tmpRows.isArray())
-				{
+				if (tmpRows.isArray()) {
 					final ArrayNode rows = (ArrayNode) tmpRows;
-					for (int i = 0; i < rows.size(); i++)
-					{
+					for (int i = 0; i < rows.size(); i++) {
 						final JsonNode theNode = rows.get(i);
 						final JsonNode theDoc = theNode.get("doc");
 						final GDataset newData = new GDataset(theDoc, databaseURL);
@@ -113,17 +111,11 @@ public class GPackage extends BaseLayer
 					}
 				}
 			}
-		}
-		catch (final JsonParseException e)
-		{
+		} catch (final JsonParseException e) {
 			e.printStackTrace();
-		}
-		catch (final JsonMappingException e)
-		{
+		} catch (final JsonMappingException e) {
 			e.printStackTrace();
-		}
-		catch (final IOException e)
-		{
+		} catch (final IOException e) {
 			e.printStackTrace();
 		}
 		System.out.println("load complete!");
@@ -131,12 +123,6 @@ public class GPackage extends BaseLayer
 		// tell the world
 		this.firePropertyChange(SupportsPropertyListeners.FORMAT, false, true);
 
-	}
-
-	@Override
-	public Enumeration<Editable> elements()
-	{
-		return super.elements();
 	}
 
 }

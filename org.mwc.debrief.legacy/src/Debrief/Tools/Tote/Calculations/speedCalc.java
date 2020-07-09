@@ -1,17 +1,18 @@
-/*
- *    Debrief - the Open Source Maritime Analysis Application
- *    http://debrief.info
+/*******************************************************************************
+ * Debrief - the Open Source Maritime Analysis Application
+ * http://debrief.info
  *
- *    (C) 2000-2014, PlanetMayo Ltd
+ * (C) 2000-2020, Deep Blue C Technology Ltd
  *
- *    This library is free software; you can redistribute it and/or
- *    modify it under the terms of the Eclipse Public License v1.0
- *    (http://www.eclipse.org/legal/epl-v10.html)
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the Eclipse Public License v1.0
+ * (http://www.eclipse.org/legal/epl-v10.html)
  *
- *    This library is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
- */
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *******************************************************************************/
+
 package Debrief.Tools.Tote.Calculations;
 
 // Copyright MWC 1999, Debrief 3 Project
@@ -79,45 +80,45 @@ import java.text.DecimalFormat;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.Watchable;
 
-public final class speedCalc extends plainCalc
-{
+public final class speedCalc extends plainCalc {
 
-  /////////////////////////////////////////////////////////////
-  // constructor
-  ////////////////////////////////////////////////////////////
+	/////////////////////////////////////////////////////////////
+	// constructor
+	////////////////////////////////////////////////////////////
 
-  public speedCalc()
-  {  
-    super(new DecimalFormat("00.00"), "Speed", "Knots");
-  }
-  /////////////////////////////////////////////////////////////
-  // member functions
-  ////////////////////////////////////////////////////////////
+	public speedCalc() {
+		super(new DecimalFormat("00.00"), "Speed", "Knots");
+	}
+	/////////////////////////////////////////////////////////////
+	// member functions
+	////////////////////////////////////////////////////////////
 
-  public final double calculate(final Watchable primary, final Watchable secondary, final HiResDate thisTime)
-  {
-    double res = 0.0;
-    if(primary != null)
-    {
-      res = primary.getSpeed();
-    }
-    return res;
-  }
-  
-  public final String update(final Watchable primary, final Watchable secondary, final HiResDate time)
-  {
+	@Override
+	public final double calculate(final Watchable primary, final Watchable secondary, final HiResDate thisTime) {
+		double res = 0.0;
+		if (primary != null) {
+			res = primary.getSpeed();
+		}
+		return res;
+	}
+
+	/**
+	 * does this calculation require special bearing handling (prevent wrapping
+	 * through 360 degs)
+	 *
+	 */
+	@Override
+	public final boolean isWrappableData() {
+		return false;
+	}
+
+	@Override
+	public final String update(final Watchable primary, final Watchable secondary, final HiResDate time) {
 		// check we have data
-		if(primary == null)
+		if (primary == null)
 			return NOT_APPLICABLE;
-		
-    return _myPattern.format(calculate(primary, secondary, time));
-  }
 
-  /** does this calculation require special bearing handling (prevent wrapping through 360 degs)
-   *
-   */
-  public final boolean isWrappableData() {
-    return false;
-  }
+		return _myPattern.format(calculate(primary, secondary, time));
+	}
 
 }

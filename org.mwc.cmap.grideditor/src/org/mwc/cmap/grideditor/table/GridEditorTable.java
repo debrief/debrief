@@ -1,17 +1,18 @@
-/*
- *    Debrief - the Open Source Maritime Analysis Application
- *    http://debrief.info
+/*******************************************************************************
+ * Debrief - the Open Source Maritime Analysis Application
+ * http://debrief.info
  *
- *    (C) 2000-2014, PlanetMayo Ltd
+ * (C) 2000-2020, Deep Blue C Technology Ltd
  *
- *    This library is free software; you can redistribute it and/or
- *    modify it under the terms of the Eclipse Public License v1.0
- *    (http://www.eclipse.org/legal/epl-v10.html)
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the Eclipse Public License v1.0
+ * (http://www.eclipse.org/legal/epl-v10.html)
  *
- *    This library is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
- */
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *******************************************************************************/
+
 package org.mwc.cmap.grideditor.table;
 
 import org.eclipse.jface.viewers.ISelectionChangedListener;
@@ -31,8 +32,7 @@ import org.mwc.cmap.grideditor.table.actons.GridEditorActionGroup;
 import org.mwc.cmap.grideditor.table.actons.TablePopupMenuBuilder;
 import org.mwc.cmap.gridharness.data.GriddableSeries;
 
-public class GridEditorTable extends Composite
-{
+public class GridEditorTable extends Composite {
 
 	private final TableViewer myTableViewer;
 
@@ -48,46 +48,38 @@ public class GridEditorTable extends Composite
 
 	private boolean myOnlyShowVisiblePoints = true;
 
-	public GridEditorTable(final Composite parent, final GridEditorActionGroup actionGroup)
-	{
+	public GridEditorTable(final Composite parent, final GridEditorActionGroup actionGroup) {
 		super(parent, SWT.NONE);
 		setTrackingSelection(true);
 		setLayout(new FillLayout());
 		myActionContext = actionGroup.getContext();
 
-		myTableViewer = new TableViewer(this, SWT.MULTI | SWT.H_SCROLL
-				| SWT.V_SCROLL | SWT.FULL_SELECTION);
+		myTableViewer = new TableViewer(this, SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL | SWT.FULL_SELECTION);
 		myTableViewer.getTable().setHeaderVisible(true);
 		myTableViewer.getTable().setLinesVisible(true);
 		myTableViewer.setContentProvider(new SeriesContentProvider());
-		myTableModel = new TableModel(myTableViewer, myActionContext
-				.getUndoSupport());
+		myTableModel = new TableModel(myTableViewer, myActionContext.getUndoSupport());
 		mySeriesLabelProvider = new SeriesLabelProvider(myTableModel);
 		myTableViewer.setLabelProvider(mySeriesLabelProvider);
-		myTableViewer.addSelectionChangedListener(new ISelectionChangedListener()
-		{
+		myTableViewer.addSelectionChangedListener(new ISelectionChangedListener() {
 
-			public void selectionChanged(final SelectionChangedEvent event)
-			{
+			@Override
+			public void selectionChanged(final SelectionChangedEvent event) {
 				myActionContext.setSelection(myTableViewer.getSelection());
 			}
 		});
 
 		new TablePopupMenuBuilder(this, actionGroup);
 
-		myTableViewer.getTable().addListener(SWT.MeasureItem, new Listener()
-		{
+		myTableViewer.getTable().addListener(SWT.MeasureItem, new Listener() {
 
 			private int myComputedHeight = -1;
 
-			public void handleEvent(final Event event)
-			{
-				if (myComputedHeight < 0)
-				{
-					final DateTime shouldFit = new DateTime(myTableViewer.getTable(), SWT.DATE
-							| SWT.MEDIUM);
-					final Point sizeToFit = shouldFit.computeSize(SWT.DEFAULT, SWT.DEFAULT,
-							true);
+			@Override
+			public void handleEvent(final Event event) {
+				if (myComputedHeight < 0) {
+					final DateTime shouldFit = new DateTime(myTableViewer.getTable(), SWT.DATE | SWT.MEDIUM);
+					final Point sizeToFit = shouldFit.computeSize(SWT.DEFAULT, SWT.DEFAULT, true);
 					shouldFit.dispose();
 					myComputedHeight = sizeToFit.y;
 				}
@@ -96,40 +88,45 @@ public class GridEditorTable extends Composite
 		});
 	}
 
-	public void setTrackingSelection(final boolean isTrackingSelection)
-	{
-		myIsTrackingSelection = isTrackingSelection;
+	public GridEditorActionContext getActionContext() {
+		return myActionContext;
 	}
 
-	public boolean isTrackingSelection()
-	{
-		return myIsTrackingSelection;
+	public TableModel getTableModel() {
+		return myTableModel;
 	}
 
-	public boolean isOnlyShowVisible()
-	{
+	public TableViewer getTableViewer() {
+		return myTableViewer;
+	}
+
+	public boolean isOnlyShowVisible() {
 		return myOnlyShowVisiblePoints;
 	}
 
-	public void setOnlyShowVisible(final boolean val)
-	{
-		myOnlyShowVisiblePoints = val;
-
-		// ok, do an update of the data
-		setInput((GriddableSeries) myTableViewer.getInput());
+	public boolean isTrackingSelection() {
+		return myIsTrackingSelection;
 	}
 
-	public void setColumnHeaderSelectionListener(final SelectionListener listener)
-	{
+	private void refreshTableColumns() {
+		// this sets up the cell label providers for all columns at once
+		myTableViewer.setLabelProvider(mySeriesLabelProvider);
+
+		if (myColumnHeaderSelectionListener != null) {
+			for (final TableColumn next : myTableViewer.getTable().getColumns()) {
+				next.addSelectionListener(myColumnHeaderSelectionListener);
+			}
+		}
+	}
+
+	public void setColumnHeaderSelectionListener(final SelectionListener listener) {
 		myColumnHeaderSelectionListener = listener;
 	}
 
-	public void setInput(final GriddableSeries series)
-	{
+	public void setInput(final GriddableSeries series) {
 
 		// have we received real data?
-		if (series != null)
-		{
+		if (series != null) {
 			series.setOnlyShowVisibleItems(myOnlyShowVisiblePoints);
 		}
 
@@ -140,32 +137,14 @@ public class GridEditorTable extends Composite
 		myActionContext.setInput(series);
 	}
 
-	public TableViewer getTableViewer()
-	{
-		return myTableViewer;
+	public void setOnlyShowVisible(final boolean val) {
+		myOnlyShowVisiblePoints = val;
+
+		// ok, do an update of the data
+		setInput((GriddableSeries) myTableViewer.getInput());
 	}
 
-	public GridEditorActionContext getActionContext()
-	{
-		return myActionContext;
-	}
-
-	public TableModel getTableModel()
-	{
-		return myTableModel;
-	}
-
-	private void refreshTableColumns()
-	{
-		// this sets up the cell label providers for all columns at once
-		myTableViewer.setLabelProvider(mySeriesLabelProvider);
-
-		if (myColumnHeaderSelectionListener != null)
-		{
-			for (final TableColumn next : myTableViewer.getTable().getColumns())
-			{
-				next.addSelectionListener(myColumnHeaderSelectionListener);
-			}
-		}
+	public void setTrackingSelection(final boolean isTrackingSelection) {
+		myIsTrackingSelection = isTrackingSelection;
 	}
 }

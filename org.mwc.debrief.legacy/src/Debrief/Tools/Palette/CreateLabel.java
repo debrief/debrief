@@ -1,17 +1,18 @@
-/*
- *    Debrief - the Open Source Maritime Analysis Application
- *    http://debrief.info
+/*******************************************************************************
+ * Debrief - the Open Source Maritime Analysis Application
+ * http://debrief.info
  *
- *    (C) 2000-2014, PlanetMayo Ltd
+ * (C) 2000-2020, Deep Blue C Technology Ltd
  *
- *    This library is free software; you can redistribute it and/or
- *    modify it under the terms of the Eclipse Public License v1.0
- *    (http://www.eclipse.org/legal/epl-v10.html)
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the Eclipse Public License v1.0
+ * (http://www.eclipse.org/legal/epl-v10.html)
  *
- *    This library is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
- */
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *******************************************************************************/
+
 // $RCSfile: CreateLabel.java,v $
 // @author $Author: Ian.Mayo $
 // @version $Revision: 1.3 $
@@ -82,158 +83,167 @@ import MWC.GUI.Properties.PropertiesPanel;
 import MWC.GUI.Tools.Action;
 import MWC.GenericData.WorldLocation;
 
-public final class CreateLabel extends CoreCreateShape
-{
+public class CreateLabel extends CoreCreateShape {
 
-  /////////////////////////////////////////////////////////////
-  // member variables
-  ////////////////////////////////////////////////////////////
-  /** the properties panel
-   */
-  private PropertiesPanel _thePanel;
+	///////////////////////////////////////////////////////
+	// store action information
+	///////////////////////////////////////////////////////
+	static public final class CreateLabelAction implements Action {
+		/**
+		 * the panel we are going to show the initial editor in
+		 */
+		final PropertiesPanel _thePanel;
+		final Layer _theLayer;
+		final Debrief.Wrappers.LabelWrapper _theShape;
+		final private Layers _theData;
+		final private Layer addedLayer;
 
+		public CreateLabelAction(final PropertiesPanel thePanel, final Layer theLayer, final LabelWrapper theShape,
+				final Layers theData, final Layer newLayer) {
+			_thePanel = thePanel;
+			_theLayer = theLayer;
+			_theShape = theShape;
+			_theData = theData;
+			addedLayer = newLayer;
+		}
 
-  /////////////////////////////////////////////////////////////
-  // constructor
-  ////////////////////////////////////////////////////////////
-  /** constructor for label
-   * @param theParent parent where we can change cursor
-   * @param thePanel panel
-   */
-  public CreateLabel(final ToolParent theParent,
-      final PropertiesPanel thePanel,
-      final Layers theData,
-      final BoundsProvider bounds,
-      final String theName,
-      final String theImage)
-  {
-    super(theParent, theName, theImage,theData,bounds);
+		/**
+		 * make it so!
+		 */
+		@Override
+		public final void execute() {
+			if (addedLayer != null) {
+				final Layer layer = _theData.findLayer(addedLayer.getName());
+				if (layer == null) {
+					_theData.addThisLayer(addedLayer);
+				}
 
-    _thePanel = thePanel;
-  }
-  
+			}
+			// add the Shape to the layer, and put it
+			// in the property editor
+			_theLayer.add(_theShape);
 
-  /** helper class, to allow common code to be used for both shapes & labels
-   * 
-   * @author ian
-   *
-   */
-  public static interface GetAction
-  {
-    /** create the action that puts the item into a layer
-     * 
-     * @param thePanel
-     * @param theLayer
-     * @param theItem
-     * @param theData
-     * @return
-     */
-    Action createLabelAction(final PropertiesPanel thePanel,
-        final Layer theLayer,
-        final PlainWrapper theItem,
-        final Layers theData);
-    
-    /** create a new instance of the correct type
-     * 
-     * @param centre
-     * @return
-     */
-    PlainWrapper getItem(final WorldLocation centre);
-  }
-  
- 
+			if (_thePanel != null)
+				_thePanel.addEditor(_theShape.getInfo(), _theLayer);
 
-  public final Action getData()
-  {
-    final GetAction getAction = new GetAction() {
+			// and fire the extended event
+			_theData.fireExtended(_theShape, _theLayer);
+		}
 
-      @Override
-      public Action createLabelAction(final PropertiesPanel thePanel, final Layer theLayer,
-          final PlainWrapper theItem, final Layers theData)
-      {
-        return new CreateLabelAction(_thePanel, theLayer, (LabelWrapper) theItem, _theData);
-      }
+		/**
+		 * specify is this is an operation which can be redone
+		 */
+		@Override
+		public final boolean isRedoable() {
+			return true;
+		}
 
-      @Override
-      public PlainWrapper getItem(final WorldLocation centre)
-      {
-        return  new LabelWrapper("blank label",
-            centre,
-            MWC.GUI.Properties.DebriefColors.ORANGE);
-      }};
-    return commonGetData(getAction, _thePanel);
-  }
+		/**
+		 * specify is this is an operation which can be undone
+		 */
+		@Override
+		public final boolean isUndoable() {
+			return true;
+		}
 
-  ///////////////////////////////////////////////////////
-  // store action information
-  ///////////////////////////////////////////////////////
-  static public final class CreateLabelAction implements Action
-  {
-    /** the panel we are going to show the initial editor in
-     */
-    final PropertiesPanel _thePanel;
-    final Layer _theLayer;
-    final Debrief.Wrappers.LabelWrapper _theShape;
-    final private Layers _theData;
+		/**
+		 * return string describing this operation
+		 *
+		 * @return String describing this operation
+		 */
+		@Override
+		public final String toString() {
+			return "New shape:" + _theShape.getName();
+		}
 
+		/**
+		 * take the shape away from the layer
+		 */
+		@Override
+		public final void undo() {
+			if (addedLayer != null) {
+				_theData.removeThisLayer(addedLayer);
+			} else {
+				_theLayer.removeElement(_theShape);
+			}
+			// and fire the extended event
+			_theData.fireExtended();
+		}
+	}
 
-    public CreateLabelAction(final PropertiesPanel thePanel,
-        final Layer theLayer,
-        final LabelWrapper theShape,
-        final Layers theData)
-    {
-      _thePanel = thePanel;
-      _theLayer = theLayer;
-      _theShape = theShape;
-      _theData = theData;
-    }
+	/**
+	 * helper class, to allow common code to be used for both shapes & labels
+	 *
+	 * @author ian
+	 *
+	 */
+	public static interface GetAction {
+		/**
+		 * create the action that puts the item into a layer
+		 *
+		 * @param thePanel
+		 * @param theLayer
+		 * @param theItem
+		 * @param theData
+		 * @return
+		 */
+		Action createLabelAction(final PropertiesPanel thePanel, final Layer theLayer, final PlainWrapper theItem,
+				final Layers theData);
 
-    /** specify is this is an operation which can be undone
-     */
-    public final boolean isUndoable()
-    {
-      return true;
-    }
+		/**
+		 * create a new instance of the correct type
+		 *
+		 * @param centre
+		 * @return
+		 */
+		PlainWrapper getItem(final WorldLocation centre);
+	}
 
-    /** specify is this is an operation which can be redone
-     */
-    public final boolean isRedoable()
-    {
-      return true;
-    }
+	/**
+	 *
+	 */
+	private static final long serialVersionUID = 1L;
 
-    /** return string describing this operation
-     * @return String describing this operation
-     */
-    public final String toString()
-    {
-      return "New shape:" + _theShape.getName();
-    }
+	/////////////////////////////////////////////////////////////
+	// member variables
+	////////////////////////////////////////////////////////////
+	/**
+	 * the properties panel
+	 */
+	private final PropertiesPanel _thePanel;
 
-    /** take the shape away from the layer
-     */
-    public final void undo()
-    {
-      _theLayer.removeElement(_theShape);
+	/////////////////////////////////////////////////////////////
+	// constructor
+	////////////////////////////////////////////////////////////
+	/**
+	 * constructor for label
+	 *
+	 * @param theParent parent where we can change cursor
+	 * @param thePanel  panel
+	 */
+	public CreateLabel(final ToolParent theParent, final PropertiesPanel thePanel, final Layers theData,
+			final BoundsProvider bounds, final String theName, final String theImage) {
+		super(theParent, theName, theImage, theData, bounds);
 
-      // and fire the extended event
-      _theData.fireExtended();
-    }
+		_thePanel = thePanel;
+	}
 
-    /** make it so!
-     */
-    public final void execute()
-    {
-      // add the Shape to the layer, and put it
-      // in the property editor
-      _theLayer.add(_theShape);
+	@Override
+	public final Action getData() {
+		final GetAction getAction = new GetAction() {
 
-      if(_thePanel != null)
-        _thePanel.addEditor(_theShape.getInfo(), _theLayer);
+			@Override
+			public Action createLabelAction(final PropertiesPanel thePanel, final Layer theLayer,
+					final PlainWrapper theItem, final Layers theData) {
+				return new CreateLabelAction(_thePanel, theLayer, (LabelWrapper) theItem, _theData, addedLayer);
+			}
 
-      // and fire the extended event
-      _theData.fireExtended(_theShape, _theLayer);
-    }
-  }
+			@Override
+			public PlainWrapper getItem(final WorldLocation centre) {
+				return new LabelWrapper("blank label", centre, MWC.GUI.Properties.DebriefColors.ORANGE);
+			}
+		};
+		return commonGetData(getAction, _thePanel);
+	}
 
 }

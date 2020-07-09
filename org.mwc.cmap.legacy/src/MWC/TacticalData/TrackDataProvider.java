@@ -1,17 +1,18 @@
-/*
- *    Debrief - the Open Source Maritime Analysis Application
- *    http://debrief.info
+/*******************************************************************************
+ * Debrief - the Open Source Maritime Analysis Application
+ * http://debrief.info
  *
- *    (C) 2000-2014, PlanetMayo Ltd
+ * (C) 2000-2020, Deep Blue C Technology Ltd
  *
- *    This library is free software; you can redistribute it and/or
- *    modify it under the terms of the Eclipse Public License v1.0
- *    (http://www.eclipse.org/legal/epl-v10.html)
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the Eclipse Public License v1.0
+ * (http://www.eclipse.org/legal/epl-v10.html)
  *
- *    This library is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
- */
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *******************************************************************************/
+
 package MWC.TacticalData;
 
 import MWC.GenericData.WatchableList;
@@ -19,89 +20,91 @@ import MWC.GenericData.WatchableList;
 /**
  * @author ian.mayo
  */
-public interface TrackDataProvider
-{
-  public static interface TrackDataListener
-  {
-    /**
-     * find out that the primary has changed
-     * 
-     * @param primary         the primary track
-     */
-    public void tracksUpdated(WatchableList primary, WatchableList[] secondaries);
-  }
-  
-  /** people who want to find out about tracks moving
-   * 
-   * @author ian.mayo
-   *
-   */
-  public static interface TrackShiftListener
-  {
-    /** 
-     * 
-     */
-    public void trackShifted(WatchableList target);
-  }
+public interface TrackDataProvider {
+	public static interface TrackDataListener {
+		/**
+		 * find out that the primary has changed
+		 *
+		 * @param primary the primary track
+		 */
+		public void tracksUpdated(WatchableList primary, WatchableList[] secondaries);
+	}
 
-  /**
-   * declare that we want to be informed about changes in selected tracks
-   */
-  public void addTrackDataListener(TrackDataListener listener);
+	/**
+	 * people who want to find out about tracks moving
+	 *
+	 * @author ian.mayo
+	 *
+	 */
+	public static interface TrackShiftListener {
+		/**
+		 *
+		 */
+		public void trackShifted(WatchableList target);
+	}
 
-  /**
-   * forget that somebody wants to know about track changes
-   */
-  public void removeTrackDataListener(TrackDataListener listener);
-  
-  /**
-   * declare that we want to be informed about changes in selected tracks
-   */
-  public void addTrackShiftListener(TrackShiftListener listener);
+	/**
+	 * add this as another secondary track
+	 *
+	 * @param secondary additional secondary
+	 */
+	public void addSecondary(WatchableList secondary);
 
-  /**
-   * forget that somebody wants to know about track changes
-   */
-  public void removeTrackShiftListener(TrackShiftListener listener);
-  
-  /** ok - tell anybody that wants to know about our movement
-   * 
-   * @param watchableList what's being dragged
-   */
-  public void fireTrackShift(final WatchableList watchableList);
-  
-  /** ok, the tracks have changed. tell the world
-   * 
-   */
-  public void fireTracksChanged();
-  
+	/**
+	 * declare that we want to be informed about changes in selected tracks
+	 */
+	public void addTrackDataListener(TrackDataListener listener);
 
-  /**
-   * find out what the primary track is
-   */
-  public WatchableList getPrimaryTrack();
+	/**
+	 * declare that we want to be informed about changes in selected tracks
+	 */
+	public void addTrackShiftListener(TrackShiftListener listener);
 
-  /**
-   * find out what the secondary track is
-   */
-  public WatchableList[] getSecondaryTracks();
+	/**
+	 * ok, the tracks have changed. tell the world
+	 *
+	 */
+	public void fireTracksChanged();
 
-  /** add this as another secondary track
-   * 
-   * @param secondary additional secondary
-   */
-  public void addSecondary(WatchableList secondary);
+	/**
+	 * ok - tell anybody that wants to know about our movement
+	 *
+	 * @param watchableList what's being dragged
+	 */
+	public void fireTrackShift(final WatchableList watchableList);
 
-  /** set the primary track
-   * 
-   * @param primary the primary track
-   */
-  public void setPrimary(WatchableList primary);
+	/**
+	 * find out what the primary track is
+	 */
+	public WatchableList getPrimaryTrack();
 
-  /** set this as the sole secondary track
-   * 
-   * @param secondary the sole secondary track
-   */
-  public void setSecondary(WatchableList secondary);
+	/**
+	 * find out what the secondary track is
+	 */
+	public WatchableList[] getSecondaryTracks();
+
+	/**
+	 * forget that somebody wants to know about track changes
+	 */
+	public void removeTrackDataListener(TrackDataListener listener);
+
+	/**
+	 * forget that somebody wants to know about track changes
+	 */
+	public void removeTrackShiftListener(TrackShiftListener listener);
+
+	/**
+	 * set the primary track
+	 *
+	 * @param primary the primary track
+	 */
+	public void setPrimary(WatchableList primary);
+
+	/**
+	 * set this as the sole secondary track
+	 *
+	 * @param secondary the sole secondary track
+	 */
+	public void setSecondary(WatchableList secondary);
 
 }

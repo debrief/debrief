@@ -1,0 +1,55 @@
+Signature-Version: 1.0
+SHA-256-Digest-Manifest-Main-Attributes: JY5gfg/NgQu1PKxcbfppgPwAlNAR7
+ Zv0yMHgGoP0M7g=
+SHA-256-Digest-Manifest: ySRAzs7QyI0dQL8RQQacvEh9oul/Ru4LRosDJF876oo=
+Created-By: 1.8.0_51 (Oracle Corporation)
+
+Name: about.properties
+SHA-256-Digest: Vo8Wt3GL8FWExW633I1yQbj+E2CrkujfQdAoYS5SJaQ=
+
+Name: about.html
+SHA-256-Digest: 2XEsjpHP+S7nSuQzG4L2BG8fRHPwJbH4OW6uei4OzB8=
+
+Name: plugin.xml
+SHA-256-Digest: PrR6k7pNirfKSnRKF/EDLyv/mqkya64Q85Pf3jUnNBA=
+
+Name: META-INF/maven/org.eclipse.rcptt.external.dependencies/org.eclip
+ se.rcptt.updates.extra/pom.xml
+SHA-256-Digest: yrxGUdQ8xZPplD+O3Ve2RtXJtnBZiHjpHFn8df/wthA=
+
+Name: featureImage.png
+SHA-256-Digest: IBiteyGz65hvd36QS902Dpnp8d/rXvVipshjhGv2Nug=
+
+Name: dependencies/plugins/org.dom4j_1.6.1.v201312101416.jar
+SHA-256-Digest: RBdVy8Iu4EhqwBjnSsdWI4fGoRqyePUwHackIanFdQw=
+
+Name: dependencies/content.jar
+SHA-256-Digest: Cl2ostf+Jvl6VZgTd92512Z5w/Nu97xWgdQ7C5qtsi4=
+
+Name: dependencies/plugins/org.apache.xmlbeans_2.3.0.v201605172150.jar
+SHA-256-Digest: AB/trX7McxyT8oyCW+DPlVVPni/kRM2JatdFO3iciu0=
+
+Name: dependencies/artifacts.jar
+SHA-256-Digest: 7h9s8X0WvyU1oiJXagUuB2G5JqBNjJou3EqGnDTvGlM=
+
+Name: META-INF/maven/org.eclipse.rcptt.external.dependencies/org.eclip
+ se.rcptt.updates.extra/pom.properties
+SHA-256-Digest: PvkS8at2MVCY0yBuNRs6xwe78Y9brNdY7xTNY/6VM/o=
+
+Name: dependencies/plugins/org.apache.poi_3.9.0.v201405241750.jar
+SHA-256-Digest: WxxPB4l8wISVKNxDpqF9k3k2wiu9ytck7+u7DLp9nfc=
+
+Name: dependencies/plugins/org.apache.poi.ooxml_3.9.0.v201405241905.ja
+ r
+SHA-256-Digest: N4WGWXUgY2uVCZEaaLrwVEILPsDrezdpgRfZeiJDSv8=
+
+Name: about.ini
+SHA-256-Digest: XxtU+0U2nLBiUSJV4gV7bABGQrt8uGmhXomYgDg5X8k=
+
+Name: plugin.properties
+SHA-256-Digest: w9Szaj6+HEOmEah7xPnuCSuo1fxY7cu4Z227cQEKHH8=
+
+Name: dependencies/plugins/org.apache.poi.ooxml.schemas_3.9.0.v2014052
+ 41750.jar
+SHA-256-Digest: bt4owj0gsRqf61FUSw6F1MfqoSs4VtHF97cVxtg0a3E=
+

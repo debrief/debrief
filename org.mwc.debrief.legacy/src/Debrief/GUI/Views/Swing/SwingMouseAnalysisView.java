@@ -1,165 +1,149 @@
-/*
- *    Debrief - the Open Source Maritime Analysis Application
- *    http://debrief.info
+/*******************************************************************************
+ * Debrief - the Open Source Maritime Analysis Application
+ * http://debrief.info
  *
- *    (C) 2000-2014, PlanetMayo Ltd
+ * (C) 2000-2020, Deep Blue C Technology Ltd
  *
- *    This library is free software; you can redistribute it and/or
- *    modify it under the terms of the Eclipse Public License v1.0
- *    (http://www.eclipse.org/legal/epl-v10.html)
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the Eclipse Public License v1.0
+ * (http://www.eclipse.org/legal/epl-v10.html)
  *
- *    This library is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
- */
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *******************************************************************************/
+
 package Debrief.GUI.Views.Swing;
+
+import java.awt.event.InputEvent;
 
 import Debrief.GUI.Frames.Session;
 import Debrief.GUI.Frames.Swing.SwingSession;
-
-import java.awt.event.MouseEvent;
-
 import MWC.GUI.ToolParent;
 import MWC.GUI.Tools.Action;
 
-public final class SwingMouseAnalysisView extends SwingAnalysisView
-{
-  /**************************************************************
-   * member methods
-   **************************************************************/
+public final class SwingMouseAnalysisView extends SwingAnalysisView {
+	/**************************************************************
+	 * member methods
+	 **************************************************************/
 
-  /** the instance of listener which listens to the mouse wheel,
-   * and moves the tote backwards and forwards
-   */
-  private java.util.EventListener _wheelListener = null;
+	/**
+	 * the instance of listener which listens to the mouse wheel, and moves the tote
+	 * backwards and forwards
+	 */
+	private java.util.EventListener _wheelListener = null;
 
+	/**************************************************************
+	 * constructor
+	 **************************************************************/
+	public SwingMouseAnalysisView(final ToolParent theParent, final SwingSession theSession) {
+		super(theParent, theSession);
+	}
 
-  /**************************************************************
-   * constructor
-   **************************************************************/
-  public SwingMouseAnalysisView(final ToolParent theParent,
-               final SwingSession theSession)
-  {
-    super(theParent, theSession);
-  }
+	@Override
+	public final void close() {
+		// first unload the mouse
+		if (_wheelListener != null) {
+			try {
+				closeMouseWheel();
+			} catch (final java.lang.NoClassDefFoundError e) {
+				System.out.println("Mouse support not available");
+			}
+		}
 
-  /**************************************************************
-   * member methods
-   **************************************************************/
+		// now let the parent close
+		super.close();
+	}
 
+	/**
+	 * remove the mouse wheel
+	 *
+	 */
+	private void closeMouseWheel() {
+		getChart().getPanel().removeMouseWheelListener((java.awt.event.MouseWheelListener) _wheelListener);
+		getTote().getPanel().removeMouseWheelListener((java.awt.event.MouseWheelListener) _wheelListener);
+		_wheelListener = null;
+	}
 
+	/**************************************************************
+	 * member methods
+	 **************************************************************/
 
-  protected final void initForm(final Session theSession)
-  {
-    // do the parent first
-    super.initForm(theSession);
+	@Override
+	protected final void initForm(final Session theSession) {
+		// do the parent first
+		super.initForm(theSession);
 
-    // now the mouse stuff
-    // handle instances where MouseWheel support not available (JDK before 1.4)
-    try
-    {
-      /////////////////////////////////////////////////
-      // mouse-wheel support
-      /////////////////////////////////////////////////
-      setupMouseWheel();
+		// now the mouse stuff
+		// handle instances where MouseWheel support not available (JDK before 1.4)
+		try {
+			/////////////////////////////////////////////////
+			// mouse-wheel support
+			/////////////////////////////////////////////////
+			setupMouseWheel();
 
-    }
-    catch (final java.lang.NoClassDefFoundError e)
-    {
-      System.out.println("MOUSE SUPPORT NOT AVAILABLE");
-    }
+		} catch (final java.lang.NoClassDefFoundError e) {
+			System.out.println("MOUSE SUPPORT NOT AVAILABLE");
+		}
 
-  }
+	}
 
-  public final void close()
-  {
-    // first unload the mouse
-    if(_wheelListener != null)
-    {
-      try
-      {
-        closeMouseWheel();
-      }
-      catch (final java.lang.NoClassDefFoundError e)
-      {
-        System.out.println("Mouse support not available");
-      }
-    }
+	/**
+	 * setup the mouse wheel handler part of it
+	 *
+	 */
+	private void setupMouseWheel() {
+		final java.awt.event.MouseWheelListener theWheelListener = new java.awt.event.MouseWheelListener() {
+			@Override
+			public void mouseWheelMoved(final java.awt.event.MouseWheelEvent e) {
 
-    // now let the parent close
-    super.close();
-  }
+				// find out if we are doing our "special" processing
+				if (e.getModifiers() == InputEvent.CTRL_MASK) {
+					// set the scale factor
 
-  /** remove the mouse wheel
-   *
-   */
-  private void closeMouseWheel()
-  {
-    getChart().getPanel().removeMouseWheelListener((java.awt.event.MouseWheelListener) _wheelListener);
-    getTote().getPanel().removeMouseWheelListener((java.awt.event.MouseWheelListener) _wheelListener);
-    _wheelListener = null;
-  }
+					double scale = 1.1;
+					// are we zooming in our out?
+					if (e.getWheelRotation() > 0)
+						scale = 1 / scale;
 
+					// set busy
+					getParent().setCursor(java.awt.Cursor.WAIT_CURSOR);
 
-  /** setup the mouse wheel handler part of it
-   *
-   */
-  private void setupMouseWheel()
-  {
-      final java.awt.event.MouseWheelListener theWheelListener = new java.awt.event.MouseWheelListener()
-      {
-        public void mouseWheelMoved(final java.awt.event.MouseWheelEvent e)
-        {
+					// create our action
+					final Action action = new MWC.GUI.Tools.Chart.ZoomOut.ZoomOutAction(getChart(),
+							getChart().getCanvas().getProjection().getDataArea(), scale);
 
-          // find out if we are doing our "special" processing
-          if(e.getModifiers() == MouseEvent.CTRL_MASK)
-          {
-            // set the scale factor
+					// do the zoom
+					action.execute();
 
-            double scale = 1.1;
-            // are we zooming in our out?
-            if(e.getWheelRotation() > 0)
-              scale = 1 / scale;
+					// remember this action
+					getParent().addActionToBuffer(action);
 
-            // set busy
-            getParent().setCursor(java.awt.Cursor.WAIT_CURSOR);
+					// and restore the cursor
+					getParent().restoreCursor();
+				} else {
+					// we are moving forward/backward in time
+					final int rot = e.getWheelRotation();
+					final boolean fwd = (rot > 0);
 
-            // create our action
-            final Action action = new MWC.GUI.Tools.Chart.ZoomOut.ZoomOutAction(getChart(), getChart().getCanvas().getProjection().getDataArea(), scale);
+					// are we doing a large step?
+					final boolean large_step = (e.getModifiers() == InputEvent.SHIFT_MASK);
 
-            // do the zoom
-            action.execute();
+					// do the step
+					getTote().getStepper().doStep(fwd, large_step);
+				}
 
-            // remember this action
-            getParent().addActionToBuffer(action);
+			}
+		};
 
-            // and restore the cursor
-            getParent().restoreCursor();
-          }
-          else
-          {
-            // we are moving forward/backward in time
-            final int rot = e.getWheelRotation();
-            final boolean fwd = (rot > 0);
+		// listen to the time stepper
+		getTote().getPanel().addMouseWheelListener(theWheelListener);
 
-            // are we doing a large step?
-            final boolean large_step = (e.getModifiers() == MouseEvent.SHIFT_MASK);
+		// and listen to the plt
+		getChart().getPanel().addMouseWheelListener(theWheelListener);
 
-            // do the step
-            getTote().getStepper().doStep(fwd, large_step);
-          }
-
-        }
-      };
-
-      // listen to the time stepper
-      getTote().getPanel().addMouseWheelListener(theWheelListener);
-
-      // and listen to the plt
-      getChart().getPanel().addMouseWheelListener(theWheelListener);
-
-      // and save it
-      _wheelListener = theWheelListener;
-  }
+		// and save it
+		_wheelListener = theWheelListener;
+	}
 
 }

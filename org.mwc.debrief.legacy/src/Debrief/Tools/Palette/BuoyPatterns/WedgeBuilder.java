@@ -1,17 +1,18 @@
-/*
- *    Debrief - the Open Source Maritime Analysis Application
- *    http://debrief.info
+/*******************************************************************************
+ * Debrief - the Open Source Maritime Analysis Application
+ * http://debrief.info
  *
- *    (C) 2000-2014, PlanetMayo Ltd
+ * (C) 2000-2020, Deep Blue C Technology Ltd
  *
- *    This library is free software; you can redistribute it and/or
- *    modify it under the terms of the Eclipse Public License v1.0
- *    (http://www.eclipse.org/legal/epl-v10.html)
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the Eclipse Public License v1.0
+ * (http://www.eclipse.org/legal/epl-v10.html)
  *
- *    This library is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
- */
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *******************************************************************************/
+
 // $RCSfile: WedgeBuilder.java,v $
 // @author $Author: Ian.Mayo $
 // @version $Revision: 1.2 $
@@ -70,319 +71,299 @@
 
 package Debrief.Tools.Palette.BuoyPatterns;
 
-import java.beans.*;
-
-import MWC.GenericData.*;
-
-public final class WedgeBuilder extends PatternBuilderType
-{
-
-  //////////////////////////////////////////
-  // Member variables
-  //////////////////////////////////////////
-
-  /** first orientation (degs)
-   */
-  private double _orientation2;
-
-  /** second orientation (degs)
-   */
-  private double _orientation1;
-
-  /** spacing of buoys (nm)
-   */
-  private double _spacing;
-
-
-  /** our editor
-   */
-  transient private MWC.GUI.Editable.EditorType _myEditor = null;
-
-  //////////////////////////////////////////
-  // Constructor
-  //////////////////////////////////////////
-  public WedgeBuilder(final WorldLocation centre,
-                        final MWC.GUI.Properties.PropertiesPanel thePanel,
-                        final MWC.GUI.Layers theData)
-  {
-    super(centre, thePanel, theData);
-
-    // initialise our variables
-    _orientation2 = 45;
-    _orientation1 = 315;
-    _spacing = 0.5;
-    setPatternName("blank wedge");
-
-    // and the variables in our parent
-    setKingpinBearing(0.0);
-    setKingpinRange(new WorldDistance(0.0, WorldDistance.NM));
-    setNumberOfBuoys(new Integer(7));
-
-  }
-
-  //////////////////////////////////////////
-  // Member functions
-  //////////////////////////////////////////
-
-  /** this method is called by the 'Create' function, and it fills in the
-   *  buoys into the correct pattern
-   */
-  protected final void addBuoys(final Debrief.Wrappers.BuoyPatternWrapper pattern)
-  {
-    WorldLocation origin = getKingpin();
-    // note that as we calculate the LH angle
-    final double lh_orient_rads = MWC.Algorithms.Conversions.Degs2Rads(_orientation2);
-    final double rh_orient_rads = MWC.Algorithms.Conversions.Degs2Rads(_orientation1);
-    final double spacing_degs = MWC.Algorithms.Conversions.Nm2Degs(_spacing);
-
-
-    // how many bouys in each leg?
-    // an even number means we don't have one at the tip, which becomes a special case
-    final int num_buoys = getNumberOfBuoys().intValue();
-    boolean even_num = false;
-    if((num_buoys % 2) == 0)
-    {
-      even_num = true;
-    }
-
-    // sort out how many there are in each leg
-    final int num_in_leg = num_buoys / 2;
-
-    // sort out the direction
-    double this_orient = rh_orient_rads;
-
-    int buoy_counter = 0;
-
-    // remember that we are looking at the first buoy
-    boolean first_buoy = true;
-
-    // do the first leg
-    for(int i = 0;i< num_in_leg ;i++)
-    {
-      // create the new symbol
-      final Debrief.Wrappers.LabelWrapper lw = new Debrief.Wrappers.LabelWrapper("W" + (buoy_counter + 1),
-                                                  origin,
-                                                    MWC.GUI.Properties.DebriefColors.RED);
-
-      buoy_counter++;
-
-      // get the parent to do the formatting
-      this.formatSymbol(lw, pattern);
-
-      // if this is the first buoy, mark it as the kingping
-      if(first_buoy)
-      {
-        lw.setSymbolType("Kingpin");
-        first_buoy = false;
-      }
-
-
-      // create the step to use to get to the next buoy
-      final WorldVector thisStep = new MWC.GenericData.WorldVector(this_orient, spacing_degs, 0.0);
-
-      // place buoy
-      origin = origin.add(thisStep);
-    }
-
-    // if we have an even number, we need to move forward 1/2 distance for one more step before we change direction
-    if(even_num)
-    {
-      // calculate the size of this small step
-      final double reverse_rh_rads = MWC.Algorithms.Conversions.Degs2Rads(_orientation1 + 180.0);
-      WorldVector short_hop = new WorldVector(reverse_rh_rads, spacing_degs / 2, 0.0);
-
-      // move the origin forward
-      origin = origin.add(short_hop);
-
-      // calculate the size of this small step
-      short_hop = new WorldVector(lh_orient_rads, spacing_degs / 2, 0.0);
-
-      // move the origin forward
-      origin = origin.add(short_hop);
-    }
-    else
-    {
-
-      // drop a buoy at the current point
-      final Debrief.Wrappers.LabelWrapper lw = new Debrief.Wrappers.LabelWrapper("W" + (buoy_counter + 1),
-                                                  origin,
-                                                    MWC.GUI.Properties.DebriefColors.RED);
-      buoy_counter++;
-
-      // move to the correct location for the next point
-      final WorldVector short_hop = new WorldVector(lh_orient_rads, spacing_degs, 0.0);
-
-      // move the origin forward
-      origin = origin.add(short_hop);
-
-
-      // get the parent to do the formatting
-      this.formatSymbol(lw, pattern);
-
-    }
-
-    // now travel back down the reverse side
-    // sort out the direction
-    this_orient = lh_orient_rads;
-
-    // do the first leg
-    for(int i =0;i< num_in_leg ;i++)
-    {
-
-      // create the new symbol
-      final Debrief.Wrappers.LabelWrapper lw = new Debrief.Wrappers.LabelWrapper("W" + (buoy_counter + 1),
-                                                  origin,
-                                                    MWC.GUI.Properties.DebriefColors.RED);
-
-      buoy_counter++;
-
-      // get the parent to do the formatting
-      this.formatSymbol(lw, pattern);
-
-      // create the step to use to get to the next buoy
-      final WorldVector thisStep = new MWC.GenericData.WorldVector(this_orient, spacing_degs, 0.0);
-
-      // start moving down the return leg
-      // move buoy
-      origin = origin.add(thisStep);
-
-
-    }
-
-  }
-
-  //////////////////////////////////////////
-  // editable accessor functions
-  //////////////////////////////////////////
-
-
-  public final double getOrientation2()
-  {
-    return _orientation2;
-  }
-
-  public final void setOrientation2(final double val)
-  {
-    _orientation2 = val;
-  }
-
-  public final double getOrientation1()
-  {
-    return _orientation1;
-  }
-
-  public final void setOrientation1(final double val)
-  {
-    _orientation1 = val;
-  }
-
-
-
-  public final WorldDistance getPatternBuoySpacing()
-  {
-    return new WorldDistance(_spacing, WorldDistance.NM);
-  }
-
-  public final void setPatternBuoySpacing(final WorldDistance val)
-  {
-    _spacing = val.getValueIn(WorldDistance.NM);
-  }
-
-
-
-  /** get the editor for this item
- * @return the BeanInfo data for this editable object
- */
-  public final MWC.GUI.Editable.EditorType getInfo()
-  {
-    if(_myEditor == null)
-      _myEditor = new WedgeInfo(this, this.getName());
-
-    return _myEditor;
-  }
-
-  public final String toString()
-  {
-    return "Wedge Builder";
-  }
-
-  //////////////////////////////////////////
-  // editable details
-  //////////////////////////////////////////
-
-  public final class WedgeInfo extends MWC.GUI.Editable.EditorType
-  {
-
-    public WedgeInfo(final WedgeBuilder data,
-                   final String theName)
-    {
-      super(data, theName, "Wedge:");
-    }
-
-    /** method which gets called when all parameters have
-     *  been updated
-     */
-    public final void updatesComplete()
-    {
-      // get the builder to build itself
-      create();
-
-      // inform the parent
-      super.updatesComplete();
-    }
-
-    public final PropertyDescriptor[] getPropertyDescriptors()
-    {
-      try
-      {
-        final PropertyDescriptor[] myRes=
-        {
-          displayProp("SymbolType", "Symbol type", "the type of symbol plotted for this label"),
-          displayProp("SymbolSize", "Symbol size", "the scale of the symbol"),
-          prop("Duration", "the lifetime of the buoy pattern"),
-          displayProp("PatternName", "Pattern name", "the name of this barrier"),
-          displayProp("PatternBuoySpacing", "Pattern buoy spacing", "the spacing of the buoys in the wedge"),
-          displayProp("Orientation2", "Orientation of the second side", "the orientation of the second side of the wedge from kingpin (degs)"),
-          displayProp("Orientation1", "Orientation of the first side", "the orientation of the first side of the wedge from kingpin (degs)"),
-          displayProp("KingpinRange", "Kingpin range", "the range of the kingpin from the jig point"),
-          displayProp("KingpinBearing", "Kingpin bearing", "the bearing of the kingpin from the jig point (degs)"),
-          displayProp("JigPoint", "Jig point", "the jig point for the construction of this wedge"),
-          displayProp("NumberOfBuoys", "Number of buoys", "the number of buoys in this wedge"),
-          prop("Color", "the default colour for this wedge"),
-          displayProp("DateTimeGroup", "DateTime group", "the DTG this pattern starts (DD/MM/YY)"),
-          displayProp("BuoyLabelVisible", "Buoy label visible", "whether the buoy labels are visible")
-        };
-        myRes[0].setPropertyEditorClass(MWC.GUI.Shapes.Symbols.SymbolFactoryPropertyEditor.SymbolFactoryBuoyPropertyEditor.class);
-        myRes[1].setPropertyEditorClass(MWC.GUI.Shapes.Symbols.SymbolScalePropertyEditor.class);
-
-        return myRes;
-
-      }catch(final IntrospectionException e)
-      {
-        // find out which property fell over
-        MWC.Utilities.Errors.Trace.trace(e, "Creating editor for Wedge Builder");
-
-        return super.getPropertyDescriptors();
-      }
-    }
-  }
-
-  //////////////////////////////////////////////////////////////////////////////////////////////////
-  // testing for this class
-  //////////////////////////////////////////////////////////////////////////////////////////////////
-  static public final class testMe extends junit.framework.TestCase
-  {
-    static public final String TEST_ALL_TEST_TYPE  = "UNIT";
-    public testMe(final String val)
-    {
-      super(val);
-    }
-    public final void testMyParams()
-    {
-      MWC.GUI.Editable ed = new WedgeBuilder(null,null,null);
-      MWC.GUI.Editable.editableTesterSupport.testParams(ed, this);
-      ed = null;
-    }
-  }
+import java.beans.IntrospectionException;
+import java.beans.PropertyDescriptor;
+
+import MWC.GenericData.WorldDistance;
+import MWC.GenericData.WorldLocation;
+import MWC.GenericData.WorldVector;
+
+public final class WedgeBuilder extends PatternBuilderType {
+
+	//////////////////////////////////////////
+	// Member variables
+	//////////////////////////////////////////
+
+	//////////////////////////////////////////////////////////////////////////////////////////////////
+	// testing for this class
+	//////////////////////////////////////////////////////////////////////////////////////////////////
+	static public final class testMe extends junit.framework.TestCase {
+		static public final String TEST_ALL_TEST_TYPE = "UNIT";
+
+		public testMe(final String val) {
+			super(val);
+		}
+
+		public final void testMyParams() {
+			MWC.GUI.Editable ed = new WedgeBuilder(null, null, null);
+			MWC.GUI.Editable.editableTesterSupport.testParams(ed, this);
+			ed = null;
+		}
+	}
+
+	public final class WedgeInfo extends MWC.GUI.Editable.EditorType {
+
+		public WedgeInfo(final WedgeBuilder data, final String theName) {
+			super(data, theName, "Wedge:");
+		}
+
+		@Override
+		public final PropertyDescriptor[] getPropertyDescriptors() {
+			try {
+				final PropertyDescriptor[] myRes = {
+						displayProp("SymbolType", "Symbol type", "the type of symbol plotted for this label"),
+						displayProp("SymbolSize", "Symbol size", "the scale of the symbol"),
+						prop("Duration", "the lifetime of the buoy pattern"),
+						displayProp("PatternName", "Pattern name", "the name of this barrier"),
+						displayProp("PatternBuoySpacing", "Pattern buoy spacing",
+								"the spacing of the buoys in the wedge"),
+						displayProp("Orientation2", "Orientation of the second side",
+								"the orientation of the second side of the wedge from kingpin (degs)"),
+						displayProp("Orientation1", "Orientation of the first side",
+								"the orientation of the first side of the wedge from kingpin (degs)"),
+						displayProp("KingpinRange", "Kingpin range", "the range of the kingpin from the jig point"),
+						displayProp("KingpinBearing", "Kingpin bearing",
+								"the bearing of the kingpin from the jig point (degs)"),
+						displayProp("JigPoint", "Jig point", "the jig point for the construction of this wedge"),
+						displayProp("NumberOfBuoys", "Number of buoys", "the number of buoys in this wedge"),
+						prop("Color", "the default colour for this wedge"),
+						displayProp("DateTimeGroup", "DateTime group", "the DTG this pattern starts (DD/MM/YY)"),
+						displayProp("BuoyLabelVisible", "Buoy label visible", "whether the buoy labels are visible") };
+				myRes[0].setPropertyEditorClass(
+						MWC.GUI.Shapes.Symbols.SymbolFactoryPropertyEditor.SymbolFactoryBuoyPropertyEditor.class);
+				myRes[1].setPropertyEditorClass(MWC.GUI.Shapes.Symbols.SymbolScalePropertyEditor.class);
+
+				return myRes;
+
+			} catch (final IntrospectionException e) {
+				// find out which property fell over
+				MWC.Utilities.Errors.Trace.trace(e, "Creating editor for Wedge Builder");
+
+				return super.getPropertyDescriptors();
+			}
+		}
+
+		/**
+		 * method which gets called when all parameters have been updated
+		 */
+		@Override
+		public final void updatesComplete() {
+			// get the builder to build itself
+			create();
+
+			// inform the parent
+			super.updatesComplete();
+		}
+	}
+
+	/**
+	 * first orientation (degs)
+	 */
+	private double _orientation2;
+
+	/**
+	 * second orientation (degs)
+	 */
+	private double _orientation1;
+
+	/**
+	 * spacing of buoys (nm)
+	 */
+	private double _spacing;
+
+	//////////////////////////////////////////
+	// Member functions
+	//////////////////////////////////////////
+
+	/**
+	 * our editor
+	 */
+	transient private MWC.GUI.Editable.EditorType _myEditor = null;
+
+	//////////////////////////////////////////
+	// editable accessor functions
+	//////////////////////////////////////////
+
+	//////////////////////////////////////////
+	// Constructor
+	//////////////////////////////////////////
+	public WedgeBuilder(final WorldLocation centre, final MWC.GUI.Properties.PropertiesPanel thePanel,
+			final MWC.GUI.Layers theData) {
+		super(centre, thePanel, theData);
+
+		// initialise our variables
+		_orientation2 = 45;
+		_orientation1 = 315;
+		_spacing = 0.5;
+		setPatternName("blank wedge");
+
+		// and the variables in our parent
+		setKingpinBearing(0.0);
+		setKingpinRange(new WorldDistance(0.0, WorldDistance.NM));
+		setNumberOfBuoys(new Integer(7));
+
+	}
+
+	/**
+	 * this method is called by the 'Create' function, and it fills in the buoys
+	 * into the correct pattern
+	 */
+	@Override
+	protected final void addBuoys(final Debrief.Wrappers.BuoyPatternWrapper pattern) {
+		WorldLocation origin = getKingpin();
+		// note that as we calculate the LH angle
+		final double lh_orient_rads = MWC.Algorithms.Conversions.Degs2Rads(_orientation2);
+		final double rh_orient_rads = MWC.Algorithms.Conversions.Degs2Rads(_orientation1);
+		final double spacing_degs = MWC.Algorithms.Conversions.Nm2Degs(_spacing);
+
+		// how many bouys in each leg?
+		// an even number means we don't have one at the tip, which becomes a special
+		// case
+		final int num_buoys = getNumberOfBuoys().intValue();
+		boolean even_num = false;
+		if ((num_buoys % 2) == 0) {
+			even_num = true;
+		}
+
+		// sort out how many there are in each leg
+		final int num_in_leg = num_buoys / 2;
+
+		// sort out the direction
+		double this_orient = rh_orient_rads;
+
+		int buoy_counter = 0;
+
+		// remember that we are looking at the first buoy
+		boolean first_buoy = true;
+
+		// do the first leg
+		for (int i = 0; i < num_in_leg; i++) {
+			// create the new symbol
+			final Debrief.Wrappers.LabelWrapper lw = new Debrief.Wrappers.LabelWrapper("W" + (buoy_counter + 1), origin,
+					MWC.GUI.Properties.DebriefColors.RED);
+
+			buoy_counter++;
+
+			// get the parent to do the formatting
+			this.formatSymbol(lw, pattern);
+
+			// if this is the first buoy, mark it as the kingping
+			if (first_buoy) {
+				lw.setSymbolType("Kingpin");
+				first_buoy = false;
+			}
+
+			// create the step to use to get to the next buoy
+			final WorldVector thisStep = new MWC.GenericData.WorldVector(this_orient, spacing_degs, 0.0);
+
+			// place buoy
+			origin = origin.add(thisStep);
+		}
+
+		// if we have an even number, we need to move forward 1/2 distance for one more
+		// step before we change direction
+		if (even_num) {
+			// calculate the size of this small step
+			final double reverse_rh_rads = MWC.Algorithms.Conversions.Degs2Rads(_orientation1 + 180.0);
+			WorldVector short_hop = new WorldVector(reverse_rh_rads, spacing_degs / 2, 0.0);
+
+			// move the origin forward
+			origin = origin.add(short_hop);
+
+			// calculate the size of this small step
+			short_hop = new WorldVector(lh_orient_rads, spacing_degs / 2, 0.0);
+
+			// move the origin forward
+			origin = origin.add(short_hop);
+		} else {
+
+			// drop a buoy at the current point
+			final Debrief.Wrappers.LabelWrapper lw = new Debrief.Wrappers.LabelWrapper("W" + (buoy_counter + 1), origin,
+					MWC.GUI.Properties.DebriefColors.RED);
+			buoy_counter++;
+
+			// move to the correct location for the next point
+			final WorldVector short_hop = new WorldVector(lh_orient_rads, spacing_degs, 0.0);
+
+			// move the origin forward
+			origin = origin.add(short_hop);
+
+			// get the parent to do the formatting
+			this.formatSymbol(lw, pattern);
+
+		}
+
+		// now travel back down the reverse side
+		// sort out the direction
+		this_orient = lh_orient_rads;
+
+		// do the first leg
+		for (int i = 0; i < num_in_leg; i++) {
+
+			// create the new symbol
+			final Debrief.Wrappers.LabelWrapper lw = new Debrief.Wrappers.LabelWrapper("W" + (buoy_counter + 1), origin,
+					MWC.GUI.Properties.DebriefColors.RED);
+
+			buoy_counter++;
+
+			// get the parent to do the formatting
+			this.formatSymbol(lw, pattern);
+
+			// create the step to use to get to the next buoy
+			final WorldVector thisStep = new MWC.GenericData.WorldVector(this_orient, spacing_degs, 0.0);
+
+			// start moving down the return leg
+			// move buoy
+			origin = origin.add(thisStep);
+
+		}
+
+	}
+
+	/**
+	 * get the editor for this item
+	 *
+	 * @return the BeanInfo data for this editable object
+	 */
+	@Override
+	public final MWC.GUI.Editable.EditorType getInfo() {
+		if (_myEditor == null)
+			_myEditor = new WedgeInfo(this, this.getName());
+
+		return _myEditor;
+	}
+
+	public final double getOrientation1() {
+		return _orientation1;
+	}
+
+	public final double getOrientation2() {
+		return _orientation2;
+	}
+
+	public final WorldDistance getPatternBuoySpacing() {
+		return new WorldDistance(_spacing, WorldDistance.NM);
+	}
+
+	public final void setOrientation1(final double val) {
+		_orientation1 = val;
+	}
+
+	public final void setOrientation2(final double val) {
+		_orientation2 = val;
+	}
+
+	//////////////////////////////////////////
+	// editable details
+	//////////////////////////////////////////
+
+	public final void setPatternBuoySpacing(final WorldDistance val) {
+		_spacing = val.getValueIn(WorldDistance.NM);
+	}
+
+	@Override
+	public final String toString() {
+		return "Wedge Builder";
+	}
 
 }

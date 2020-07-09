@@ -1,35 +1,36 @@
-/*
- *    Debrief - the Open Source Maritime Analysis Application
- *    http://debrief.info
+/*******************************************************************************
+ * Debrief - the Open Source Maritime Analysis Application
+ * http://debrief.info
  *
- *    (C) 2000-2014, PlanetMayo Ltd
+ * (C) 2000-2020, Deep Blue C Technology Ltd
  *
- *    This library is free software; you can redistribute it and/or
- *    modify it under the terms of the Eclipse Public License v1.0
- *    (http://www.eclipse.org/legal/epl-v10.html)
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the Eclipse Public License v1.0
+ * (http://www.eclipse.org/legal/epl-v10.html)
  *
- *    This library is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
- */
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *******************************************************************************/
+
 package com.planetmayo.debrief.satc_rcp.ui.converters;
 
 import com.planetmayo.debrief.satc_rcp.ui.converters.units.MeterToYds;
 
 public class ScaleConverterTo extends ScaleConverterFrom {
-	
-	public ScaleConverterTo(int[] increments, int[] borders) {
+
+	public ScaleConverterTo(final int[] increments, final int[] borders) {
 		super(increments, borders);
 	}
 
 	@Override
-	public Object convert(Object value) {
-		if (! (value instanceof Double) ) {
+	public Object convert(final Object value) {
+		if (!(value instanceof Double)) {
 			return null;
 		}
-		Double d = new MeterToYds().safeConvert((Double)value);
-		//int val = ((Double) value).intValue();
-		int val = d.intValue();
+		final Double d = new MeterToYds().safeConvert((Double) value);
+		// int val = ((Double) value).intValue();
+		final int val = d.intValue();
 		int current = startValue;
 		int result = 0;
 		for (int i = 0; i < values.length; i++) {
@@ -53,6 +54,5 @@ public class ScaleConverterTo extends ScaleConverterFrom {
 	public Object getToType() {
 		return Integer.class;
 	}
-	
-	
+
 }

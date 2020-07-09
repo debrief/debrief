@@ -1,17 +1,4 @@
-/*
- *    Debrief - the Open Source Maritime Analysis Application
- *    http://debrief.info
- *
- *    (C) 2000-2014, PlanetMayo Ltd
- *
- *    This library is free software; you can redistribute it and/or
- *    modify it under the terms of the Eclipse Public License v1.0
- *    (http://www.eclipse.org/legal/epl-v10.html)
- *
- *    This library is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
- */
+
 // $RCSfile: ImportNarrative2.java,v $
 // @author $Author: Ian.Mayo $
 // @version $Revision: 1.5 $
@@ -91,386 +78,340 @@ import MWC.Utilities.TextFormatting.DebriefFormatDateTime;
 /**
  * class to parse a label from a line of text
  */
-public final class ImportNarrative2 extends AbstractPlainLineImporter
-{
-  /**
-   * the type for this string
-   */
-  private final String _myType = ";NARRATIVE2:";
+public final class ImportNarrative2 extends AbstractPlainLineImporter {
+	/*******************************************************************************
+	 * Debrief - the Open Source Maritime Analysis Application http://debrief.info
+	 *
+	 * (C) 2000-2020, Deep Blue C Technology Ltd
+	 *
+	 * This library is free software; you can redistribute it and/or modify it under
+	 * the terms of the Eclipse Public License v1.0
+	 * (http://www.eclipse.org/legal/epl-v10.html)
+	 *
+	 * This library is distributed in the hope that it will be useful, but WITHOUT
+	 * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+	 * FOR A PARTICULAR PURPOSE.
+	 *******************************************************************************/
+	public static class LoremIpsum {
 
-  /**
-   * read in this string and return a Label
-   * @throws ParseException 
-   */
-  public final Object readThisLine(final String theLine) throws ParseException
-  {
+		/*
+		 * The Lorem Ipsum Standard Paragraph
+		 */
+		protected final String standard = "Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.";
+		private final String[] words = { "a", "ac", "accumsan", "ad", "adipiscing", "aenean", "aliquam", "aliquet",
+				"amet", "ante", "aptent", "arcu", "at", "auctor", "augue", "bibendum", "blandit", "class", "commodo",
+				"condimentum", "congue", "consectetur", "consequat", "conubia", "convallis", "cras", "cubilia", "cum",
+				"curabitur", "curae", "cursus", "dapibus", "diam", "dictum", "dictumst", "dignissim", "dis", "dolor",
+				"donec", "dui", "duis", "egestas", "eget", "eleifend", "elementum", "elit", "enim", "erat", "eros",
+				"est", "et", "etiam", "eu", "euismod", "facilisi", "facilisis", "fames", "faucibus", "felis",
+				"fermentum", "feugiat", "fringilla", "fusce", "gravida", "habitant", "habitasse", "hac", "hendrerit",
+				"himenaeos", "iaculis", "id", "imperdiet", "in", "inceptos", "integer", "interdum", "ipsum", "justo",
+				"lacinia", "lacus", "laoreet", "lectus", "leo", "libero", "ligula", "litora", "lobortis", "lorem",
+				"luctus", "maecenas", "magna", "magnis", "malesuada", "massa", "mattis", "mauris", "metus", "mi",
+				"molestie", "mollis", "montes", "morbi", "mus", "nam", "nascetur", "natoque", "nec", "neque", "netus",
+				"nibh", "nisi", "nisl", "non", "nostra", "nulla", "nullam", "nunc", "odio", "orci", "ornare",
+				"parturient", "pellentesque", "penatibus", "per", "pharetra", "phasellus", "placerat", "platea",
+				"porta", "porttitor", "posuere", "potenti", "praesent", "pretium", "primis", "proin", "pulvinar",
+				"purus", "quam", "quis", "quisque", "rhoncus", "ridiculus", "risus", "rutrum", "sagittis", "sapien",
+				"scelerisque", "sed", "sem", "semper", "senectus", "sit", "sociis", "sociosqu", "sodales",
+				"sollicitudin", "suscipit", "suspendisse", "taciti", "tellus", "tempor", "tempus", "tincidunt",
+				"torquent", "tortor", "tristique", "turpis", "ullamcorper", "ultrices", "ultricies", "urna", "ut",
+				"varius", "vehicula", "vel", "velit", "venenatis", "vestibulum", "vitae", "vivamus", "viverra",
+				"volutpat", "vulputate" };
+		private final String[] punctuation = { ".", "?" };
+		private final String _n = System.getProperty("line.separator");
+		private final Random random = new Random();
 
-    // get a stream from the string
-    final StringTokenizer st = new StringTokenizer(theLine);
+		public LoremIpsum() {
+		}
 
-    // declare local variables
-    HiResDate DTG = null;
-    String theTrack = null;
-    String theEntry = null;
-    String theType = null;
+		public String paragraph() {
+			return paragraph(false);
+		}
 
-    // skip the comment identifier
-    st.nextToken();
+		/**
+		 * Get a paragraph
+		 *
+		 * @useStandard - get the standard Lorem Ipsum paragraph?
+		 */
+		public String paragraph(final boolean useStandard) {
+			return useStandard ? standard : sentences(random.nextInt(3) + 2);
+		}
 
-    // combine the date, a space, and the time
-    final String dateToken = st.nextToken();
-    final String timeToken = st.nextToken();
+		public String paragraphs(final int count) {
+			return paragraphs(count, false);
+		}
 
-    // and extract the date
-    DTG = DebriefFormatDateTime.parseThis(dateToken, timeToken);
+		/**
+		 * Get multiple paragraphs
+		 *
+		 * @param count - the number of paragraphs
+		 * @useStandard - begin with the standard Lorem Ipsum paragraph?
+		 */
+		public String paragraphs(int count, boolean useStandard) {
+			final StringBuilder s = new StringBuilder();
+			while (count-- > 0) {
+				s.append(paragraph(useStandard)).append(_n);
+				useStandard = false;
+			}
+			return s.toString().trim();
+		}
 
-    // now the track name
-    theTrack = ImportFix.checkForQuotedName(st);
+		/**
+		 * Get a random punctuation mark
+		 */
+		public String randomPunctuation() {
+			return punctuation[random.nextInt(punctuation.length - 1)];
+		}
 
-    // start off with the type
-    theType = ImportFix.checkForQuotedName(st);
+		/**
+		 * Get a random word
+		 */
+		public String randomWord() {
+			return words[random.nextInt(words.length - 1)];
+		}
 
-    // and now read in the message
-    theEntry = st.nextToken("\r");
+		/**
+		 * Get a sentence
+		 */
+		public String sentence() {
+			// first word
+			final String w = randomWord();
+			final StringBuilder s = new StringBuilder(w.substring(0, 1).toUpperCase()).append(w.substring(1))
+					.append(" ");
+			// commas?
+			if (random.nextBoolean()) {
+				final int r = random.nextInt(3) + 1;
+				for (int i = 0; i < r; i++)
+					s.append(sentenceFragment()).append(", ");
+			}
+			// last fragment + punctuation
+			return s.append(sentenceFragment()).append(randomPunctuation()).toString();
+		}
 
-    // can we trim any leading whitespace?
-    theEntry = theEntry.trim();
+		/**
+		 * Get a sentence fragment
+		 */
+		public String sentenceFragment() {
+			return words(random.nextInt(10) + 3);
+		}
 
-    final NarrativeEntry entry =
-        new NarrativeEntry(theTrack, theType, DTG, theEntry);
+		/**
+		 * Get multiple sentences
+		 *
+		 * @param count - the number of sentences
+		 */
+		public String sentences(int count) {
+			final StringBuilder s = new StringBuilder();
+			while (count-- > 0)
+				s.append(sentence()).append("  ");
+			return s.toString().trim();
+		}
 
-    return entry;
-  }
+		/**
+		 * Get a string of words
+		 *
+		 * @param count - the number of words to fetch
+		 */
+		public String words(int count) {
+			final StringBuilder s = new StringBuilder();
+			while (count-- > 0)
+				s.append(randomWord()).append(" ");
+			return s.toString().trim();
+		}
+	}
 
-  /**
-   * determine the identifier returning this type of annotation
-   */
-  public final String getYourType()
-  {
-    return _myType;
-  }
+	// ///////////////////////////////////////////////////////////////////////////////////////////
+	// testing for this class
+	// ////////////////////////////////////////////////////////////////////////////////////////////////
+	static public final class testImport extends junit.framework.TestCase {
+		static public final String TEST_ALL_TEST_TYPE = "UNIT";
 
-  /**
-   * export the specified shape as a string
-   * 
-   * @return the shape in String form
-   * @param theWrapper
-   *          the Shape we are exporting
-   */
-  public final String exportThis(final MWC.GUI.Plottable theWrapper)
-  {
-    final NarrativeEntry theEntry = (NarrativeEntry) theWrapper;
+		public testImport(final String val) {
+			super(val);
+		}
 
-    String line = null;
+		public void testImportQuotedLine() throws ParseException {
+			final String theLine = ";NARRATIVE2:	020421	121857	\"HMS TORBAY\" 	GenComment2	Mk Rge BAAA R121212";
+			final ImportNarrative2 in = new ImportNarrative2();
+			final Object res = in.readThisLine(theLine);
+			final NarrativeEntry ne = (NarrativeEntry) res;
 
-    line = _myType;
-    line = line + " " + DebriefFormatDateTime.toStringHiRes(theEntry.getDTG());
+			// check it contains the right data
+			final String theDate = ne.getDTGString();
+			assertEquals("020421 121857", theDate);
+			assertEquals("found track name", "HMS TORBAY", ne.getTrackName());
+			assertEquals("type matches", "GenComment2", ne.getType());
 
-    // careful how we export it, in case it's a multi-word track name
-    line = ImportFix.exportTrackName(theEntry.getTrackName(), line);
+		}
 
-    line = line + " " + theEntry.getType() + " " + theEntry.getEntry();
+		public void testImportSingleLine() throws ParseException {
+			final String theLine = ";NARRATIVE2:	020421	121857	HMS_TORBAY 	GenComment	Mk Rge BAAA R121212";
+			final ImportNarrative2 in = new ImportNarrative2();
+			final Object res = in.readThisLine(theLine);
+			final NarrativeEntry ne = (NarrativeEntry) res;
 
-    return line;
-  }
+			// check it contains the right data
+			final String theDate = ne.getDTGString();
+			assertEquals(theDate, "020421 121857");
+			assertEquals("found track name", "HMS_TORBAY", ne.getTrackName());
+			assertEquals("type matches", "GenComment", ne.getType());
+		}
 
-  /**
-   * indicate if you can export this type of object
-   * 
-   * @param val
-   *          the object to test
-   * @return boolean saying whether you can do it
-   */
-  public final boolean canExportThis(final Object val)
-  {
-    boolean res = false;
+	}
 
-    if (val instanceof NarrativeEntry)
-    {
-      // right, it's narrative data, but does it have a type?
-      final NarrativeEntry ne = (NarrativeEntry) val;
-      if (ne.getType() != null)
-        // yup, let's export it then.
-        res = true;
-    }
+	/**
+	 * do some narrative import checking
+	 *
+	 * @param args
+	 * @throws IOException
+	 */
+	@SuppressWarnings("deprecation")
+	public static void main(final String[] args) throws IOException {
+		final long startDate = new Date(1995, 11, 12, 5, 0, 0).getTime();
+		final long endDate = new Date(1995, 11, 12, 11, 45, 0).getTime();
+		// long endDate = new Date(1995,11,11,11,44,0).getTime();
 
-    return res;
+		final String[] tracks = new String[] { "NELSON", "COLLINGWOOD" };
+		final String[] types = new String[] { "TYPE_1", "TYPE_2", "TYPE_3", "TYPE_4", "TYPE_5" };
+		final String[] phrases = new String[] { "URGENT", "MAJOR", "IMPORTANT", "DIAGONAL", "SV311" };
 
-  }
+		final FileWriter oFile = new FileWriter("test_out.rep");
 
-  // ///////////////////////////////////////////////////////////////////////////////////////////
-  // testing for this class
-  // ////////////////////////////////////////////////////////////////////////////////////////////////
-  static public final class testImport extends junit.framework.TestCase
-  {
-    static public final String TEST_ALL_TEST_TYPE = "UNIT";
+		final ImportNarrative2 in = new ImportNarrative2();
+		final LoremIpsum lorem = new LoremIpsum();
 
-    public testImport(final String val)
-    {
-      super(val);
-    }
+		for (long thisT = startDate; thisT < endDate; thisT += 2000) {
+			final String track = tracks[(int) (Math.random() * tracks.length)];
+			final String type = types[(int) (Math.random() * types.length)];
+			final HiResDate dtg = new HiResDate(thisT);
 
-    public void testImportSingleLine() throws ParseException
-    {
-      final String theLine =
-          ";NARRATIVE2:	020421	121857	HMS_TORBAY 	GenComment	Mk Rge BAAA R121212";
-      final ImportNarrative2 in = new ImportNarrative2();
-      final Object res = in.readThisLine(theLine);
-      final NarrativeEntry ne = (NarrativeEntry) res;
+			String entry;
 
-      // check it contains the right data
-      final String theDate = ne.getDTGString();
-      assertEquals(theDate, "020421 121857");
-      assertEquals("found track name", "HMS_TORBAY", ne.getTrackName());
-      assertEquals("type matches", "GenComment", ne.getType());
-    }
+			if (Math.random() < 0.95) {
+				entry = lorem.words(9);
+			} else {
+				entry = lorem.paragraphs(2);
+				entry = entry.replace("\n", "<br/>");
+			}
 
-    public void testImportQuotedLine() throws ParseException
-    {
-      final String theLine =
-          ";NARRATIVE2:	020421	121857	\"HMS TORBAY\" 	GenComment2	Mk Rge BAAA R121212";
-      final ImportNarrative2 in = new ImportNarrative2();
-      final Object res = in.readThisLine(theLine);
-      final NarrativeEntry ne = (NarrativeEntry) res;
+			if (Math.random() > 0.9) {
+				entry += " " + phrases[(int) (Math.random() * phrases.length)];
+			} else if (Math.random() > 0.95) {
+				entry = phrases[(int) (Math.random() * phrases.length)] + " " + entry;
+			} else if (Math.random() > 0.95) {
+				entry = entry + " " + phrases[(int) (Math.random() * phrases.length)] + " " + entry;
+			}
 
-      // check it contains the right data
-      final String theDate = ne.getDTGString();
-      assertEquals("020421 121857", theDate);
-      assertEquals("found track name", "HMS TORBAY", ne.getTrackName());
-      assertEquals("type matches", "GenComment2", ne.getType());
+			final NarrativeEntry newE = new NarrativeEntry(track, type, dtg, entry);
+			oFile.write(in.exportThis(newE));
+			oFile.write("\n");
+		}
 
-    }
+		oFile.close();
 
-  }
+	}
 
-  /**
-   * do some narrative import checking
-   * 
-   * @param args
-   * @throws IOException
-   */
-  @SuppressWarnings("deprecation")
-  public static void main(final String[] args) throws IOException
-  {
-    long startDate = new Date(1995, 11, 12, 5, 0, 0).getTime();
-    long endDate = new Date(1995, 11, 12, 11, 45, 0).getTime();
-    // long endDate = new Date(1995,11,11,11,44,0).getTime();
+	/**
+	 * the type for this string
+	 */
+	private final String _myType = ";NARRATIVE2:";
 
-    String[] tracks = new String[]
-    {"NELSON", "COLLINGWOOD"};
-    String[] types = new String[]
-    {"TYPE_1", "TYPE_2", "TYPE_3", "TYPE_4", "TYPE_5"};
-    String[] phrases = new String[]
-    {"URGENT", "MAJOR", "IMPORTANT", "DIAGONAL", "SV311"};
+	/**
+	 * indicate if you can export this type of object
+	 *
+	 * @param val the object to test
+	 * @return boolean saying whether you can do it
+	 */
+	@Override
+	public final boolean canExportThis(final Object val) {
+		boolean res = false;
 
-    FileWriter oFile = new FileWriter("test_out.rep");
+		if (val instanceof NarrativeEntry) {
+			// right, it's narrative data, but does it have a type?
+			final NarrativeEntry ne = (NarrativeEntry) val;
+			if (ne.getType() != null)
+				// yup, let's export it then.
+				res = true;
+		}
 
-    ImportNarrative2 in = new ImportNarrative2();
-    LoremIpsum lorem = new LoremIpsum();
+		return res;
 
-    for (long thisT = startDate; thisT < endDate; thisT += 2000)
-    {
-      String track = tracks[(int) (Math.random() * tracks.length)];
-      String type = types[(int) (Math.random() * types.length)];
-      HiResDate dtg = new HiResDate(thisT);
+	}
 
-      String entry;
+	/**
+	 * export the specified shape as a string
+	 *
+	 * @return the shape in String form
+	 * @param theWrapper the Shape we are exporting
+	 */
+	@Override
+	public final String exportThis(final MWC.GUI.Plottable theWrapper) {
+		final NarrativeEntry theEntry = (NarrativeEntry) theWrapper;
 
-      if (Math.random() < 0.95)
-      {
-        entry = lorem.words(9);
-      }
-      else
-      {
-        entry = lorem.paragraphs(2);
-        entry = entry.replace("\n", "<br/>");
-      }
+		String line = null;
 
-      if (Math.random() > 0.9)
-      {
-        entry += " " + phrases[(int) (Math.random() * phrases.length)];
-      }
-      else if (Math.random() > 0.95)
-      {
-        entry = phrases[(int) (Math.random() * phrases.length)] + " " + entry;
-      }
-      else if (Math.random() > 0.95)
-      {
-        entry =
-            entry + " " + phrases[(int) (Math.random() * phrases.length)] + " "
-                + entry;
-      }
+		line = _myType;
+		line = line + " " + DebriefFormatDateTime.toStringHiRes(theEntry.getDTG());
 
-      NarrativeEntry newE = new NarrativeEntry(track, type, dtg, entry);
-      oFile.write(in.exportThis(newE));
-      oFile.write("\n");
-    }
+		// careful how we export it, in case it's a multi-word track name
+		line = ImportFix.exportTrackName(theEntry.getTrackName(), line);
 
-    oFile.close();
+		line = line + " " + theEntry.getType() + " " + theEntry.getEntry();
 
-  }
+		return line;
+	}
 
-  /*
-   * Copyright 2010 Oliver C Dodd http://01001111.net Licensed under the MIT license:
-   * http://www.opensource.org/licenses/mit-license.php
-   */
-  public static class LoremIpsum
-  {
+	/**
+	 * determine the identifier returning this type of annotation
+	 */
+	@Override
+	public final String getYourType() {
+		return _myType;
+	}
 
-    /*
-     * The Lorem Ipsum Standard Paragraph
-     */
-    protected final String standard =
-        "Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.";
-    private final String[] words =
-    {"a", "ac", "accumsan", "ad", "adipiscing", "aenean", "aliquam", "aliquet",
-        "amet", "ante", "aptent", "arcu", "at", "auctor", "augue", "bibendum",
-        "blandit", "class", "commodo", "condimentum", "congue", "consectetur",
-        "consequat", "conubia", "convallis", "cras", "cubilia", "cum",
-        "curabitur", "curae", "cursus", "dapibus", "diam", "dictum",
-        "dictumst", "dignissim", "dis", "dolor", "donec", "dui", "duis",
-        "egestas", "eget", "eleifend", "elementum", "elit", "enim", "erat",
-        "eros", "est", "et", "etiam", "eu", "euismod", "facilisi", "facilisis",
-        "fames", "faucibus", "felis", "fermentum", "feugiat", "fringilla",
-        "fusce", "gravida", "habitant", "habitasse", "hac", "hendrerit",
-        "himenaeos", "iaculis", "id", "imperdiet", "in", "inceptos", "integer",
-        "interdum", "ipsum", "justo", "lacinia", "lacus", "laoreet", "lectus",
-        "leo", "libero", "ligula", "litora", "lobortis", "lorem", "luctus",
-        "maecenas", "magna", "magnis", "malesuada", "massa", "mattis",
-        "mauris", "metus", "mi", "molestie", "mollis", "montes", "morbi",
-        "mus", "nam", "nascetur", "natoque", "nec", "neque", "netus", "nibh",
-        "nisi", "nisl", "non", "nostra", "nulla", "nullam", "nunc", "odio",
-        "orci", "ornare", "parturient", "pellentesque", "penatibus", "per",
-        "pharetra", "phasellus", "placerat", "platea", "porta", "porttitor",
-        "posuere", "potenti", "praesent", "pretium", "primis", "proin",
-        "pulvinar", "purus", "quam", "quis", "quisque", "rhoncus", "ridiculus",
-        "risus", "rutrum", "sagittis", "sapien", "scelerisque", "sed", "sem",
-        "semper", "senectus", "sit", "sociis", "sociosqu", "sodales",
-        "sollicitudin", "suscipit", "suspendisse", "taciti", "tellus",
-        "tempor", "tempus", "tincidunt", "torquent", "tortor", "tristique",
-        "turpis", "ullamcorper", "ultrices", "ultricies", "urna", "ut",
-        "varius", "vehicula", "vel", "velit", "venenatis", "vestibulum",
-        "vitae", "vivamus", "viverra", "volutpat", "vulputate"};
-    private final String[] punctuation =
-    {".", "?"};
-    private final String _n = System.getProperty("line.separator");
-    private Random random = new Random();
+	/**
+	 * read in this string and return a Label
+	 *
+	 * @throws ParseException
+	 */
+	@Override
+	public final Object readThisLine(final String theLine) throws ParseException {
 
-    public LoremIpsum()
-    {
-    }
+		// get a stream from the string
+		final StringTokenizer st = new StringTokenizer(theLine);
 
-    /**
-     * Get a random word
-     */
-    public String randomWord()
-    {
-      return words[random.nextInt(words.length - 1)];
-    }
+		// declare local variables
+		HiResDate DTG = null;
+		String theTrack = null;
+		String theEntry = null;
+		String theType = null;
 
-    /**
-     * Get a random punctuation mark
-     */
-    public String randomPunctuation()
-    {
-      return punctuation[random.nextInt(punctuation.length - 1)];
-    }
+		// skip the comment identifier
+		st.nextToken();
 
-    /**
-     * Get a string of words
-     * 
-     * @param count
-     *          - the number of words to fetch
-     */
-    public String words(int count)
-    {
-      StringBuilder s = new StringBuilder();
-      while (count-- > 0)
-        s.append(randomWord()).append(" ");
-      return s.toString().trim();
-    }
+		// combine the date, a space, and the time
+		final String dateToken = st.nextToken();
+		final String timeToken = st.nextToken();
 
-    /**
-     * Get a sentence fragment
-     */
-    public String sentenceFragment()
-    {
-      return words(random.nextInt(10) + 3);
-    }
+		// and extract the date
+		DTG = DebriefFormatDateTime.parseThis(dateToken, timeToken);
 
-    /**
-     * Get a sentence
-     */
-    public String sentence()
-    {
-      // first word
-      String w = randomWord();
-      StringBuilder s =
-          new StringBuilder(w.substring(0, 1).toUpperCase()).append(
-              w.substring(1)).append(" ");
-      // commas?
-      if (random.nextBoolean())
-      {
-        int r = random.nextInt(3) + 1;
-        for (int i = 0; i < r; i++)
-          s.append(sentenceFragment()).append(", ");
-      }
-      // last fragment + punctuation
-      return s.append(sentenceFragment()).append(randomPunctuation())
-          .toString();
-    }
+		// now the track name
+		theTrack = AbstractPlainLineImporter.checkForQuotedName(st);
 
-    /**
-     * Get multiple sentences
-     * 
-     * @param count
-     *          - the number of sentences
-     */
-    public String sentences(int count)
-    {
-      StringBuilder s = new StringBuilder();
-      while (count-- > 0)
-        s.append(sentence()).append("  ");
-      return s.toString().trim();
-    }
+		// start off with the type
+		theType = AbstractPlainLineImporter.checkForQuotedName(st);
 
-    /**
-     * Get a paragraph
-     * 
-     * @useStandard - get the standard Lorem Ipsum paragraph?
-     */
-    public String paragraph(boolean useStandard)
-    {
-      return useStandard ? standard : sentences(random.nextInt(3) + 2);
-    }
+		// and now read in the message
+		theEntry = st.nextToken("\r");
 
-    public String paragraph()
-    {
-      return paragraph(false);
-    }
+		// can we trim any leading whitespace?
+		theEntry = theEntry.trim();
 
-    /**
-     * Get multiple paragraphs
-     * 
-     * @param count
-     *          - the number of paragraphs
-     * @useStandard - begin with the standard Lorem Ipsum paragraph?
-     */
-    public String paragraphs(int count, boolean useStandard)
-    {
-      StringBuilder s = new StringBuilder();
-      while (count-- > 0)
-      {
-        s.append(paragraph(useStandard)).append(_n);
-        useStandard = false;
-      }
-      return s.toString().trim();
-    }
+		final NarrativeEntry entry = new NarrativeEntry(theTrack, theType, DTG, theEntry);
 
-    public String paragraphs(int count)
-    {
-      return paragraphs(count, false);
-    }
-  }
+		return entry;
+	}
 
 }

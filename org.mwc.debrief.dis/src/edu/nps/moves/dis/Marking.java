@@ -1,172 +1,163 @@
 package edu.nps.moves.dis;
 
-import java.util.*;
-import java.io.*;
-
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.Serializable;
 
 /**
- * Section 5.2.15. Specifies the character set used inthe first byte, followed by 11 characters of text data.
+ * Section 5.2.15. Specifies the character set used inthe first byte, followed
+ * by 11 characters of text data.
  *
- * Copyright (c) 2008-2016, MOVES Institute, Naval Postgraduate School. All rights reserved.
- * This work is licensed under the BSD open source license, available at https://www.movesinstitute.org/licenses/bsd.html
+ * Copyright (c) 2008-2016, MOVES Institute, Naval Postgraduate School. All
+ * rights reserved. This work is licensed under the BSD open source license,
+ * available at https://www.movesinstitute.org/licenses/bsd.html
  *
  * @author DMcG
  */
-public class Marking extends Object implements Serializable
-{
-   /** The character set */
-   protected short  characterSet;
+public class Marking extends Object implements Serializable {
+	/**
+	 *
+	 */
+	private static final long serialVersionUID = 1L;
 
-   /** The characters */
-   protected byte[]  characters = new byte[11]; 
+	/** The character set */
+	protected short characterSet;
 
+	/** The characters */
+	protected byte[] characters = new byte[11];
 
-/** Constructor */
- public Marking()
- {
- }
+	/** Constructor */
+	public Marking() {
+	}
 
-public int getMarshalledSize()
-{
-   int marshalSize = 0; 
+	/*
+	 * The equals method doesn't always work--mostly it works only on classes that
+	 * consist only of primitives. Be careful.
+	 */
+	@Override
+	public boolean equals(final Object obj) {
 
-   marshalSize = marshalSize + 1;  // characterSet
-   marshalSize = marshalSize + 11 * 1;  // characters
+		if (this == obj) {
+			return true;
+		}
 
-   return marshalSize;
-}
+		if (obj == null) {
+			return false;
+		}
 
+		if (getClass() != obj.getClass())
+			return false;
 
-public void setCharacterSet(short pCharacterSet)
-{ characterSet = pCharacterSet;
-}
+		return equalsImpl(obj);
+	}
 
-public short getCharacterSet()
-{ return characterSet; 
-}
+	/**
+	 * Compare all fields that contribute to the state, ignoring transient and
+	 * static fields, for <code>this</code> and the supplied object
+	 *
+	 * @param obj the object to compare to
+	 * @return true if the objects are equal, false otherwise.
+	 */
+	public boolean equalsImpl(final Object obj) {
+		boolean ivarsEqual = true;
 
-public void setCharacters(byte[] pCharacters)
-{ characters = pCharacters;
-}
+		if (!(obj instanceof Marking))
+			return false;
 
-public byte[] getCharacters()
-{ return characters; }
+		final Marking rhs = (Marking) obj;
 
+		if (!(characterSet == rhs.characterSet))
+			ivarsEqual = false;
 
-public void marshal(DataOutputStream dos)
-{
-    try 
-    {
-       dos.writeByte( (byte)characterSet);
+		for (int idx = 0; idx < 11; idx++) {
+			if (!(characters[idx] == rhs.characters[idx]))
+				ivarsEqual = false;
+		}
 
-       for(int idx = 0; idx < characters.length; idx++)
-       {
-           dos.writeByte(characters[idx]);
-       } // end of array marshaling
+		return ivarsEqual;
+	}
 
-    } // end try 
-    catch(Exception e)
-    { 
-      System.out.println(e);}
-    } // end of marshal method
+	public byte[] getCharacters() {
+		return characters;
+	}
 
-public void unmarshal(DataInputStream dis)
-{
-    try 
-    {
-       characterSet = (short)dis.readUnsignedByte();
-       for(int idx = 0; idx < characters.length; idx++)
-       {
-                characters[idx] = dis.readByte();
-       } // end of array unmarshaling
-    } // end try 
-   catch(Exception e)
-    { 
-      System.out.println(e); 
-    }
- } // end of unmarshal method 
+	public short getCharacterSet() {
+		return characterSet;
+	}
 
+	public int getMarshalledSize() {
+		int marshalSize = 0;
 
-/**
- * Packs a Pdu into the ByteBuffer.
- * @throws java.nio.BufferOverflowException if buff is too small
- * @throws java.nio.ReadOnlyBufferException if buff is read only
- * @see java.nio.ByteBuffer
- * @param buff The ByteBuffer at the position to begin writing
- * @since ??
- */
-public void marshal(java.nio.ByteBuffer buff)
-{
-       buff.put( (byte)characterSet);
+		marshalSize = marshalSize + 1; // characterSet
+		marshalSize = marshalSize + 11 * 1; // characters
 
-       for(int idx = 0; idx < characters.length; idx++)
-       {
-           buff.put((byte)characters[idx]);
-       } // end of array marshaling
+		return marshalSize;
+	}
 
-    } // end of marshal method
+	public void marshal(final DataOutputStream dos) {
+		try {
+			dos.writeByte((byte) characterSet);
 
-/**
- * Unpacks a Pdu from the underlying data.
- * @throws java.nio.BufferUnderflowException if buff is too small
- * @see java.nio.ByteBuffer
- * @param buff The ByteBuffer at the position to begin reading
- * @since ??
- */
-public void unmarshal(java.nio.ByteBuffer buff)
-{
-       characterSet = (short)(buff.get() & 0xFF);
-       for(int idx = 0; idx < characters.length; idx++)
-       {
-                characters[idx] = buff.get();
-       } // end of array unmarshaling
- } // end of unmarshal method 
+			for (int idx = 0; idx < characters.length; idx++) {
+				dos.writeByte(characters[idx]);
+			} // end of array marshaling
 
+		} // end try
+		catch (final Exception e) {
+			System.out.println(e);
+		}
+	} // end of marshal method
 
- /*
-  * The equals method doesn't always work--mostly it works only on classes that consist only of primitives. Be careful.
-  */
-@Override
- public boolean equals(Object obj)
- {
+	/**
+	 * Packs a Pdu into the ByteBuffer.
+	 *
+	 * @throws java.nio.BufferOverflowException if buff is too small
+	 * @throws java.nio.ReadOnlyBufferException if buff is read only
+	 * @see java.nio.ByteBuffer
+	 * @param buff The ByteBuffer at the position to begin writing
+	 * @since ??
+	 */
+	public void marshal(final java.nio.ByteBuffer buff) {
+		buff.put((byte) characterSet);
 
-    if(this == obj){
-      return true;
-    }
+		for (int idx = 0; idx < characters.length; idx++) {
+			buff.put(characters[idx]);
+		} // end of array marshaling
 
-    if(obj == null){
-       return false;
-    }
+	} // end of marshal method
 
-    if(getClass() != obj.getClass())
-        return false;
+	public void setCharacters(final byte[] pCharacters) {
+		characters = pCharacters;
+	}
 
-    return equalsImpl(obj);
- }
+	public void setCharacterSet(final short pCharacterSet) {
+		characterSet = pCharacterSet;
+	}
 
- /**
-  * Compare all fields that contribute to the state, ignoring
- transient and static fields, for <code>this</code> and the supplied object
-  * @param obj the object to compare to
-  * @return true if the objects are equal, false otherwise.
-  */
- public boolean equalsImpl(Object obj)
- {
-     boolean ivarsEqual = true;
+	public void unmarshal(final DataInputStream dis) {
+		try {
+			characterSet = (short) dis.readUnsignedByte();
+			for (int idx = 0; idx < characters.length; idx++) {
+				characters[idx] = dis.readByte();
+			} // end of array unmarshaling
+		} // end try
+		catch (final Exception e) {
+			System.out.println(e);
+		}
+	} // end of unmarshal method
 
-    if(!(obj instanceof Marking))
-        return false;
-
-     final Marking rhs = (Marking)obj;
-
-     if( ! (characterSet == rhs.characterSet)) ivarsEqual = false;
-
-     for(int idx = 0; idx < 11; idx++)
-     {
-          if(!(characters[idx] == rhs.characters[idx])) ivarsEqual = false;
-     }
-
-
-    return ivarsEqual;
- }
+	/**
+	 * Unpacks a Pdu from the underlying data.
+	 *
+	 * @throws java.nio.BufferUnderflowException if buff is too small
+	 * @see java.nio.ByteBuffer
+	 * @param buff The ByteBuffer at the position to begin reading
+	 * @since ??
+	 */
+	public void unmarshal(final java.nio.ByteBuffer buff) {
+		characterSet = (short) (buff.get() & 0xFF);
+		for (int idx = 0; idx < characters.length; idx++) {
+			characters[idx] = buff.get();
+		} // end of array unmarshaling
+	} // end of unmarshal method
 } // end of class

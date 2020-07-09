@@ -1,17 +1,18 @@
-/*
- *    Debrief - the Open Source Maritime Analysis Application
- *    http://debrief.info
+/*******************************************************************************
+ * Debrief - the Open Source Maritime Analysis Application
+ * http://debrief.info
  *
- *    (C) 2000-2014, PlanetMayo Ltd
+ * (C) 2000-2020, Deep Blue C Technology Ltd
  *
- *    This library is free software; you can redistribute it and/or
- *    modify it under the terms of the Eclipse Public License v1.0
- *    (http://www.eclipse.org/legal/epl-v10.html)
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the Eclipse Public License v1.0
+ * (http://www.eclipse.org/legal/epl-v10.html)
  *
- *    This library is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
- */
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *******************************************************************************/
+
 package Debrief.Wrappers;
 
 // Copyright MWC 1999, Debrief 3 Project
@@ -263,71 +264,41 @@ import junit.framework.TestCase;
 /**
  * extended shapewrapper class, that introduces support for showing the child
  * nodes in the layer manager
- * 
+ *
  * @author ian
- * 
+ *
  */
-public class PolygonWrapper extends ShapeWrapper implements Layer,
-		ExportLayerAsSingleItem
-{
-  
-  public static class TestPolygon extends TestCase
-  {
-
-    public final void testMyParams()
-    {
-      Vector<PolygonNode> nodes = new Vector<PolygonNode>();
-      nodes.add(new PolygonNode("aa", new WorldLocation(2d, 3d, 0d), null));
-      final PolygonShape shape = new PolygonShape(nodes);
-      PolygonWrapper ed = new PolygonWrapper("aa", shape, MWC.GUI.Properties.DebriefColors.RED,
-          new HiResDate(0));
-      editableTesterSupport.testParams(ed, this);
-      ed = null;
-    }
-  }
-  
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
+public class PolygonWrapper extends ShapeWrapper implements Layer, ExportLayerAsSingleItem {
 
 	// ////////////////////////////////////////////////////
-	// bean info for this class
-	// ///////////////////////////////////////////////////
-	public final class PolygonWrapperInfo extends Editable.EditorType
-	{
+// bean info for this class
+// ///////////////////////////////////////////////////
+	public final class PolygonWrapperInfo extends Editable.EditorType {
 
-		public PolygonWrapperInfo(final PolygonWrapper data, final String theName)
-		{
+		public PolygonWrapperInfo(final PolygonWrapper data, final String theName) {
 			super(data, theName, data._theShape.getType() + ":");
 		}
 
 		/**
-		 * whether the normal editable properties should be combined with the
-		 * additional editable properties into a single list. This is typically used
-		 * for a composite object which has two lists of editable properties but
-		 * which is seen by the user as a single object To be overwritten to change
-		 * it
+		 * whether the normal editable properties should be combined with the additional
+		 * editable properties into a single list. This is typically used for a
+		 * composite object which has two lists of editable properties but which is seen
+		 * by the user as a single object To be overwritten to change it
 		 */
 		@Override
-		public final boolean combinePropertyLists()
-		{
+		public final boolean combinePropertyLists() {
 			return true;
 		}
 
 		@Override
-		public final BeanInfo[] getAdditionalBeanInfo()
-		{
+		public final BeanInfo[] getAdditionalBeanInfo() {
 			// get our shape back
 			final PolygonWrapper sp = (PolygonWrapper) super.getData();
 			final MWC.GUI.Shapes.PlainShape ps = sp._theShape;
-			if (sp instanceof MWC.GUI.Editable)
-			{
+			if (sp instanceof MWC.GUI.Editable) {
 				final MWC.GUI.Editable et = (MWC.GUI.Editable) ps;
-				if (et.hasEditor() == true)
-				{
-					final BeanInfo[] res =
-					{ et.getInfo() };
+				if (et.hasEditor() == true) {
+					final BeanInfo[] res = { et.getInfo() };
 					return res;
 				}
 			}
@@ -336,54 +307,41 @@ public class PolygonWrapper extends ShapeWrapper implements Layer,
 		}
 
 		@Override
-		public final MethodDescriptor[] getMethodDescriptors()
-		{
+		public final MethodDescriptor[] getMethodDescriptors() {
 			// just add the reset color field first
 			final Class<?> c = PolygonWrapper.class;
-			final MethodDescriptor[] mds =
-			{ method(c, "exportThis", null, "Export Shape"),
+			final MethodDescriptor[] mds = { method(c, "exportThis", null, "Export Shape"),
 					method(c, "addNode", null, "Add Node") };
 			return mds;
 		}
 
 		@Override
-		public final String getName()
-		{
+		public final String getName() {
 			return getLabel();
 		}
 
 		@Override
-		public final PropertyDescriptor[] getPropertyDescriptors()
-		{
-			try
-			{
-				final PropertyDescriptor[] myRes =
-				{
-						displayProp("LabelColor", "Label color", "the text color", FORMAT),
-						prop("Label", "the text showing", FORMAT),
-						prop("Font", "the label font", FORMAT),
+		public final PropertyDescriptor[] getPropertyDescriptors() {
+			try {
+				final PropertyDescriptor[] myRes = { displayProp("LabelColor", "Label color", "the text color", FORMAT),
+						prop("Label", "the text showing", FORMAT), prop("Font", "the label font", FORMAT),
 						displayProp("LabelLocation", "Label location", "the relative location of the label", FORMAT),
 						prop("Visible", "whether this shape is visible", VISIBILITY),
 						displayProp("LabelVisible", "Label visible", "whether the label is visible", VISIBILITY),
 						displayProp("StartDTGProperty", "Time start", "the start date time group", TEMPORAL),
-						displayLongProp("LineStyle", "Line style",
-								"the dot-dash style to use for plotting this shape",
+						displayLongProp("LineStyle", "Line style", "the dot-dash style to use for plotting this shape",
 								LineStylePropertyEditor.class, FORMAT),
-						displayLongProp("LineThickness", "Line thickness",
-								"the line-thickness to use for this shape",
+						displayLongProp("LineThickness", "Line thickness", "the line-thickness to use for this shape",
 								MWC.GUI.Properties.LineWidthPropertyEditor.class),
 						prop("Color", "the color of the shape itself", FORMAT),
 						displayProp("EndDTGProperty", "Time end",
 								"the end date time group \n\r(or leave blank for to use Start as Centre time)",
 								TEMPORAL), };
-				myRes[3]
-						.setPropertyEditorClass(MWC.GUI.Properties.LocationPropertyEditor.class);
+				myRes[3].setPropertyEditorClass(MWC.GUI.Properties.LocationPropertyEditor.class);
 
 				return myRes;
 
-			}
-			catch (final IntrospectionException e)
-			{
+			} catch (final IntrospectionException e) {
 				e.printStackTrace();
 				return super.getPropertyDescriptors();
 			}
@@ -391,48 +349,63 @@ public class PolygonWrapper extends ShapeWrapper implements Layer,
 
 	}
 
+	public static class TestPolygon extends TestCase {
+
+		public final void testMyParams() {
+			final Vector<PolygonNode> nodes = new Vector<PolygonNode>();
+			nodes.add(new PolygonNode("aa", new WorldLocation(2d, 3d, 0d), null));
+			final PolygonShape shape = new PolygonShape(nodes);
+			PolygonWrapper ed = new PolygonWrapper("aa", shape, MWC.GUI.Properties.DebriefColors.RED, new HiResDate(0));
+			editableTesterSupport.testParams(ed, this);
+			ed = null;
+		}
+	}
+
+	/**
+	 *
+	 */
+	private static final long serialVersionUID = 1L;
+
 	// ///////////////////////////////////////////////////////////
 	// constructor
 	// //////////////////////////////////////////////////////////
-	public PolygonWrapper(final String label, final PolygonShape shape,
-			final java.awt.Color theColor, final HiResDate theDate)
-	{
+	public PolygonWrapper(final String label, final PolygonShape shape, final java.awt.Color theColor,
+			final HiResDate theDate) {
 		super(label, shape, theColor, theDate);
 		setName(label);
 		super.setLabelLocation(LocationPropertyEditor.CENTRE);
 	}
-	
-	public PolygonWrapper(final String label, final PolygonShape shape,
-			final java.awt.Color theColor, final HiResDate startDate, final HiResDate endDate)
-	{
+
+	public PolygonWrapper(final String label, final PolygonShape shape, final java.awt.Color theColor,
+			final HiResDate startDate, final HiResDate endDate) {
 		this(label, shape, theColor, startDate);
 		setEndDTG(endDate);
 	}
 
-	public PolygonShape getPoly()
-	{
-		return (PolygonShape) _theShape;
+	@Override
+	@FireExtended
+	public void add(final Editable point) {
+		if (point instanceof PolygonNode) {
+			getPoly().add(point);
+		}
 	}
 
 	@FireExtended
-	public void addNode()
-	{
+	public void addNode() {
 		getPoly().addNode();
 	}
 
 	@Override
-	public final WorldArea getBounds()
-	{
-		return _theShape.getBounds();
+	public void append(final Layer other) {
+
 	}
 
 	/**
 	 * instruct this object to clear itself out, ready for ditching
-	 * 
+	 *
 	 */
 	@Override
-	public void closeMe()
-	{
+	public void closeMe() {
 		// stop listening to node changes
 
 		// and let the parent close
@@ -440,97 +413,78 @@ public class PolygonWrapper extends ShapeWrapper implements Layer,
 	}
 
 	@Override
-	public Editable.EditorType getInfo()
-	{
-		if (_myEditor == null)
-			_myEditor = new PolygonWrapperInfo(this, this.getName());
-
-		return _myEditor;
+	public Enumeration<Editable> elements() {
+		final Vector<PolygonNode> nodes = getPoly().getPoints();
+		final Vector<Editable> editables = new Vector<Editable>();
+		editables.addAll(nodes);
+		return editables.elements();
 	}
 
-  public String toString()
-  {
-    final String title = getPoly().getClosed() ? "Polygon" : "Polyline";
-    return title + ":" + getName() + " (" + (getPoly().getPoints().size())
-        + " nodes)";
-  }
+	@Override
+	public void exportShape() {
+		MWC.Utilities.ReaderWriter.ImportManager.exportThis(";;Layer: " + getName());
+
+		final Editable pl = this;
+		if (pl instanceof Exportable) {
+			final Exportable e = (Exportable) pl;
+			e.exportThis();
+		}
+	}
 
 	// /////////////////////////////////
 	// LAYER SUPPORT
 	// ////////////////////////////////
 
 	@Override
-	public void exportShape()
-	{
-		MWC.Utilities.ReaderWriter.ImportManager
-				.exportThis(";;Layer: " + getName());
-
-		final Editable pl = this;
-		if (pl instanceof Exportable)
-		{
-			final Exportable e = (Exportable) pl;
-			e.exportThis();
-		}
-	}
-
-	@Override
-	public void exportThis()
-	{
+	public void exportThis() {
 		super.exportThis();
 	}
 
 	@Override
-	public void append(final Layer other)
-	{
-
+	public final WorldArea getBounds() {
+		return _theShape.getBounds();
 	}
 
 	@Override
-	public void setName(final String val)
-	{
-		getPoly().setName(val);
+	public Editable.EditorType getInfo() {
+		if (_myEditor == null)
+			_myEditor = new PolygonWrapperInfo(this, this.getName());
+
+		return _myEditor;
+	}
+
+	public PolygonShape getPoly() {
+		return (PolygonShape) _theShape;
 	}
 
 	@Override
-	public void setLabel(final String val)
-	{
-		setName(val);
-		super.setLabel(val);
-	}
-
-	@Override
-	public boolean hasOrderedChildren()
-	{
+	public boolean hasOrderedChildren() {
 		return true;
 	}
 
 	@Override
 	@FireExtended
-	public void add(final Editable point)
-	{
-		if (point instanceof PolygonNode)
-		{
-			getPoly().add(point);
-		}
-	}
-
-	@Override
-	@FireExtended
-	public void removeElement(final Editable point)
-	{
-		if (point instanceof PolygonNode)
-		{
+	public void removeElement(final Editable point) {
+		if (point instanceof PolygonNode) {
 			getPoly().removeElement(point);
 		}
 	}
 
 	@Override
-	public Enumeration<Editable> elements()
-	{
-		final Vector<PolygonNode> nodes = getPoly().getPoints();
-		final Vector<Editable> editables = new Vector<Editable>();
-		editables.addAll(nodes);
-		return editables.elements();
+	public void setLabel(final String val) {
+		setName(val);
+		super.setLabel(val);
+	}
+
+	@Override
+	public void setName(final String val) {
+		getPoly().setName(val);
+	}
+
+	@Override
+	public String toString() {
+		final String title = getPoly().getClosed() ? "Polygon" : "Polyline";
+		return title + ":" + getName() + " (" + (getPoly().getPoints().size()) + " nodes)";
 	}
 
 }

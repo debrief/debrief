@@ -1,17 +1,18 @@
-/*
- *    Debrief - the Open Source Maritime Analysis Application
- *    http://debrief.info
+/*******************************************************************************
+ * Debrief - the Open Source Maritime Analysis Application
+ * http://debrief.info
  *
- *    (C) 2000-2014, PlanetMayo Ltd
+ * (C) 2000-2020, Deep Blue C Technology Ltd
  *
- *    This library is free software; you can redistribute it and/or
- *    modify it under the terms of the Eclipse Public License v1.0
- *    (http://www.eclipse.org/legal/epl-v10.html)
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the Eclipse Public License v1.0
+ * (http://www.eclipse.org/legal/epl-v10.html)
  *
- *    This library is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
- */
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *******************************************************************************/
+
 package org.mwc.asset.netasset2.core;
 
 import java.io.IOException;
@@ -21,6 +22,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
 
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.jface.viewers.ILabelProviderListener;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.ITableLabelProvider;
@@ -60,8 +62,52 @@ import ASSET.Participants.Status;
 import ASSET.Scenario.MultiScenarioLister;
 import ASSET.Scenario.ScenarioSteppedListener;
 
-public class PClient implements ScenarioSteppedListener
-{
+public class PClient implements ScenarioSteppedListener {
+	private class CombinedListener
+			implements ParticipantMovedListener, ParticipantDetectedListener, ParticipantDecidedListener {
+		public CombinedListener() {
+		}
+
+		@Override
+		public void moved(final Status newStatus) {
+			// now loop through any participant listeners
+			final Iterator<IVPartMovement> iter = _partMovers.iterator();
+			while (iter.hasNext()) {
+				final IVPartMovement ivPart = iter.next();
+				Display.getDefault().asyncExec(new Runnable() {
+					@Override
+					public void run() {
+						ivPart.moved(newStatus);
+					}
+				});
+			}
+		}
+
+		@Override
+		public void newDecision(final String description, final DemandedStatus dem_status) {
+		}
+
+		@Override
+		public void newDetections(final DetectionList detections) {
+			// now loop through any participant listeners
+			final Iterator<ParticipantDetectedListener> iter = _partDetectors.iterator();
+			while (iter.hasNext()) {
+				final ParticipantDetectedListener ivPart = iter.next();
+				Display.getDefault().asyncExec(new Runnable() {
+					@Override
+					public void run() {
+						ivPart.newDetections(detections);
+					}
+				});
+			}
+		}
+
+		@Override
+		public void restart(final ScenarioType scenario) {
+		}
+
+	}
+
 	private final IMClient _model;
 	private LightScenario _listeningTo;
 	private final CombinedListener _partListener;
@@ -70,12 +116,12 @@ public class PClient implements ScenarioSteppedListener
 	private final Vector<IVPartControl> _partControllers;
 	private final Vector<IVPartMovement> _partMovers;
 	private final Vector<ParticipantDetectedListener> _partDetectors;
+
 	private final Vector<IVConnect> _connectors;
 
 	private AServer _selfHostServer;
 
-	public PClient(final IMClient model)
-	{
+	public PClient(final IMClient model) {
 		_model = model;
 		_partListener = new CombinedListener();
 
@@ -91,369 +137,7 @@ public class PClient implements ScenarioSteppedListener
 
 	}
 
-	private class CombinedListener implements ParticipantMovedListener,
-			ParticipantDetectedListener, ParticipantDecidedListener
-	{
-		public CombinedListener()
-		{
-		}
-
-		@Override
-		public void newDecision(final String description, final DemandedStatus dem_status)
-		{
-		}
-
-		@Override
-		public void newDetections(final DetectionList detections)
-		{
-			// now loop through any participant listeners
-			final Iterator<ParticipantDetectedListener> iter = _partDetectors.iterator();
-			while (iter.hasNext())
-			{
-				final ParticipantDetectedListener ivPart = iter.next();
-				Display.getDefault().asyncExec(new Runnable()
-				{
-					@Override
-					public void run()
-					{
-						ivPart.newDetections(detections);
-					}
-				});
-			}
-		}
-
-		@Override
-		public void moved(final Status newStatus)
-		{
-			// now loop through any participant listeners
-			final Iterator<IVPartMovement> iter = _partMovers.iterator();
-			while (iter.hasNext())
-			{
-				final IVPartMovement ivPart = iter.next();
-				Display.getDefault().asyncExec(new Runnable()
-				{
-					@Override
-					public void run()
-					{
-						ivPart.moved(newStatus);
-					}
-				});
-			}
-		}
-
-		@Override
-		public void restart(final ScenarioType scenario)
-		{
-		}
-
-	}
-
-	protected void participantSelected(final LightParticipant part)
-	{
-		final NewDemStatus newDemStatusListener = new NewDemStatus()
-		{
-			@Override
-			public void demanded(final double course, final double speed, final double depth)
-			{
-				if (_listeningTo != null)
-				{
-					_model.controlPart(_listeningTo.name, part.id, course, speed, depth);
-				}
-			}
-		};
-
-		// now loop through any participant listeners
-		final Iterator<IVPartControl> iter = _partControllers.iterator();
-		while (iter.hasNext())
-		{
-			final IVPartControl ivPart = iter.next();
-			ivPart.setEnabled(true);
-			ivPart.setParticipant(part.name);
-			ivPart.setDemStatusListener(newDemStatusListener);
-		}
-
-		final Iterator<IVPartMovement> iter2 = _partMovers.iterator();
-		while (iter2.hasNext())
-		{
-			final IVPartMovement ivPart = iter2.next();
-			ivPart.setParticipant(part.name);
-		}
-
-		// also start listening to him
-		if (_listeningTo != null)
-		{
-			// cancel any existing listners
-			_model.stopListenPart(_listeningTo.name, Network.DUFF_INDEX);
-
-			_model.listenPart(_listeningTo.name, part.id, _partListener,
-					_partListener, _partListener);
-		}
-	}
-
-	protected void scenarioSelected(final LightScenario scenario)
-	{
-		if (_listeningTo != null)
-		{
-			_model.stopListenScen(_listeningTo.name);
-		}
-
-		// remember it
-		_listeningTo = scenario;
-
-		// start listening to it
-		System.err.println("about to listen to:" + scenario.name);
-		_model.listenScen(scenario.name, this);
-
-		// enable the timer controls
-		final Iterator<IVTimeControl> iter = _timeControllers.iterator();
-		while (iter.hasNext())
-		{
-			final IVTimeControl ivTime = iter.next();
-			ivTime.setEnabled(true);
-		}
-
-		final Iterator<IVConnect> iter2 = _connectors.iterator();
-		while (iter2.hasNext())
-		{
-			final IVConnect ivConnect = (IVConnect) iter2.next();
-			ivConnect.disableScenarios();
-			ivConnect.disableServers();
-			ivConnect.enableParticipants();
-			ivConnect.setParticipants(scenario.listOfParticipants);
-			ivConnect.enableDisconnect();
-		}
-
-	}
-
-	protected void serverSelected(final InetAddress val)
-	{
-		// ok, connect
-		try
-		{
-			_model.connect(val.getHostAddress());
-
-			// ok, disable the server list, to stop user re-connecting
-			final Iterator<IVConnect> iter = _connectors.iterator();
-			while (iter.hasNext())
-			{
-				final IVConnect ivPart = iter.next();
-				ivPart.disableServers();
-			}
-
-			final AHandler<Vector<LightScenario>> handler = new AHandler<Vector<LightScenario>>()
-			{
-				public void onSuccess(final Vector<LightScenario> results)
-				{
-					showScenarios(results);
-				}
-			};
-			// and get the servers
-			_model.getScenarioList(handler);
-		}
-		catch (final IOException e)
-		{
-			e.printStackTrace();
-		}
-
-	}
-
-	protected void showScenarios(final Vector<LightScenario> results)
-	{
-		System.out.println("received sceanrios");
-
-		// ok, disable the server list, to stop user re-connecting
-		final Iterator<IVConnect> iter = _connectors.iterator();
-		while (iter.hasNext())
-		{
-			final IVConnect ivPart = iter.next();
-			ivPart.setScenarios(results);
-
-			// and enable them
-			ivPart.enableScenarios();
-		}
-	}
-
-	protected void pinged()
-	{
-		// ok, get any servers
-		final List<InetAddress> adds = _model.discoverHosts();
-
-		// ok, disable the server list, to stop user re-connecting
-		final Iterator<IVConnect> iter = _connectors.iterator();
-		while (iter.hasNext())
-		{
-			final IVConnect ivPart = iter.next();
-			
-			if (adds != null)
-			{
-				ivPart.setServers(adds);
-				ivPart.enableServers();
-			}
-		}
-	}
-
-	@Override
-	public void step(final ScenarioType scenario, final long newTime)
-	{
-		final Iterator<IVTime> iter = _timeListeners.iterator();
-		while (iter.hasNext())
-		{
-			final IVTime ivTime = (IVTime) iter.next();
-			ivTime.newTime(newTime);
-		}
-	}
-
-	@Override
-	public void restart(final ScenarioType scenario)
-	{
-	}
-
-	/**
-	 * trigger a scenario step
-	 * 
-	 * @return
-	 */
-	public void doStep()
-	{
-		if (_listeningTo != null)
-		{
-			_model.step(_listeningTo.name);
-		}
-	}
-
-	public void doStop()
-	{
-		if (_listeningTo != null)
-		{
-			final ScenControl sc = new ScenControl(_listeningTo.name, ScenControl.TERMINATE);
-			_model.controlScen(sc);
-		}
-	}
-
-	public void doPlay()
-	{
-		if (_listeningTo != null)
-		{
-			final ScenControl sc = new ScenControl(_listeningTo.name, ScenControl.PLAY);
-			_model.controlScen(sc);
-		}
-	}
-
-	public void doPause()
-	{
-		if (_listeningTo != null)
-		{
-			final ScenControl sc = new ScenControl(_listeningTo.name, ScenControl.PAUSE);
-			_model.controlScen(sc);
-		}
-	}
-
-	public void addTimeController(final IVTimeControl timer)
-	{
-		_timeControllers.add(timer);
-
-		// and listen to the timer
-		timer.addStepListener(new SelectionAdapter()
-		{
-			@Override
-			public void widgetSelected(final SelectionEvent e)
-			{
-				doStep();
-			}
-		});
-		timer.addStopListener(new SelectionAdapter()
-		{
-			@Override
-			public void widgetSelected(final SelectionEvent e)
-			{
-				doStop();
-			}
-		});
-		timer.addFasterListener(new SelectionAdapter()
-		{
-			@Override
-			public void widgetSelected(final SelectionEvent e)
-			{
-				doFaster();
-			}
-		});
-		timer.addSlowerListener(new SelectionAdapter()
-		{
-			@Override
-			public void widgetSelected(final SelectionEvent e)
-			{
-				doSlower();
-			}
-		});
-
-		timer.addPlayListener(new SelectionAdapter()
-		{
-			@Override
-			public void widgetSelected(final SelectionEvent e)
-			{
-				// right, what's the current value?
-				final Button src = (Button) e.getSource();
-				final String label = src.getText();
-				if (label.equals("Play"))
-				{
-					doPlay();
-					timer.setPlayLabel(IVTimeControl.PAUSE);
-				}
-				else
-				{
-					doPause();
-					timer.setPlayLabel(IVTimeControl.PLAY);
-				}
-			}
-		});
-	}
-
-	protected void doSlower()
-	{
-		if (_listeningTo != null)
-		{
-			final ScenControl sc = new ScenControl(_listeningTo.name, ScenControl.SLOWER);
-			_model.controlScen(sc);
-		}
-
-	}
-
-	protected void doFaster()
-	{
-		if (_listeningTo != null)
-		{
-			final ScenControl sc = new ScenControl(_listeningTo.name, ScenControl.FASTER);
-			_model.controlScen(sc);
-		}
-
-	}
-
-	public void addTimer(final IVTime listener)
-	{
-		if (!_timeListeners.contains(listener))
-			_timeListeners.add(listener);
-	}
-
-	public void addPartController(final IVPartControl listener)
-	{
-		if (!_partControllers.contains(listener))
-			_partControllers.add(listener);
-	}
-
-	public void addPartDetector(final ParticipantDetectedListener listener)
-	{
-		if (!_partDetectors.contains(listener))
-			_partDetectors.add(listener);
-	}
-
-	public void addPartUpdater(final IVPartMovement instance)
-	{
-		if (!_partDetectors.contains(instance))
-			_partMovers.add(instance);
-	}
-
-	public void addConnector(final IVConnect view)
-	{
+	public void addConnector(final IVConnect view) {
 		if (!_connectors.contains(view))
 			_connectors.add(view);
 
@@ -461,119 +145,95 @@ public class PClient implements ScenarioSteppedListener
 		view.disableServers();
 		view.disableDisconnect();
 
-		view.addPingListener(new ClickHandler()
-		{
+		view.addPingListener(new ClickHandler() {
 			@Override
-			public void clicked()
-			{
+			public void clicked() {
 				pinged();
 			}
 		});
 
-		view.addSelfHostListener(new IVConnect.BooleanHandler()
-		{
-			public void change(final boolean val)
-			{
+		view.addSelfHostListener(new IVConnect.BooleanHandler() {
+			@Override
+			public void change(final boolean val) {
 				selfHostChanged(val);
 			}
 		});
 
-		view.addManualListener(new ClickHandler()
-		{
+		view.addManualListener(new ClickHandler() {
 
 			@Override
-			public void clicked()
-			{
+			public void clicked() {
 				getHost();
 			}
 		});
 
-		view.addDisconnectListener(new ClickHandler()
-		{
+		view.addDisconnectListener(new ClickHandler() {
 			@Override
-			public void clicked()
-			{
+			public void clicked() {
 				disconnect();
 			}
 		});
 
 		// and for server selections
-		view.addServerListener(new ServerSelected()
-		{
+		view.addServerListener(new ServerSelected() {
 			@Override
-			public void selected(final InetAddress val)
-			{
+			public void selected(final InetAddress val) {
 				serverSelected(val);
 			}
 		});
 
 		// and now scenario selections
-		view.addScenarioListener(new ScenarioSelected()
-		{
+		view.addScenarioListener(new ScenarioSelected() {
 			@Override
-			public void selected(final LightScenario scenario)
-			{
+			public void selected(final LightScenario scenario) {
 				scenarioSelected(scenario);
 			}
 		});
 
-		view.addParticipantListener(new ParticipantSelected()
-		{
+		view.addParticipantListener(new ParticipantSelected() {
 			@Override
-			public void selected(final LightParticipant participant)
-			{
+			public void selected(final LightParticipant participant) {
 				participantSelected(participant);
 			}
 		});
 
-		view.setPartContentProvider(new IStructuredContentProvider()
-		{
+		view.setPartContentProvider(new IStructuredContentProvider() {
 
 			@Override
-			public void inputChanged(final Viewer viewer, final Object oldInput, final Object newInput)
-			{
+			public void dispose() {
 			}
 
 			@Override
-			public void dispose()
-			{
-			}
-
-			@Override
-			public Object[] getElements(final Object inputElement)
-			{
+			public Object[] getElements(final Object inputElement) {
 				@SuppressWarnings("unchecked")
-				final
-				Vector<LightParticipant> res = (Vector<LightParticipant>) inputElement;
+				final Vector<LightParticipant> res = (Vector<LightParticipant>) inputElement;
 				return res.toArray();
+			}
+
+			@Override
+			public void inputChanged(final Viewer viewer, final Object oldInput, final Object newInput) {
 			}
 		});
 
-		view.setPartLabelProvider(new ITableLabelProvider()
-		{
-			public void removeListener(final ILabelProviderListener listener)
-			{
+		view.setPartLabelProvider(new ITableLabelProvider() {
+			@Override
+			public void addListener(final ILabelProviderListener listener) {
 			}
 
-			public boolean isLabelProperty(final Object element, final String property)
-			{
-				return false;
+			@Override
+			public void dispose() {
 			}
 
-			public void dispose()
-			{
+			@Override
+			public Image getColumnImage(final Object element, final int columnIndex) {
+				return null;
 			}
 
-			public void addListener(final ILabelProviderListener listener)
-			{
-			}
-
-			public String getColumnText(final Object element, final int columnIndex)
-			{
+			@Override
+			public String getColumnText(final Object element, final int columnIndex) {
 				final LightParticipant pt = (LightParticipant) element;
 				String res;
-				switch (columnIndex)
-				{
+				switch (columnIndex) {
 				case 0:
 					res = pt.name;
 					break;
@@ -590,28 +250,278 @@ public class PClient implements ScenarioSteppedListener
 				return res;
 			}
 
-			public Image getColumnImage(final Object element, final int columnIndex)
-			{
-				return null;
+			@Override
+			public boolean isLabelProperty(final Object element, final String property) {
+				return false;
+			}
+
+			@Override
+			public void removeListener(final ILabelProviderListener listener) {
 			}
 		});
 	}
 
-	protected void selfHostChanged(final boolean val)
-	{
+	public void addPartController(final IVPartControl listener) {
+		if (!_partControllers.contains(listener))
+			_partControllers.add(listener);
+	}
 
-		try
-		{
-			if (_selfHostServer == null)
-			{
+	public void addPartDetector(final ParticipantDetectedListener listener) {
+		if (!_partDetectors.contains(listener))
+			_partDetectors.add(listener);
+	}
+
+	public void addPartUpdater(final IVPartMovement instance) {
+		if (!_partDetectors.contains(instance))
+			_partMovers.add(instance);
+	}
+
+	public void addTimeController(final IVTimeControl timer) {
+		_timeControllers.add(timer);
+
+		// and listen to the timer
+		timer.addStepListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(final SelectionEvent e) {
+				doStep();
+			}
+		});
+		timer.addStopListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(final SelectionEvent e) {
+				doStop();
+			}
+		});
+		timer.addFasterListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(final SelectionEvent e) {
+				doFaster();
+			}
+		});
+		timer.addSlowerListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(final SelectionEvent e) {
+				doSlower();
+			}
+		});
+
+		timer.addPlayListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(final SelectionEvent e) {
+				// right, what's the current value?
+				final Button src = (Button) e.getSource();
+				final String label = src.getText();
+				if (label.equals("Play")) {
+					doPlay();
+					timer.setPlayLabel(IVTimeControl.PAUSE);
+				} else {
+					doPause();
+					timer.setPlayLabel(IVTimeControl.PLAY);
+				}
+			}
+		});
+	}
+
+	public void addTimer(final IVTime listener) {
+		if (!_timeListeners.contains(listener))
+			_timeListeners.add(listener);
+	}
+
+	public void disconnect() {
+		if (_listeningTo != null) {
+			// ok, stop the participant listeners
+			_model.stopListenPart(_listeningTo.name, Network.DUFF_INDEX);
+
+			// and drop the scenario listening
+			_model.stopListenScen(_listeningTo.name);
+
+			// also disable the relevant bits
+			final Iterator<IVConnect> iter = _connectors.iterator();
+			while (iter.hasNext()) {
+				final IVConnect ivConnect = iter.next();
+				ivConnect.disableParticipants();
+				ivConnect.enableServers();
+				ivConnect.enableScenarios();
+				ivConnect.disableDisconnect();
+			}
+
+			final Iterator<IVTimeControl> iter2 = _timeControllers.iterator();
+			while (iter2.hasNext()) {
+				final IVTimeControl ivTime = iter2.next();
+				ivTime.setEnabled(false);
+			}
+
+			final Iterator<IVPartControl> iter3 = _partControllers.iterator();
+			while (iter3.hasNext()) {
+				final IVPartControl ivPart = iter3.next();
+				ivPart.setEnabled(false);
+			}
+
+			_listeningTo = null;
+
+		}
+	}
+
+	protected void doFaster() {
+		if (_listeningTo != null) {
+			final ScenControl sc = new ScenControl(_listeningTo.name, ScenControl.FASTER);
+			_model.controlScen(sc);
+		}
+
+	}
+
+	public void doPause() {
+		if (_listeningTo != null) {
+			final ScenControl sc = new ScenControl(_listeningTo.name, ScenControl.PAUSE);
+			_model.controlScen(sc);
+		}
+	}
+
+	public void doPlay() {
+		if (_listeningTo != null) {
+			final ScenControl sc = new ScenControl(_listeningTo.name, ScenControl.PLAY);
+			_model.controlScen(sc);
+		}
+	}
+
+	protected void doSlower() {
+		if (_listeningTo != null) {
+			final ScenControl sc = new ScenControl(_listeningTo.name, ScenControl.SLOWER);
+			_model.controlScen(sc);
+		}
+
+	}
+
+	/**
+	 * trigger a scenario step
+	 *
+	 * @return
+	 */
+	public void doStep() {
+		if (_listeningTo != null) {
+			_model.step(_listeningTo.name);
+		}
+	}
+
+	public void doStop() {
+		if (_listeningTo != null) {
+			final ScenControl sc = new ScenControl(_listeningTo.name, ScenControl.TERMINATE);
+			_model.controlScen(sc);
+		}
+	}
+
+	protected void getHost() {
+		IVConnect conny;
+		// have we got a connector?
+		if (_connectors.size() > 0) {
+			conny = _connectors.firstElement();
+			final String address = conny.getString("Connect to ASSET Server", "Please type in IP address");
+			if (address != null) {
+				try {
+					final InetAddress in = InetAddress.getByName(address);
+					serverSelected(in);
+				} catch (final UnknownHostException e) {
+					Activator.logError(IStatus.ERROR, "Whilst connecting to ASSET server", e);
+				}
+			}
+		}
+	}
+
+	protected void participantSelected(final LightParticipant part) {
+		final NewDemStatus newDemStatusListener = new NewDemStatus() {
+			@Override
+			public void demanded(final double course, final double speed, final double depth) {
+				if (_listeningTo != null) {
+					_model.controlPart(_listeningTo.name, part.id, course, speed, depth);
+				}
+			}
+		};
+
+		// now loop through any participant listeners
+		final Iterator<IVPartControl> iter = _partControllers.iterator();
+		while (iter.hasNext()) {
+			final IVPartControl ivPart = iter.next();
+			ivPart.setEnabled(true);
+			ivPart.setParticipant(part.name);
+			ivPart.setDemStatusListener(newDemStatusListener);
+		}
+
+		final Iterator<IVPartMovement> iter2 = _partMovers.iterator();
+		while (iter2.hasNext()) {
+			final IVPartMovement ivPart = iter2.next();
+			ivPart.setParticipant(part.name);
+		}
+
+		// also start listening to him
+		if (_listeningTo != null) {
+			// cancel any existing listners
+			_model.stopListenPart(_listeningTo.name, Network.DUFF_INDEX);
+
+			_model.listenPart(_listeningTo.name, part.id, _partListener, _partListener, _partListener);
+		}
+	}
+
+	protected void pinged() {
+		// ok, get any servers
+		final List<InetAddress> adds = _model.discoverHosts();
+
+		// ok, disable the server list, to stop user re-connecting
+		final Iterator<IVConnect> iter = _connectors.iterator();
+		while (iter.hasNext()) {
+			final IVConnect ivPart = iter.next();
+
+			if (adds != null) {
+				ivPart.setServers(adds);
+				ivPart.enableServers();
+			}
+		}
+	}
+
+	@Override
+	public void restart(final ScenarioType scenario) {
+	}
+
+	protected void scenarioSelected(final LightScenario scenario) {
+		if (_listeningTo != null) {
+			_model.stopListenScen(_listeningTo.name);
+		}
+
+		// remember it
+		_listeningTo = scenario;
+
+		// start listening to it
+		System.err.println("about to listen to:" + scenario.name);
+		_model.listenScen(scenario.name, this);
+
+		// enable the timer controls
+		final Iterator<IVTimeControl> iter = _timeControllers.iterator();
+		while (iter.hasNext()) {
+			final IVTimeControl ivTime = iter.next();
+			ivTime.setEnabled(true);
+		}
+
+		final Iterator<IVConnect> iter2 = _connectors.iterator();
+		while (iter2.hasNext()) {
+			final IVConnect ivConnect = iter2.next();
+			ivConnect.disableScenarios();
+			ivConnect.disableServers();
+			ivConnect.enableParticipants();
+			ivConnect.setParticipants(scenario.listOfParticipants);
+			ivConnect.enableDisconnect();
+		}
+
+	}
+
+	protected void selfHostChanged(final boolean val) {
+
+		try {
+			if (_selfHostServer == null) {
 				_selfHostServer = new AServer();
 				// ok, give the server some data
-				final MultiScenarioLister lister = new MultiScenarioLister()
-				{
+				final MultiScenarioLister lister = new MultiScenarioLister() {
 
 					@Override
-					public Vector<ScenarioType> getScenarios()
-					{
+					public Vector<ScenarioType> getScenarios() {
 						return CoreTest.getScenarioList();
 					}
 				};
@@ -626,75 +536,57 @@ public class PClient implements ScenarioSteppedListener
 			else
 				_selfHostServer.stop();
 
-		}
-		catch (final IOException e)
-		{
+		} catch (final IOException e) {
 			e.printStackTrace();
 		}
 	}
 
-	protected void getHost()
-	{
-		IVConnect conny;
-		// have we got a connector?
-		if (_connectors.size() > 0)
-		{
-			conny = _connectors.firstElement();
-			final String address = conny.getString("Connect to ASSET Server",
-					"Please type in IP address");
-			if (address != null)
-			{
-				try
-				{
-					final InetAddress in = InetAddress.getByName(address);
-					serverSelected(in);
-				}
-				catch (final UnknownHostException e)
-				{
-					Activator.logError(org.eclipse.core.runtime.Status.ERROR,
-							"Whilst connecting to ASSET server", e);
-				}
+	protected void serverSelected(final InetAddress val) {
+		// ok, connect
+		try {
+			_model.connect(val.getHostAddress());
+
+			// ok, disable the server list, to stop user re-connecting
+			final Iterator<IVConnect> iter = _connectors.iterator();
+			while (iter.hasNext()) {
+				final IVConnect ivPart = iter.next();
+				ivPart.disableServers();
 			}
+
+			final AHandler<Vector<LightScenario>> handler = new AHandler<Vector<LightScenario>>() {
+				@Override
+				public void onSuccess(final Vector<LightScenario> results) {
+					showScenarios(results);
+				}
+			};
+			// and get the servers
+			_model.getScenarioList(handler);
+		} catch (final IOException e) {
+			e.printStackTrace();
+		}
+
+	}
+
+	protected void showScenarios(final Vector<LightScenario> results) {
+		System.out.println("received sceanrios");
+
+		// ok, disable the server list, to stop user re-connecting
+		final Iterator<IVConnect> iter = _connectors.iterator();
+		while (iter.hasNext()) {
+			final IVConnect ivPart = iter.next();
+			ivPart.setScenarios(results);
+
+			// and enable them
+			ivPart.enableScenarios();
 		}
 	}
 
-	public void disconnect()
-	{
-		if (_listeningTo != null)
-		{
-			// ok, stop the participant listeners
-			_model.stopListenPart(_listeningTo.name, Network.DUFF_INDEX);
-
-			// and drop the scenario listening
-			_model.stopListenScen(_listeningTo.name);
-
-			// also disable the relevant bits
-			final Iterator<IVConnect> iter = _connectors.iterator();
-			while (iter.hasNext())
-			{
-				final IVConnect ivConnect = (IVConnect) iter.next();
-				ivConnect.disableParticipants();
-				ivConnect.enableServers();
-				ivConnect.enableScenarios();
-				ivConnect.disableDisconnect();
-			}
-
-			final Iterator<IVTimeControl> iter2 = _timeControllers.iterator();
-			while (iter2.hasNext())
-			{
-				final IVTimeControl ivTime = iter2.next();
-				ivTime.setEnabled(false);
-			}
-
-			final Iterator<IVPartControl> iter3 = _partControllers.iterator();
-			while (iter3.hasNext())
-			{
-				final IVPartControl ivPart = (IVPartControl) iter3.next();
-				ivPart.setEnabled(false);
-			}
-
-			_listeningTo = null;
-
+	@Override
+	public void step(final ScenarioType scenario, final long newTime) {
+		final Iterator<IVTime> iter = _timeListeners.iterator();
+		while (iter.hasNext()) {
+			final IVTime ivTime = iter.next();
+			ivTime.newTime(newTime);
 		}
 	}
 

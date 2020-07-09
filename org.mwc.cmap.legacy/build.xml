@@ -1,4 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!--
+    Debrief - the Open Source Maritime Analysis Application
+    http://debrief.info
+     
+    (C) 2000-2020, Deep Blue C Technology Ltd
+     
+    This library is free software; you can redistribute it and/or
+    modify it under the terms of the Eclipse Public License v1.0
+    (http://www.eclipse.org/legal/epl-v10.html)
+     
+    This library is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ -->
+
 <project name="cmap_legacy" default="build.jars" basedir=".">
 
 	<property name="javacSource" value="1.7"/>
@@ -26,7 +41,7 @@
 		<condition property="pluginTemp" value="${buildTempFolder}/plugins"		>
 			<isset property="buildTempFolder"/>
 		</condition>
-		<condition property="build.result.folder" value="${pluginTemp}/org.mwc.debrief.legacy_1.0.377"		>
+		<condition property="build.result.folder" value="${pluginTemp}/org.mwc.cmap.legacy_1.0.377"		>
 			<isset property="buildTempFolder"/>
 		</condition>
 		<property name="build.result.folder" value="${basedir}"/>
@@ -56,7 +71,6 @@
 				<exclude name="**/package.htm*"/>
 			</fileset>
 		</copy>
-		<mkdir dir="${build.result.folder}"/>
 		<jar destfile="${build.result.folder}/cmap_legacy.jar" basedir="${temp.folder}/cmap_legacy.jar.bin"/>
 		<delete dir="${temp.folder}/cmap_legacy.jar.bin"/>
 	</target>

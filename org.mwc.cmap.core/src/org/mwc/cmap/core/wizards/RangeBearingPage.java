@@ -1,17 +1,18 @@
-/*
- *    Debrief - the Open Source Maritime Analysis Application
- *    http://debrief.info
+/*******************************************************************************
+ * Debrief - the Open Source Maritime Analysis Application
+ * http://debrief.info
  *
- *    (C) 2000-2014, PlanetMayo Ltd
+ * (C) 2000-2020, Deep Blue C Technology Ltd
  *
- *    This library is free software; you can redistribute it and/or
- *    modify it under the terms of the Eclipse Public License v1.0
- *    (http://www.eclipse.org/legal/epl-v10.html)
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the Eclipse Public License v1.0
+ * (http://www.eclipse.org/legal/epl-v10.html)
  *
- *    This library is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
- */
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *******************************************************************************/
+
 package org.mwc.cmap.core.wizards;
 
 import java.beans.PropertyDescriptor;
@@ -24,154 +25,133 @@ import MWC.GUI.Editable;
 import MWC.GenericData.WorldDistance;
 import MWC.Utilities.ReaderWriter.XML.MWCXMLReader;
 
-public class RangeBearingPage extends CoreEditableWizardPage
-{
-  private static final String RANGE = "RANGE";
-  private static final String BEARING = "BEARING";
+public class RangeBearingPage extends CoreEditableWizardPage {
+	public static class DataItem implements Editable {
+		double _bearing = 0;
+		WorldDistance _range = new WorldDistance(5, WorldDistance.NM);
 
-  public static class DataItem implements Editable
-  {
-    double _bearing = 0;
-    WorldDistance _range = new WorldDistance(5, WorldDistance.NM);
+		public double getBearing() {
+			return _bearing;
+		}
 
-    public double getBearing()
-    {
-      return _bearing;
-    }
+		@Override
+		public EditorType getInfo() {
+			return null;
+		}
 
-    public EditorType getInfo()
-    {
-      return null;
-    }
+		@Override
+		public String getName() {
+			return null;
+		}
 
-    public String getName()
-    {
-      return null;
-    }
+		public WorldDistance getRange() {
+			return _range;
+		}
 
-    public WorldDistance getRange()
-    {
-      return _range;
-    }
+		@Override
+		public boolean hasEditor() {
+			return false;
+		}
 
-    public boolean hasEditor()
-    {
-      return false;
-    }
+		public void setBearing(final double bearing) {
+			_bearing = bearing;
+		}
 
-    public void setBearing(final double bearing)
-    {
-      _bearing = bearing;
-    }
+		public void setRange(final WorldDistance range) {
+			_range = range;
+		}
+	}
 
-    public void setRange(final WorldDistance range)
-    {
-      _range = range;
-    }
-  }
+	private static final String RANGE = "RANGE";
 
-  public static String NAME = "Initial Offset";
+	private static final String BEARING = "BEARING";
 
-  DataItem _myWrapper;
-  final private String _rangeTitle;
-  final private String _bearingTitle;
-  final private WorldDistance _defaultRange;
-  private double _brgDegs;
+	public static String NAME = "Initial Offset";
 
-  public RangeBearingPage(final ISelection selection, final String pageName,
-      final String pageDescription, final String rangeTitle,
-      final String bearingTitle, final String imagePath,
-      final String helpContext, final WorldDistance defaultRange, final double brgDegs)
-  {
-    super(selection, NAME, pageName, pageDescription, imagePath, helpContext,
-        false, null);
-    _rangeTitle = rangeTitle;
-    _bearingTitle = bearingTitle;
-    _defaultRange = defaultRange;
-    _brgDegs = brgDegs;
+	DataItem _myWrapper;
+	final private String _rangeTitle;
+	final private String _bearingTitle;
+	final private WorldDistance _defaultRange;
+	private final double _brgDegs;
 
-    setDefaults();
-  }
+	public RangeBearingPage(final ISelection selection, final String pageName, final String pageDescription,
+			final String rangeTitle, final String bearingTitle, final String imagePath, final String helpContext,
+			final WorldDistance defaultRange, final double brgDegs) {
+		super(selection, NAME, pageName, pageDescription, imagePath, helpContext, false, null);
+		_rangeTitle = rangeTitle;
+		_bearingTitle = bearingTitle;
+		_defaultRange = defaultRange;
+		_brgDegs = brgDegs;
 
-  private void setDefaults()
-  {
-    final Preferences prefs = getPrefs();
-    boolean assigned = false;
+		setDefaults();
+	}
 
-    if (prefs != null)
-    {
-      final String rangeStr = prefs.get(RANGE, null);
-      if (rangeStr != null)
-      {
-        final String[] parts = rangeStr.split(",");
-        try
-        {
-          final double val = MWCXMLReader.readThisDouble(parts[0]);
-          final int units = Integer.parseInt(parts[1]);
-          final WorldDistance range = new WorldDistance(val, units);
-          setData(range, _brgDegs);
-          assigned = true;
-        }
-        catch (final ParseException pe)
-        {
-          MWC.Utilities.Errors.Trace.trace(pe);
-        }
-      }
-    }
+	@Override
+	protected Editable createMe() {
+		if (_myWrapper == null)
+			_myWrapper = new DataItem();
 
-    if (!assigned)
-    {
-      // ok, use our default
-      setData(_defaultRange, _brgDegs);
-    }
-  }
+		return _myWrapper;
+	}
 
-  public void setData(final WorldDistance range, final double bearing)
-  {
-    createMe();
-    _myWrapper.setRange(range);
-    _myWrapper.setBearing(bearing);
-  }
+	@Override
+	public void dispose() {
+		// try to store some defaults
+		final Preferences prefs = getPrefs();
+		final WorldDistance res = this.getRange();
+		if (res != null) {
+			prefs.put(RANGE, "" + res.getValue() + "," + res.getUnits());
+			prefs.putDouble(BEARING, _myWrapper.getBearing());
+		}
 
-  public WorldDistance getRange()
-  {
-    return _myWrapper.getRange();
-  }
+		super.dispose();
+	}
 
-  @Override
-  public void dispose()
-  {
-    // try to store some defaults
-    final Preferences prefs = getPrefs();
-    final WorldDistance res = this.getRange();
-    if (res != null)
-    {
-      prefs.put(RANGE, "" + res.getValue() + "," + res.getUnits());
-      prefs.putDouble(BEARING, _myWrapper.getBearing());
-    }
+	public double getBearingDegs() {
+		return _myWrapper.getBearing();
+	}
 
-    super.dispose();
-  }
+	@Override
+	protected PropertyDescriptor[] getPropertyDescriptors() {
+		final PropertyDescriptor[] descriptors = { prop("Range", _rangeTitle, getEditable()),
+				prop("Bearing", _bearingTitle, getEditable()) };
+		return descriptors;
+	}
 
-  public double getBearingDegs()
-  {
-    return _myWrapper.getBearing();
-  }
+	public WorldDistance getRange() {
+		return _myWrapper.getRange();
+	}
 
-  protected PropertyDescriptor[] getPropertyDescriptors()
-  {
-    final PropertyDescriptor[] descriptors =
-        {prop("Range", _rangeTitle, getEditable()),
-            prop("Bearing", _bearingTitle, getEditable())};
-    return descriptors;
-  }
+	public void setData(final WorldDistance range, final double bearing) {
+		createMe();
+		_myWrapper.setRange(range);
+		_myWrapper.setBearing(bearing);
+	}
 
-  protected Editable createMe()
-  {
-    if (_myWrapper == null)
-      _myWrapper = new DataItem();
+	private void setDefaults() {
+		final Preferences prefs = getPrefs();
+		boolean assigned = false;
 
-    return _myWrapper;
-  }
+		if (prefs != null) {
+			final String rangeStr = prefs.get(RANGE, null);
+			if (rangeStr != null) {
+				final String[] parts = rangeStr.split(",");
+				try {
+					final double val = MWCXMLReader.readThisDouble(parts[0]);
+					final int units = Integer.parseInt(parts[1]);
+					final WorldDistance range = new WorldDistance(val, units);
+					setData(range, _brgDegs);
+					assigned = true;
+				} catch (final ParseException pe) {
+					MWC.Utilities.Errors.Trace.trace(pe);
+				}
+			}
+		}
+
+		if (!assigned) {
+			// ok, use our default
+			setData(_defaultRange, _brgDegs);
+		}
+	}
 
 }
