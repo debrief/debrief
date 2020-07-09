@@ -45,6 +45,8 @@
 		<condition property="pluginTemp" value="${buildTempFolder}/plugins"		>
 			<isset property="buildTempFolder"/>
 		</condition>
+		<property name="svg-symbols.source.dir" value="../org.mwc.cmap.legacy/svg_symbols"/>
+		<property name="svg-symbols.dest.dir" value="svg_symbols"/>
 		<property name="pluginTemp" value="${basedir}"/>
 		<property name="product.version" value="${project.version}"/>
 		<condition property="build.result.folder" value="${pluginTemp}/org.mwc.debrief.lite_${product.version}"		>
@@ -159,6 +161,7 @@
 		<property name="debrief-lite-lib.dir" value="${debrief-lite-dist.dir}/lib"/>
 		<mkdir dir="${debrief-lite-dist.dir}"/>
 		<mkdir dir="${debrief-lite-dist.dir}/lib"/>
+		<mkdir dir="${debrief-lite-dist.dir}/${svg-symbols.dest.dir}"/>
 		<copy todir="${debrief-lite-dist.dir}" failonerror="true" overwrite="false">
 			<fileset dir="${temp.folder}">
 				<include name="debrief_lite.jar"/>
@@ -174,6 +177,7 @@
 			<fileset dir="../org.mwc.debrief.legacy" includes="debrief_legacy.jar"/>
 			<fileset dir="libs" includes="*.jar"/>
 		</copy>
+		<copy todir="${debrief-lite-dist.dir}/${svg-symbols.dest.dir}"><fileset dir="${svg-symbols.source.dir}" includes="**/*"></fileset></copy>
 		<copy todir="${debrief-lite-dist.dir}" file="src/main/java/icons/d_lite.png" failonerror="true" overwrite="false"/>
 		<zip destfile="${dist.dir}/debrief-lite-${product.version}.zip">
 			<fileset dir="." includes="data/**/*"/>

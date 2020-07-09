@@ -257,7 +257,7 @@ public class DebriefRibbonInsert {
 				addDropDown(layersMenu, PresentationPriority.TOP, _theLayers, toolParent),
 				ComponentPresentationModel.withDefaults());
 		layersMenu.addRibbonComponent(projection);
-		selectLayerCombo = projection.buildComponent();
+		selectLayerCombo = (JComboBox)projection.buildComponent();
 		selectLayerCombo.setName("select-layer-combo");
 		return layersMenu;
 	}
