@@ -24,6 +24,8 @@ addons:
     - unzip
     - spatialite-bin
     - libgdal20
+    - gcab
+	- libgcab-1.0-0
 notifications:
   slack: debrief-devs:GF1nQSqn2eozH3wQtyuPLAlG
 services:
