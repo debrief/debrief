@@ -17,6 +17,7 @@ package org.mwc.debrief.track_shift.preferences.tma;
 import org.eclipse.core.runtime.preferences.AbstractPreferenceInitializer;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.mwc.cmap.core.CorePlugin;
+import org.mwc.debrief.track_shift.TrackShiftActivator;
 
 import Debrief.Wrappers.Track.DynamicInfillSegment;
 
@@ -33,7 +34,7 @@ public class TMAPreferenceInitializer extends AbstractPreferenceInitializer {
 	 */
 	@Override
 	public void initializeDefaultPreferences() {
-		final IPreferenceStore store = CorePlugin.getDefault().getPreferenceStore();
+		final IPreferenceStore store = TrackShiftActivator.getDefault().getPreferenceStore();
 		store.setDefault(TMAPreferencePage.PreferenceConstants.INFILL_COLOR_STRATEGY,
 				DynamicInfillSegment.RANDOM_INFILL);
 		store.setDefault(TMAPreferencePage.PreferenceConstants.MERGED_INFILL_COLOR, "255, 150, 0");

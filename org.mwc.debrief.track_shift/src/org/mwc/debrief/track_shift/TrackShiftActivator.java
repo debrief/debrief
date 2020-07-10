@@ -53,6 +53,7 @@ public class TrackShiftActivator extends AbstractUIPlugin {
 	 * The constructor.
 	 */
 	public TrackShiftActivator() {
+		super();
 		plugin = this;
 	}
 
@@ -61,6 +62,7 @@ public class TrackShiftActivator extends AbstractUIPlugin {
 	 */
 	@Override
 	public void start(final BundleContext context) throws Exception {
+		System.out.println("Started track shift");
 		super.start(context);
 	}
 
@@ -69,7 +71,8 @@ public class TrackShiftActivator extends AbstractUIPlugin {
 	 */
 	@Override
 	public void stop(final BundleContext context) throws Exception {
-		super.stop(context);
+		System.out.println("Stopping track shift");
 		plugin = null;
+		super.stop(context);
 	}
 }
