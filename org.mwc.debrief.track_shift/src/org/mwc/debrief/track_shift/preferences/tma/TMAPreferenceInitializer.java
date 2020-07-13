@@ -16,7 +16,6 @@ package org.mwc.debrief.track_shift.preferences.tma;
 
 import org.eclipse.core.runtime.preferences.AbstractPreferenceInitializer;
 import org.eclipse.jface.preference.IPreferenceStore;
-import org.mwc.cmap.core.CorePlugin;
 import org.mwc.debrief.track_shift.TrackShiftActivator;
 
 import Debrief.Wrappers.Track.DynamicInfillSegment;
