@@ -14,15 +14,16 @@ Require-Bundle: org.eclipse.ui,
  org.mwc.cmap.plotViewer,
  org.eclipse.core.resources,
  org.eclipse.ui.views
-Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: .,
  lib/finmath-lib-3.1.9.jar
 Bundle-RequiredExecutionEnvironment: JavaSE-11
 Export-Package: org.mwc.debrief.track_shift,
  org.mwc.debrief.track_shift.ambiguity,
+ org.mwc.debrief.track_shift.ambiguity.preferences,
  org.mwc.debrief.track_shift.controls,
- org.mwc.debrief.track_shift.magic,
+ org.mwc.debrief.track_shift.preferences.tma,
  org.mwc.debrief.track_shift.views,
  org.mwc.debrief.track_shift.zig_detector,
  org.mwc.debrief.track_shift.zig_detector.moving_average,
  org.mwc.debrief.track_shift.zig_detector.target
+Bundle-ActivationPolicy: lazy
