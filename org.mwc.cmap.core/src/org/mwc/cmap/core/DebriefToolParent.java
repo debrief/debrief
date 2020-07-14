@@ -17,11 +17,11 @@ package org.mwc.cmap.core;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Vector;
 
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.commands.operations.IOperationHistory;
 import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.window.Window;
@@ -52,6 +52,11 @@ public class DebriefToolParent implements ToolParent, ProvidesModeSelector {
 	 */
 	private static ImportSettings _selectedImportSettings = null;
 
+	/** names of plugins that are able to provide preferences
+	 * 
+	 */
+	private static Vector<String> _preferenceHelpers;
+	
 	/**
 	 * the set of preferences we support
 	 */
@@ -66,6 +71,19 @@ public class DebriefToolParent implements ToolParent, ProvidesModeSelector {
 	public DebriefToolParent(final IPreferenceStore prefs, final IOperationHistory undoBuffer) {
 		_myPrefs = prefs;
 		_myUndo = undoBuffer;
+	}
+	
+	/** register a new plugin that can help with preferences. This was initially done
+	 * to allow code in debrief.legacy to access preferences that are actually stored
+	 * in the track_shift preference store.
+	 * 
+	 * @param pluginId the id of the plugin
+	 */
+	public static void registerPreferenceHelper(final String pluginId) {
+		if(_preferenceHelpers == null) {
+			_preferenceHelpers = new Vector<>();
+		}
+		_preferenceHelpers.add(pluginId);
 	}
 
 	/**
@@ -112,9 +130,22 @@ public class DebriefToolParent implements ToolParent, ProvidesModeSelector {
 		return retMap;
 	}
 	
-	public String getTMAProperty(final String name) {
-		IPreferenceStore prefs = new ScopedPreferenceStore(InstanceScope.INSTANCE, "org.mwc.debrief.track_shift");
-		return prefs.getString(name);
+	/** use the list of registered plugins to get the preference
+	 * 
+	 * @param name preference
+	 * @return first match found
+	 */
+	private String getFallbackPreference(final String name) {
+		if(_preferenceHelpers != null) {
+			for(final String id: _preferenceHelpers) {
+				final ScopedPreferenceStore store = new ScopedPreferenceStore(InstanceScope.INSTANCE, id);
+				final String res = store.getString(name);
+				if(res != null) {
+					return res;
+				}
+			}
+		}
+		return null;
 	}
 
 	/**
@@ -125,7 +156,7 @@ public class DebriefToolParent implements ToolParent, ProvidesModeSelector {
 	public String getProperty(final String name) {
 		String res = _myPrefs.getString(name);
 		if(res.isBlank()) {
-			res=getTMAProperty(name);
+			res=getFallbackPreference(name);
 		}
 		return res;
 	}
