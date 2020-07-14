@@ -23,11 +23,13 @@ import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.Separator;
-import org.eclipse.jface.preference.PreferenceConverter;
+import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.swt.graphics.RGB;
+import org.eclipse.ui.preferences.ScopedPreferenceStore;
 import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.operations.CMAPOperation;
 import org.mwc.cmap.core.property_support.RightClickSupport.RightClickContextItemGenerator;
@@ -221,6 +223,11 @@ public class MergeTracks implements RightClickContextItemGenerator {
 	private static Color colorFrom(final RGB col) {
 		return new Color(col.red, col.green, col.blue);
 	}
+	
+	private static RGB rgbFrom(String color) {
+		String[] rgbs = color.split(",");
+		return new RGB(Integer.valueOf(rgbs[0].trim()),Integer.valueOf(rgbs[1].trim()),Integer.valueOf(rgbs[0].trim()));
+	}
 
 	/**
 	 * @param parent
@@ -294,10 +301,11 @@ public class MergeTracks implements RightClickContextItemGenerator {
 			final String safeTargetTrackName = theLayers.createUniqueLayerName(targetTrackName);
 
 			// ok, check the property
-			final RGB infillColRGB = PreferenceConverter.getColor(CorePlugin.getDefault().getPreferenceStore(),
-					MERGED_INFILL_COLOR);
-			final RGB mergedTrackColRGB = PreferenceConverter.getColor(CorePlugin.getDefault().getPreferenceStore(),
-					MERGED_TRACK_COLOR);
+			IPreferenceStore prefs = new ScopedPreferenceStore(InstanceScope.INSTANCE, "org.mwc.debrief.track_shift");
+			String infillColorStr = prefs.getString(MERGED_INFILL_COLOR);
+			final RGB infillColRGB = rgbFrom(infillColorStr);
+			String trackColorStr = prefs.getString(MERGED_TRACK_COLOR);
+			final RGB mergedTrackColRGB = rgbFrom(trackColorStr);
 
 			// ok, get the color from the RGB
 			final Color newTrackColor = mergedTrackColRGB == null ? DebriefColors.MAGENTA
