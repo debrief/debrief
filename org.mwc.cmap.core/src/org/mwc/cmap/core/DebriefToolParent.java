@@ -21,12 +21,15 @@ import java.util.Map;
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.commands.operations.IOperationHistory;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.preferences.IEclipsePreferences;
+import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.preferences.ScopedPreferenceStore;
 import org.mwc.cmap.core.operations.DebriefActionWrapper;
 import org.mwc.cmap.core.ui_support.SelectImportModeDialog;
 import org.mwc.cmap.core.wizards.ImportRepFreqDialog;
@@ -41,6 +44,7 @@ import MWC.GUI.Tools.Palette.CreateVPFLayers;
  * @author ian.mayo
  */
 public class DebriefToolParent implements ToolParent, ProvidesModeSelector {
+	
 	/**
 	 * convenience object, used to get selected import mode back from the popup
 	 * dialog
@@ -107,6 +111,11 @@ public class DebriefToolParent implements ToolParent, ProvidesModeSelector {
 		}
 		return retMap;
 	}
+	
+	public String getTMAProperty(final String name) {
+		IPreferenceStore prefs = new ScopedPreferenceStore(InstanceScope.INSTANCE, "org.mwc.debrief.track_shift");
+		return prefs.getString(name);
+	}
 
 	/**
 	 * @param name
@@ -114,8 +123,10 @@ public class DebriefToolParent implements ToolParent, ProvidesModeSelector {
 	 */
 	@Override
 	public String getProperty(final String name) {
-		final String res = _myPrefs.getString(name);
-
+		String res = _myPrefs.getString(name);
+		if(res.isBlank()) {
+			res=getTMAProperty(name);
+		}
 		return res;
 	}
 
