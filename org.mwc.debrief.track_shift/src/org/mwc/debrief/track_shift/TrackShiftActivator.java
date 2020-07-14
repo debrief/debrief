@@ -63,7 +63,6 @@ public class TrackShiftActivator extends AbstractUIPlugin {
 	 */
 	@Override
 	public void start(final BundleContext context) throws Exception {
-		System.out.println("Started track shift");
 		super.start(context);
 		
 		// register as a preference helper
@@ -75,7 +74,6 @@ public class TrackShiftActivator extends AbstractUIPlugin {
 	 */
 	@Override
 	public void stop(final BundleContext context) throws Exception {
-		System.out.println("Stopping track shift");
 		plugin = null;
 		super.stop(context);
 	}
