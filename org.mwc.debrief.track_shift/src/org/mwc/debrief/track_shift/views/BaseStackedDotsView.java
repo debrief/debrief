@@ -336,7 +336,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements ErrorLogge
 
 		@Override
 		public List<Zone> performSlicing(final boolean wholePeriod) {
-			final boolean doCombined = Boolean.valueOf(CorePlugin.getDefault().getPreference(USE_HOLISTIC_SLICER));
+			final boolean doCombined = TrackShiftActivator.getDefault().getPreferenceStore().getBoolean(USE_HOLISTIC_SLICER);
 			if (doCombined) {
 				return performSlicingCombined();
 			} else {
@@ -1300,7 +1300,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements ErrorLogge
 		};
 
 		// are we doing holistic legs?
-		final boolean goingHolistic = Boolean.valueOf(CorePlugin.getDefault().getPreference(USE_HOLISTIC_SLICER));
+		final boolean goingHolistic = TrackShiftActivator.getDefault().getPreferenceStore().getBoolean(USE_HOLISTIC_SLICER);
 
 		// put the courses into a TimeSeries
 		final ZoneSlicer ownshipLegSlicer = getOwnshipZoneSlicer(blueProv);
