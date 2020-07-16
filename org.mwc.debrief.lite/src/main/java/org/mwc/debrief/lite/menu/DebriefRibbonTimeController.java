@@ -810,7 +810,7 @@ public class DebriefRibbonTimeController {
 				.setChangeListener(new SliderListener(operations, timeManager, liteStepControl)).build();
 
 		final ComponentSupplier<JRibbonRangeSlider, SliderComponentContentModel, ComponentPresentationModel> timeRangeSlider = (
-				final Projection<JRibbonRangeSlider, SliderComponentContentModel, ComponentPresentationModel> projection) -> JRibbonRangeSlider::new;
+				final Projection<JRibbonRangeSlider, SliderComponentContentModel, ComponentPresentationModel> projection) -> JRibbonRangeSlider::getInstance;
 		final ComponentProjection<JRibbonRangeSlider, SliderComponentContentModel> projection = new RibbonRangeSliderProjection(
 				timeFilterRangeModel, ComponentPresentationModel.withDefaults(), timeRangeSlider);
 		final RangeSlider filterTimeRangeSlider = projection.buildComponent();

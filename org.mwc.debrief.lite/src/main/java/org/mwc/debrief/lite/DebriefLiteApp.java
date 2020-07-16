@@ -1243,9 +1243,9 @@ public class DebriefLiteApp implements FileDropListener {
 								restoreCursor();
 								// update the time panel
 								final TimePeriod period = _theLayers.getTimePeriod();
-								_myOperations.setPeriod(period);
-								timeManager.setPeriod(source, period);
 								if (period != null) {
+									_myOperations.setPeriod(period);
+									timeManager.setPeriod(source, period);
 									timeManager.setTime(source, period.getStartDTG(), true);
 								}
 								timeManager.firePeriodPropertyChange();

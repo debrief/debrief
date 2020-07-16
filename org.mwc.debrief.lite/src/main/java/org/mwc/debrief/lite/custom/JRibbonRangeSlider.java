@@ -17,6 +17,7 @@ package org.mwc.debrief.lite.custom;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.beans.PropertyChangeEvent;
+import java.util.HashMap;
 
 import javax.swing.JSlider;
 import javax.swing.event.ChangeEvent;
@@ -26,6 +27,8 @@ import org.pushingpixels.flamingo.api.common.projection.Projection;
 import org.pushingpixels.flamingo.api.ribbon.synapse.model.ComponentPresentationModel;
 
 public class JRibbonRangeSlider extends RangeSlider {
+
+	private static HashMap<Projection<JRibbonRangeSlider, SliderComponentContentModel, ComponentPresentationModel>, JRibbonRangeSlider> instances = new HashMap<>();
 
 	/**
 	 *
@@ -39,6 +42,14 @@ public class JRibbonRangeSlider extends RangeSlider {
 		setSize(new Dimension(250, 40));
 		setBackground(new Color(180, 180, 230));
 		initialize(projection);
+	}
+
+	public static JRibbonRangeSlider getInstance(
+			final Projection<JRibbonRangeSlider, SliderComponentContentModel, ComponentPresentationModel> projection) {
+		if (!instances.containsKey(projection)) {
+			instances.put(projection, new JRibbonRangeSlider(projection));
+		}
+		return instances.get(projection);
 	}
 
 	public void initialize(
