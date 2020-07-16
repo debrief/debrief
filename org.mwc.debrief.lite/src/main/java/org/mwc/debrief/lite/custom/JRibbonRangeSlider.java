@@ -28,16 +28,16 @@ import org.pushingpixels.flamingo.api.ribbon.synapse.model.ComponentPresentation
 
 public class JRibbonRangeSlider extends RangeSlider {
 
-	private static HashMap<Projection<JRibbonRangeSlider, SliderComponentContentModel, ComponentPresentationModel>, JRibbonRangeSlider> instances = new HashMap<>();
+	private static HashMap<Projection<JRibbonRangeSlider, SliderCompContMdl, ComponentPresentationModel>, JRibbonRangeSlider> instances = new HashMap<>();
 
 	/**
 	 *
 	 */
 	private static final long serialVersionUID = 1L;
-	Projection<JRibbonRangeSlider, SliderComponentContentModel, ComponentPresentationModel> projection;
+	Projection<JRibbonRangeSlider, SliderCompContMdl, ComponentPresentationModel> projection;
 
 	public JRibbonRangeSlider(
-			final Projection<JRibbonRangeSlider, SliderComponentContentModel, ComponentPresentationModel> projection) {
+			final Projection<JRibbonRangeSlider, SliderCompContMdl, ComponentPresentationModel> projection) {
 		this.projection = projection;
 		setSize(new Dimension(250, 40));
 		setBackground(new Color(180, 180, 230));
@@ -45,7 +45,7 @@ public class JRibbonRangeSlider extends RangeSlider {
 	}
 
 	public static JRibbonRangeSlider getInstance(
-			final Projection<JRibbonRangeSlider, SliderComponentContentModel, ComponentPresentationModel> projection) {
+			final Projection<JRibbonRangeSlider, SliderCompContMdl, ComponentPresentationModel> projection) {
 		if (!instances.containsKey(projection)) {
 			instances.put(projection, new JRibbonRangeSlider(projection));
 		}
@@ -53,8 +53,8 @@ public class JRibbonRangeSlider extends RangeSlider {
 	}
 
 	public void initialize(
-			final Projection<JRibbonRangeSlider, SliderComponentContentModel, ComponentPresentationModel> projection) {
-		final SliderComponentContentModel contentModel = projection.getContentModel();
+			final Projection<JRibbonRangeSlider, SliderCompContMdl, ComponentPresentationModel> projection) {
+		final SliderCompContMdl contentModel = projection.getContentModel();
 		setValue(contentModel.getValue());
 		setEnabled(contentModel.isEnabled());
 		setMaximum(contentModel.getMaximum());

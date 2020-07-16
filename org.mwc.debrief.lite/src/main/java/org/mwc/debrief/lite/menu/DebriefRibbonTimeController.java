@@ -48,16 +48,16 @@ import javax.swing.event.ChangeListener;
 
 import org.mwc.debrief.lite.DebriefLiteApp;
 import org.mwc.debrief.lite.custom.JRibbonLabel;
-import org.mwc.debrief.lite.custom.JRibbonRangeDisplayPanel;
+import org.mwc.debrief.lite.custom.JRibbonRngeDsplyPnl;
 import org.mwc.debrief.lite.custom.JRibbonRangeSlider;
 import org.mwc.debrief.lite.custom.JRibbonSlider;
 import org.mwc.debrief.lite.custom.LabelComponentContentModel;
-import org.mwc.debrief.lite.custom.RangeDisplayComponentContentModel;
+import org.mwc.debrief.lite.custom.RangeDsplyCompContMdl;
 import org.mwc.debrief.lite.custom.RibbonLabelProjection;
 import org.mwc.debrief.lite.custom.RibbonRangeDisplayPanelProjection;
-import org.mwc.debrief.lite.custom.RibbonRangeSliderProjection;
+import org.mwc.debrief.lite.custom.RibbonRngSliderProj;
 import org.mwc.debrief.lite.custom.RibbonSliderProjection;
-import org.mwc.debrief.lite.custom.SliderComponentContentModel;
+import org.mwc.debrief.lite.custom.SliderCompContMdl;
 import org.mwc.debrief.lite.gui.LiteStepControl;
 import org.mwc.debrief.lite.gui.LiteStepControl.SliderControls;
 import org.mwc.debrief.lite.gui.LiteStepControl.TimeLabel;
@@ -122,7 +122,7 @@ public class DebriefRibbonTimeController {
 		protected LiteStepControl stepControl;
 		// protected JLabel minimumValue;
 		// protected JLabel maximumValue;
-		protected RangeDisplayComponentContentModel rangeDisplayModel;
+		protected RangeDsplyCompContMdl rangeDisplayModel;
 		protected RangeSlider slider;
 		protected TimeManager timeManager;
 
@@ -327,9 +327,9 @@ public class DebriefRibbonTimeController {
 
 	private static CommandButtonProjection<Command> formatCommandButton;
 
-	private static SliderComponentContentModel timeFilterRangeModel;
+	private static SliderCompContMdl timeFilterRngeMdl;
 
-	private static SliderComponentContentModel timeModel;
+	private static SliderCompContMdl timeModel;
 
 	private static Command playCommand;
 
@@ -535,7 +535,7 @@ public class DebriefRibbonTimeController {
 		control.addFlowComponent(commandStripProjection);
 		control.addFlowComponent(timeLabelProjection);
 		control.addFlowComponent(formatCommandButton);
-		timeModel = SliderComponentContentModel.builder().setEnabled(false).setChangeListener(new ChangeListener() {
+		timeModel = SliderCompContMdl.builder().setEnabled(false).setChangeListener(new ChangeListener() {
 			@Override
 			public void stateChanged(final ChangeEvent e) {
 				if (e.getSource() instanceof JSlider) {
@@ -549,9 +549,9 @@ public class DebriefRibbonTimeController {
 			}
 		}).build();
 		// set the values for the slider here.
-		final ComponentSupplier<JRibbonSlider, SliderComponentContentModel, ComponentPresentationModel> jribbonSlider = (
-				final Projection<JRibbonSlider, SliderComponentContentModel, ComponentPresentationModel> projection) -> JRibbonSlider::new;
-		final ComponentProjection<JRibbonSlider, SliderComponentContentModel> projection = new RibbonSliderProjection(
+		final ComponentSupplier<JRibbonSlider, SliderCompContMdl, ComponentPresentationModel> jribbonSlider = (
+				final Projection<JRibbonSlider, SliderCompContMdl, ComponentPresentationModel> projection) -> JRibbonSlider::new;
+		final ComponentProjection<JRibbonSlider, SliderCompContMdl> projection = new RibbonSliderProjection(
 				timeModel, ComponentPresentationModel.withDefaults(), jribbonSlider);
 		final JSlider timeSlider = projection.buildComponent();
 		timeSlider.setBackground(Color.DARK_GRAY);
@@ -806,19 +806,19 @@ public class DebriefRibbonTimeController {
 		final Calendar start = new GregorianCalendar(1995, 11, 12);
 		final Calendar end = new GregorianCalendar(1995, 11, 12);
 		// Now we create the components for the sliders
-		timeFilterRangeModel = SliderComponentContentModel.builder().setEnabled(false).setMinimum(start).setMaximum(end)
+		timeFilterRngeMdl = SliderCompContMdl.builder().setEnabled(false).setMinimum(start).setMaximum(end)
 				.setChangeListener(new SliderListener(operations, timeManager, liteStepControl)).build();
 
-		final ComponentSupplier<JRibbonRangeSlider, SliderComponentContentModel, ComponentPresentationModel> timeRangeSlider = (
-				final Projection<JRibbonRangeSlider, SliderComponentContentModel, ComponentPresentationModel> projection) -> JRibbonRangeSlider::getInstance;
-		final ComponentProjection<JRibbonRangeSlider, SliderComponentContentModel> projection = new RibbonRangeSliderProjection(
-				timeFilterRangeModel, ComponentPresentationModel.withDefaults(), timeRangeSlider);
+		final ComponentSupplier<JRibbonRangeSlider, SliderCompContMdl, ComponentPresentationModel> timeRangeSlider = (
+				final Projection<JRibbonRangeSlider, SliderCompContMdl, ComponentPresentationModel> projection) -> JRibbonRangeSlider::getInstance;
+		final ComponentProjection<JRibbonRangeSlider, SliderCompContMdl> projection = new RibbonRngSliderProj(
+				timeFilterRngeMdl, ComponentPresentationModel.withDefaults(), timeRangeSlider);
 		final RangeSlider filterTimeRangeSlider = projection.buildComponent();
 		// set the values for the slider here.
-		final RangeDisplayComponentContentModel rangeDisplayModel = RangeDisplayComponentContentModel.builder()
+		final RangeDsplyCompContMdl rangeDisplayModel = RangeDsplyCompContMdl.builder()
 				.setMinValueText("xxx" + LiteStepControl.timeFormat).build();
-		final ComponentSupplier<JRibbonRangeDisplayPanel, RangeDisplayComponentContentModel, ComponentPresentationModel> rangeLabel = (
-				final Projection<JRibbonRangeDisplayPanel, RangeDisplayComponentContentModel, ComponentPresentationModel> mxvProjection) -> JRibbonRangeDisplayPanel::new;
+		final ComponentSupplier<JRibbonRngeDsplyPnl, RangeDsplyCompContMdl, ComponentPresentationModel> rangeLabel = (
+				final Projection<JRibbonRngeDsplyPnl, RangeDsplyCompContMdl, ComponentPresentationModel> mxvProjection) -> JRibbonRngeDsplyPnl::new;
 		final RibbonRangeDisplayPanelProjection rangeDisplayProjection = new RibbonRangeDisplayPanelProjection(
 				rangeDisplayModel, ComponentPresentationModel.withDefaults(), rangeLabel);
 		rangeDisplayProjection.buildComponent();
@@ -855,7 +855,7 @@ public class DebriefRibbonTimeController {
 					final boolean enabled = DebriefLiteApp.ACTIVE_STATE.equals(evt.getNewValue())
 							|| DebriefLiteApp.TIME_ENABLED_STATE.equals(evt.getNewValue());
 					filterTimeRangeSlider.setEnabled(enabled);
-					timeFilterRangeModel.setEnabled(enabled);
+					timeFilterRngeMdl.setEnabled(enabled);
 				}
 			}
 		});
@@ -989,9 +989,9 @@ public class DebriefRibbonTimeController {
 			square.getAction().commandActivated(null);
 			symbolProps.getContentModel().setActionRichTooltip(symbol_tooltip);
 		}
-		if (timeFilterRangeModel != null) {
-			timeFilterRangeModel.setMinimum(0);
-			timeFilterRangeModel.setMaximum(1);
+		if (timeFilterRngeMdl != null) {
+			timeFilterRngeMdl.setMinimum(0);
+			timeFilterRngeMdl.setMaximum(1);
 		}
 	}
 
@@ -1004,7 +1004,7 @@ public class DebriefRibbonTimeController {
 	public static void setButtonsEnabled(final List<Command> commands, final boolean enabled) {
 		commands.forEach(command -> command.setActionEnabled(enabled));
 		timeModel.setEnabled(enabled);
-		timeFilterRangeModel.setEnabled(enabled);
+		timeFilterRngeMdl.setEnabled(enabled);
 		formatCommandButton.getContentModel().setActionEnabled(enabled);
 
 	}
