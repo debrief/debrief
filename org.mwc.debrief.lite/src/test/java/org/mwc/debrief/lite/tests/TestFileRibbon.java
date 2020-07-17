@@ -28,6 +28,7 @@ import javax.swing.JFrame;
 import javax.swing.JTree;
 import javax.swing.SwingUtilities;
 import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.TreeNode;
 
 import org.mwc.debrief.lite.DebriefLiteApp;
 import org.mwc.debrief.lite.gui.custom.JXCollapsiblePaneWithTitle;
@@ -357,7 +358,7 @@ public class TestFileRibbon extends BaseTestCase
     assertTrue(outlinePanel.isEnabled());
     JTree tree = (JTree)TestUtils.getChildNamed(outlinePanel, "Layer Tree");
     DefaultMutableTreeNode testnode = (DefaultMutableTreeNode)tree.getModel().getRoot();
-    Enumeration childnodes = testnode.children();
+    Enumeration<TreeNode> childnodes = testnode.children();
     childnodes.asIterator().forEachRemaining(chNode->System.out.println(((DefaultMutableTreeNode)chNode)));
     assertEquals(tree.getModel().getChildCount(tree.getModel().getRoot()),6);
     DefaultMutableTreeNode node = (DefaultMutableTreeNode)tree.getModel().getChild(tree.getModel().getRoot(), 5);

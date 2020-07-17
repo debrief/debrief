@@ -33,6 +33,7 @@ import MWC.GUI.Undo.UndoBuffer;
  * @author Ayesha <ayesha.ma@gmail.com>
  *
  */
+@SuppressWarnings("deprecation")
 public class RedoAction extends AbstractAction implements Action, Observer, CommandAction {
 	/**
 	 *
