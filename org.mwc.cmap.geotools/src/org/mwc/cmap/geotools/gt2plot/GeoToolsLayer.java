@@ -37,6 +37,29 @@ public abstract class GeoToolsLayer extends ExternallyManagedDataLayer {
 
 	public static final String NATURAL_EARTH = "Natural Earth";
 
+	public static void registerTifUrlServiceProvider() {
+		boolean isRegistered = false;
+		// Ensure that the provider is present
+		try {
+			final Iterator<ImageInputStreamSpi> iter = IIORegistry.getDefaultInstance()
+					.getServiceProviders(ImageInputStreamSpi.class, true);
+
+			while (iter.hasNext() && !isRegistered) {
+				final ImageInputStreamSpi stream = iter.next();
+				if (URLImageInputStreamSpi.class.equals(stream.getClass())) {
+					isRegistered = true;
+				}
+			}
+
+			if (!isRegistered) {
+				IIORegistry.getDefaultInstance().registerServiceProvider(new URLImageInputStreamSpi(),
+						ImageInputStreamSpi.class);
+			}
+		} catch (final IllegalArgumentException e) {
+			Application.logError2(ToolParent.WARNING, "Failure in service registration", e);
+		}
+	}
+
 	/**
 	 * the map where we display ourselves
 	 *
@@ -129,29 +152,5 @@ public abstract class GeoToolsLayer extends ExternallyManagedDataLayer {
 
 		if (_myLayer != null)
 			_myLayer.setVisible(visible);
-	}
-
-
-	public static void registerTifUrlServiceProvider() {
-		boolean isRegistered = false;
-		// Ensure that the provider is present
-		try {
-			final Iterator<ImageInputStreamSpi> iter = IIORegistry.getDefaultInstance()
-					.getServiceProviders(ImageInputStreamSpi.class, true);
-
-			while (iter.hasNext() && !isRegistered) {
-				final ImageInputStreamSpi stream = iter.next();
-				if (URLImageInputStreamSpi.class.equals(stream.getClass())) {
-					isRegistered = true;
-				}
-			}
-
-			if (!isRegistered) {
-				IIORegistry.getDefaultInstance().registerServiceProvider(new URLImageInputStreamSpi(),
-						ImageInputStreamSpi.class);
-			}
-		} catch (final IllegalArgumentException e) {
-			Application.logError2(ToolParent.WARNING, "Failure in service registration", e);
-		}
 	}
 }
