@@ -104,6 +104,7 @@ import org.mwc.cmap.xyplot.XYPlotPlugin;
 import com.pietjonas.wmfwriter2d.ClipboardCopy;
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.xml.DomDriver;
+import com.thoughtworks.xstream.io.xml.StaxDriver;
 
 import Debrief.GUI.Tote.StepControl;
 import MWC.Algorithms.Projections.FlatProjection;
@@ -1252,7 +1253,7 @@ public class XYPlotView extends ViewPart {
 		// store whether the axes are switched
 		memento.putString(DO_WATERFALL, Boolean.toString(_switchAxes.isChecked()));
 
-		final XStream xs = new XStream(new DomDriver());
+		final XStream xs = new XStream(new StaxDriver());
 		String str;
 
 		// String str = xs.toXML(_theFormatter);
@@ -1261,6 +1262,7 @@ public class XYPlotView extends ViewPart {
 			memento.putString(FORMATTER, str);
 		}
 
+		
 		str = xs.toXML(_dataset);
 		memento.putString(DATA, str);
 
