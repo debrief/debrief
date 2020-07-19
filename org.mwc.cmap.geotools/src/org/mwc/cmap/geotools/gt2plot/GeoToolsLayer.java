@@ -16,12 +16,18 @@
 package org.mwc.cmap.geotools.gt2plot;
 
 import java.io.File;
+import java.util.Iterator;
+
+import javax.imageio.spi.IIORegistry;
+import javax.imageio.spi.ImageInputStreamSpi;
 
 import org.geotools.map.Layer;
 import org.geotools.map.MapContent;
 
 import Debrief.GUI.Frames.Application;
 import MWC.GUI.ExternallyManagedDataLayer;
+import MWC.GUI.ToolParent;
+import it.geosolutions.imageio.stream.input.spi.URLImageInputStreamSpi;
 
 public abstract class GeoToolsLayer extends ExternallyManagedDataLayer {
 	/**
@@ -125,4 +131,27 @@ public abstract class GeoToolsLayer extends ExternallyManagedDataLayer {
 			_myLayer.setVisible(visible);
 	}
 
+
+	public static void registerTifUrlServiceProvider() {
+		boolean isRegistered = false;
+		// Ensure that the provider is present
+		try {
+			final Iterator<ImageInputStreamSpi> iter = IIORegistry.getDefaultInstance()
+					.getServiceProviders(ImageInputStreamSpi.class, true);
+
+			while (iter.hasNext() && !isRegistered) {
+				final ImageInputStreamSpi stream = iter.next();
+				if (URLImageInputStreamSpi.class.equals(stream.getClass())) {
+					isRegistered = true;
+				}
+			}
+
+			if (!isRegistered) {
+				IIORegistry.getDefaultInstance().registerServiceProvider(new URLImageInputStreamSpi(),
+						ImageInputStreamSpi.class);
+			}
+		} catch (final IllegalArgumentException e) {
+			Application.logError2(ToolParent.WARNING, "Failure in service registration", e);
+		}
+	}
 }

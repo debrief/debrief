@@ -25,6 +25,7 @@ import javax.imageio.spi.ImageInputStreamSpi;
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.operation.IRunnableWithProgress;
+import org.mwc.cmap.geotools.gt2plot.GeoToolsLayer;
 
 import Debrief.GUI.Frames.Application;
 import MWC.GUI.ExternallyManagedDataLayer;
@@ -41,7 +42,7 @@ public class TifLoader extends CoreLoader {
 	public TifLoader() {
 		super(".tif", ".tif");
 
-		registerUrlServiceProvider();
+		GeoToolsLayer.registerTifUrlServiceProvider();
 	}
 
 	@Override
@@ -60,28 +61,5 @@ public class TifLoader extends CoreLoader {
 				theLayers.addThisLayer(dl);
 			}
 		};
-	}
-
-	private void registerUrlServiceProvider() {
-		boolean isRegistered = false;
-		// Ensure that the provider is present
-		try {
-			final Iterator<ImageInputStreamSpi> iter = IIORegistry.getDefaultInstance()
-					.getServiceProviders(ImageInputStreamSpi.class, true);
-
-			while (iter.hasNext() && !isRegistered) {
-				final ImageInputStreamSpi stream = iter.next();
-				if (URLImageInputStreamSpi.class.equals(stream.getClass())) {
-					isRegistered = true;
-				}
-			}
-
-			if (!isRegistered) {
-				IIORegistry.getDefaultInstance().registerServiceProvider(new URLImageInputStreamSpi(),
-						ImageInputStreamSpi.class);
-			}
-		} catch (final IllegalArgumentException e) {
-			Application.logError2(ToolParent.WARNING, "Failure in service registration", e);
-		}
 	}
 }
