@@ -1340,7 +1340,10 @@ public class FixWrapper extends PlainWrapper implements Watchable, CanvasType.Mu
 	 */
 	@Override
 	public final HiResDate getTime() {
-		return _theFix.getTime();
+		if (_theFix != null) {
+			return _theFix.getTime();
+		}
+		return HiResDate.NULL_DATE;
 	}
 
 	public final WatchableList getTrackWrapper() {
