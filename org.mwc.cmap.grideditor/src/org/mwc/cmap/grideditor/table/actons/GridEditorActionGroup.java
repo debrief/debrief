@@ -81,7 +81,6 @@ public class GridEditorActionGroup extends ActionGroup {
 	}
 	
 	private void refreshInsertRowAction() {
-		System.out.println("REFRESHING");
 		if (!myActionsInitialized) {
 			return;
 		}
@@ -91,7 +90,6 @@ public class GridEditorActionGroup extends ActionGroup {
 	}
 
 	private void contextChanged() {
-		System.out.println("Context changed");
 		if (!myActionsInitialized) {
 			return;
 		}
