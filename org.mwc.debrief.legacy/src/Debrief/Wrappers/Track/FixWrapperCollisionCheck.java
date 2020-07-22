@@ -49,6 +49,5 @@ public class FixWrapperCollisionCheck {
 				_fixWrapper.getFix().setTime(new HiResDate(timeToAdd / 1000L));
 			}
 		}
-
 	}
 }

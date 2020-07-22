@@ -72,10 +72,26 @@ public class GridEditorActionGroup extends ActionGroup {
 				myView.refreshUndoContext();
 				contextChanged();
 			}
+
+			@Override
+			public void itemSelected() {
+				refreshInsertRowAction();
+			}
 		});
+	}
+	
+	private void refreshInsertRowAction() {
+		System.out.println("REFRESHING");
+		if (!myActionsInitialized) {
+			return;
+		}
+
+		final GridEditorActionContext contextImpl = getContext();
+		myInsertRowAction.refreshWithActionContext(contextImpl);
 	}
 
 	private void contextChanged() {
+		System.out.println("Context changed");
 		if (!myActionsInitialized) {
 			return;
 		}

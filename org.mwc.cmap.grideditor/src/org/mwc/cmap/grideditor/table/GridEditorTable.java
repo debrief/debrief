@@ -65,7 +65,7 @@ public class GridEditorTable extends Composite {
 
 			@Override
 			public void selectionChanged(final SelectionChangedEvent event) {
-				myActionContext.setSelection(myTableViewer.getSelection());
+				myActionContext.setSelectionChanged(myTableViewer.getSelection());
 			}
 		});
 
@@ -84,6 +84,14 @@ public class GridEditorTable extends Composite {
 					myComputedHeight = sizeToFit.y;
 				}
 				event.height = myComputedHeight;
+			}
+		});
+		
+		myTableViewer.getTable().addListener(SWT.MouseDown, new Listener() {
+			
+			@Override
+			public void handleEvent(Event event) {
+				myActionContext.setSelection(myTableViewer.getSelection());
 			}
 		});
 	}
