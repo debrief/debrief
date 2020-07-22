@@ -86,11 +86,11 @@ public class GridEditorTable extends Composite {
 				event.height = myComputedHeight;
 			}
 		});
-		
+
 		myTableViewer.getTable().addListener(SWT.MouseDown, new Listener() {
-			
+
 			@Override
-			public void handleEvent(Event event) {
+			public void handleEvent(final Event event) {
 				myActionContext.setSelection(myTableViewer.getSelection());
 			}
 		});
