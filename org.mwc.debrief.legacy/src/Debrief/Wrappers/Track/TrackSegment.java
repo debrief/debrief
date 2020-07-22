@@ -851,6 +851,7 @@ public class TrackSegment extends BaseItemLayer
 		if (col != null) {
 			result.setColor(col);
 		}
+		result.resetName();
 
 		return result;
 	}
