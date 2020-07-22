@@ -24,30 +24,10 @@ public class FixWrapperCollisionCheck {
 	 * @param _currentPlotables List of all the Editables
 	 */
 	public static void correctTimeCollision(final FixWrapper _fixWrapper, final Plottables _currentPlotables) {
-		final Enumeration<Editable> enumer = _currentPlotables.elements();
-		final HashSet<Long> usedTime = new HashSet<Long>();
-		while (enumer.hasMoreElements()) {
-			final Editable currentEditable = enumer.nextElement();
-			if (currentEditable instanceof FixWrapper) {
-				final FixWrapper currentFixWrapper = (FixWrapper)currentEditable;
-				if (currentFixWrapper.getTime() != null) { 
-					usedTime.add(currentFixWrapper.getTime().getMicros());
-				}
-			}
-		}
-		
-		// Ok, at this point we have in the set `usedTime` all the used times.
-		// Let's adapt the FixWrapper
-		if (_fixWrapper.getTime() != null) {
-			long timeToAdd = _fixWrapper.getTime().getMicros();
-			boolean modified = false;
-			while (usedTime.contains(timeToAdd)) {
-				timeToAdd += 1000; // add 1 second
-				modified = true;
-			}
-			if (modified) {
-				_fixWrapper.getFix().setTime(new HiResDate(timeToAdd / 1000L));
-			}
+		long timeToAdd = _fixWrapper.getTime().getMicros();
+		while(_currentPlotables.contains(_fixWrapper)) {
+			timeToAdd += 1000; // add 1 second
+			_fixWrapper.getFix().setTime(new HiResDate(timeToAdd / 1000L));
 		}
 	}
 }
