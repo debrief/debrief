@@ -248,10 +248,16 @@ public final class SymbolFactory {
 
 	public static final String SVG_EXTENSION = ".svg";
 
+	/** make these two SWT symbol types externally visible,
+	 * since they're referenced by Nisida importer
+	 */
+	public static final String BUOY_1 = "buoy_1";
+	public static final String BUOY_2 = "buoy_2";
+	
 	public static final String SVG_INDEX = "merchant,fishing,pleasure_craft,"
 			+ "coastguard_law_enforcement,friend_surface,friend_subsurface,neutral_air,"
 			+ "neutral_surface,neutral_subsurface,enemy_air,enemy_surface,enemy_subsurface,"
-			+ "unknown_air,unknown_surface,unknown_subsurface,buoy_1,buoy_2,missile,"
+			+ "unknown_air,unknown_surface,unknown_subsurface,missile," + BUOY_1 + "," + BUOY_2 + ","
 			+ "torpedo,generic_arrow,drop_point,splash_point,vector_1,vector_2,"
 			+ "anomaly,bottomed_mine,cleared,countermeasure,decoy,decoy_aw," + "decoy_uw,enemy_subsurface"
 			+ ",flagged_marker,floating_mine,friend_air,"

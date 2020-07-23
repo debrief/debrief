@@ -15,43 +15,63 @@
 
 package org.mwc.debrief.core.loaders;
 
-import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.InputStream;
 
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.jface.operation.IRunnableWithProgress;
-import org.mwc.cmap.geotools.gt2plot.GeoToolsLayer;
+import org.mwc.debrief.core.DebriefPlugin;
 
-import MWC.GUI.ExternallyManagedDataLayer;
+import Debrief.ReaderWriter.Nisida.ImportNisida;
 import MWC.GUI.Layers;
-import MWC.GUI.Shapes.ChartBoundsWrapper;
 
 /**
- * @author ian.mayo
  */
-public class TifLoader extends CoreLoader {
+public class NisidaLoader extends CoreLoader {
 
-	public TifLoader() {
-		super(".tif", ".tif");
-
-		GeoToolsLayer.registerTifUrlServiceProvider();
+	public NisidaLoader() {
+		super("Nisida", null);
 	}
 
+	
+	
 	@Override
-	protected IRunnableWithProgress getImporter(final IAdaptable target, final Layers theLayers,
+	public boolean canLoad(String fileName) {
+		if(super.canLoad(fileName)) {
+			try {
+				return ImportNisida.canLoadThisFile(new FileInputStream(fileName));
+			} catch (FileNotFoundException e) {
+				e.printStackTrace();
+				return false;
+			}
+		} else {
+			return false;			
+		}
+	}
+
+
+
+	/*
+	 * (non-Javadoc)
+	 *
+	 * @see
+	 * org.mwc.debrief.core.interfaces.IPlotLoader#loadFile(org.mwc.cmap.plotViewer
+	 * .editors.CorePlotEditor, org.eclipse.ui.IEditorInput)
+	 */
+	@Override
+	protected IRunnableWithProgress getImporter(final IAdaptable target, final Layers layers,
 			final InputStream inputStream, final String fileName) {
 		return new IRunnableWithProgress() {
 			@Override
 			public void run(final IProgressMonitor pm) {
-				// create a layer name from the filename
-				final File tmpFile = new File(fileName);
-				final String layerName = tmpFile.getName();
-
-				// ok - get loading going
-				final ExternallyManagedDataLayer dl = new ExternallyManagedDataLayer(ChartBoundsWrapper.WORLDIMAGE_TYPE,
-						layerName, fileName);
-				theLayers.addThisLayer(dl);
+				try {
+					ImportNisida.importThis(inputStream,  layers);
+				} catch (final Exception e) {
+					DebriefPlugin.logError(IStatus.ERROR, "Problem loading AIS datafile:" + fileName, e);
+				}
 			}
 		};
 	}
