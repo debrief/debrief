@@ -234,8 +234,8 @@ public class SexagesimalSupport {
 	public static double combineToDegrees(final double degree, final double minutes, final double seconds,
 			final int hemi) {
 		if (!isValidMinutes(minutes)) {
-			throw new IllegalArgumentException("The inserted value {" + minutes
-					+ "} is not valid minute. Please insert valid minutes from 0 till 59");
+			throw new IllegalArgumentException("The inserted value " + minutes
+					+ " is not valid minute. Please insert valid minutes from 0 till 59");
 		}
 		if (!isValidSeconds(seconds)) {
 			throw new IllegalArgumentException("The inserted value " + seconds
