@@ -503,6 +503,7 @@ public class TrackSegment extends BaseItemLayer
 	}
 
 	public void addFixSilent(final FixWrapper fix) {
+		FixWrapperCollisionCheck.correctTimeCollision(fix, this);
 		super.add(fix);
 
 		// store this segment in the fix
@@ -850,6 +851,7 @@ public class TrackSegment extends BaseItemLayer
 		if (col != null) {
 			result.setColor(col);
 		}
+		result.resetName();
 
 		return result;
 	}
