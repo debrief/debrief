@@ -184,7 +184,7 @@ public class Fix implements java.io.Serializable {
 		if (_theLocation != null)
 			newFix._theLocation = new WorldLocation(_theLocation);
 		if (_theTime != null)
-			newFix._theTime = new HiResDate(_theTime.getDate().getTime() + 1);
+			newFix._theTime = new HiResDate(_theTime.getDate().getTime());
 		return newFix;
 	}
 

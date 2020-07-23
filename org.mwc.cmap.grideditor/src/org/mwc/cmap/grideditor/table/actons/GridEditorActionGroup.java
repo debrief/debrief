@@ -63,6 +63,11 @@ public class GridEditorActionGroup extends ActionGroup {
 			}
 
 			@Override
+			public void itemSelected() {
+				refreshInsertRowAction();
+			}
+
+			@Override
 			public void selectionChanged() {
 				contextChanged();
 			}
@@ -167,6 +172,15 @@ public class GridEditorActionGroup extends ActionGroup {
 		myExportAction = new ExportToClipboardAction(tableUI);
 		myInterpolateAction = new InterpolateAction();
 		myActionsInitialized = true;
+	}
+
+	private void refreshInsertRowAction() {
+		if (!myActionsInitialized) {
+			return;
+		}
+
+		final GridEditorActionContext contextImpl = getContext();
+		myInsertRowAction.refreshWithActionContext(contextImpl);
 	}
 
 	@Override
