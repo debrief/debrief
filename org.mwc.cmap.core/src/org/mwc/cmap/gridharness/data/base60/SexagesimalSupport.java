@@ -238,8 +238,8 @@ public class SexagesimalSupport {
 					+ "} is not valid minute. Please insert valid minutes from 0 till 59");
 		}
 		if (!isValidSeconds(seconds)) {
-			throw new IllegalArgumentException("The inserted value {" + seconds
-					+ "} is not valid second. Please insert valid second from 0 till 59");
+			throw new IllegalArgumentException("The inserted value " + seconds
+					+ " is not valid second. Please insert valid second from 0 till 59");
 		}
 		return hemi * (degree + minutes / MINUTES_IN_DEGREE + seconds / MINUTES_IN_DEGREE / SECONDS_IN_MINUTE);
 	}
