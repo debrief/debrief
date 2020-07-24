@@ -12,6 +12,10 @@ WORKDIR=contribs/msi/
 #URL of the jre to use
 JRE_URL=https://github.com/AdoptOpenJDK/openjdk11-binaries/releases/download/jdk-11.0.5%2B10/OpenJDK11U-jre_x64_windows_hotspot_11.0.5_10.zip
 
+echo "Cleaning source directory"
+rm -rf ${SOURCEDIR}*
+echo "Done."
+
 echo "Updating version"
 version=$(grep "product.*version"  org.mwc.debrief.product/debriefng.product  | sed 's/^.*version="\([^"]*\)".*$/\1/')
 sed -i "s/versionReplacement/$version/g" ${WORKDIR}Debrief64.wxs

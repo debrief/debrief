@@ -30,6 +30,8 @@ import org.eclipse.swt.events.VerifyEvent;
 import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.MessageBox;
 import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.gridharness.data.base60.Sexagesimal;
 import org.mwc.cmap.gridharness.data.base60.SexagesimalFormat;
@@ -56,19 +58,18 @@ public class WorldLocationCellEditor extends CellEditor implements MultiControlC
 			super.verifyText(e);
 		}
 	}
-	
+
 	/**
-	 * This is a FormattedText class which gives more flexibility
-	 * to the user input, for example, adding extra spaces or leading
-	 * zeroes.
+	 * This is a FormattedText class which gives more flexibility to the user input,
+	 * for example, adding extra spaces or leading zeroes.
 	 *
 	 */
-	private static class FormattedTextWithoutValid extends FormattedText{
+	private static class FormattedTextWithoutValid extends FormattedText {
 
 		public FormattedTextWithoutValid(Composite parent, int style) {
 			super(parent, style);
 		}
-		
+
 		@Override
 		public boolean isValid() {
 			return true;
@@ -153,9 +154,26 @@ public class WorldLocationCellEditor extends CellEditor implements MultiControlC
 			return null;
 		}
 
-		final WorldLocation location = new WorldLocation(latitude.getCombinedDegrees(), longitude.getCombinedDegrees(),
-				0);
-		return location;
+		try {
+			final WorldLocation location = new WorldLocation(latitude.getCombinedDegrees(),
+					longitude.getCombinedDegrees(), 0);
+			return location;
+		} catch (Exception e) {
+
+			Display.getDefault().asyncExec(new Runnable() {
+
+				@Override
+				public void run() {
+					final MessageBox messageBox = new MessageBox(Display.getDefault().getShells()[0],
+							SWT.OK | SWT.ICON_ERROR);
+					messageBox.setMessage(e.getMessage());
+					messageBox.setText("Input Error");
+					messageBox.open();
+				}
+			});
+
+			return null;
+		}
 	}
 
 	@Override

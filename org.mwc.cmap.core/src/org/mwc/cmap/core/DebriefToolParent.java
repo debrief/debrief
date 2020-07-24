@@ -17,16 +17,19 @@ package org.mwc.cmap.core;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Vector;
 
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.commands.operations.IOperationHistory;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.preferences.ScopedPreferenceStore;
 import org.mwc.cmap.core.operations.DebriefActionWrapper;
 import org.mwc.cmap.core.ui_support.SelectImportModeDialog;
 import org.mwc.cmap.core.wizards.ImportRepFreqDialog;
@@ -41,6 +44,7 @@ import MWC.GUI.Tools.Palette.CreateVPFLayers;
  * @author ian.mayo
  */
 public class DebriefToolParent implements ToolParent, ProvidesModeSelector {
+	
 	/**
 	 * convenience object, used to get selected import mode back from the popup
 	 * dialog
@@ -48,6 +52,11 @@ public class DebriefToolParent implements ToolParent, ProvidesModeSelector {
 	 */
 	private static ImportSettings _selectedImportSettings = null;
 
+	/** names of plugins that are able to provide preferences
+	 * 
+	 */
+	private static Vector<String> _preferenceHelpers;
+	
 	/**
 	 * the set of preferences we support
 	 */
@@ -62,6 +71,19 @@ public class DebriefToolParent implements ToolParent, ProvidesModeSelector {
 	public DebriefToolParent(final IPreferenceStore prefs, final IOperationHistory undoBuffer) {
 		_myPrefs = prefs;
 		_myUndo = undoBuffer;
+	}
+	
+	/** register a new plugin that can help with preferences. This was initially done
+	 * to allow code in debrief.legacy to access preferences that are actually stored
+	 * in the track_shift preference store.
+	 * 
+	 * @param pluginId the id of the plugin
+	 */
+	public static void registerPreferenceHelper(final String pluginId) {
+		if(_preferenceHelpers == null) {
+			_preferenceHelpers = new Vector<>();
+		}
+		_preferenceHelpers.add(pluginId);
 	}
 
 	/**
@@ -107,6 +129,24 @@ public class DebriefToolParent implements ToolParent, ProvidesModeSelector {
 		}
 		return retMap;
 	}
+	
+	/** use the list of registered plugins to get the preference
+	 * 
+	 * @param name preference
+	 * @return first match found
+	 */
+	private String getFallbackPreference(final String name) {
+		if(_preferenceHelpers != null) {
+			for(final String id: _preferenceHelpers) {
+				final ScopedPreferenceStore store = new ScopedPreferenceStore(InstanceScope.INSTANCE, id);
+				final String res = store.getString(name);
+				if(res != null) {
+					return res;
+				}
+			}
+		}
+		return null;
+	}
 
 	/**
 	 * @param name
@@ -114,8 +154,10 @@ public class DebriefToolParent implements ToolParent, ProvidesModeSelector {
 	 */
 	@Override
 	public String getProperty(final String name) {
-		final String res = _myPrefs.getString(name);
-
+		String res = _myPrefs.getString(name);
+		if(res.isBlank()) {
+			res=getFallbackPreference(name);
+		}
 		return res;
 	}
 
