@@ -172,11 +172,6 @@ public class SliderCompContMdl implements ComponentContentModel {
 		}
 	}
 
-	/**
-	 *
-	 */
-	private static final long serialVersionUID = 3020555105731152313L;
-
 	public static Builder builder() {
 		return new Builder();
 	}
