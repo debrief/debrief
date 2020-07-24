@@ -274,19 +274,6 @@ public class DebriefRibbonFile {
 
 	}
 
-	private static class SavePopupMenu extends JCommandPopupMenu {
-		/**
-		 *
-		 */
-		private static final long serialVersionUID = 1L;
-
-		public SavePopupMenu(
-				final Projection<JCommandPopupMenu, CommandMenuContentModel, CommandPopupMenuPresentationModel> projection) {
-			super(projection);
-
-		}
-	}
-
 	private static final String LAST_FILE_OPEN_LOCATION = "last_fileopen_location";
 
 	public static CommandButtonProjection<Command> closeButton;

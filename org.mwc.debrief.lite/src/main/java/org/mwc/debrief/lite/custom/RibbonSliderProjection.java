@@ -22,11 +22,11 @@ import org.pushingpixels.flamingo.api.ribbon.synapse.projection.ComponentProject
  * @author Ayesha
  *
  */
-public class RibbonSliderProjection extends ComponentProjection<JRibbonSlider, SliderComponentContentModel> {
+public class RibbonSliderProjection extends ComponentProjection<JRibbonSlider, SliderCompContMdl> {
 
-	public RibbonSliderProjection(final SliderComponentContentModel contentModel,
+	public RibbonSliderProjection(final SliderCompContMdl contentModel,
 			final ComponentPresentationModel presentationModel,
-			final ComponentSupplier<JRibbonSlider, SliderComponentContentModel, ComponentPresentationModel> componentSupplier) {
+			final ComponentSupplier<JRibbonSlider, SliderCompContMdl, ComponentPresentationModel> componentSupplier) {
 		super(contentModel, presentationModel, componentSupplier);
 	}
 
