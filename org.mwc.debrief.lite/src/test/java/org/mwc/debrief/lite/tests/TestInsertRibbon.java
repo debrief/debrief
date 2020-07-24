@@ -31,7 +31,6 @@ import org.mwc.debrief.lite.utils.TestUtils;
 import org.pushingpixels.flamingo.api.common.JCommandButton;
 import org.pushingpixels.flamingo.api.ribbon.JRibbonFrame;
 import org.pushingpixels.flamingo.internal.ui.ribbon.JBandControlPanel;
-import org.pushingpixels.flamingo.internal.ui.ribbon.JRibbonComponent;
 
 import Debrief.Wrappers.ShapeWrapper;
 import MWC.GUI.Shapes.ArcShape;
