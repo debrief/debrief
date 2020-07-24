@@ -30,6 +30,7 @@ import org.eclipse.ui.IWorkbenchPreferencePage;
 import org.mwc.cmap.core.CorePlugin;
 import org.mwc.debrief.core.ContextOperations.GenerateTMASegmentFromCuts;
 import org.mwc.debrief.core.ContextOperations.MergeTracks;
+import org.mwc.debrief.track_shift.TrackShiftActivator;
 import org.mwc.debrief.track_shift.views.BaseStackedDotsView;
 
 import Debrief.Wrappers.Track.DynamicInfillSegment;
@@ -67,7 +68,7 @@ public class TMAPreferencePage extends FieldEditorPreferencePage implements IWor
 
 	public TMAPreferencePage() {
 		super("Debrief Preferences", CorePlugin.getImageDescriptor("icons/24/MultiPath.png"), GRID);
-		setPreferenceStore(CorePlugin.getDefault().getPreferenceStore());
+		setPreferenceStore(TrackShiftActivator.getDefault().getPreferenceStore());
 		setDescription("TMA-specific settings");
 	}
 
