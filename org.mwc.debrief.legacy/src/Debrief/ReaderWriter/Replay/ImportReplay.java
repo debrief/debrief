@@ -55,6 +55,7 @@ import Debrief.Wrappers.DynamicTrackShapes.DynamicTrackShapeWrapper;
 import Debrief.Wrappers.Track.LightweightTrackWrapper;
 import Debrief.Wrappers.Track.PlanningSegment;
 import Debrief.Wrappers.Track.TrackSegment;
+import Debrief.Wrappers.Track.TrackWrapper_Support.SegmentList;
 import MWC.GUI.BaseLayer;
 import MWC.GUI.Editable;
 import MWC.GUI.ExportLayerAsSingleItem;
@@ -2134,6 +2135,35 @@ public class ImportReplay extends PlainImporterBase {
 
 			addToLayer(thisWrapper, dest);
 
+		}else if (thisObject instanceof TrackSplitOrder) {
+			// Ok, we need to find out where we need to split the track.
+			
+			final TrackSplitOrder trackSplitOrder = (TrackSplitOrder) thisObject;
+			// Let's get the track first.
+			
+			final TrackWrapper track = (TrackWrapper) getLayerFor(trackSplitOrder.getTrackName());
+			final SegmentList allSegments = track.getSegments();
+			final Enumeration<Editable> elements = allSegments.elements();
+			while(elements.hasMoreElements()) {
+				final Editable editable = elements.nextElement();
+				
+				if (editable instanceof TrackSegment) {
+					final TrackSegment trackSegment = (TrackSegment)editable;
+					
+					final Enumeration<Editable> segmentIt = trackSegment.elements();
+					
+					while(segmentIt.hasMoreElements()) {
+						final Editable element = segmentIt.nextElement();
+						
+						System.out.println(element.getName());
+					}
+					
+				}
+				System.out.println(editable.getName());
+				
+				System.out.println("A");
+			}
+			System.out.println("Output " + track.getName());
 		}
 
 		return res;
