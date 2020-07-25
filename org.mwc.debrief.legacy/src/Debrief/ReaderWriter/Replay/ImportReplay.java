@@ -728,6 +728,8 @@ public class ImportReplay extends PlainImporterBase {
 			_coreImporters.addElement(new ImportDynamicPolygon());
 
 			_coreImporters.addElement(new ImportSensorArc());
+			
+			_coreImporters.addElement(new ImportCreateNewTrackSegment());
 		}
 	}
 
@@ -1310,6 +1312,15 @@ public class ImportReplay extends PlainImporterBase {
 	}
 
 	/**
+	 * Returns true if the symbology indicates to create a new segment.
+	 * @param symbology Symbology of the track
+	 * @return true if the symbology indicates to create a new segment.
+	 */
+	final private boolean isSymNewSegment(final String symbology) {
+		return symbology.indexOf("NEW_SEGMENT") >= 0;
+	}
+	
+	/**
 	 * utility method to extract formatted property values from a symbology line,
 	 * such as: ;TEXT: CA[LAYER=Special_Layer,SYMBOL=missile] 21.42 0 0 N 21.88 0 0
 	 * W Other layer
@@ -1836,6 +1847,23 @@ public class ImportReplay extends PlainImporterBase {
 				}
 			}
 
+			// Let's check if we have to split the track into another segment.
+			if (isSymNewSegment(rf.theSymbology)) {
+				TrackSegment newSegment = null;
+				String importMode = _myParent.getProperty(TRACK_IMPORT_MODE);
+				
+				if (importMode.equals(ImportReplay.IMPORT_AS_OTG)) {
+					newSegment = new TrackSegment(TrackSegment.ABSOLUTE);
+				} else if (importMode.equals(ImportReplay.IMPORT_AS_DR)) {
+					newSegment = new TrackSegment(TrackSegment.RELATIVE);
+				}
+
+				if (newSegment != null) {
+					// split the track then.
+					trkWrapper.add(newSegment);
+				}
+			}
+			
 			// ok, are we
 
 			// add the fix to the track
