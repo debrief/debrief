@@ -1838,12 +1838,29 @@ public class ImportReplay extends PlainImporterBase {
 				}
 			}
 
+			// https://github.com/debrief/debrief/issues/4932
+			// We should only read the style and thickness from the regular symbology
+			// and not from the extended.
+			
+			final String regSymbology;
+			if (rf.theSymbology == null) {
+				regSymbology = null;
+			}else {
+				final int endOfRegularSym = rf.theSymbology.indexOf('[');
+				if (endOfRegularSym >= 0) {
+					regSymbology = rf.theSymbology.substring(0, endOfRegularSym);
+				}else {
+					// We are not using extended symbology then
+					regSymbology = rf.theSymbology;
+				}
+			}
+			
 			// Note: line style & thickness only (currently) apply to whole tracks,
 			// so we will effectively just use the last value read in.
-			if (rf.theSymbology != null && rf.theSymbology.length() > 2) {
-				trkWrapper.setLineStyle(ImportReplay.replayLineStyleFor(rf.theSymbology.substring(2)));
-				if (rf.theSymbology.length() > 3) {
-					trkWrapper.setLineThickness(ImportReplay.replayLineThicknesFor(rf.theSymbology.substring(3)));
+			if (regSymbology != null && regSymbology.length() > 2) {
+				trkWrapper.setLineStyle(ImportReplay.replayLineStyleFor(regSymbology.substring(2)));
+				if (regSymbology.length() > 3) {
+					trkWrapper.setLineThickness(ImportReplay.replayLineThicknesFor(regSymbology.substring(3)));
 				}
 			}
 
