@@ -55,7 +55,6 @@ import Debrief.Wrappers.DynamicTrackShapes.DynamicTrackShapeWrapper;
 import Debrief.Wrappers.Track.LightweightTrackWrapper;
 import Debrief.Wrappers.Track.PlanningSegment;
 import Debrief.Wrappers.Track.TrackSegment;
-import Debrief.Wrappers.Track.TrackWrapper_Support.SegmentList;
 import MWC.GUI.BaseLayer;
 import MWC.GUI.Editable;
 import MWC.GUI.ExportLayerAsSingleItem;
@@ -729,7 +728,7 @@ public class ImportReplay extends PlainImporterBase {
 			_coreImporters.addElement(new ImportDynamicPolygon());
 
 			_coreImporters.addElement(new ImportSensorArc());
-			
+
 			_coreImporters.addElement(new ImportCreateNewTrackSegment());
 		}
 	}
@@ -1313,15 +1312,6 @@ public class ImportReplay extends PlainImporterBase {
 	}
 
 	/**
-	 * Returns true if the symbology indicates to create a new segment.
-	 * @param symbology Symbology of the track
-	 * @return true if the symbology indicates to create a new segment.
-	 */
-	final private boolean isSymNewSegment(final String symbology) {
-		return symbology.indexOf("NEW_SEGMENT") >= 0;
-	}
-	
-	/**
 	 * utility method to extract formatted property values from a symbology line,
 	 * such as: ;TEXT: CA[LAYER=Special_Layer,SYMBOL=missile] 21.42 0 0 N 21.88 0 0
 	 * W Other layer
@@ -1481,6 +1471,16 @@ public class ImportReplay extends PlainImporterBase {
 	public final void importThis(final String text, final int numLines, final MonitorProvider provider) {
 		final InputStream stream = new ByteArrayInputStream(text.getBytes());
 		importRep(null, stream, numLines, provider);
+	}
+
+	/**
+	 * Returns true if the symbology indicates to create a new segment.
+	 * 
+	 * @param symbology Symbology of the track
+	 * @return true if the symbology indicates to create a new segment.
+	 */
+	final private boolean isSymNewSegment(final String symbology) {
+		return symbology.indexOf("NEW_SEGMENT") >= 0;
 	}
 
 	private void proccessShapeWrapper(final PlainLineImporter thisOne, final Object thisObject) {
@@ -1842,20 +1842,20 @@ public class ImportReplay extends PlainImporterBase {
 			// https://github.com/debrief/debrief/issues/4932
 			// We should only read the style and thickness from the regular symbology
 			// and not from the extended.
-			
+
 			final String regSymbology;
 			if (rf.theSymbology == null) {
 				regSymbology = null;
-			}else {
+			} else {
 				final int endOfRegularSym = rf.theSymbology.indexOf('[');
 				if (endOfRegularSym >= 0) {
 					regSymbology = rf.theSymbology.substring(0, endOfRegularSym);
-				}else {
+				} else {
 					// We are not using extended symbology then
 					regSymbology = rf.theSymbology;
 				}
 			}
-			
+
 			// Note: line style & thickness only (currently) apply to whole tracks,
 			// so we will effectively just use the last value read in.
 			if (regSymbology != null && regSymbology.length() > 2) {
@@ -1868,14 +1868,14 @@ public class ImportReplay extends PlainImporterBase {
 			// Let's check if we have to split the track into another segment.
 			if (isSymNewSegment(rf.theSymbology)) {
 				TrackSegment newSegment = null;
-				String importMode = _importSettings.importMode;
-				
+				final String importMode = _importSettings.importMode;
+
 				if (importMode.equals(ImportReplay.IMPORT_AS_OTG)) {
 					newSegment = new TrackSegment(TrackSegment.ABSOLUTE);
 				} else if (importMode.equals(ImportReplay.IMPORT_AS_DR)) {
 					newSegment = new TrackSegment(TrackSegment.RELATIVE);
 				}
-				
+
 				newSegment.setName("Positions");
 
 				if (newSegment != null) {
@@ -1883,7 +1883,7 @@ public class ImportReplay extends PlainImporterBase {
 					trkWrapper.add(newSegment);
 				}
 			}
-			
+
 			// ok, are we
 
 			// add the fix to the track
@@ -2135,37 +2135,34 @@ public class ImportReplay extends PlainImporterBase {
 
 			addToLayer(thisWrapper, dest);
 
-		}else if (thisObject instanceof TrackSplitOrder) {
+		} else if (thisObject instanceof TrackSplitOrder) {
 			// Ok, we need to find out where we need to split the track.
-			
-			/*final TrackSplitOrder trackSplitOrder = (TrackSplitOrder) thisObject;
-			// Let's get the track first.
-			
-			final TrackWrapper track = (TrackWrapper) getLayerFor(trackSplitOrder.getTrackName());
-			final SegmentList allSegments = track.getSegments();
-			final Enumeration<Editable> elements = allSegments.elements();
-			while(elements.hasMoreElements()) {
-				final Editable editable = elements.nextElement();
-				
-				if (editable instanceof TrackSegment) {
-					final TrackSegment trackSegment = (TrackSegment)editable;
-					
-					final Enumeration<Editable> segmentIt = trackSegment.elements();
-					
-					while(segmentIt.hasMoreElements()) {
-						final Editable element = segmentIt.nextElement();
-						
-						System.out.println(element.getName());
-					}
-					
-				}
-				System.out.println(editable.getName());
-				
-				System.out.println("A");
-			}
-			System.out.println("Output " + track.getName());
-			*/
-			
+
+			/*
+			 * final TrackSplitOrder trackSplitOrder = (TrackSplitOrder) thisObject; //
+			 * Let's get the track first.
+			 * 
+			 * final TrackWrapper track = (TrackWrapper)
+			 * getLayerFor(trackSplitOrder.getTrackName()); final SegmentList allSegments =
+			 * track.getSegments(); final Enumeration<Editable> elements =
+			 * allSegments.elements(); while(elements.hasMoreElements()) { final Editable
+			 * editable = elements.nextElement();
+			 * 
+			 * if (editable instanceof TrackSegment) { final TrackSegment trackSegment =
+			 * (TrackSegment)editable;
+			 * 
+			 * final Enumeration<Editable> segmentIt = trackSegment.elements();
+			 * 
+			 * while(segmentIt.hasMoreElements()) { final Editable element =
+			 * segmentIt.nextElement();
+			 * 
+			 * System.out.println(element.getName()); }
+			 * 
+			 * } System.out.println(editable.getName());
+			 * 
+			 * System.out.println("A"); } System.out.println("Output " + track.getName());
+			 */
+
 		}
 
 		return res;
