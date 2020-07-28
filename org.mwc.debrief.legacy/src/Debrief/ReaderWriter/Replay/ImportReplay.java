@@ -2138,7 +2138,7 @@ public class ImportReplay extends PlainImporterBase {
 		}else if (thisObject instanceof TrackSplitOrder) {
 			// Ok, we need to find out where we need to split the track.
 			
-			final TrackSplitOrder trackSplitOrder = (TrackSplitOrder) thisObject;
+			/*final TrackSplitOrder trackSplitOrder = (TrackSplitOrder) thisObject;
 			// Let's get the track first.
 			
 			final TrackWrapper track = (TrackWrapper) getLayerFor(trackSplitOrder.getTrackName());
@@ -2164,6 +2164,8 @@ public class ImportReplay extends PlainImporterBase {
 				System.out.println("A");
 			}
 			System.out.println("Output " + track.getName());
+			*/
+			
 		}
 
 		return res;
