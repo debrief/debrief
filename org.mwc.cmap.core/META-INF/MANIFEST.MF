@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: CMap Core
 Bundle-SymbolicName: org.mwc.cmap.core; singleton:=true
-Bundle-Version: 1.0.267
+Bundle-Version: 1.0.268
 Bundle-ClassPath: cmap_core.jar,
  libs/WMFWriter.jar,
  libs/xstream-1.4.12.jar,
