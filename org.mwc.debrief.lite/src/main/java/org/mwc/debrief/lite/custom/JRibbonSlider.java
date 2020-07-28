@@ -35,8 +35,8 @@ public class JRibbonSlider extends JSlider {
 	private static final long serialVersionUID = 1L;
 
 	public JRibbonSlider(
-			final Projection<JRibbonSlider, SliderComponentContentModel, ComponentPresentationModel> projection) {
-		final SliderComponentContentModel contentModel = projection.getContentModel();
+			final Projection<JRibbonSlider, SliderCompContMdl, ComponentPresentationModel> projection) {
+		final SliderCompContMdl contentModel = projection.getContentModel();
 		setValue(contentModel.getValue());
 		setEnabled(contentModel.isEnabled());
 		setMaximum(contentModel.getMaximum());

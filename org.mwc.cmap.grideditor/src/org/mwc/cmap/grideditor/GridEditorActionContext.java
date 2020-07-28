@@ -35,6 +35,11 @@ public class GridEditorActionContext extends ActionContext {
 			}
 
 			@Override
+			public void itemSelected() {
+				//
+			}
+
+			@Override
 			public void selectionChanged() {
 				//
 			}
@@ -46,6 +51,11 @@ public class GridEditorActionContext extends ActionContext {
 		};
 
 		public void chartInputChanged();
+
+		/**
+		 * This is a generic click (it could be the same item)
+		 */
+		public void itemSelected();
 
 		public void selectionChanged();
 
@@ -109,7 +119,23 @@ public class GridEditorActionContext extends ActionContext {
 	}
 
 	@Override
+	/**
+	 * This is triggered when an item is clicked
+	 * 
+	 * @param selection Item selected
+	 */
 	public void setSelection(final ISelection selection) {
+		if (myListener != null) {
+			myListener.itemSelected();
+		}
+	}
+
+	/**
+	 * This is triggered only when we select a different item
+	 * 
+	 * @param selection Item selected
+	 */
+	public void setSelectionChanged(final ISelection selection) {
 		if (selection != null && false == selection instanceof IStructuredSelection) {
 			throw new IllegalStateException("Selection of table viewers is always structured : " + selection);
 		}

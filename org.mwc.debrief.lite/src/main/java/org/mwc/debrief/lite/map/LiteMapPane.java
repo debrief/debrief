@@ -54,10 +54,9 @@ public class LiteMapPane extends JMapPane {
 	 */
 	private static final long serialVersionUID = 1L;
 
-	private static final String WORLD_PROJECTION = "EPSG:3395"; // 3395 for Mercator proj (? or may
-
-	// be 3857?)
-	private static final String DATA_PROJECTION = "EPSG:4326";
+//	private static final String WORLD_PROJECTION = "EPSG:3395"; // 3395 for Mercator proj (? or may
+//	// be 3857?)
+//	private static final String DATA_PROJECTION = "EPSG:4326";
 
 	// Maximum are allowed in the map
 	public static double MAX_MAP_AREA = 2.0E15;

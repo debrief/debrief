@@ -66,6 +66,13 @@ public class TimeManager implements ControllableTime, TimeProvider {
 		_pSupport.addPropertyChangeListener(propertyType, listener);
 	}
 
+	public void firePeriodPropertyChange() {
+		// do we have any listeners?
+		if (_pSupport != null) {
+			_pSupport.firePropertyChange(PERIOD_CHANGED_PROPERTY_NAME, null, _timePeriod);
+		}
+	}
+
 	public void fireTimePropertyChange() {
 		// do we have any listeners?
 		if (_pSupport != null) {

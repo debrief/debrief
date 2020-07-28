@@ -29,7 +29,7 @@ import org.pushingpixels.neon.api.icon.ResizableIcon;
  * @author Ayesha
  *
  */
-public class SliderComponentContentModel implements ComponentContentModel {
+public class SliderCompContMdl implements ComponentContentModel {
 	public static class Builder {
 		private boolean isEnabled = true;
 		private ResizableIcon.Factory iconFactory;
@@ -48,8 +48,8 @@ public class SliderComponentContentModel implements ComponentContentModel {
 		private boolean paintTickSpacing;
 		private boolean paintLabels;
 
-		public SliderComponentContentModel build() {
-			final SliderComponentContentModel model = new SliderComponentContentModel();
+		public SliderCompContMdl build() {
+			final SliderCompContMdl model = new SliderCompContMdl();
 			model.setText(this.text);
 			model.changeListener = this.changeListener;
 			model.isEnabled = this.isEnabled;
@@ -171,11 +171,6 @@ public class SliderComponentContentModel implements ComponentContentModel {
 			return (int) (date.getTimeInMillis() / 1000L);
 		}
 	}
-
-	/**
-	 *
-	 */
-	private static final long serialVersionUID = 3020555105731152313L;
 
 	public static Builder builder() {
 		return new Builder();

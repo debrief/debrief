@@ -23,16 +23,16 @@ import org.pushingpixels.flamingo.api.ribbon.synapse.projection.ComponentProject
  *
  */
 public class RibbonRangeDisplayPanelProjection
-		extends ComponentProjection<JRibbonRangeDisplayPanel, RangeDisplayComponentContentModel> {
+		extends ComponentProjection<JRibbonRngeDsplyPnl, RangeDsplyCompContMdl> {
 
-	public RibbonRangeDisplayPanelProjection(final RangeDisplayComponentContentModel contentModel,
+	public RibbonRangeDisplayPanelProjection(final RangeDsplyCompContMdl contentModel,
 			final ComponentPresentationModel presentationModel,
-			final ComponentSupplier<JRibbonRangeDisplayPanel, RangeDisplayComponentContentModel, ComponentPresentationModel> componentSupplier) {
+			final ComponentSupplier<JRibbonRngeDsplyPnl, RangeDsplyCompContMdl, ComponentPresentationModel> componentSupplier) {
 		super(contentModel, presentationModel, componentSupplier);
 	}
 
 	@Override
-	protected void configureComponent(final JRibbonRangeDisplayPanel component) {
+	protected void configureComponent(final JRibbonRngeDsplyPnl component) {
 		component.setMinValueText(getContentModel().getMinValueText());
 		component.setMaxValueText(getContentModel().getMaxValueText());
 //    component.getMinimumValue().setSize(new Dimension(60,20));

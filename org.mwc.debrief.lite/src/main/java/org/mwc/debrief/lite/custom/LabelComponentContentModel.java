@@ -17,7 +17,6 @@ package org.mwc.debrief.lite.custom;
 
 import java.awt.Color;
 import java.awt.Font;
-import java.awt.event.ActionListener;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 
@@ -39,8 +38,6 @@ public class LabelComponentContentModel implements ComponentContentModel {
 		private String caption;
 		private RichTooltip richTooltip;
 		private String text;
-		private ActionListener actionListener;
-
 		private Border border;
 		private Color background;
 		private Color foreground;
@@ -50,7 +47,6 @@ public class LabelComponentContentModel implements ComponentContentModel {
 		public LabelComponentContentModel build() {
 			final LabelComponentContentModel model = new LabelComponentContentModel();
 			model.setText(this.text);
-			model.actionListener = this.actionListener;
 			model.isEnabled = this.isEnabled;
 			model.iconFactory = this.iconFactory;
 			model.caption = this.caption;
@@ -114,8 +110,6 @@ public class LabelComponentContentModel implements ComponentContentModel {
 	private String text;
 
 	private RichTooltip richTooltip;
-	private ActionListener actionListener;
-
 	private final PropertyChangeSupport pcs = new PropertyChangeSupport(this);
 
 	private Border border;

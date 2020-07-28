@@ -196,7 +196,6 @@ public class TestUtils
     
     JCommandButton saveDDButton =(JCommandButton)((JPanel)((JPanel)((JScrollablePanel)panel.getComponent(0)).getComponent(0)).getComponent(0)).getComponent(1);
     saveDDButton.setFireActionOnRollover(true);
-    System.out.println("Save Button:"+saveDDButton);
     return saveDDButton;
   }
   public static JCommandButtonStrip getTimeControllerCommands()
