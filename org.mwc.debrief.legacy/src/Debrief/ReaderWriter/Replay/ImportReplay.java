@@ -373,64 +373,6 @@ public class ImportReplay extends PlainImporterBase {
 		public final void testDRimport() {
 			doReadRep(ImportReplay.IMPORT_AS_DR, null, 3, 25, true);
 		}
-		
-		public void testNewSegment() throws IOException, ParseException {
-			final String text =
-					"951212 112700.000 NELSON   @C   22  7  0.63 N 21 45 14.91 W 334.9   2.0      0 \n" + 
-					"951212 112800.000 NELSON   @C   22  7  7.00 N 21 45 19.26 W 340.7   2.0      0 \n" + 
-					"951212 112900.000 NELSON   @C[NEW_SEGMENT]   22  7 14.33 N 21 45 23.01 W 346.1   2.0      0 \n" + 
-					"951212 113000.000 NELSON   @C   22  7 21.35 N 21 45 25.55 W  21.4   2.0      0 \n" + 
-					"951212 113100.000 NELSON   @C   22  7 26.42 N 21 45 22.64 W  21.0   2.0      0 ";
-			
-			final ImportReplay importReplay = new ImportReplay();
-			final Layers dummyLayers = new Layers();
-			importReplay.setLayers(dummyLayers);
-			for (String line : text.split("\n")) {
-				importReplay.readLine(line);
-			}
-			Enumeration<Editable> elemIterator = dummyLayers.elements();
-			while (elemIterator.hasMoreElements()) {
-				final Editable element = elemIterator.nextElement();
-				assertEquals("Track Imported succesfully for new segment test", "NELSON", element.getName());
-				assertTrue("Correct type in the new segment test", element instanceof TrackWrapper);
-				final TrackWrapper trackWrapperNelson = (TrackWrapper) element;
-				final Enumeration<Editable> legsIterator = trackWrapperNelson.elements();
-				while (legsIterator.hasMoreElements()) {
-					final Editable leg = legsIterator.nextElement();
-					final SegmentList legList = (SegmentList)leg;
-					assertEquals("Amount of segment in new segment test", 2, legList.size());
-				}
-			}
-		}
-		
-		public void testNewSegment2() throws IOException, ParseException {
-			final String text =
-					"951212 112700.000 NELSON   @C   22  7  0.63 N 21 45 14.91 W 334.9   2.0      0 \n" + 
-					"951212 112800.000 NELSON   @C[NEW_SEGMENT]   22  7  7.00 N 21 45 19.26 W 340.7   2.0      0 \n" + 
-					"951212 112900.000 NELSON   @C[NEW_SEGMENT]   22  7 14.33 N 21 45 23.01 W 346.1   2.0      0 \n" + 
-					"951212 113000.000 NELSON   @C[NEW_SEGMENT]   22  7 21.35 N 21 45 25.55 W  21.4   2.0      0 \n" + 
-					"951212 113100.000 NELSON   @C   22  7 26.42 N 21 45 22.64 W  21.0   2.0      0 ";
-			
-			final ImportReplay importReplay = new ImportReplay();
-			final Layers dummyLayers = new Layers();
-			importReplay.setLayers(dummyLayers);
-			for (String line : text.split("\n")) {
-				importReplay.readLine(line);
-			}
-			Enumeration<Editable> elemIterator = dummyLayers.elements();
-			while (elemIterator.hasMoreElements()) {
-				final Editable element = elemIterator.nextElement();
-				assertEquals("Track Imported succesfully for new segment test", "NELSON", element.getName());
-				assertTrue("Correct type in the new segment test", element instanceof TrackWrapper);
-				final TrackWrapper trackWrapperNelson = (TrackWrapper) element;
-				final Enumeration<Editable> legsIterator = trackWrapperNelson.elements();
-				while (legsIterator.hasMoreElements()) {
-					final Editable leg = legsIterator.nextElement();
-					final SegmentList legList = (SegmentList)leg;
-					assertEquals("Amount of segment in new segment test", 4, legList.size());
-				}
-			}
-		}
 
 		public void testIsContentImportable() {
 			String textToPaste = ";LINE: @B 20 50 0 N 21 10 0 W 22 0 0 N 21 10 0 W test line\r\n"
@@ -457,6 +399,62 @@ public class ImportReplay extends PlainImporterBase {
 			assertTrue(isContentImportable(textToPaste));
 			textToPaste = "19951212 050000.000 \"NEL STYLE\"   @C      22 12 10.63 N 21 31 52.37 W 269.7   2.0      0 ";
 			assertTrue(isContentImportable(textToPaste));
+		}
+
+		public void testNewSegment() throws IOException, ParseException {
+			final String text = "951212 112700.000 NELSON   @C   22  7  0.63 N 21 45 14.91 W 334.9   2.0      0 \n"
+					+ "951212 112800.000 NELSON   @C   22  7  7.00 N 21 45 19.26 W 340.7   2.0      0 \n"
+					+ "951212 112900.000 NELSON   @C[NEW_SEGMENT]   22  7 14.33 N 21 45 23.01 W 346.1   2.0      0 \n"
+					+ "951212 113000.000 NELSON   @C   22  7 21.35 N 21 45 25.55 W  21.4   2.0      0 \n"
+					+ "951212 113100.000 NELSON   @C   22  7 26.42 N 21 45 22.64 W  21.0   2.0      0 ";
+
+			final ImportReplay importReplay = new ImportReplay();
+			final Layers dummyLayers = new Layers();
+			importReplay.setLayers(dummyLayers);
+			for (final String line : text.split("\n")) {
+				importReplay.readLine(line);
+			}
+			final Enumeration<Editable> elemIterator = dummyLayers.elements();
+			while (elemIterator.hasMoreElements()) {
+				final Editable element = elemIterator.nextElement();
+				assertEquals("Track Imported succesfully for new segment test", "NELSON", element.getName());
+				assertTrue("Correct type in the new segment test", element instanceof TrackWrapper);
+				final TrackWrapper trackWrapperNelson = (TrackWrapper) element;
+				final Enumeration<Editable> legsIterator = trackWrapperNelson.elements();
+				while (legsIterator.hasMoreElements()) {
+					final Editable leg = legsIterator.nextElement();
+					final SegmentList legList = (SegmentList) leg;
+					assertEquals("Amount of segment in new segment test", 2, legList.size());
+				}
+			}
+		}
+
+		public void testNewSegment2() throws IOException, ParseException {
+			final String text = "951212 112700.000 NELSON   @C   22  7  0.63 N 21 45 14.91 W 334.9   2.0      0 \n"
+					+ "951212 112800.000 NELSON   @C[NEW_SEGMENT]   22  7  7.00 N 21 45 19.26 W 340.7   2.0      0 \n"
+					+ "951212 112900.000 NELSON   @C[NEW_SEGMENT]   22  7 14.33 N 21 45 23.01 W 346.1   2.0      0 \n"
+					+ "951212 113000.000 NELSON   @C[NEW_SEGMENT]   22  7 21.35 N 21 45 25.55 W  21.4   2.0      0 \n"
+					+ "951212 113100.000 NELSON   @C   22  7 26.42 N 21 45 22.64 W  21.0   2.0      0 ";
+
+			final ImportReplay importReplay = new ImportReplay();
+			final Layers dummyLayers = new Layers();
+			importReplay.setLayers(dummyLayers);
+			for (final String line : text.split("\n")) {
+				importReplay.readLine(line);
+			}
+			final Enumeration<Editable> elemIterator = dummyLayers.elements();
+			while (elemIterator.hasMoreElements()) {
+				final Editable element = elemIterator.nextElement();
+				assertEquals("Track Imported succesfully for new segment test", "NELSON", element.getName());
+				assertTrue("Correct type in the new segment test", element instanceof TrackWrapper);
+				final TrackWrapper trackWrapperNelson = (TrackWrapper) element;
+				final Enumeration<Editable> legsIterator = trackWrapperNelson.elements();
+				while (legsIterator.hasMoreElements()) {
+					final Editable leg = legsIterator.nextElement();
+					final SegmentList legList = (SegmentList) leg;
+					assertEquals("Amount of segment in new segment test", 4, legList.size());
+				}
+			}
 		}
 
 		public final void testOTGimport1() {
@@ -1534,7 +1532,7 @@ public class ImportReplay extends PlainImporterBase {
 
 	/**
 	 * Returns true if the symbology indicates to create a new segment.
-	 * 
+	 *
 	 * @param symbology Symbology of the track
 	 * @return true if the symbology indicates to create a new segment.
 	 */
@@ -2200,25 +2198,25 @@ public class ImportReplay extends PlainImporterBase {
 			/*
 			 * final TrackSplitOrder trackSplitOrder = (TrackSplitOrder) thisObject; //
 			 * Let's get the track first.
-			 * 
+			 *
 			 * final TrackWrapper track = (TrackWrapper)
 			 * getLayerFor(trackSplitOrder.getTrackName()); final SegmentList allSegments =
 			 * track.getSegments(); final Enumeration<Editable> elements =
 			 * allSegments.elements(); while(elements.hasMoreElements()) { final Editable
 			 * editable = elements.nextElement();
-			 * 
+			 *
 			 * if (editable instanceof TrackSegment) { final TrackSegment trackSegment =
 			 * (TrackSegment)editable;
-			 * 
+			 *
 			 * final Enumeration<Editable> segmentIt = trackSegment.elements();
-			 * 
+			 *
 			 * while(segmentIt.hasMoreElements()) { final Editable element =
 			 * segmentIt.nextElement();
-			 * 
+			 *
 			 * System.out.println(element.getName()); }
-			 * 
+			 *
 			 * } System.out.println(editable.getName());
-			 * 
+			 *
 			 * System.out.println("A"); } System.out.println("Output " + track.getName());
 			 */
 
