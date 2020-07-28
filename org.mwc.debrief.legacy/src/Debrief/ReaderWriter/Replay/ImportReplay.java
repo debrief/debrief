@@ -55,6 +55,7 @@ import Debrief.Wrappers.DynamicTrackShapes.DynamicTrackShapeWrapper;
 import Debrief.Wrappers.Track.LightweightTrackWrapper;
 import Debrief.Wrappers.Track.PlanningSegment;
 import Debrief.Wrappers.Track.TrackSegment;
+import Debrief.Wrappers.Track.TrackWrapper_Support.SegmentList;
 import MWC.GUI.BaseLayer;
 import MWC.GUI.Editable;
 import MWC.GUI.ExportLayerAsSingleItem;
@@ -371,6 +372,64 @@ public class ImportReplay extends PlainImporterBase {
 
 		public final void testDRimport() {
 			doReadRep(ImportReplay.IMPORT_AS_DR, null, 3, 25, true);
+		}
+		
+		public void testNewSegment() throws IOException, ParseException {
+			final String text =
+					"951212 112700.000 NELSON   @C   22  7  0.63 N 21 45 14.91 W 334.9   2.0      0 \n" + 
+					"951212 112800.000 NELSON   @C   22  7  7.00 N 21 45 19.26 W 340.7   2.0      0 \n" + 
+					"951212 112900.000 NELSON   @C[NEW_SEGMENT]   22  7 14.33 N 21 45 23.01 W 346.1   2.0      0 \n" + 
+					"951212 113000.000 NELSON   @C   22  7 21.35 N 21 45 25.55 W  21.4   2.0      0 \n" + 
+					"951212 113100.000 NELSON   @C   22  7 26.42 N 21 45 22.64 W  21.0   2.0      0 ";
+			
+			final ImportReplay importReplay = new ImportReplay();
+			final Layers dummyLayers = new Layers();
+			importReplay.setLayers(dummyLayers);
+			for (String line : text.split("\n")) {
+				importReplay.readLine(line);
+			}
+			Enumeration<Editable> elemIterator = dummyLayers.elements();
+			while (elemIterator.hasMoreElements()) {
+				final Editable element = elemIterator.nextElement();
+				assertEquals("Track Imported succesfully for new segment test", "NELSON", element.getName());
+				assertTrue("Correct type in the new segment test", element instanceof TrackWrapper);
+				final TrackWrapper trackWrapperNelson = (TrackWrapper) element;
+				final Enumeration<Editable> legsIterator = trackWrapperNelson.elements();
+				while (legsIterator.hasMoreElements()) {
+					final Editable leg = legsIterator.nextElement();
+					final SegmentList legList = (SegmentList)leg;
+					assertEquals("Amount of segment in new segment test", 2, legList.size());
+				}
+			}
+		}
+		
+		public void testNewSegment2() throws IOException, ParseException {
+			final String text =
+					"951212 112700.000 NELSON   @C   22  7  0.63 N 21 45 14.91 W 334.9   2.0      0 \n" + 
+					"951212 112800.000 NELSON   @C[NEW_SEGMENT]   22  7  7.00 N 21 45 19.26 W 340.7   2.0      0 \n" + 
+					"951212 112900.000 NELSON   @C[NEW_SEGMENT]   22  7 14.33 N 21 45 23.01 W 346.1   2.0      0 \n" + 
+					"951212 113000.000 NELSON   @C[NEW_SEGMENT]   22  7 21.35 N 21 45 25.55 W  21.4   2.0      0 \n" + 
+					"951212 113100.000 NELSON   @C   22  7 26.42 N 21 45 22.64 W  21.0   2.0      0 ";
+			
+			final ImportReplay importReplay = new ImportReplay();
+			final Layers dummyLayers = new Layers();
+			importReplay.setLayers(dummyLayers);
+			for (String line : text.split("\n")) {
+				importReplay.readLine(line);
+			}
+			Enumeration<Editable> elemIterator = dummyLayers.elements();
+			while (elemIterator.hasMoreElements()) {
+				final Editable element = elemIterator.nextElement();
+				assertEquals("Track Imported succesfully for new segment test", "NELSON", element.getName());
+				assertTrue("Correct type in the new segment test", element instanceof TrackWrapper);
+				final TrackWrapper trackWrapperNelson = (TrackWrapper) element;
+				final Enumeration<Editable> legsIterator = trackWrapperNelson.elements();
+				while (legsIterator.hasMoreElements()) {
+					final Editable leg = legsIterator.nextElement();
+					final SegmentList legList = (SegmentList)leg;
+					assertEquals("Amount of segment in new segment test", 4, legList.size());
+				}
+			}
 		}
 
 		public void testIsContentImportable() {
