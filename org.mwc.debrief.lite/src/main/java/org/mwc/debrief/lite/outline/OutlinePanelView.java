@@ -15,6 +15,7 @@
 
 package org.mwc.debrief.lite.outline;
 
+import static Debrief.GUI.Views.LogicHelpers.getClipboardIsTrackTest;
 import static Debrief.GUI.Views.LogicHelpers.getClipboardNotEmptyTest;
 import static Debrief.GUI.Views.LogicHelpers.getIsFixesTest;
 import static Debrief.GUI.Views.LogicHelpers.getIsLayerTest;
@@ -135,7 +136,6 @@ public class OutlinePanelView extends SwingLayerManager implements ClipboardOwne
 		}
 	}
 
-	@SuppressWarnings("serial")
 	final class DoAddLayer extends PlainTool implements ActionListener {
 		final class AddLayerAction implements MWC.GUI.Tools.Action {
 			/**
@@ -200,7 +200,6 @@ public class OutlinePanelView extends SwingLayerManager implements ClipboardOwne
 		}
 	}
 
-	@SuppressWarnings("serial")
 	final class DoDelete extends PlainTool {
 		final class DeleteAction implements MWC.GUI.Tools.Action, ClipboardOwner {
 			private final Plottable plottable;
@@ -367,7 +366,6 @@ public class OutlinePanelView extends SwingLayerManager implements ClipboardOwne
 		}
 	}
 
-	@SuppressWarnings("serial")
 	final class DoPaste extends PlainTool {
 
 		final class PasteAction implements MWC.GUI.Tools.Action, ClipboardOwner {
@@ -971,6 +969,7 @@ public class OutlinePanelView extends SwingLayerManager implements ClipboardOwne
 		final EnabledTest selectionIsLayer = getIsLayerTest();
 		final EnabledTest clipboardIsFixes = getIsFixesTest();
 		final EnabledTest clipboardIsShapes = getIsShapesTest();
+		final EnabledTest clipboardIsLayer = getClipboardIsTrackTest();
 		// final EnabledTest isEmpty = getSelectionEmptyTest();
 		final EnabledTest notNarrative = getNotNarrativeTest();
 		final EnabledTest notIsLayer = getNotLayerTest();
@@ -1000,7 +999,7 @@ public class OutlinePanelView extends SwingLayerManager implements ClipboardOwne
 
 		final JButton pasteButton = createCommandButton("Paste", "icons/24/paste.png");
 		_enablers.add(new ButtonEnabler(pasteButton, new And(clipboardNotEmpty,
-				new Or(new And(selectionIsTrack, clipboardIsFixes), new And(selectionIsLayer, clipboardIsShapes)))));
+				new Or(new And(selectionIsTrack, clipboardIsFixes),new And(selectionIsLayer,clipboardIsLayer), new And(selectionIsLayer, clipboardIsShapes)))));
 		pasteButton.setEnabled(false);
 		pasteButton.setMnemonic(KeyEvent.VK_V);
 		commandBar.add(pasteButton);
@@ -1259,6 +1258,7 @@ public class OutlinePanelView extends SwingLayerManager implements ClipboardOwne
 						if (newItem instanceof FixWrapper) {
 							rootNode = (DefaultMutableTreeNode) rootNode.getFirstChild();
 						}
+						((DefaultTreeModel) _myTree.getModel()).reload(rootNode);
 						itemNode = getTreeNode(rootNode, newItem.getName(), newItem);
 					}
 					if (itemNode != null) {

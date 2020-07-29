@@ -245,6 +245,23 @@ public class LogicHelpers {
 			}
 		};
 	}
+	
+	public static EnabledTest getClipboardIsTrackTest() {
+		return new EnabledTest("Clipboard is track") {
+			@Override
+			public boolean isEnabled(final Helper helper) {
+				final ArrayList<Plottable> sel = helper.getClipboardContents();
+				if (sel.size() == 1) {
+					final Plottable first = sel.get(0);
+					if (first instanceof TrackWrapper) {
+						return true;
+					}
+				}
+				return false;
+			}
+		};
+	}
+	
 
 	public static EnabledTest getIsShapesTest() {
 		return new EnabledTest("Clipboard is shapes or labels") {

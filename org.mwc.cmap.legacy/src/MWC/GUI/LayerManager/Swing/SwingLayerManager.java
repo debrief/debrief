@@ -1252,11 +1252,17 @@ public class SwingLayerManager extends SwingCustomEditor
 							otherLayer);
 					if (otherL != null) {
 						updateLayer(thisL, otherLayer, theTopLayer);
+						//it should not be a leaf
+						if(thisL.isLeaf()) {
+							thisL.add(otherL);
+						}
 						children.remove(otherL);
 					} else {
 						thisL.add(makeLayer(otherLayer, theTopLayer, treeCache));
 					}
-				} else {
+					
+				} 
+				else {
 					// hey, it's a leaf - just add it
 					final DefaultMutableTreeNode nodeL = (DefaultMutableTreeNode) getTreeNodeConstantTime(treeCache,
 							pl);
