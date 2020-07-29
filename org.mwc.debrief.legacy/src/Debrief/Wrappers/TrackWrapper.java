@@ -67,6 +67,7 @@ import MWC.GUI.HasEditables.ProvidesContiguousElements;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
 import MWC.GUI.Layers.NeedsToKnowAboutLayers;
+import MWC.GUI.Layers.NeedsWrappingInLayerManager;
 import MWC.GUI.MessageProvider;
 import MWC.GUI.PlainWrapper;
 import MWC.GUI.Plottable;
@@ -106,7 +107,7 @@ import MWC.Utilities.TextFormatting.FormatRNDateTime;
  * the FixWrapper
  */
 public class TrackWrapper extends LightweightTrackWrapper implements WatchableList, DraggableItem,
-		HasDraggableComponents, ProvidesContiguousElements, ISecondaryTrack, DynamicPlottable, NeedsTidyingOnPaste {
+		HasDraggableComponents, ProvidesContiguousElements, ISecondaryTrack, DynamicPlottable, NeedsTidyingOnPaste, NeedsWrappingInLayerManager {
 
 	// //////////////////////////////////////
 	// member variables
@@ -3937,5 +3938,15 @@ public class TrackWrapper extends LightweightTrackWrapper implements WatchableLi
 		}
 
 		return visible;
+	}
+
+	@Override
+	public Layer wrapMe(Layers layers) {
+		final TrackWrapper newTrack = new TrackWrapper();
+		newTrack.setName(this.getName());
+		newTrack.setColor(Color.red);
+		newTrack.add(this);
+
+		return newTrack;
 	}
 }

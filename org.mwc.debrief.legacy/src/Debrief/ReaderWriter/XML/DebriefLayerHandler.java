@@ -31,8 +31,10 @@ import Debrief.ReaderWriter.XML.Shapes.RangeRingsHandler;
 import Debrief.ReaderWriter.XML.Shapes.RectangleHandler;
 import Debrief.ReaderWriter.XML.Shapes.VectorHandler;
 import Debrief.ReaderWriter.XML.Shapes.WheelHandler;
+import Debrief.ReaderWriter.XML.Tactical.HeavyWeightTrackHandler;
 import Debrief.ReaderWriter.XML.Tactical.LightweightTrackHandler;
 import Debrief.Wrappers.ShapeWrapper;
+import Debrief.Wrappers.TrackWrapper;
 import Debrief.Wrappers.Formatters.CoreFormatItemListener;
 import Debrief.Wrappers.Formatters.HideLayerFormatListener;
 import Debrief.Wrappers.Formatters.SliceTrackFormatListener;
@@ -58,7 +60,12 @@ public class DebriefLayerHandler extends MWC.Utilities.ReaderWriter.XML.LayerHan
 
 			// hey, the parent ones haven't either. Go for it.
 			LayerHandler.checkExporters();
-
+			_myExporters.put(TrackWrapper.class, new HeavyWeightTrackHandler() {
+				
+				@Override
+				public void storeTrack(TrackWrapper track) {
+				}
+			});
 			_myExporters.put(MWC.GUI.Shapes.ArcShape.class, new ArcHandler() {
 				@Override
 				public void addPlottable(final MWC.GUI.Plottable plottable) {
@@ -217,6 +224,13 @@ public class DebriefLayerHandler extends MWC.Utilities.ReaderWriter.XML.LayerHan
 		addHandler(new LightweightTrackHandler() {
 			@Override
 			public void storeTrack(final LightweightTrackWrapper track) {
+				addThis(track);
+			}
+		});
+		
+		addHandler(new HeavyWeightTrackHandler() {
+			@Override
+			public void storeTrack(final TrackWrapper track) {
 				addThis(track);
 			}
 		});
