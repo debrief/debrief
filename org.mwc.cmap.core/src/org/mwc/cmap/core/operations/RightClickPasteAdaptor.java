@@ -365,7 +365,7 @@ public class RightClickPasteAdaptor {
 	 */
 	public static PasteItem createAction(final Editable destination, final Layers theLayers, 
 			final Editable[] clipboardContents) {
-		PasteItem paster = null;
+		final PasteItem paster;
 		// see if all of the selected items are layers - or not
 		boolean allLayers = true;
 		for (int i = 0; i < clipboardContents.length; i++) {
@@ -378,37 +378,40 @@ public class RightClickPasteAdaptor {
 			// just check that it we're not trying to drop a layer onto a layer
 			if ((editable instanceof BaseLayer) && (destination instanceof BaseLayer)) {
 				// nope, we don't allow a baselayer to be dropped onto a baselayer
-				return paster;
+				return null;
 			}
 			if ((editable instanceof TrackWrapper) && (destination instanceof BaseLayer)) {
 				// nope, we don't allow a baselayer to be dropped onto a baselayer
-				return paster;
+				return null;
 			}
 
 		}
 
 		// so, are we just dealing with layers?
 		if (allLayers) {
-			// create the menu items
+			// create the menu items.
+			// Note: destination can be null,if we're pasting to top level
 			paster = new PasteLayer(clipboardContents, (Layer) destination, theLayers);
 		} else {
 			// just check that there isn't a null destination
-			if (destination != null) {
-				// just check that the layers are compliant (that we're not trying to paste a
-				// dynamic
-				// plottable
-				// into a non-compliant layer
-				if (!(destination instanceof DynamicLayer) || clipboardContents[0] instanceof DynamicPlottable) {
-					// create the menu items
-					paster = new PasteItem(clipboardContents, (Layer) destination, theLayers);
+			final boolean hasDest = destination != null;
+			final boolean contentsDynamic = clipboardContents[0] instanceof DynamicPlottable;
+			final boolean destinationDynamic = destination instanceof DynamicLayer;
+			// just check that the layers are compliant (that we're not trying to paste a
+			// dynamic plottable into a non-compliant layer)
+			if(hasDest && (!contentsDynamic || destinationDynamic)) {
+				// create the menu items
+				paster = new PasteItem(clipboardContents, (Layer) destination, theLayers);
 
-					// formatting
-					paster.setImageDescriptor(PlatformUI.getWorkbench().getSharedImages()
-							.getImageDescriptor(ISharedImages.IMG_TOOL_PASTE));
-					paster.setActionDefinitionId(ActionFactory.PASTE.getCommandId());
-				}
+				// formatting
+				paster.setImageDescriptor(PlatformUI.getWorkbench().getSharedImages()
+						.getImageDescriptor(ISharedImages.IMG_TOOL_PASTE));
+				paster.setActionDefinitionId(ActionFactory.PASTE.getCommandId());
+			} else {
+				return null;
 			}
 		}
+		
 		return paster;
 	}
 
