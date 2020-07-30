@@ -35,6 +35,7 @@ import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.operations.RightClickCutCopyAdaptor.EditableTransfer;
 
 import Debrief.Wrappers.LabelWrapper;
+import Debrief.Wrappers.TrackWrapper;
 import Debrief.Wrappers.DynamicTrackShapes.DynamicTrackShapeSetWrapper;
 import MWC.GUI.BaseLayer;
 import MWC.GUI.CanEnumerate;
@@ -373,6 +374,10 @@ public class RightClickPasteAdaptor {
 
 			// just check that it we're not trying to drop a layer onto a layer
 			if ((editable instanceof BaseLayer) && (destination instanceof BaseLayer)) {
+				// nope, we don't allow a baselayer to be dropped onto a baselayer
+				return paster;
+			}
+			if ((editable instanceof TrackWrapper) && (destination instanceof BaseLayer)) {
 				// nope, we don't allow a baselayer to be dropped onto a baselayer
 				return paster;
 			}
