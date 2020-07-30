@@ -344,8 +344,7 @@ public final class ImportTMA_Pos extends AbstractPlainLineImporter {
 				orientation = MWCXMLReader.readThisDouble(next);
 				maxima = MWCXMLReader.readThisDouble(st.nextToken());
 				minima = MWCXMLReader.readThisDouble(st.nextToken());
-
-				theEllipse = new EllipseShape(null, orientation,
+				theEllipse = new EllipseShape(origin, orientation,
 						new WorldDistance(Conversions.Yds2Degs(maxima), WorldDistance.DEGS),
 						new WorldDistance(Conversions.Yds2Degs(minima), WorldDistance.DEGS));
 
