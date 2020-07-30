@@ -35,7 +35,6 @@ import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.operations.RightClickCutCopyAdaptor.EditableTransfer;
 
 import Debrief.Wrappers.LabelWrapper;
-import Debrief.Wrappers.TrackWrapper;
 import Debrief.Wrappers.DynamicTrackShapes.DynamicTrackShapeSetWrapper;
 import MWC.GUI.BaseLayer;
 import MWC.GUI.CanEnumerate;
@@ -46,6 +45,7 @@ import MWC.GUI.HasEditables;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
 import MWC.GUI.Renamable;
+import MWC.GUI.Tools.Operations.RightClickPasteAdaptor.CannotBePastedIntoLayer;
 import MWC.GUI.Tools.Operations.RightClickPasteAdaptor.NeedsTidyingOnPaste;
 import MWC.GenericData.WorldLocation;
 import junit.framework.TestCase;
@@ -380,8 +380,8 @@ public class RightClickPasteAdaptor {
 				// nope, we don't allow a baselayer to be dropped onto a baselayer
 				return null;
 			}
-			if ((editable instanceof TrackWrapper) && (destination instanceof BaseLayer)) {
-				// nope, we don't allow a baselayer to be dropped onto a baselayer
+			if ((destination != null) && (destination instanceof BaseLayer) && !(editable instanceof CannotBePastedIntoLayer)) {
+				// nope, we don't allow a this type of object to be dropped onto a baselayer
 				return null;
 			}
 
@@ -402,14 +402,16 @@ public class RightClickPasteAdaptor {
 			if(hasDest && (!contentsDynamic || destinationDynamic)) {
 				// create the menu items
 				paster = new PasteItem(clipboardContents, (Layer) destination, theLayers);
-
-				// formatting
-				paster.setImageDescriptor(PlatformUI.getWorkbench().getSharedImages()
-						.getImageDescriptor(ISharedImages.IMG_TOOL_PASTE));
-				paster.setActionDefinitionId(ActionFactory.PASTE.getCommandId());
 			} else {
 				return null;
 			}
+		}
+
+		if(paster != null) {
+			// format the action
+			paster.setImageDescriptor(PlatformUI.getWorkbench().getSharedImages()
+					.getImageDescriptor(ISharedImages.IMG_TOOL_PASTE));
+			paster.setActionDefinitionId(ActionFactory.PASTE.getCommandId());
 		}
 		
 		return paster;

@@ -84,6 +84,7 @@ import MWC.GUI.Shapes.TextLabel;
 import MWC.GUI.Shapes.Symbols.SymbolFactoryPropertyEditor;
 import MWC.GUI.Shapes.Symbols.SymbolScalePropertyEditor;
 import MWC.GUI.Shapes.Symbols.Vessels.WorldScaledSym;
+import MWC.GUI.Tools.Operations.RightClickPasteAdaptor.CannotBePastedIntoLayer;
 import MWC.GUI.Tools.Operations.RightClickPasteAdaptor.NeedsTidyingOnPaste;
 import MWC.GenericData.Duration;
 import MWC.GenericData.HiResDate;
@@ -106,7 +107,8 @@ import MWC.Utilities.TextFormatting.FormatRNDateTime;
  * the FixWrapper
  */
 public class TrackWrapper extends LightweightTrackWrapper implements WatchableList, DraggableItem,
-		HasDraggableComponents, ProvidesContiguousElements, ISecondaryTrack, DynamicPlottable, NeedsTidyingOnPaste {
+		HasDraggableComponents, ProvidesContiguousElements, ISecondaryTrack, DynamicPlottable, 
+		NeedsTidyingOnPaste, CannotBePastedIntoLayer {
 
 	// //////////////////////////////////////
 	// member variables
