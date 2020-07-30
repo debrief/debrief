@@ -141,8 +141,7 @@ public class RightClickPasteAdaptor {
 	}
 
 	public static class PasteLayer extends PasteItem {
-		public PasteLayer(final Editable[] items, final Layer theDestination,
-				final Layers theLayers) {
+		public PasteLayer(final Editable[] items, final Layer theDestination, final Layers theLayers) {
 			super(items, theDestination, theLayers);
 		}
 
@@ -356,14 +355,15 @@ public class RightClickPasteAdaptor {
 		return false;
 	}
 
-	/** create action to paste item(s) into target
+	/**
+	 * create action to paste item(s) into target
 	 * 
-	 * @param destination where it's to be pasted into
-	 * @param theLayers top level layers object (required for refresh)
+	 * @param destination       where it's to be pasted into
+	 * @param theLayers         top level layers object (required for refresh)
 	 * @param clipboardContents
 	 * @return action, or null if paste not possible
 	 */
-	public static PasteItem createAction(final Editable destination, final Layers theLayers, 
+	public static PasteItem createAction(final Editable destination, final Layers theLayers,
 			final Editable[] clipboardContents) {
 		final PasteItem paster;
 		// see if all of the selected items are layers - or not
@@ -380,7 +380,8 @@ public class RightClickPasteAdaptor {
 				// nope, we don't allow a baselayer to be dropped onto a baselayer
 				return null;
 			}
-			if ((destination != null) && (destination instanceof BaseLayer) && !(editable instanceof CannotBePastedIntoLayer)) {
+			if ((destination != null) && (destination instanceof BaseLayer)
+					&& !(editable instanceof CannotBePastedIntoLayer)) {
 				// nope, we don't allow a this type of object to be dropped onto a baselayer
 				return null;
 			}
@@ -399,7 +400,7 @@ public class RightClickPasteAdaptor {
 			final boolean destinationDynamic = destination instanceof DynamicLayer;
 			// just check that the layers are compliant (that we're not trying to paste a
 			// dynamic plottable into a non-compliant layer)
-			if(hasDest && (!contentsDynamic || destinationDynamic)) {
+			if (hasDest && (!contentsDynamic || destinationDynamic)) {
 				// create the menu items
 				paster = new PasteItem(clipboardContents, (Layer) destination, theLayers);
 			} else {
@@ -407,13 +408,13 @@ public class RightClickPasteAdaptor {
 			}
 		}
 
-		if(paster != null) {
+		if (paster != null) {
 			// format the action
-			paster.setImageDescriptor(PlatformUI.getWorkbench().getSharedImages()
-					.getImageDescriptor(ISharedImages.IMG_TOOL_PASTE));
+			paster.setImageDescriptor(
+					PlatformUI.getWorkbench().getSharedImages().getImageDescriptor(ISharedImages.IMG_TOOL_PASTE));
 			paster.setActionDefinitionId(ActionFactory.PASTE.getCommandId());
 		}
-		
+
 		return paster;
 	}
 
