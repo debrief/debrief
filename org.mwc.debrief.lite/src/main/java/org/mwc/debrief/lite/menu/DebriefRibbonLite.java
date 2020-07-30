@@ -78,7 +78,6 @@ public class DebriefRibbonLite {
 		 *
 		 */
 		private static final long serialVersionUID = 1L;
-		@SuppressWarnings("unused")
 		private final String _path;
 
 		public HelpAction(final String path) {
@@ -88,8 +87,6 @@ public class DebriefRibbonLite {
 		@Override
 		public void actionPerformed(final ActionEvent e) {
 			if (Desktop.isDesktopSupported()) {
-//        JOptionPane.showMessageDialog(null, "Please see the file titled ReadMe.pdf");
-
 				try {
 					final File myFile = new File(_path);
 					Desktop.getDesktop().open(myFile);
@@ -115,6 +112,7 @@ public class DebriefRibbonLite {
 
 	static Command collapseCommand;
 
+	@SuppressWarnings("deprecation")
 	protected static void addLiteTab(final JRibbon ribbon, final Session session, final Runnable resetAction,
 			final Runnable exitAction, final Runnable collapseAction, final String path) {
 		final JRibbonBand liteMenu = new JRibbonBand("Lite", null);

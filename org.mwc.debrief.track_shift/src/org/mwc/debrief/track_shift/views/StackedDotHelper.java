@@ -48,6 +48,7 @@ import org.jfree.data.time.TimeSeriesDataItem;
 import org.jfree.util.ShapeUtilities;
 import org.mwc.cmap.core.CorePlugin;
 import org.mwc.debrief.core.ContextOperations.GenerateTMASegmentFromCuts.TMAfromCuts;
+import org.mwc.debrief.track_shift.TrackShiftActivator;
 import org.mwc.debrief.track_shift.controls.ZoneChart;
 import org.mwc.debrief.track_shift.controls.ZoneChart.ColorProvider;
 import org.mwc.debrief.track_shift.controls.ZoneChart.Zone;
@@ -2432,7 +2433,7 @@ public final class StackedDotHelper {
 		SensorWrapper lastSensor = null;
 
 		// sort out the speed of sound
-		final String speedStr = CorePlugin.getDefault().getPreferenceStore()
+		final String speedStr = TrackShiftActivator.getDefault().getPreferenceStore()
 				.getString(FrequencyCalcs.SPEED_OF_SOUND_KTS_PROPERTY);
 		final double speedOfSound;
 		if (speedStr != null && speedStr.length() > 0) {

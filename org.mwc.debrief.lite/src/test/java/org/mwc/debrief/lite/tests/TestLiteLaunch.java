@@ -16,6 +16,7 @@
 package org.mwc.debrief.lite.tests;
 
 import java.awt.Component;
+import java.util.List;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -25,6 +26,7 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import org.mwc.debrief.lite.DebriefLiteApp;
 import org.mwc.debrief.lite.gui.custom.JXCollapsiblePaneWithTitle;
 import org.mwc.debrief.lite.utils.TestUtils;
+import org.pushingpixels.flamingo.api.common.JCommandButton;
 import org.pushingpixels.flamingo.api.ribbon.JRibbonFrame;
 
 /**
@@ -45,14 +47,18 @@ public class TestLiteLaunch extends BaseTestCase
   public void testTaskBarButtons()
   {
     JRibbonFrame ribbonFrame = DebriefLiteApp.getInstance().getApplicationFrame();
-//    assertNotNull(ribbonFrame.getRibbon().getTaskbarCommands());
-//    assertTrue(ribbonFrame.getRibbon().getTaskbarCommands().size()==3);
-//    assertFalse(ribbonFrame.getRibbon().getTaskbarCommands().get(0).isEnabled());
-//    assertFalse(ribbonFrame.getRibbon().getTaskbarCommands().get(1).isEnabled());
-//    assertTrue(ribbonFrame.getRibbon().getTaskbarCommands().get(2).isEnabled());
-//    assertTrue(ribbonFrame.getRibbon().getTaskbarCommands().get(0).getTitle().equals("Undo"));
-//    assertTrue(ribbonFrame.getRibbon().getTaskbarCommands().get(1).getTitle().equals("Redo"));
-//    assertTrue(ribbonFrame.getRibbon().getTaskbarCommands().get(2).getTitle().equals("Collapse"));
+    List<Component> taskbarComponents = ribbonFrame.getRibbon().getTaskbarComponents();
+	assertNotNull(taskbarComponents);
+    assertTrue(taskbarComponents.size()==3);
+    assertTrue(taskbarComponents.get(0).isEnabled());
+    assertTrue(taskbarComponents.get(1).isEnabled());
+    assertTrue(taskbarComponents.get(2).isEnabled());
+    final JCommandButton item1 = (JCommandButton) taskbarComponents.get(0);
+    final JCommandButton item2 = (JCommandButton) taskbarComponents.get(1);
+    final JCommandButton item3 = (JCommandButton) taskbarComponents.get(2);
+    assertTrue(item1.getText().equals("Undo"));
+    assertTrue(item2.getText().equals("Redo"));
+    assertTrue(item3.getText().equals("Collapse"));
   }
   
   public void testRibbonTabs()

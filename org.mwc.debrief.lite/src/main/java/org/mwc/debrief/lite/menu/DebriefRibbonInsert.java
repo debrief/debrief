@@ -29,7 +29,6 @@ import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.mwc.debrief.lite.map.GeoToolMapRenderer;
 import org.mwc.debrief.lite.shapes.actions.ArcShapeCommandAction;
 import org.mwc.debrief.lite.shapes.actions.CircleShapeCommandAction;
-import org.mwc.debrief.lite.shapes.actions.CoastCommandAction;
 import org.mwc.debrief.lite.shapes.actions.CreateGridCommandAction;
 import org.mwc.debrief.lite.shapes.actions.CreateScaleCommandAction;
 import org.mwc.debrief.lite.shapes.actions.EllipseShapeCommandAction;
@@ -221,14 +220,15 @@ public class DebriefRibbonInsert {
 
 		final JRibbonBand chartfeaturesMenu = createDecorations(theLayers, theProperties, toolParent, bounds);
 
-		final JRibbonBand referenceDataMenu = createReferenceData(theLayers, theProperties, toolParent, bounds);
+//		final JRibbonBand referenceDataMenu = createReferenceData(theLayers, theProperties, toolParent, bounds);
 
 		final JRibbonBand layersMenu = createLayerMenu(theLayers, toolParent);
 
 		final JRibbonBand drawingMenu = createShapes(theLayers, theProperties, toolParent, bounds);
 
 		/**
-		 * temporarily drop reference data
+		 * temporarily drop reference data section, since we already show the 
+		 * Natural Earth backdrop
 		 *
 		 */
 //    final RibbonTask drawingTask = new RibbonTask("Insert", chartfeaturesMenu,
@@ -253,27 +253,28 @@ public class DebriefRibbonInsert {
 
 	private static JRibbonBand createLayerMenu(final Layers _theLayers, final ToolParent toolParent) {
 		final JRibbonBand layersMenu = new JRibbonBand("Active Layer", null);
-		final RibbonComboBoxProjection projection = new RibbonComboBoxProjection(
-				addDropDown(layersMenu, PresentationPriority.TOP, _theLayers, toolParent),
+		final RibbonComboBoxContentModel<String> dropDown = addDropDown(layersMenu, PresentationPriority.TOP, _theLayers, toolParent);
+		final RibbonComboBoxProjection<String> projection = new RibbonComboBoxProjection<>(
+				dropDown,
 				ComponentPresentationModel.withDefaults());
 		layersMenu.addRibbonComponent(projection);
-		selectLayerCombo = (JComboBox)projection.buildComponent();
+		selectLayerCombo = (JComboBox<String>)projection.buildComponent();
 		selectLayerCombo.setName("select-layer-combo");
 		return layersMenu;
 	}
 
-	private static JRibbonBand createReferenceData(final Layers theLayers, final PropertiesPanel theProperties,
-			final ToolParent toolParent, final BoundsProvider bounds) {
-		final JRibbonBand referenceDataMenu = new JRibbonBand("Reference Data", null);
-		MenuUtils.addCommand("Coastline", "icons/24/coast_add.png",
-				new CoastCommandAction(toolParent, theProperties, theLayers, bounds), referenceDataMenu,
-				PresentationPriority.TOP, "Add coastline to the plot");
-		MenuUtils.addCommand("Natural Earth", "icons/24/NaturalEarth.png",
-				new CoastCommandAction(toolParent, theProperties, theLayers, bounds), referenceDataMenu,
-				PresentationPriority.TOP, "Add natural earth coastline to the plot");
-		referenceDataMenu.setResizePolicies(MenuUtils.getStandardRestrictivePolicies(referenceDataMenu));
-		return referenceDataMenu;
-	}
+//	private static JRibbonBand createReferenceData(final Layers theLayers, final PropertiesPanel theProperties,
+//			final ToolParent toolParent, final BoundsProvider bounds) {
+//		final JRibbonBand referenceDataMenu = new JRibbonBand("Reference Data", null);
+//		MenuUtils.addCommand("Coastline", "icons/24/coast_add.png",
+//				new CoastCommandAction(toolParent, theProperties, theLayers, bounds), referenceDataMenu,
+//				PresentationPriority.TOP, "Add coastline to the plot");
+//		MenuUtils.addCommand("Natural Earth", "icons/24/NaturalEarth.png",
+//				new CoastCommandAction(toolParent, theProperties, theLayers, bounds), referenceDataMenu,
+//				PresentationPriority.TOP, "Add natural earth coastline to the plot");
+//		referenceDataMenu.setResizePolicies(MenuUtils.getStandardRestrictivePolicies(referenceDataMenu));
+//		return referenceDataMenu;
+//	}
 
 	private static JRibbonBand createShapes(final Layers theLayers, final PropertiesPanel theProperties,
 			final ToolParent toolParent, final BoundsProvider bounds) {

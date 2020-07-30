@@ -1340,7 +1340,10 @@ public class FixWrapper extends PlainWrapper implements Watchable, CanvasType.Mu
 	 */
 	@Override
 	public final HiResDate getTime() {
-		return _theFix.getTime();
+		if (_theFix != null) {
+			return _theFix.getTime();
+		}
+		return HiResDate.NULL_DATE;
 	}
 
 	public final WatchableList getTrackWrapper() {
@@ -1807,4 +1810,24 @@ public class FixWrapper extends PlainWrapper implements Watchable, CanvasType.Mu
 	public final boolean visibleBetween(final HiResDate start, final HiResDate end) {
 		return ((this.getTime().greaterThan(start)) && (getTime().lessThan(end)));
 	}
+
+	@Override
+	public Object clone() {
+		final FixWrapper template = this;
+		final FixWrapper result = new FixWrapper(template.getFix().makeCopy());
+		result.setLabelShowing(template.getLabelShowing());
+		result.setLineShowing(template.getLineShowing());
+		result.setSymbolShowing(template.getSymbolShowing());
+		result.setArrowShowing(template.getArrowShowing());
+		result.setLabelLocation(template.getLabelLocation());
+
+		final Color col = template.getActualColor();
+		if (col != null) {
+			result.setColor(col);
+		}
+
+		return result;
+	}
+	
+	
 }

@@ -925,6 +925,9 @@ public class RightClickCutCopyAdaptor {
 	static public Editable cloneThis(final Editable item) {
 		Editable res = null;
 		try {
+			if (item instanceof FixWrapper) {
+				return (Editable) ((FixWrapper)item).clone();
+			}
 
 			final java.io.ByteArrayOutputStream bas = new ByteArrayOutputStream();
 			final java.io.ObjectOutputStream oos = new ObjectOutputStream(bas);

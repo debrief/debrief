@@ -23,7 +23,6 @@ import org.pushingpixels.flamingo.api.common.CommandAction;
 import org.pushingpixels.flamingo.api.common.CommandActionEvent;
 
 import MWC.GUI.ToolParent;
-import MWC.GUI.Tools.Action;
 
 /**
  * @author Ayesha

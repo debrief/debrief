@@ -103,6 +103,7 @@ import Debrief.GUI.Tote.Painters.PainterManager;
 import Debrief.GUI.Tote.Painters.SnailPainter2;
 import Debrief.GUI.Tote.Painters.TotePainter;
 import Debrief.ReaderWriter.NMEA.ImportNMEA;
+import Debrief.ReaderWriter.Nisida.ImportNisida;
 import Debrief.ReaderWriter.Replay.ImportReplay;
 import Debrief.ReaderWriter.XML.DebriefXMLReaderWriter;
 import Debrief.ReaderWriter.XML.SessionHandler;
@@ -606,7 +607,7 @@ public class DebriefLiteApp implements FileDropListener {
 			// make the actual change
 			final Vector<Layer> res = super.performOperation(operationName);
 
-			if (res != null && res.size() != 0) {
+			if (res != null && !res.isEmpty()) {
 				for (final Iterator<Layer> iter = res.iterator(); iter.hasNext();) {
 					final Layer thisL = iter.next();
 					// and update the screen
@@ -673,7 +674,7 @@ public class DebriefLiteApp implements FileDropListener {
 		geoMapRenderer = new GeoToolMapRenderer(initialAlpha, mapComponent, projection.getDataTransform().inverse());
 
 		final FileDropSupport dropSupport = new FileDropSupport();
-		dropSupport.setFileDropListener(this, " .REP, .XML, .DSF, .DTF, .DPF, .LOG, .TIF");
+		dropSupport.setFileDropListener(this, " .REP, .XML, .DSF, .DTF, .DPF, .LOG, .TIF, .TXT");
 
 		// provide some file helpers
 		ImportReplay.initialise(app);
@@ -1067,8 +1068,15 @@ public class DebriefLiteApp implements FileDropListener {
 					} else if (suff.equalsIgnoreCase(".TIF")) {
 						handleImportTIFFile(file);
 					} else {
-						Trace.trace("This file type not handled:" + suff);
-						DialogFactory.showMessage("Open Debrief file", "This file type not handled:" + suff);
+						// try nisida format - we can't rely on filename
+						FileInputStream fis = new FileInputStream(file);
+						if(ImportNisida.canLoadThisFile(fis)) {
+							fis.close();
+							handleImportNisidaFile(file);
+						} else {
+							Trace.trace("This file type not handled:" + suff);
+							DialogFactory.showMessage("Open Debrief file", "This file type not handled:" + suff);
+						}
 					}
 				}
 			}
@@ -1169,6 +1177,32 @@ public class DebriefLiteApp implements FileDropListener {
 		enableFileCloseButton(true);
 	}
 
+	private void handleImportNisidaFile(final File file) throws FileNotFoundException {
+		final FileInputStream fis = new FileInputStream(file);
+		try {
+			ImportNisida.importThis(fis, _theLayers);
+		} finally {
+			try {
+				fis.close();
+			} catch (final IOException e) {
+				getDefault().logError(ToolParent.ERROR, "Failed to close NMEA file", e);
+			}
+		}
+
+		final TimePeriod period = _theLayers.getTimePeriod();
+		_myOperations.setPeriod(period);
+		timeManager.setPeriod(this, period);
+		if (period != null) {
+			timeManager.setTime(this, period.getStartDTG(), true);
+		}
+
+		_theLayers.fireModified(null);
+
+		// also tell the layers they've been reformatted
+		_theLayers.fireReformatted(null);
+		enableFileCloseButton(true);
+	}
+	
 	private void enableFileCloseButton(boolean b) {
 		DebriefRibbonFile.closeButton.getContentModel().setActionEnabled(b);
 		
@@ -1209,11 +1243,12 @@ public class DebriefLiteApp implements FileDropListener {
 								restoreCursor();
 								// update the time panel
 								final TimePeriod period = _theLayers.getTimePeriod();
-								_myOperations.setPeriod(period);
-								timeManager.setPeriod(source, period);
 								if (period != null) {
+									_myOperations.setPeriod(period);
+									timeManager.setPeriod(source, period);
 									timeManager.setTime(source, period.getStartDTG(), true);
 								}
+								timeManager.firePeriodPropertyChange();
 
 								theTote.assignWatchables(true);
 

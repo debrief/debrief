@@ -17,6 +17,7 @@ package org.mwc.debrief.track_shift;
 
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
+import org.mwc.cmap.core.DebriefToolParent;
 import org.osgi.framework.BundleContext;
 
 /**
@@ -53,6 +54,7 @@ public class TrackShiftActivator extends AbstractUIPlugin {
 	 * The constructor.
 	 */
 	public TrackShiftActivator() {
+		super();
 		plugin = this;
 	}
 
@@ -62,6 +64,9 @@ public class TrackShiftActivator extends AbstractUIPlugin {
 	@Override
 	public void start(final BundleContext context) throws Exception {
 		super.start(context);
+		
+		// register as a preference helper
+		DebriefToolParent.registerPreferenceHelper(PLUGIN_ID);
 	}
 
 	/**
@@ -69,7 +74,7 @@ public class TrackShiftActivator extends AbstractUIPlugin {
 	 */
 	@Override
 	public void stop(final BundleContext context) throws Exception {
-		super.stop(context);
 		plugin = null;
+		super.stop(context);
 	}
 }

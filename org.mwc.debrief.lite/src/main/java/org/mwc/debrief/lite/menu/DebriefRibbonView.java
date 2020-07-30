@@ -30,7 +30,7 @@ import org.mwc.debrief.lite.custom.JRibbonSlider;
 import org.mwc.debrief.lite.custom.LabelComponentContentModel;
 import org.mwc.debrief.lite.custom.RibbonLabelProjection;
 import org.mwc.debrief.lite.custom.RibbonSliderProjection;
-import org.mwc.debrief.lite.custom.SliderComponentContentModel;
+import org.mwc.debrief.lite.custom.SliderCompContMdl;
 import org.mwc.debrief.lite.gui.FitToWindow;
 import org.mwc.debrief.lite.gui.GeoToolMapProjection;
 import org.mwc.debrief.lite.gui.ZoomOut;
@@ -74,16 +74,16 @@ public class DebriefRibbonView {
 	final static List<Command> rangeBearingUnitPopupCommands = new ArrayList<>();
 	private static JRibbonSlider transparencySlider;
 
-	private static ComponentProjection<JRibbonSlider, SliderComponentContentModel> addAlphaSlider(
+	private static ComponentProjection<JRibbonSlider, SliderCompContMdl> addAlphaSlider(
 			final ChangeListener alphaListener, final float alpha) {
 
-		final SliderComponentContentModel sliderModel = SliderComponentContentModel.builder().setEnabled(true)
+		final SliderCompContMdl sliderModel = SliderCompContMdl.builder().setEnabled(true)
 				.setMinimum(0).setMaximum(100).setMajorTickSpacing(20).setPaintTickSpacing(true).setPaintLabels(false)
 				.setChangeListener(alphaListener).build();
 		// set the values for the slider here.
-		final ComponentSupplier<JRibbonSlider, SliderComponentContentModel, ComponentPresentationModel> jribbonSlider = (
-				final Projection<JRibbonSlider, SliderComponentContentModel, ComponentPresentationModel> projection) -> JRibbonSlider::new;
-		final ComponentProjection<JRibbonSlider, SliderComponentContentModel> projection = new RibbonSliderProjection(
+		final ComponentSupplier<JRibbonSlider, SliderCompContMdl, ComponentPresentationModel> jribbonSlider = (
+				final Projection<JRibbonSlider, SliderCompContMdl, ComponentPresentationModel> projection) -> JRibbonSlider::new;
+		final ComponentProjection<JRibbonSlider, SliderCompContMdl> projection = new RibbonSliderProjection(
 				sliderModel, ComponentPresentationModel.withDefaults(), jribbonSlider);
 		transparencySlider = projection.buildComponent();
 		transparencySlider.setToolTipText("Modify transparency");
@@ -101,7 +101,7 @@ public class DebriefRibbonView {
 
 		// and the slider
 		final JRibbonBand layersMenu = new JRibbonBand("Background", null);
-		final ComponentProjection<JRibbonSlider, SliderComponentContentModel> slider = addAlphaSlider(alphaListener,
+		final ComponentProjection<JRibbonSlider, SliderCompContMdl> slider = addAlphaSlider(alphaListener,
 				alpha);
 		layersMenu.addRibbonComponent(slider);
 

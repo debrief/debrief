@@ -135,7 +135,6 @@ public class OutlinePanelView extends SwingLayerManager implements ClipboardOwne
 		}
 	}
 
-	@SuppressWarnings("serial")
 	final class DoAddLayer extends PlainTool implements ActionListener {
 		final class AddLayerAction implements MWC.GUI.Tools.Action {
 			/**
@@ -200,7 +199,6 @@ public class OutlinePanelView extends SwingLayerManager implements ClipboardOwne
 		}
 	}
 
-	@SuppressWarnings("serial")
 	final class DoDelete extends PlainTool {
 		final class DeleteAction implements MWC.GUI.Tools.Action, ClipboardOwner {
 			private final Plottable plottable;
@@ -367,7 +365,6 @@ public class OutlinePanelView extends SwingLayerManager implements ClipboardOwne
 		}
 	}
 
-	@SuppressWarnings("serial")
 	final class DoPaste extends PlainTool {
 
 		final class PasteAction implements MWC.GUI.Tools.Action, ClipboardOwner {
@@ -956,6 +953,7 @@ public class OutlinePanelView extends SwingLayerManager implements ClipboardOwne
 		return res;
 	}
 
+	@SuppressWarnings("deprecation")
 	@Override
 	protected void initForm() {
 		super.initForm(true);
