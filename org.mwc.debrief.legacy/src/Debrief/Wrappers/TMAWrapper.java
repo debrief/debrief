@@ -511,8 +511,7 @@ public final class TMAWrapper extends TacticalDataWrapper {
 		final double maxima = interp.interp(_last.getMaxima().getValueIn(WorldDistance.DEGS),
 				_next.getMaxima().getValueIn(WorldDistance.DEGS));
 		final double orient = interp.interp(_last.getOrientation(), _next.getOrientation());
-
-		final EllipseShape theEllipse = new EllipseShape(null, orient, new WorldDistance(maxima, WorldDistance.DEGS),
+		final EllipseShape theEllipse = new EllipseShape(new WorldLocation(2,2,0), orient, new WorldDistance(maxima, WorldDistance.DEGS),
 				new WorldDistance(minima, WorldDistance.DEGS));
 
 		// do we have an origin?
