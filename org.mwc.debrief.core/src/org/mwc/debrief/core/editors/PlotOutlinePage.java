@@ -302,20 +302,8 @@ public class PlotOutlinePage extends Page implements IContentOutlinePage {
 
 	private static Set<Layer> _pendingLayers = new TreeSet<Layer>(new Comparator<Layer>() {
 		@Override
-		@SuppressWarnings({ "unchecked", "rawtypes" })
 		public int compare(final Layer arg0, final Layer arg1) {
-			int res = 1;
-
-			if (arg0.equals(arg1)) {
-				res = 0;
-			}
-
-			if (arg0 instanceof Comparable) {
-				final Comparable c0 = arg0;
-				res = c0.compareTo(arg1);
-			}
-
-			return res;
+			return arg0.compareTo(arg1);
 		}
 
 	});
@@ -638,7 +626,7 @@ public class PlotOutlinePage extends Page implements IContentOutlinePage {
 					selectedItem = selectionContext.eList[0];
 				}
 				if ((selectedItem instanceof MWC.GUI.Layer) || (selectedItem == null)) {
-					return RightClickPasteAdaptor.createAction(selectedItem, _myLayers, _clipboard, tr) != null;
+					return RightClickPasteAdaptor.createAction(selectedItem, _myLayers, tr) != null;
 				}
 
 				return false;
@@ -669,7 +657,7 @@ public class PlotOutlinePage extends Page implements IContentOutlinePage {
 					selectedItem = selectionContext.eList[0];
 				}
 				if ((selectedItem instanceof MWC.GUI.Layer) || (selectedItem == null)) {
-					RightClickPasteAdaptor.createAction(selectedItem, _myLayers, _clipboard, tr).run();
+					RightClickPasteAdaptor.createAction(selectedItem, _myLayers, tr).run();
 				}
 
 			}
