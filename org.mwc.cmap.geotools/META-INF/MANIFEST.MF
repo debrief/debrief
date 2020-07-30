@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: GeoTools - The Open Source Java GIS Toolkit
 Bundle-SymbolicName: org.mwc.cmap.geotools
-Bundle-Version: 1.0.11
+Bundle-Version: 1.0.12
 Require-Bundle: org.mwc.cmap.legacy;bundle-version="1.0.278",
  org.mwc.debrief.legacy;bundle-version="1.0.409"
 Bundle-RequiredExecutionEnvironment: JavaSE-11
