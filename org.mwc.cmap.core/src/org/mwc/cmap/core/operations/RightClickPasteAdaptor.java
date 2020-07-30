@@ -141,7 +141,7 @@ public class RightClickPasteAdaptor {
 	}
 
 	public static class PasteLayer extends PasteItem {
-		public PasteLayer(final Editable[] items, final Clipboard clipboard, final Layer theDestination,
+		public PasteLayer(final Editable[] items, final Layer theDestination,
 				final Layers theLayers) {
 			super(items, theDestination, theLayers);
 		}
@@ -243,10 +243,9 @@ public class RightClickPasteAdaptor {
 			final BaseLayer layer3 = new BaseLayer();
 			layer3.setName("name");
 			final Editable[] items = new Editable[] { layer1, layer2, layer3 };
-			final Clipboard clipboard = null;
 			final Layer destination = null;
 
-			final PasteItem action = createAction(destination, layers, clipboard, items);
+			final PasteItem action = createAction(destination, layers, items);
 
 			assertEquals("Check empty", 0, layers.size());
 
@@ -264,10 +263,9 @@ public class RightClickPasteAdaptor {
 			final BaseLayer layer3 = new BaseLayer();
 			layer3.setName("name");
 			final Editable[] items = new Editable[] { layer1, layer2, layer3 };
-			final Clipboard clipboard = null;
 			final DynamicLayer destination = new DynamicLayer();
 
-			final PasteItem action = createAction(destination, layers, clipboard, items);
+			final PasteItem action = createAction(destination, layers, items);
 
 			assertNull("failed to create action", action);
 		}
@@ -277,9 +275,8 @@ public class RightClickPasteAdaptor {
 			final DynamicTrackShapeSetWrapper layer1 = new DynamicTrackShapeSetWrapper("title");
 			layer1.setName("name");
 			final Editable[] items = new Editable[] { layer1 };
-			final Clipboard clipboard = null;
 			final DynamicLayer destination = new DynamicLayer();
-			final PasteItem action = createAction(destination, layers, clipboard, items);
+			final PasteItem action = createAction(destination, layers, items);
 			assertNull("failed to create action", action);
 		}
 
@@ -318,9 +315,8 @@ public class RightClickPasteAdaptor {
 			final BaseLayer layer3 = new BaseLayer();
 			layer3.setName("name");
 			final Editable[] items = new Editable[] { layer1, layer2, layer3 };
-			final Clipboard clipboard = null;
 			final Layer destination = null;
-			final PasteItem paste = new PasteLayer(items, clipboard, destination, layers);
+			final PasteItem paste = new PasteLayer(items, destination, layers);
 
 			assertEquals("starts empty", 0, layers.size());
 
@@ -360,13 +356,20 @@ public class RightClickPasteAdaptor {
 		return false;
 	}
 
-	public static PasteItem createAction(final Editable destination, final Layers theLayers, final Clipboard _clipboard,
-			final Editable[] theDataList) {
+	/** create action to paste item(s) into target
+	 * 
+	 * @param destination where it's to be pasted into
+	 * @param theLayers top level layers object (required for refresh)
+	 * @param clipboardContents
+	 * @return action, or null if paste not possible
+	 */
+	public static PasteItem createAction(final Editable destination, final Layers theLayers, 
+			final Editable[] clipboardContents) {
 		PasteItem paster = null;
 		// see if all of the selected items are layers - or not
 		boolean allLayers = true;
-		for (int i = 0; i < theDataList.length; i++) {
-			final Editable editable = theDataList[i];
+		for (int i = 0; i < clipboardContents.length; i++) {
+			final Editable editable = clipboardContents[i];
 			if (!(editable instanceof Layer)) {
 				allLayers = false;
 				continue;
@@ -387,7 +390,7 @@ public class RightClickPasteAdaptor {
 		// so, are we just dealing with layers?
 		if (allLayers) {
 			// create the menu items
-			paster = new PasteLayer(theDataList, _clipboard, (Layer) destination, theLayers);
+			paster = new PasteLayer(clipboardContents, (Layer) destination, theLayers);
 		} else {
 			// just check that there isn't a null destination
 			if (destination != null) {
@@ -395,9 +398,9 @@ public class RightClickPasteAdaptor {
 				// dynamic
 				// plottable
 				// into a non-compliant layer
-				if (!(destination instanceof DynamicLayer) || theDataList[0] instanceof DynamicPlottable) {
+				if (!(destination instanceof DynamicLayer) || clipboardContents[0] instanceof DynamicPlottable) {
 					// create the menu items
-					paster = new PasteItem(theDataList, (Layer) destination, theLayers);
+					paster = new PasteItem(clipboardContents, (Layer) destination, theLayers);
 
 					// formatting
 					paster.setImageDescriptor(PlatformUI.getWorkbench().getSharedImages()
@@ -431,7 +434,7 @@ public class RightClickPasteAdaptor {
 					// extract the plottable
 					PasteItem paster = null;
 
-					paster = createAction(destination, theLayers, _clipboard, tr);
+					paster = createAction(destination, theLayers, tr);
 
 					// did we find one?
 					if (paster != null) {
