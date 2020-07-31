@@ -35,6 +35,7 @@ import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.operations.RightClickCutCopyAdaptor.EditableTransfer;
 
 import Debrief.Wrappers.LabelWrapper;
+import Debrief.Wrappers.TrackWrapper;
 import Debrief.Wrappers.DynamicTrackShapes.DynamicTrackShapeSetWrapper;
 import MWC.GUI.BaseLayer;
 import MWC.GUI.CanEnumerate;
@@ -332,6 +333,20 @@ public class RightClickPasteAdaptor {
 			assertEquals("was renamed", "Copy of name", i2.getName());
 			assertEquals("was renamed", "name", i1.getName());
 		}
+		public void testPasteTrackToLayer() {
+			final Layers layers = new Layers();
+			final BaseLayer destination = new BaseLayer();
+			destination.setName("name");
+			final TrackWrapper track = new TrackWrapper();
+			track.setName("track");
+			final Editable[] items = new Editable[] { track};
+			final PasteItem action = createAction(destination, layers, items);
+			assertNull("failed to create action", action);
+			
+			
+		}
+		
+		
 	}
 
 	private static final String DUPLICATE_PREFIX = "Copy of ";
@@ -381,7 +396,7 @@ public class RightClickPasteAdaptor {
 				return null;
 			}
 			if ((destination != null) && (destination instanceof BaseLayer)
-					&& !(editable instanceof CannotBePastedIntoLayer)) {
+					&& (editable instanceof CannotBePastedIntoLayer)) {
 				// nope, we don't allow a this type of object to be dropped onto a baselayer
 				return null;
 			}
