@@ -420,12 +420,8 @@ public class ImportReplay extends PlainImporterBase {
 				assertEquals("Track Imported succesfully for new segment test", "NELSON", element.getName());
 				assertTrue("Correct type in the new segment test", element instanceof TrackWrapper);
 				final TrackWrapper trackWrapperNelson = (TrackWrapper) element;
-				final Enumeration<Editable> legsIterator = trackWrapperNelson.elements();
-				while (legsIterator.hasMoreElements()) {
-					final Editable leg = legsIterator.nextElement();
-					final SegmentList legList = (SegmentList) leg;
-					assertEquals("Amount of segment in new segment test", 2, legList.size());
-				}
+				final SegmentList legList = trackWrapperNelson.getSegments();
+				assertEquals("Amount of segment in new segment test", 2, legList.size());
 			}
 		}
 
@@ -448,12 +444,8 @@ public class ImportReplay extends PlainImporterBase {
 				assertEquals("Track Imported succesfully for new segment test", "NELSON", element.getName());
 				assertTrue("Correct type in the new segment test", element instanceof TrackWrapper);
 				final TrackWrapper trackWrapperNelson = (TrackWrapper) element;
-				final Enumeration<Editable> legsIterator = trackWrapperNelson.elements();
-				while (legsIterator.hasMoreElements()) {
-					final Editable leg = legsIterator.nextElement();
-					final SegmentList legList = (SegmentList) leg;
-					assertEquals("Amount of segment in new segment test", 4, legList.size());
-				}
+				final SegmentList legList = trackWrapperNelson.getSegments();
+				assertEquals("Amount of segment in new segment test", 4, legList.size());
 			}
 		}
 
