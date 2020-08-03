@@ -16,6 +16,7 @@
 package org.mwc.cmap.core.operations;
 
 import java.awt.Color;
+import java.util.ArrayList;
 import java.util.Enumeration;
 
 import org.eclipse.core.commands.ExecutionException;
@@ -34,9 +35,12 @@ import org.eclipse.ui.actions.ActionFactory;
 import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.operations.RightClickCutCopyAdaptor.EditableTransfer;
 
+import Debrief.Wrappers.DynamicShapeWrapper;
 import Debrief.Wrappers.LabelWrapper;
 import Debrief.Wrappers.TrackWrapper;
+import Debrief.Wrappers.DynamicTrackShapes.DynamicTrackCoverageWrapper;
 import Debrief.Wrappers.DynamicTrackShapes.DynamicTrackShapeSetWrapper;
+import Debrief.Wrappers.DynamicTrackShapes.DynamicTrackShapeWrapper.DynamicShape;
 import MWC.GUI.BaseLayer;
 import MWC.GUI.CanEnumerate;
 import MWC.GUI.DynamicLayer;
@@ -46,8 +50,11 @@ import MWC.GUI.HasEditables;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
 import MWC.GUI.Renamable;
+import MWC.GUI.Shapes.CircleShape;
+import MWC.GUI.Shapes.PlainShape;
 import MWC.GUI.Tools.Operations.RightClickPasteAdaptor.CannotBePastedIntoLayer;
 import MWC.GUI.Tools.Operations.RightClickPasteAdaptor.NeedsTidyingOnPaste;
+import MWC.GenericData.HiResDate;
 import MWC.GenericData.WorldLocation;
 import junit.framework.TestCase;
 
@@ -345,8 +352,20 @@ public class RightClickPasteAdaptor {
 			
 			
 		}
-		
-		
+		public void testPasteSensorArcToTrack() {
+			final Layers layers = new Layers();
+			final BaseLayer destination = new BaseLayer();
+			destination.setName("dest");
+			HiResDate startDTG = new HiResDate(System.currentTimeMillis()-60*60*1000);
+			HiResDate endDTG = new HiResDate(System.currentTimeMillis());
+			DynamicTrackCoverageWrapper sensorArc = new DynamicTrackCoverageWrapper("track1", startDTG, endDTG,
+					new ArrayList<DynamicShape>(), Color.blue, 2, "coverage");
+			DynamicTrackShapeSetWrapper sa = new DynamicTrackShapeSetWrapper("dynamicarc");
+			sa.add(sensorArc);
+			final Editable[] items = new Editable[] {sa};
+			final PasteItem action = createAction(destination, layers, items);
+			assertNull("failed to create action", action);
+		}
 	}
 
 	private static final String DUPLICATE_PREFIX = "Copy of ";
