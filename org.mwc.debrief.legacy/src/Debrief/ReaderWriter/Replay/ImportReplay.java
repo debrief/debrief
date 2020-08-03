@@ -448,6 +448,62 @@ public class ImportReplay extends PlainImporterBase {
 				assertEquals("Amount of segment in new segment test", 4, legList.size());
 			}
 		}
+		
+		public void testTrackSplit() throws IOException, ParseException {
+			final String text = "951212 112700.000 NELSON   @C   22  7  0.63 N 21 45 14.91 W 334.9   2.0      0 \n"
+					+ "951212 112800.000 NELSON   @C   22  7  7.00 N 21 45 19.26 W 340.7   2.0      0 \n"
+					+ "951212 112900.000 NELSON   @C   22  7 14.33 N 21 45 23.01 W 346.1   2.0      0 \n"
+					+ "951212 113000.000 NELSON   @C   22  7 21.35 N 21 45 25.55 W  21.4   2.0      0 \n"
+					+ "951212 113100.000 NELSON   @C   22  7 26.42 N 21 45 22.64 W  21.0   2.0      0 \n"
+					+ ";TRACKSPLIT 951212 112930.000 NELSON";
+
+			final ImportReplay importReplay = new ImportReplay();
+			final Layers dummyLayers = new Layers();
+			importReplay.setLayers(dummyLayers);
+			for (final String line : text.split("\n")) {
+				importReplay.readLine(line);
+			}
+			final Enumeration<Editable> elemIterator = dummyLayers.elements();
+			while (elemIterator.hasMoreElements()) {
+				final Editable element = elemIterator.nextElement();
+				assertEquals("Track Imported succesfully for track split test", "NELSON", element.getName());
+				assertTrue("Correct type in the new segment test", element instanceof TrackWrapper);
+				final TrackWrapper trackWrapperNelson = (TrackWrapper) element;
+				final SegmentList legList = trackWrapperNelson.getSegments();
+				assertEquals("Amount of segment in new segment test", 2, legList.size());
+			}
+		}
+		
+		public void testTrackSplit2() throws IOException, ParseException {
+			final String text = "951212 112700.000 NELSON   @C   22  7  0.63 N 21 45 14.91 W 334.9   2.0      0 \n"
+					+ "951212 112800.000 NELSON   @C   22  7  7.00 N 21 45 19.26 W 340.7   2.0      0 \n"
+					+ "951212 112900.000 NELSON   @C   22  7 14.33 N 21 45 23.01 W 346.1   2.0      0 \n"
+					+ "951212 113000.000 NELSON   @C   22  7 21.35 N 21 45 25.55 W  21.4   2.0      0 \n"
+					+ "951212 113100.000 NELSON   @C   22  7 26.42 N 21 45 22.64 W  21.0   2.0      0 \n"
+					+ ";TRACKSPLIT 951212 112930.000 NELSON\n"
+					+ ";TRACKSPLIT 951212 112930.000 NELSON\n"
+					+ ";TRACKSPLIT 951212 112930.000 NELSON\n"
+					+ ";TRACKSPLIT 951212 112930.000 NELSON\n"
+					+ ";TRACKSPLIT 951212 112930.000 NELSON\n"
+					+ ";TRACKSPLIT 951212 112930.000 NELSON\n"
+					+ ";TRACKSPLIT 951212 113030.000 NELSON";
+
+			final ImportReplay importReplay = new ImportReplay();
+			final Layers dummyLayers = new Layers();
+			importReplay.setLayers(dummyLayers);
+			for (final String line : text.split("\n")) {
+				importReplay.readLine(line);
+			}
+			final Enumeration<Editable> elemIterator = dummyLayers.elements();
+			while (elemIterator.hasMoreElements()) {
+				final Editable element = elemIterator.nextElement();
+				assertEquals("Track Imported succesfully for track split test", "NELSON", element.getName());
+				assertTrue("Correct type in the new segment test", element instanceof TrackWrapper);
+				final TrackWrapper trackWrapperNelson = (TrackWrapper) element;
+				final SegmentList legList = trackWrapperNelson.getSegments();
+				assertEquals("Amount of segment in new segment test", 3, legList.size());
+			}
+		}
 
 		public final void testOTGimport1() {
 			doReadRep(ImportReplay.IMPORT_AS_OTG, 0L, 3, 25, true);
