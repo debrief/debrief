@@ -141,7 +141,7 @@ public final class TMAContactWrapper extends SnailDrawTMAContact.PlottableWrappe
 		public final void testMyCalcs() {
 			// setup our object to be tested using an absolute location
 			final WorldLocation origin = new WorldLocation(2, 2, 0);
-			final EllipseShape es = new EllipseShape(null, 0,
+			final EllipseShape es = new EllipseShape(origin, 0,
 					new WorldDistance(Conversions.Yds2Degs(100), WorldDistance.DEGS),
 					new WorldDistance(Conversions.Yds2Degs(50), WorldDistance.DEGS));
 			final HiResDate theDTG = new HiResDate(new java.util.Date().getTime());
@@ -471,7 +471,7 @@ public final class TMAContactWrapper extends SnailDrawTMAContact.PlottableWrappe
 			final double speedKts, final double depthMetres, final Color color, final String label,
 			final EllipseShape theEllipse, final String theSymbol) {
 		final WorldLocation emptyLocation = null;
-
+		final WorldLocation origin = new WorldLocation(2, 2, 0);
 		_originalLocation = location;
 
 		// ok, do we have an ellipse?
@@ -480,7 +480,7 @@ public final class TMAContactWrapper extends SnailDrawTMAContact.PlottableWrappe
 			_theEllipse = theEllipse;
 		} else {
 			// no, create it afresh
-			_theEllipse = new EllipseShape(emptyLocation, 0d, new WorldDistance(0d, WorldDistance.DEGS),
+			_theEllipse = new EllipseShape(origin, 0d, new WorldDistance(0d, WorldDistance.DEGS),
 					new WorldDistance(0d, WorldDistance.DEGS));
 		}
 
