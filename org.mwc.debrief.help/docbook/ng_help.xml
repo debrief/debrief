@@ -7153,13 +7153,13 @@ YYYYMMDD HHMMSS.SSS "XYX XYX XYX" SY DD MM SS.SS H DDD MM SS.SS H CCC.C SS.S DDD
                       <para>[NEW_SEGMENT]</para>
                     </entry>
                     <entry>
-                      <para>Using this annotation creates a new segment into the track from the current FixWrapper.</para>
+                      <para>Using this annotation creates a new segment in the track from the current FixWrapper.</para>
                     </entry>
                   </row>
                 </tbody>
               </tgroup>
             </table> Please, take a look at the following example of the extended symbology at use <screen xml:id="extended_symbology_example">            <markup>
-951212 050700.000 NELSON @C[SYMBOL=missile] 22 11 10.08 N 21 43 20.34 W 270.5   2.0      0 
+951212 050700.000 NELSON @C[SYMBOL=missile,NEW_SEGMENT] 22 11 10.08 N 21 43 20.34 W 270.5   2.0      0 
 951212 050701.000 COLLINGWOOD @C[SYMBOL=torpedo,LAYER=Support] 22 11 10.08 N 21 43 20.34 W 270.5   2.0      0 
             </markup>      </screen>
           </para>
@@ -7301,6 +7301,11 @@ surrounded by quotes (").
 ;NARRATIVE2:  YYMMDD HHMMSS  TTT.TTT AA..AA XX..XX
  ;; dtg, track name, narrative entry-type, narrative entry.  Note the track name 
 and entry type can be multi-word if surrounded by quotes (").
+
+;TRACKSPLIT YYMMDD HHMMSS TTT.TTT 
+ ;; dtg, trackname. It will split the specified track into two segments at the given
+time
+
             </markup>   </screen>
           </para>
         </sect2>
