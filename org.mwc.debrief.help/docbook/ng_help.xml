@@ -7148,6 +7148,14 @@ YYYYMMDD HHMMSS.SSS "XYX XYX XYX" SY DD MM SS.SS H DDD MM SS.SS H CCC.C SS.S DDD
                       <para>This annotation places the specified icon as a symbol. Note: spaces not allowed. Icon name must be the exact name that appears in the SVG Section.</para>
                     </entry>
                   </row>
+                  <row>
+                    <entry>
+                      <para>[NEW_SEGMENT]</para>
+                    </entry>
+                    <entry>
+                      <para>Using this annotation creates a new segment into the track from the current FixWrapper.</para>
+                    </entry>
+                  </row>
                 </tbody>
               </tgroup>
             </table> Please, take a look at the following example of the extended symbology at use <screen xml:id="extended_symbology_example">            <markup>
