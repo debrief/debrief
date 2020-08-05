@@ -20,6 +20,7 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Cursor;
 import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -29,6 +30,8 @@ import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.WindowAdapter;
@@ -40,19 +43,27 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
+import java.util.stream.IntStream;
 
+import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JSlider;
+import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
+import javax.swing.border.EmptyBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
@@ -102,6 +113,7 @@ import Debrief.GUI.Frames.Application;
 import Debrief.GUI.Tote.Painters.PainterManager;
 import Debrief.GUI.Tote.Painters.SnailPainter2;
 import Debrief.GUI.Tote.Painters.TotePainter;
+import Debrief.ReaderWriter.Antares.ImportAntares;
 import Debrief.ReaderWriter.NMEA.ImportNMEA;
 import Debrief.ReaderWriter.Nisida.ImportNisida;
 import Debrief.ReaderWriter.Replay.ImportReplay;
@@ -1067,10 +1079,16 @@ public class DebriefLiteApp implements FileDropListener {
 						// layerManager.resetTree();
 					} else if (suff.equalsIgnoreCase(".TIF")) {
 						handleImportTIFFile(file);
+					} else if (suff.equalsIgnoreCase(".TXT")) {
+						// Maybe it is an antares file
+						final ImportAntares antaresImporter = new ImportAntares();
+						if (antaresImporter.canImportThisFile(file.getAbsolutePath())) {
+							handleImportAntares(file, antaresImporter);
+						}
 					} else {
 						// try nisida format - we can't rely on filename
 						FileInputStream fis = new FileInputStream(file);
-						if(ImportNisida.canLoadThisFile(fis)) {
+						if (ImportNisida.canLoadThisFile(fis)) {
 							fis.close();
 							handleImportNisidaFile(file);
 						} else {
@@ -1086,6 +1104,98 @@ public class DebriefLiteApp implements FileDropListener {
 		}
 
 		restoreCursor();
+	}
+
+	private void handleImportAntares(final File file, final ImportAntares antaresImporter) {
+		// We need to ask to the user the trackname, month and year.
+		
+		antaresImporter.setLayers(_theLayers);
+		
+		final JPanel mainPanel = new JPanel(new BorderLayout());
+		
+		final JLabel nameOfTheTrackLabel = new JLabel("Please, choose the name of the track");
+		nameOfTheTrackLabel.setBorder(new EmptyBorder(5, 5, 5, 5));
+		final JLabel dateLabel = new JLabel("Please, choose the month and year");
+		dateLabel.setBorder(new EmptyBorder(5, 5, 5, 5));
+		final JTextField nameOfTheTrackTextField = new JTextField();
+		nameOfTheTrackTextField.setToolTipText("Name of the track");
+		
+		
+		final JComboBox<String> monthComboBox = new JComboBox<String>(
+				IntStream.range(1, 13).mapToObj(i -> String.format("%01d", i)).toArray(String[]::new));
+		monthComboBox.setSelectedIndex(Calendar.getInstance().get(Calendar.MONTH));
+		final JTextField yearTextField = new JTextField();
+		yearTextField.setText(Calendar.getInstance().get(Calendar.YEAR) + "");
+		
+		final JButton cancelButton = new JButton("Cancel");
+		final JButton acceptButton = new JButton("Accept");
+		
+		final JPanel centerPanel = new JPanel();
+		
+		centerPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
+		centerPanel.setLayout(new BoxLayout(centerPanel, BoxLayout.Y_AXIS));
+		centerPanel.add(nameOfTheTrackLabel);
+		centerPanel.add(nameOfTheTrackTextField);
+		centerPanel.add(dateLabel);
+		
+		
+		
+		final JPanel datePanel = new JPanel();
+		datePanel.setLayout(new BoxLayout(datePanel, BoxLayout.X_AXIS));
+		datePanel.add(monthComboBox);
+		datePanel.add(yearTextField);
+		
+		centerPanel.add(datePanel);
+		
+		mainPanel.add(centerPanel, BorderLayout.CENTER);
+		
+		final JPanel buttonsPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+		buttonsPanel.add(cancelButton);
+		buttonsPanel.add(acceptButton);
+		
+		mainPanel.add(buttonsPanel, BorderLayout.SOUTH);
+
+		final JDialog frame = new JDialog(getApplicationFrame(), "Antares Import Configuration", true) {
+
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = -4759126543816346899L;
+
+			@Override
+			public Dimension getPreferredSize() {
+				return new Dimension(300, 200);
+			}
+			
+		};
+		cancelButton.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				frame.dispose();
+			}
+		});
+		
+		acceptButton.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				antaresImporter.setMonth(monthComboBox.getSelectedIndex());
+				antaresImporter.setYear(Integer.parseInt(yearTextField.getText()));
+				antaresImporter.setTrackName(nameOfTheTrackTextField.getText());
+				try {
+					antaresImporter.importThis(file.getName(), new FileInputStream(file));
+				} catch (FileNotFoundException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+				frame.dispose();
+			}
+		});
+		frame.setLocationRelativeTo(null);
+		frame.getContentPane().add(mainPanel);
+		frame.pack();
+		frame.setVisible(true);
 	}
 
 	public JRibbonFrame getApplicationFrame() {
@@ -1132,7 +1242,7 @@ public class DebriefLiteApp implements FileDropListener {
 			_theLayers.fireReformatted(null);
 
 			// and the spatial bounds
-			new FitToWindow(_theLayers, mapPane, projection,null).actionPerformed(null);
+			new FitToWindow(_theLayers, mapPane, projection, null).actionPerformed(null);
 		} catch (final FileNotFoundException e) {
 			app.logError(ToolParent.ERROR, "Failed to read DPF File", e);
 			MWC.GUI.Dialogs.DialogFactory.showMessage("Open Debrief file", "Failed to read DPF File" + e.getMessage());
@@ -1202,10 +1312,10 @@ public class DebriefLiteApp implements FileDropListener {
 		_theLayers.fireReformatted(null);
 		enableFileCloseButton(true);
 	}
-	
+
 	private void enableFileCloseButton(boolean b) {
 		DebriefRibbonFile.closeButton.getContentModel().setActionEnabled(b);
-		
+
 	}
 
 	private void handleImportRep(final File[] fList) {
@@ -1253,7 +1363,7 @@ public class DebriefLiteApp implements FileDropListener {
 								theTote.assignWatchables(true);
 
 								// and the spatial bounds
-								final FitToWindow fitMe = new FitToWindow(_theLayers, mapPane, projection,null);
+								final FitToWindow fitMe = new FitToWindow(_theLayers, mapPane, projection, null);
 								fitMe.actionPerformed(null);
 							}
 						});
@@ -1455,7 +1565,7 @@ public class DebriefLiteApp implements FileDropListener {
 		// put some backdrop data back in
 		loadBackdropdata(_theLayers);
 		resetUndoBuffer();
-		
+
 		graphPanelView.reset();
 		graphPanel.setCollapsed(true);
 	}
@@ -1527,7 +1637,7 @@ public class DebriefLiteApp implements FileDropListener {
 
 		projection.setDataArea(newArea);
 	}
-	
+
 	public WorldArea getProjectionArea() {
 		final DirectPosition2D upperCorner = (DirectPosition2D) mapPane.getDisplayArea().getUpperCorner();
 		final DirectPosition2D bottomCorner = (DirectPosition2D) mapPane.getDisplayArea().getLowerCorner();
@@ -1549,6 +1659,7 @@ public class DebriefLiteApp implements FileDropListener {
 
 		return newArea;
 	}
+
 	public GeoToolMapProjection getProjection() {
 		return projection;
 	}

@@ -26,9 +26,9 @@ import MWC.Utilities.ReaderWriter.PlainImporterBase;
  */
 public class ImportAntares extends PlainImporterBase {
 
-	private final String _trackName;
-	final int _month;
-	final int _year;
+	String _trackName;
+	int _month;
+	int _year;
 
 	public ImportAntares(final String _trackName, final int _month, final int _year, final Layers layers) {
 		this._trackName = _trackName;
@@ -36,6 +36,22 @@ public class ImportAntares extends PlainImporterBase {
 		this._year = _year;
 
 		this.setLayers(layers);
+	}
+	
+	public ImportAntares() {
+		
+	}
+
+	public void setMonth(int _month) {
+		this._month = _month;
+	}
+
+	public void setYear(int _year) {
+		this._year = _year;
+	}
+	
+	public void setTrackName(String _trackName) {
+		this._trackName = _trackName;
 	}
 
 	/**
