@@ -7302,10 +7302,6 @@ surrounded by quotes (").
  ;; dtg, track name, narrative entry-type, narrative entry.  Note the track name 
 and entry type can be multi-word if surrounded by quotes (").
 
-;TRACKSPLIT YYMMDD HHMMSS TTT.TTT 
- ;; dtg, trackname. It will split the specified track into two segments at the given
-time
-
             </markup>   </screen>
           </para>
         </sect2>

@@ -2279,18 +2279,26 @@ public class ImportReplay extends PlainImporterBase {
 			addToLayer(thisWrapper, dest);
 
 		} else if (thisObject instanceof TrackSplitOrder) {
+
+			/**
+			 * This has been disabled intentionally due this:
+			 * https://github.com/debrief/debrief/pull/4934#issuecomment-669393732
+			 */
+
 			// Ok, we need to find out where we need to split the track.
 
-			final TrackSplitOrder trackSplitOrder = (TrackSplitOrder) thisObject;
-			// Let's get the track first.
-
-			final TrackWrapper track = (TrackWrapper) getLayerFor(trackSplitOrder.getTrackName());
-			final Watchable[] nearest = track.getNearestTo(trackSplitOrder.getDTG());
-
-			if (nearest.length >= 1 && nearest[0] instanceof FixWrapper) {
-				track.splitTrack((FixWrapper) nearest[0],
-						nearest[0].getTime().greaterThanOrEqualTo(trackSplitOrder.getDTG()));
-			}
+			/*
+			 * final TrackSplitOrder trackSplitOrder = (TrackSplitOrder) thisObject; //
+			 * Let's get the track first.
+			 * 
+			 * final TrackWrapper track = (TrackWrapper)
+			 * getLayerFor(trackSplitOrder.getTrackName()); final Watchable[] nearest =
+			 * track.getNearestTo(trackSplitOrder.getDTG());
+			 * 
+			 * if (nearest.length >= 1 && nearest[0] instanceof FixWrapper) {
+			 * track.splitTrack((FixWrapper) nearest[0],
+			 * nearest[0].getTime().greaterThanOrEqualTo(trackSplitOrder.getDTG())); }
+			 */
 
 		}
 
