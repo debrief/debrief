@@ -37,7 +37,6 @@ import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.operations.RightClickCutCopyAdaptor.EditableTransfer;
 
 import Debrief.Wrappers.DynamicShapeWrapper;
-import Debrief.Wrappers.IDynamicShapeWrapper;
 import Debrief.Wrappers.LabelWrapper;
 import Debrief.Wrappers.TrackWrapper;
 import Debrief.Wrappers.DynamicTrackShapes.DynamicTrackCoverageWrapper;
