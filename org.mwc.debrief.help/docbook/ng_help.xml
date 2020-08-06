@@ -7153,7 +7153,7 @@ YYYYMMDD HHMMSS.SSS "XYX XYX XYX" SY DD MM SS.SS H DDD MM SS.SS H CCC.C SS.S DDD
                       <para>[NEW_SEGMENT]</para>
                     </entry>
                     <entry>
-                      <para>Using this annotation creates a new segment in the track from the current FixWrapper.</para>
+                      <para>Use this annotation to split the track at this point by creating a new segment</para>
                     </entry>
                   </row>
                 </tbody>
