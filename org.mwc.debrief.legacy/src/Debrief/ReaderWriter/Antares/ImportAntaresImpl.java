@@ -10,9 +10,11 @@ import java.util.List;
 import java.util.TimeZone;
 
 import Debrief.Wrappers.FixWrapper;
+import Debrief.Wrappers.TrackWrapper;
 import MWC.GUI.BaseLayer;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
+import MWC.GUI.Properties.DebriefColors;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.WorldLocation;
 import MWC.TacticalData.Fix;
@@ -76,28 +78,14 @@ public class ImportAntaresImpl {
 		/**
 		 * Let's create the layer where we are going to insert the track data
 		 */
-		final Layer theLayer = _layers.findLayer(_trackName, true);
+		TrackWrapper track = (TrackWrapper) _layers.findLayer(_trackName, true);
 
-		final BaseLayer layer;
-		if (theLayer == null) {
-			/**
-			 * We are starting the process, so let's create the new layer
-			 */
-			layer = new BaseLayer();
-			layer.setName(_trackName);
-			_layers.addThisLayer(layer);
-		} else if (theLayer instanceof BaseLayer) {
-			/**
-			 * The layer were were looking for already existed, let's use it
-			 */
-			layer = (BaseLayer) theLayer;
-		} else {
-			/**
-			 * We have found a different object with the same name. We will rename then
-			 */
-			layer = new BaseLayer();
-			layer.setName(theLayer + "_1");
-			_layers.addThisLayer(layer);
+		if (track == null) {
+			// We didn't find the track, let's create it then.
+			track = new TrackWrapper();
+			track.setColor(DebriefColors.RED);
+			track.setName(_trackName);
+			_layers.addThisLayer(track);
 		}
 
 		String antaresLine;
@@ -106,7 +94,7 @@ public class ImportAntaresImpl {
 			while ((antaresLine = br.readLine()) != null) {
 				try {
 					++lineNumber;
-					loadThisLine(antaresLine, layer, _trackName, _month, _year);
+					loadThisLine(antaresLine, track, _trackName, _month, _year);
 				} catch (Exception e) {
 					errors.add(new ImportAntaresException("Error in line " + lineNumber + "\n" + e.getMessage()));
 				}
@@ -130,7 +118,7 @@ public class ImportAntaresImpl {
 	 * Sample: TRACK/DDHHMMZ/LAT-LONG/COURSE/SPEED/DEPTH//
 	 * 
 	 * @param _antaresLine line to parse
-	 * @param _theLayer    Layer where we will load the tracks read
+	 * @param _track    Layer where we will load the tracks read
 	 * @param _trackName   Name of the new track (since it is not available in the
 	 *                     Antares format)
 	 * @param _month       Month to use in the new track (since it is not available
@@ -141,7 +129,7 @@ public class ImportAntaresImpl {
 	 *                                ImportAntaresException with a descriptive
 	 *                                message
 	 */
-	private static void loadThisLine(final String _antaresLine, final Layer _theLayer, final String _trackName,
+	private static void loadThisLine(final String _antaresLine, final TrackWrapper _track, final String _trackName,
 			final int _month, final int _year) throws ImportAntaresException {
 
 		/**
@@ -174,7 +162,7 @@ public class ImportAntaresImpl {
 		newFixWrapper.setDepth(depth);
 		newFixWrapper.resetName();
 
-		_theLayer.add(newFixWrapper);
+		_track.add(newFixWrapper);
 	}
 
 	/**
