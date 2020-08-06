@@ -2028,19 +2028,20 @@ public class ImportReplay extends PlainImporterBase {
 
 			// Let's check if we have to split the track into another segment.
 			if (isSymNewSegment(rf.theSymbology)) {
-				TrackSegment newSegment = null;
+				final TrackSegment newSegment;
 				final String importMode = _importSettings.importMode;
 
+				// split the track then.
 				if (importMode.equals(ImportReplay.IMPORT_AS_OTG)) {
 					newSegment = new TrackSegment(TrackSegment.ABSOLUTE);
 				} else if (importMode.equals(ImportReplay.IMPORT_AS_DR)) {
 					newSegment = new TrackSegment(TrackSegment.RELATIVE);
+				} else {
+					newSegment = null;
 				}
 
-				newSegment.setName("Positions");
-
 				if (newSegment != null) {
-					// split the track then.
+					newSegment.setName("Positions");
 					trkWrapper.add(newSegment);
 				}
 			}
