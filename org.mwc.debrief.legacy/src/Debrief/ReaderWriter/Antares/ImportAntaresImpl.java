@@ -61,32 +61,32 @@ public class ImportAntaresImpl {
 	 * Method that import the Antares format given through a InputStream into the
 	 * Layers.
 	 *
-	 * @param _is        InputStream where the Antares format is available.
-	 * @param _layers    New Track will be inserted into this layers
-	 * @param _trackName Name of the new track (since it is not available in the
+	 * @param is        InputStream where the Antares format is available.
+	 * @param layers    New Track will be inserted into this layers
+	 * @param trackName Name of the new track (since it is not available in the
 	 *                   Antares format)
-	 * @param _month     Month to use in the new track (since it is not available in
+	 * @param month     Month to use in the new track (since it is not available in
 	 *                   the Antares format)
-	 * @param _year      Year to use in the new track (since it is not available in
+	 * @param year      Year to use in the new track (since it is not available in
 	 *                   the Antares format)
 	 * @return A list with the errors found while reading the Antares format.
 	 */
-	public static List<ImportAntaresException> importThis(final InputStream _is, final Layers _layers,
-			final String _trackName, final int _month, final int _year) {
+	public static List<ImportAntaresException> importThis(final InputStream is, final Layers layers,
+			final String trackName, final int month, final int year) {
 		final ArrayList<ImportAntaresException> errors = new ArrayList<>();
-		final BufferedReader br = new BufferedReader(new InputStreamReader(_is));
+		final BufferedReader br = new BufferedReader(new InputStreamReader(is));
 
 		/**
 		 * Let's create the layer where we are going to insert the track data
 		 */
-		TrackWrapper track = (TrackWrapper) _layers.findLayer(_trackName, true);
+		TrackWrapper track = (TrackWrapper) layers.findLayer(trackName, true);
 
 		if (track == null) {
 			// We didn't find the track, let's create it then.
 			track = new TrackWrapper();
 			track.setColor(DebriefColors.RED);
-			track.setName(_trackName);
-			_layers.addThisLayer(track);
+			track.setName(trackName);
+			layers.addThisLayer(track);
 		}
 
 		String antaresLine;
@@ -95,7 +95,7 @@ public class ImportAntaresImpl {
 			while ((antaresLine = br.readLine()) != null) {
 				try {
 					++lineNumber;
-					loadThisLine(antaresLine, track, _trackName, _month, _year);
+					loadThisLine(antaresLine, track, trackName, month, year);
 				} catch (final Exception e) {
 					errors.add(new ImportAntaresException("Error in line " + lineNumber + "\n" + e.getMessage()));
 				}
@@ -110,7 +110,7 @@ public class ImportAntaresImpl {
 			errors.add(new ImportAntaresException(e.getMessage()));
 		}
 
-		_layers.fireExtended();
+		layers.fireExtended();
 
 		return errors;
 	}
@@ -120,37 +120,37 @@ public class ImportAntaresImpl {
 	 *
 	 * Sample: TRACK/DDHHMMZ/LAT-LONG/COURSE/SPEED/DEPTH//
 	 *
-	 * @param _antaresLine line to parse
-	 * @param _track       Layer where we will load the tracks read
-	 * @param _trackName   Name of the new track (since it is not available in the
-	 *                     Antares format)
-	 * @param _month       Month to use in the new track (since it is not available
-	 *                     in the Antares format)
-	 * @param _year        Year to use in the new track (since it is not available
-	 *                     in the Antares format)
+	 * @param antaresLine line to parse
+	 * @param track       Layer where we will load the tracks read
+	 * @param trackName   Name of the new track (since it is not available in the
+	 *                    Antares format)
+	 * @param month       Month to use in the new track (since it is not available
+	 *                    in the Antares format)
+	 * @param year        Year to use in the new track (since it is not available in
+	 *                    the Antares format)
 	 * @throws ImportAntaresException In case of any error, we will throw an
 	 *                                ImportAntaresException with a descriptive
 	 *                                message
 	 */
-	private static void loadThisLine(final String _antaresLine, final TrackWrapper _track, final String _trackName,
-			final int _month, final int _year) throws ImportAntaresException {
+	private static void loadThisLine(final String antaresLine, final TrackWrapper track, final String trackName,
+			final int month, final int year) throws ImportAntaresException {
 
 		/**
 		 * We can conclude it is an invalid line.
 		 */
-		if (!_antaresLine.startsWith("TRACK/")) {
-			throw new ImportAntaresException("Line doesn't start with the reserverved word TRACK/");
+		if (!antaresLine.startsWith("TRACK/")) {
+			throw new ImportAntaresException("Line doesn't start with the reserved word TRACK/");
 		}
 
 		/**
 		 * Let's split the track into tokens.
 		 */
-		final String[] tokens = _antaresLine.split("/");
+		final String[] tokens = antaresLine.split("/");
 		if (tokens.length != 6) {
 			throw new ImportAntaresException("Incorrect amount of fields");
 		}
 
-		final HiResDate date = parseDate(tokens[1], _month, _year);
+		final HiResDate date = parseDate(tokens[1], month, year);
 		final WorldLocation location = parseWorldLocation(tokens[2]);
 		final double course = parseDouble(tokens[3], "Course");
 		final double speed = parseDouble(tokens[4], "Speed");
@@ -165,21 +165,21 @@ public class ImportAntaresImpl {
 		newFixWrapper.setDepth(depth);
 		newFixWrapper.resetName();
 
-		_track.add(newFixWrapper);
+		track.add(newFixWrapper);
 	}
 
 	/**
 	 * Parse the given date, using the month, and year given
 	 *
 	 * @param dateAsString Date in the Antares format (DDHHMMZ)
-	 * @param _month       month to assign to the date
-	 * @param _year        year to assign to the date
+	 * @param month       month to assign to the date
+	 * @param year        year to assign to the date
 	 * @return Date in the HiResDate format
 	 * @throws ImportAntaresException In case of any error, we will throw an
 	 *                                ImportAntaresException with a descriptive
 	 *                                message
 	 */
-	private static HiResDate parseDate(final String dateAsString, final int _month, final int _year)
+	private static HiResDate parseDate(final String dateAsString, final int month, final int year)
 			throws ImportAntaresException {
 		if (dateAsString.charAt(dateAsString.length() - 1) != 'Z') {
 			throw new ImportAntaresException("Invalid format for timestamp - missing Z character: " + dateAsString);
@@ -193,7 +193,7 @@ public class ImportAntaresImpl {
 			final Calendar calendar = Calendar.getInstance();
 			calendar.clear();
 			calendar.setTimeZone(TimeZone.getTimeZone("GMT"));
-			calendar.set(_year, _month, day, hour, minute);
+			calendar.set(year, month, day, hour, minute);
 			return new HiResDate(calendar.getTime());
 		} catch (final Exception e) {
 			throw new ImportAntaresException(
