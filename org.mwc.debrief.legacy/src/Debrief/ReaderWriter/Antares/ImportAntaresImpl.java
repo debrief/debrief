@@ -9,6 +9,7 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.TimeZone;
 
+import Debrief.GUI.Frames.Application;
 import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.TrackWrapper;
 import MWC.GUI.Layers;
@@ -44,12 +45,14 @@ public class ImportAntaresImpl {
 		try {
 			final BufferedReader br = new BufferedReader(new InputStreamReader(is));
 
-			String nisidaLine;
-			if ((nisidaLine = br.readLine()) != null) {
+			// the only check we do is that the first line starts wtih TRACK/
+			final String nisidaLine = br.readLine();
+			if (nisidaLine != null) {
 				return nisidaLine.startsWith("TRACK/");
 			}
 		} catch (final IOException e) {
 			// There were problems reading the file. It cannot be loaded.
+			Application.logError2(Application.ERROR, "Failed to load Antares file", e);
 		}
 		return false;
 	}
