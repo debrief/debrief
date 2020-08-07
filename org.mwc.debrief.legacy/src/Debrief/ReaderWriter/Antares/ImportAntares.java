@@ -17,6 +17,7 @@ package Debrief.ReaderWriter.Antares;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
+
 import MWC.GUI.Layers;
 import MWC.GUI.Plottable;
 import MWC.Utilities.ReaderWriter.PlainImporterBase;
@@ -30,6 +31,10 @@ public class ImportAntares extends PlainImporterBase {
 	int _month;
 	int _year;
 
+	public ImportAntares() {
+
+	}
+
 	public ImportAntares(final String _trackName, final int _month, final int _year, final Layers layers) {
 		this._trackName = _trackName;
 		this._month = _month;
@@ -37,58 +42,58 @@ public class ImportAntares extends PlainImporterBase {
 
 		this.setLayers(layers);
 	}
-	
-	public ImportAntares() {
-		
-	}
-
-	public void setMonth(int _month) {
-		this._month = _month;
-	}
-
-	public void setYear(int _year) {
-		this._year = _year;
-	}
-	
-	public void setTrackName(String _trackName) {
-		this._trackName = _trackName;
-	}
 
 	/**
 	 * Method that returns true if the Stream given contains a valid Antares file.
-	 * 
+	 *
 	 * @param theFile file that contains the
 	 * @return true only if it is a valid Antares file.
 	 */
 	@Override
-	public boolean canImportThisFile(String theFile) {
+	public boolean canImportThisFile(final String theFile) {
 		try {
 			final FileInputStream inputStream = new FileInputStream(theFile);
-			return ImportAntaresImpl.canLoadThisStream(inputStream);
-		} catch (FileNotFoundException e) {
+			return canImportThisInputStream(inputStream);
+		} catch (final FileNotFoundException e) {
 			return false;
 		}
 
 	}
 
+	public boolean canImportThisInputStream(final InputStream inputStream) {
+		return ImportAntaresImpl.canLoadThisStream(inputStream);
+	}
+
 	@Override
-	public void exportThis(Plottable item) {
+	public void exportThis(final Plottable item) {
 		// Nothing to do here
 	}
 
 	@Override
-	public void exportThis(String comment) {
+	public void exportThis(final String comment) {
 		// Nothing to do here
 	}
 
 	@Override
-	public void importThis(String fName, InputStream is) {
+	public void importThis(final String fName, final InputStream is) {
 		ImportAntaresImpl.importThis(is, getLayers(), _trackName, _month, _year);
 	}
 
 	@Override
-	public void importThis(String fName, InputStream is, MonitorProvider provider) {
+	public void importThis(final String fName, final InputStream is, final MonitorProvider provider) {
 		// We can use the provider eventually.
 		importThis(fName, is);
+	}
+
+	public void setMonth(final int _month) {
+		this._month = _month;
+	}
+
+	public void setTrackName(final String _trackName) {
+		this._trackName = _trackName;
+	}
+
+	public void setYear(final int _year) {
+		this._year = _year;
 	}
 }
