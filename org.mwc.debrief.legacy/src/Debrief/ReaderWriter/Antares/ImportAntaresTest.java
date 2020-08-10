@@ -32,7 +32,7 @@ public class ImportAntaresTest extends TestCase {
 	public static void testImportThis() {
 
 		final String inputFileContent = "TRACK/010530Z/2512.0N-03010.5W/30/2/-5//\n"
-				+ "TRACK/010532Z/2514.0N-03012.5W/30/2/-5//\n" + "TRACK/010534Z/2516.0N-03014.5W/30/2/-5//";
+				+ "TRACK/010532Z/2514.0N-03012.5W/31/3/-3//\n" + "TRACK/010534Z/2516.0N-03014.5W/35/4/-1//";
 
 		final InputStream targetStream = new ByteArrayInputStream(inputFileContent.getBytes());
 		final Layers layers = new Layers();
@@ -50,17 +50,24 @@ public class ImportAntaresTest extends TestCase {
 			assertTrue("Correct type created in the ImportAntares process", nextEditable instanceof TrackSegment);
 			final TrackSegment trackSegment = (TrackSegment) nextEditable;
 
+			final double[] expectedSpeed = new double[] {2, 3, 4};
+			final double[] expectedCourse = new double[] {30, 31, 35};
+			final double[] expectedDepth = new double[] {-5, -3, -1};
+			final long[] expectedTime = new long[] {-59161602600000000L, -59161602480000000L, -59161602360000000L};
 			final Enumeration<Editable> enumSegment = trackSegment.elements();
 			while (enumSegment.hasMoreElements()) {
 				final Editable nextFix = enumSegment.nextElement();
 				assertTrue("Correct type created in the fix for ImportAntares process", nextFix instanceof FixWrapper);
 				final FixWrapper fixWrapper = (FixWrapper) nextFix;
 
-				assertEquals("Correct Depth ", -5.0, fixWrapper.getDepth(), 1e-8);
+				assertEquals("Correct Depth ", expectedDepth[totalFixes], fixWrapper.getDepth(), 1e-8);
 
-				assertEquals("Correct Course ", 30.0, fixWrapper.getCourse(), 1e-8);
+				assertEquals("Correct Course ", expectedCourse[totalFixes], fixWrapper.getCourse(), 1e-8);
 
-				assertEquals("Correct Speed ", 2, fixWrapper.getFix().getSpeed(), 1e-8);
+				assertEquals("Correct Speed ", expectedSpeed[totalFixes], fixWrapper.getFix().getSpeed(), 1e-8);
+				
+				assertEquals("Correct DTG ", expectedTime[totalFixes], fixWrapper.getFix().getTime().getMicros());
+				
 				++totalFixes;
 			}
 		}
