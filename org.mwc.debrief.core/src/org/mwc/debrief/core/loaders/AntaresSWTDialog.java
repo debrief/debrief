@@ -15,6 +15,9 @@
 package org.mwc.debrief.core.loaders;
 
 import java.util.Calendar;
+import java.util.HashMap;
+import java.util.List;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import org.eclipse.jface.dialogs.TitleAreaDialog;
@@ -38,9 +41,15 @@ public class AntaresSWTDialog extends TitleAreaDialog {
 
 	private int year;
 	private String trackName;
+	
+	private String _persistencyYear = "Year";
+	private String _persistencyMonth = "Month";
+	
+	private final HashMap<String, String> _persistency;
 
-	public AntaresSWTDialog(final Shell parentShell) {
+	public AntaresSWTDialog(final Shell parentShell, final HashMap<String, String> persistency) {
 		super(parentShell);
+		_persistency = persistency;
 	}
 
 	@Override
@@ -74,8 +83,14 @@ public class AntaresSWTDialog extends TitleAreaDialog {
 		dataFirstName.horizontalAlignment = GridData.FILL;
 
 		monthCombo = new Combo(container, SWT.BORDER);
-		monthCombo.setItems(IntStream.range(1, 13).mapToObj(i -> String.format("%01d", i)).toArray(String[]::new));
-		monthCombo.select(Calendar.getInstance().get(Calendar.MONTH));
+		final List<String> items = IntStream.range(1, 13).mapToObj(i -> String.format("%02d", i)).collect(Collectors.toList()); 
+		
+		monthCombo.setItems(items.toArray(new String[] {}));
+		if (_persistency.containsKey(_persistencyMonth)) {
+			monthCombo.select(items.indexOf(_persistency.get(_persistencyMonth)));
+		}else {
+			monthCombo.select(Calendar.getInstance().get(Calendar.MONTH));
+		}
 		monthCombo.setLayoutData(dataFirstName);
 	}
 
@@ -100,7 +115,11 @@ public class AntaresSWTDialog extends TitleAreaDialog {
 		dataYearName.horizontalAlignment = GridData.FILL;
 
 		yearText = new Text(container, SWT.BORDER);
-		yearText.setText(Calendar.getInstance().get(Calendar.YEAR) + "");
+		if (_persistency.containsKey(_persistencyYear)) {
+			yearText.setText(_persistency.get(_persistencyYear));
+		}else {
+			yearText.setText(Calendar.getInstance().get(Calendar.YEAR) + "");
+		}
 		yearText.setLayoutData(dataYearName);
 	}
 
@@ -124,7 +143,13 @@ public class AntaresSWTDialog extends TitleAreaDialog {
 	@Override
 	protected void okPressed() {
 		storeValues();
+		storePersistency();
 		super.okPressed();
+	}
+
+	private void storePersistency() {
+		_persistency.put(_persistencyMonth, monthCombo.getText());
+		_persistency.put(_persistencyYear, yearText.getText());
 	}
 
 	private void storeValues() {

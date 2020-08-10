@@ -17,6 +17,7 @@ package org.mwc.debrief.core.loaders;
 import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import org.eclipse.core.runtime.IAdaptable;
@@ -55,6 +56,8 @@ public class AntaresLoader extends CoreLoader {
 			return false;
 		}
 	}
+	
+	final static HashMap<String, String> persistency = new HashMap<String, String>();
 
 	@Override
 	protected IRunnableWithProgress getImporter(final IAdaptable target, final Layers layers,
@@ -70,7 +73,7 @@ public class AntaresLoader extends CoreLoader {
 					public void run() {
 
 						final Shell active = PlatformUI.getWorkbench().getWorkbenchWindows()[0].getShell();
-						final AntaresSWTDialog antaresDialog = new AntaresSWTDialog(active);
+						final AntaresSWTDialog antaresDialog = new AntaresSWTDialog(active, persistency);
 
 						antaresDialog.create();
 
