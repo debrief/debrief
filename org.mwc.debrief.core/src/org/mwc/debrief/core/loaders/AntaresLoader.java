@@ -16,9 +16,15 @@ package org.mwc.debrief.core.loaders;
 
 import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.MultiStatus;
+import org.eclipse.core.runtime.Status;
+import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.widgets.Display;
@@ -26,6 +32,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.PlatformUI;
 
 import Debrief.ReaderWriter.Antares.ImportAntares;
+import Debrief.ReaderWriter.Antares.ImportAntaresImpl.ImportAntaresException;
 import MWC.GUI.Layers;
 
 public class AntaresLoader extends CoreLoader {
@@ -76,6 +83,19 @@ public class AntaresLoader extends CoreLoader {
 							antaresImporter.setLayers(layers);
 
 							antaresImporter.importThis(fileName, inputStream);
+
+							if (!antaresImporter.getErrors().isEmpty()) {
+								final List<Status> status = new ArrayList<>();
+								for (final ImportAntaresException error : antaresImporter.getErrors()) {
+									status.add(new Status(IStatus.ERROR, "Antares Import", error.getMessage()));
+								}
+
+								final MultiStatus multiStatus = new MultiStatus("Antares Import", IStatus.ERROR,
+										status.toArray(new Status[] {}), "Some lines didn't have the Antares format",
+										null);
+
+								ErrorDialog.openError(active, "Error", "File Imported with errors", multiStatus);
+							}
 						}
 					}
 				});
