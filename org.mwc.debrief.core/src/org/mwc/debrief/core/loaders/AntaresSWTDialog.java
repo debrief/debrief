@@ -56,7 +56,7 @@ public class AntaresSWTDialog extends TitleAreaDialog {
 	public void create() {
 		super.create();
 		setTitle("Antares Import Dialog");
-		setMessage("Please, indicate the name of the track, month and year");
+		setMessage("Please indicate the name of the track, month and year");
 	}
 
 	@Override
