@@ -60,7 +60,6 @@ public class AntaresLoader extends CoreLoader {
 	protected IRunnableWithProgress getImporter(final IAdaptable target, final Layers layers,
 			final InputStream inputStream, final String fileName) throws Exception {
 
-		System.out.println("A");
 		return new IRunnableWithProgress() {
 
 			@Override
