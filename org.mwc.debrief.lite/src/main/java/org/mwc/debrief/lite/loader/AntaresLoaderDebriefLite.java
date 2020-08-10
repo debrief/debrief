@@ -9,6 +9,9 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.util.Calendar;
+import java.util.HashMap;
+import java.util.List;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import javax.swing.BoxLayout;
@@ -28,8 +31,11 @@ import MWC.GUI.Layers;
 
 public class AntaresLoaderDebriefLite {
 
+	private static String _persistencyYear = "AntaresImportPersistenceYear";
+	private static String _persistencyMonth = "AntaresImportPersistenceMonth";
+
 	public static void handleImportAntares(final File file, final ImportAntares antaresImporter, final Layers theLayers,
-			final JFrame owner) {
+			final JFrame owner, final HashMap<String, String> persistency) {
 		// We need to ask to the user the trackname, month and year.
 
 		antaresImporter.setLayers(theLayers);
@@ -43,11 +49,21 @@ public class AntaresLoaderDebriefLite {
 		final JTextField nameOfTheTrackTextField = new JTextField();
 		nameOfTheTrackTextField.setToolTipText("Name of the track");
 
-		final JComboBox<String> monthComboBox = new JComboBox<String>(
-				IntStream.range(1, 13).mapToObj(i -> String.format("%01d", i)).toArray(String[]::new));
-		monthComboBox.setSelectedIndex(Calendar.getInstance().get(Calendar.MONTH));
+		final List<String> items = IntStream.range(1, 13).mapToObj(i -> String.format("%02d", i))
+				.collect(Collectors.toList());
+		final JComboBox<String> monthComboBox = new JComboBox<String>(items.toArray(new String[] {}));
+		if (persistency.containsKey(_persistencyMonth)) {
+			monthComboBox.setSelectedIndex(items.indexOf(persistency.get(_persistencyMonth)));
+		} else {
+			monthComboBox.setSelectedIndex(Calendar.getInstance().get(Calendar.MONTH));
+		}
 		final JTextField yearTextField = new JTextField();
-		yearTextField.setText(Calendar.getInstance().get(Calendar.YEAR) + "");
+
+		if (persistency.containsKey(_persistencyYear)) {
+			yearTextField.setText(persistency.get(_persistencyYear));
+		} else {
+			yearTextField.setText(Calendar.getInstance().get(Calendar.YEAR) + "");
+		}
 
 		final JButton cancelButton = new JButton("Cancel");
 		final JButton acceptButton = new JButton("Accept");
@@ -102,6 +118,11 @@ public class AntaresLoaderDebriefLite {
 			public void actionPerformed(final ActionEvent e) {
 				antaresImporter.setMonth(monthComboBox.getSelectedIndex());
 				antaresImporter.setYear(Integer.parseInt(yearTextField.getText()));
+
+				// store persistence
+				persistency.put(_persistencyMonth, monthComboBox.getSelectedItem().toString());
+				persistency.put(_persistencyYear, yearTextField.getText());
+
 				antaresImporter.setTrackName(nameOfTheTrackTextField.getText());
 				try {
 					antaresImporter.importThis(file.getName(), new FileInputStream(file));
