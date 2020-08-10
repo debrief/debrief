@@ -126,9 +126,10 @@ public class AntaresLoaderDebriefLite {
 				antaresImporter.setTrackName(nameOfTheTrackTextField.getText());
 				try {
 					antaresImporter.importThis(file.getName(), new FileInputStream(file));
-					if (!antaresImporter.getErrors().isEmpty()) {
+					List<ImportAntaresException> errors = antaresImporter.getErrors();
+					if (!errors.isEmpty()) {
 						final StringBuilder builder = new StringBuilder();
-						for (final ImportAntaresException exception : antaresImporter.getErrors()) {
+						for (final ImportAntaresException exception : errors) {
 							builder.append(exception.getMessage());
 							builder.append("\n");
 						}

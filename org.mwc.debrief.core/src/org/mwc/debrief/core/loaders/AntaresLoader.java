@@ -86,9 +86,10 @@ public class AntaresLoader extends CoreLoader {
 
 							antaresImporter.importThis(fileName, inputStream);
 
-							if (!antaresImporter.getErrors().isEmpty()) {
+							List<ImportAntaresException> errors = antaresImporter.getErrors();
+							if (!errors.isEmpty()) {
 								final List<Status> status = new ArrayList<>();
-								for (final ImportAntaresException error : antaresImporter.getErrors()) {
+								for (final ImportAntaresException error : errors) {
 									status.add(new Status(IStatus.ERROR, "Antares Import", error.getMessage()));
 								}
 
