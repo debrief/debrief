@@ -59,6 +59,8 @@ public class ImportAntaresTest extends TestCase {
 			final double[] expectedCourse = new double[] { 30, 31, 35 };
 			final double[] expectedDepth = new double[] { -5, -3, -1 };
 			final long[] expectedTime = new long[] { -59161602600000000L, -59161602480000000L, -59161602360000000L };
+			final double[] expectedLocationLatitude = new double[] {25.2, 25.233333333333334, 25.266666666666666};
+			final double[] expectedLocationLongitud = new double[] {-30.175, -30.208333333333332, -30.241666666666667};
 			final Enumeration<Editable> enumSegment = trackSegment.elements();
 			while (enumSegment.hasMoreElements()) {
 				final Editable nextFix = enumSegment.nextElement();
@@ -72,6 +74,8 @@ public class ImportAntaresTest extends TestCase {
 				assertEquals("Correct Speed ", expectedSpeed[totalFixes], fixWrapper.getFix().getSpeed(), 1e-8);
 
 				assertEquals("Correct DTG ", expectedTime[totalFixes], fixWrapper.getFix().getTime().getMicros());
+				assertEquals("Correct Latitude ", expectedLocationLatitude[totalFixes], fixWrapper.getFix().getLocation().getLat(), 1e-8);
+				assertEquals("Correct Longitude ", expectedLocationLongitud[totalFixes], fixWrapper.getFix().getLocation().getLong(), 1e-8);
 
 				++totalFixes;
 			}
