@@ -9,6 +9,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.util.Calendar;
+import java.util.List;
 import java.util.stream.IntStream;
 
 import javax.swing.BoxLayout;
@@ -17,17 +18,19 @@ import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
 
 import Debrief.ReaderWriter.Antares.ImportAntares;
+import Debrief.ReaderWriter.Antares.ImportAntaresImpl.ImportAntaresException;
 import MWC.GUI.Layers;
 
 public class AntaresLoaderDebriefLite {
 
-	public static void handleImportAntares(final File file, final ImportAntares antaresImporter,
-			final Layers theLayers, final JFrame owner) {
+	public static void handleImportAntares(final File file, final ImportAntares antaresImporter, final Layers theLayers,
+			final JFrame owner) {
 		// We need to ask to the user the trackname, month and year.
 
 		antaresImporter.setLayers(theLayers);
@@ -103,9 +106,17 @@ public class AntaresLoaderDebriefLite {
 				antaresImporter.setTrackName(nameOfTheTrackTextField.getText());
 				try {
 					antaresImporter.importThis(file.getName(), new FileInputStream(file));
+					if (!antaresImporter.getErrors().isEmpty()) {
+						final StringBuilder builder = new StringBuilder();
+						for (ImportAntaresException exception : antaresImporter.getErrors()) {
+							builder.append(exception.getMessage());
+							builder.append("\n");
+						}
+						JOptionPane.showMessageDialog(owner,
+								"Antares file was imported, but with errors: " + builder.toString().trim());
+					}
 				} catch (FileNotFoundException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
+					JOptionPane.showMessageDialog(owner, "Antares file was not found " + e1.getMessage());
 				}
 				frame.dispose();
 			}

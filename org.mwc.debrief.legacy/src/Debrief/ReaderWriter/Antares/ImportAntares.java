@@ -17,7 +17,10 @@ package Debrief.ReaderWriter.Antares;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
 
+import Debrief.ReaderWriter.Antares.ImportAntaresImpl.ImportAntaresException;
 import MWC.GUI.Layers;
 import MWC.GUI.Plottable;
 import MWC.Utilities.ReaderWriter.PlainImporterBase;
@@ -27,9 +30,10 @@ import MWC.Utilities.ReaderWriter.PlainImporterBase;
  */
 public class ImportAntares extends PlainImporterBase {
 
-	String _trackName;
-	int _month;
-	int _year;
+	private String _trackName;
+	private int _month;
+	private int _year;
+	private List<ImportAntaresException> errors = new ArrayList<>();
 
 	public ImportAntares() {
 
@@ -76,7 +80,8 @@ public class ImportAntares extends PlainImporterBase {
 
 	@Override
 	public void importThis(final String fName, final InputStream is) {
-		ImportAntaresImpl.importThis(is, getLayers(), _trackName, _month, _year);
+		errors.clear();
+		errors.addAll(ImportAntaresImpl.importThis(is, getLayers(), _trackName, _month, _year));
 	}
 
 	@Override
@@ -95,5 +100,9 @@ public class ImportAntares extends PlainImporterBase {
 
 	public void setYear(final int _year) {
 		this._year = _year;
+	}
+
+	public List<ImportAntaresException> getErrors() {
+		return errors;
 	}
 }
