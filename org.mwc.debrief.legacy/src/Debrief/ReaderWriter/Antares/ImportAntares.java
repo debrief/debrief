@@ -33,7 +33,7 @@ public class ImportAntares extends PlainImporterBase {
 	private String _trackName;
 	private int _month;
 	private int _year;
-	private List<ImportAntaresException> errors = new ArrayList<>();
+	private final List<ImportAntaresException> _errors = new ArrayList<>();
 
 	public ImportAntares() {
 
@@ -78,10 +78,14 @@ public class ImportAntares extends PlainImporterBase {
 		// Nothing to do here
 	}
 
+	public List<ImportAntaresException> getErrors() {
+		return _errors;
+	}
+
 	@Override
 	public void importThis(final String fName, final InputStream is) {
-		errors.clear();
-		errors.addAll(ImportAntaresImpl.importThis(is, getLayers(), _trackName, _month, _year));
+		_errors.clear();
+		_errors.addAll(ImportAntaresImpl.importThis(is, getLayers(), _trackName, _month, _year));
 	}
 
 	@Override
@@ -100,9 +104,5 @@ public class ImportAntares extends PlainImporterBase {
 
 	public void setYear(final int _year) {
 		this._year = _year;
-	}
-
-	public List<ImportAntaresException> getErrors() {
-		return errors;
 	}
 }

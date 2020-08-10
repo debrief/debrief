@@ -95,7 +95,8 @@ public class ImportAntaresTest extends TestCase {
 		final InputStream targetStream = new ByteArrayInputStream(inputFileContent.getBytes());
 		final Layers layers = new Layers();
 
-		List<ImportAntaresException> errors = ImportAntaresImpl.importThis(targetStream, layers, "TRACK_SAUL", 3, 95);
+		final List<ImportAntaresException> errors = ImportAntaresImpl.importThis(targetStream, layers, "TRACK_SAUL", 3,
+				95);
 
 		assertEquals("Correct Layer Unit", 1, layers.size());
 		final Layer saulTrack = layers.findLayer("TRACK_SAUL");

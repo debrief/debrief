@@ -9,7 +9,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.util.Calendar;
-import java.util.List;
 import java.util.stream.IntStream;
 
 import javax.swing.BoxLayout;
@@ -79,7 +78,7 @@ public class AntaresLoaderDebriefLite {
 		final JDialog frame = new JDialog(owner, "Antares Import Configuration", true) {
 
 			/**
-			 * 
+			 *
 			 */
 			private static final long serialVersionUID = -4759126543816346899L;
 
@@ -92,7 +91,7 @@ public class AntaresLoaderDebriefLite {
 		cancelButton.addActionListener(new ActionListener() {
 
 			@Override
-			public void actionPerformed(ActionEvent e) {
+			public void actionPerformed(final ActionEvent e) {
 				frame.dispose();
 			}
 		});
@@ -100,7 +99,7 @@ public class AntaresLoaderDebriefLite {
 		acceptButton.addActionListener(new ActionListener() {
 
 			@Override
-			public void actionPerformed(ActionEvent e) {
+			public void actionPerformed(final ActionEvent e) {
 				antaresImporter.setMonth(monthComboBox.getSelectedIndex());
 				antaresImporter.setYear(Integer.parseInt(yearTextField.getText()));
 				antaresImporter.setTrackName(nameOfTheTrackTextField.getText());
@@ -108,14 +107,14 @@ public class AntaresLoaderDebriefLite {
 					antaresImporter.importThis(file.getName(), new FileInputStream(file));
 					if (!antaresImporter.getErrors().isEmpty()) {
 						final StringBuilder builder = new StringBuilder();
-						for (ImportAntaresException exception : antaresImporter.getErrors()) {
+						for (final ImportAntaresException exception : antaresImporter.getErrors()) {
 							builder.append(exception.getMessage());
 							builder.append("\n");
 						}
 						JOptionPane.showMessageDialog(owner,
 								"Antares file was imported, but with errors: " + builder.toString().trim());
 					}
-				} catch (FileNotFoundException e1) {
+				} catch (final FileNotFoundException e1) {
 					JOptionPane.showMessageDialog(owner, "Antares file was not found " + e1.getMessage());
 				}
 				frame.dispose();

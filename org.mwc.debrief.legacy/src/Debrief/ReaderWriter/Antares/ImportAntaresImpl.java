@@ -13,6 +13,7 @@ import Debrief.GUI.Frames.Application;
 import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.TrackWrapper;
 import MWC.GUI.Layers;
+import MWC.GUI.ToolParent;
 import MWC.GUI.Properties.DebriefColors;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.WorldLocation;
@@ -52,7 +53,7 @@ public class ImportAntaresImpl {
 			}
 		} catch (final IOException e) {
 			// There were problems reading the file. It cannot be loaded.
-			Application.logError2(Application.ERROR, "Failed to load Antares file", e);
+			Application.logError2(ToolParent.ERROR, "Failed to load Antares file", e);
 		}
 		return false;
 	}
@@ -64,11 +65,11 @@ public class ImportAntaresImpl {
 	 * @param is        InputStream where the Antares format is available.
 	 * @param layers    New Track will be inserted into this layers
 	 * @param trackName Name of the new track (since it is not available in the
-	 *                   Antares format)
+	 *                  Antares format)
 	 * @param month     Month to use in the new track (since it is not available in
-	 *                   the Antares format)
+	 *                  the Antares format)
 	 * @param year      Year to use in the new track (since it is not available in
-	 *                   the Antares format)
+	 *                  the Antares format)
 	 * @return A list with the errors found while reading the Antares format.
 	 */
 	public static List<ImportAntaresException> importThis(final InputStream is, final Layers layers,
@@ -172,8 +173,8 @@ public class ImportAntaresImpl {
 	 * Parse the given date, using the month, and year given
 	 *
 	 * @param dateAsString Date in the Antares format (DDHHMMZ)
-	 * @param month       month to assign to the date
-	 * @param year        year to assign to the date
+	 * @param month        month to assign to the date
+	 * @param year         year to assign to the date
 	 * @return Date in the HiResDate format
 	 * @throws ImportAntaresException In case of any error, we will throw an
 	 *                                ImportAntaresException with a descriptive
@@ -203,7 +204,7 @@ public class ImportAntaresImpl {
 
 	/**
 	 * Parse a location degree, Examples: 2512.0N 03010.5W
-	 * 
+	 *
 	 * @param degrees
 	 * @return Equivalent location as double
 	 * @throws ImportAntaresException
