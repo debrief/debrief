@@ -42,9 +42,9 @@ public class AntaresLoaderDebriefLite {
 
 		final JPanel mainPanel = new JPanel(new BorderLayout());
 
-		final JLabel nameOfTheTrackLabel = new JLabel("Please choose the name of the track");
+		final JLabel nameOfTheTrackLabel = new JLabel("Please provide the name of the track");
 		nameOfTheTrackLabel.setBorder(new EmptyBorder(5, 5, 5, 5));
-		final JLabel dateLabel = new JLabel("Please choose the month and year");
+		final JLabel dateLabel = new JLabel("Please provide the month and year");
 		dateLabel.setBorder(new EmptyBorder(5, 5, 5, 5));
 		final JTextField nameOfTheTrackTextField = new JTextField();
 		nameOfTheTrackTextField.setToolTipText("Name of the track");
