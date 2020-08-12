@@ -14,6 +14,8 @@
  */
 package MWC.Utilities.ReaderWriter.Word;
 
+import static org.junit.Assert.assertNotEquals;
+
 import java.awt.Color;
 import java.io.File;
 import java.io.FileInputStream;
@@ -50,17 +52,28 @@ public class NarrativeWriter {
 			FileOutputStream outStream = null;
 			XWPFDocument document = null;
 			try {
-				File file = new File(fileName);
-				System.out.println("File exists:"+file.exists());
 				document = new XWPFDocument();
 				int rowCount = 0;
-				int colCount=4;
+				int colCount=2;
+				if(showSource) {
+					colCount++;
+				}
+				if(showType) {
+					colCount++;
+				}
 				final XWPFTable narrativesTable = document.createTable(rowCount+1,colCount);
 				final XWPFTableRow row = narrativesTable.getRow(rowCount);
 				row.getCell(0).setText("DTG ");
 				row.getCell(1).setText("Entry");
-				row.getCell(2).setText("Track");
-				row.getCell(3).setText("Type");
+				if(showSource) {
+					row.getCell(2).setText("Track");
+				}
+				if(!showSource && showType) {
+					row.getCell(2).setText("Type");
+				}
+				else if(showSource && showType){
+					row.getCell(3).setText("Type");
+				}
 				
 				NarrativeEntry nextEntry = currentEntry;
 				
@@ -68,26 +81,28 @@ public class NarrativeWriter {
 				
 				while(nextEntry!=null) {
 					final XWPFTableRow dataRow = narrativesTable.createRow();
-					rowCount++;
-					System.out.println("Rowcount:"+rowCount);
 					currentEntry = nextEntry;
 					XWPFTableCell cell1 = dataRow.getCell(0);
 					String dtgString = currentEntry.getDTGString();
 					cell1.setText(dtgString);
-					System.out.println("DTGString:"+dtgString);
 					XWPFTableCell cell2 = dataRow.getCell(1);
 					cell2.setText(currentEntry.getEntry());
 					
-					if(!isNullOrBlank(currentEntry.getSource())) {
+					if(showSource && !isNullOrBlank(currentEntry.getSource())) {
 						XWPFTableCell sourceCell = dataRow.getCell(2);
 						sourceCell.setText(currentEntry.getSource());
 					}
-					if(!isNullOrBlank(currentEntry.getType())) {
-						XWPFTableCell typeCell = dataRow.getCell(3);
-						typeCell.setText(currentEntry.getType());
+					if(showType && !isNullOrBlank(currentEntry.getType())) {
+						XWPFTableCell typeCell;
+						if(showSource && showType) {
+							typeCell = dataRow.getCell(3);
+						}
+						else {
+							typeCell = dataRow.getCell(2);
+						}
+						typeCell.setText(currentEntry.getType());	
 					}
 					nextEntry = editableItems.hasMoreElements()?(NarrativeEntry)editableItems.nextElement():null;
-					//narrativesTable.addRow(dataRow);
 				}
 				
 				outStream = new FileOutputStream(fileName);
@@ -144,13 +159,11 @@ public class NarrativeWriter {
 			FileInputStream fileInputStream = null;
 			try {
 				File fileToBeRead = new File(fileName);
-				System.out.println(fileToBeRead.getAbsolutePath());
 				fileInputStream = new FileInputStream(fileToBeRead);
 				document = new XWPFDocument(fileInputStream);
 				List<XWPFTable> tables = document.getTables();
 				assertEquals("row count",3,tables.get(0).getNumberOfRows());
 				XWPFTableRow row1 = tables.get(0).getRow(1);
-				System.out.println("n1dtgstring:"+n1.getDTGString());
 				assertEquals(n1.getDTGString(),row1.getCell(0).getText());
 				assertEquals(n1.getEntry(),row1.getCell(1).getText());
 				XWPFTableRow row2 = tables.get(0).getRow(2);
@@ -187,11 +200,14 @@ public class NarrativeWriter {
 			
 			
 		}
-		public void testWritingBlankType() {
+		public void testWritingNoType() {
 			final NarrativeWrapper narr = new NarrativeWrapper("Some title");
 			assertEquals("empty", 0, narr.size());
 			HiResDate date1 = new HiResDate(3000);
 			final NarrativeEntry n1 = new NarrativeEntry("track", date1, "some entry");
+			n1.setSource("src");
+			n1.setType("Type");
+	
 			narr.add(n1);
 
 			assertEquals("has one", 1, narr.size());
@@ -202,9 +218,10 @@ public class NarrativeWriter {
 			assertEquals("has two", 2, narr.size());
 			
 			n2.setSource("src");
+			n2.setType("Type");
 			NarrativeWriter nw = new NarrativeWriter();
 			String currentDirectory = System.getProperty("user.dir");
-			nw.write(narr, true,true, new File(currentDirectory));
+			nw.write(narr, true,false, new File(currentDirectory));
 			String fileName = n1.getDTGString()+".docx";
 			File outFile =new File(fileName);
 			assertTrue(outFile.exists());
@@ -302,11 +319,14 @@ public class NarrativeWriter {
 			outFile.delete();
 			
 		}
-		public void testNarrativeBlankSource() {
+		public void testNarrativeNoSource() {
 			final NarrativeWrapper narr = new NarrativeWrapper("Some title");
 			assertEquals("empty", 0, narr.size());
 			HiResDate date1 = new HiResDate(3000);
 			final NarrativeEntry n1 = new NarrativeEntry("track", date1, "some entry");
+			n1.setSource("src");
+			n1.setType("Type");
+	
 			narr.add(n1);
 
 			assertEquals("has one", 1, narr.size());
@@ -316,11 +336,11 @@ public class NarrativeWriter {
 
 			assertEquals("has two", 2, narr.size());
 			
-			n2.setSource("");
-			n2.setType("type");
+			n2.setSource("src");
+			n2.setType("Type");
 			NarrativeWriter nw = new NarrativeWriter();
 			String currentDirectory = System.getProperty("user.dir");
-			nw.write(narr, true,true, new File(currentDirectory));
+			nw.write(narr, false,true, new File(currentDirectory));
 			String fileName = n1.getDTGString()+".docx";
 			File outFile =new File(fileName);
 			assertTrue(outFile.exists());
@@ -340,9 +360,7 @@ public class NarrativeWriter {
 				XWPFTableRow row2 = tables.get(0).getRow(2);
 				assertEquals(n2.getDTGString(),row2.getCell(0).getText());
 				assertEquals(n2.getEntry(),row2.getCell(1).getText());
-				assertEquals(n2.getSource(),row2.getCell(2).getText());
-				assertEquals(n2.getType(),row2.getCell(3).getText());
-				
+				assertEquals(n2.getType(),row2.getCell(2).getText());
 			} catch (Exception e) {
 				e.printStackTrace();
 				fail("Error reading the word doc");

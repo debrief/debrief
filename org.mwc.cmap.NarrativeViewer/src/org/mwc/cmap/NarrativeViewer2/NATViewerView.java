@@ -18,6 +18,7 @@ package org.mwc.cmap.NarrativeViewer2;
 import java.awt.Color;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.io.File;
 import java.text.DateFormat;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -59,6 +60,7 @@ import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.DirectoryDialog;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.ui.IEditorInput;
@@ -68,6 +70,7 @@ import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.dialogs.PreferencesUtil;
 import org.eclipse.ui.part.ViewPart;
+import org.mwc.cmap.NarrativeViewer.NarrativeViewerModel;
 import org.mwc.cmap.NarrativeViewer.model.TimeFormatter;
 import org.mwc.cmap.NarrativeViewer.preferences.NarrativeViewerPrefsPage;
 import org.mwc.cmap.core.CorePlugin;
@@ -91,6 +94,7 @@ import MWC.TacticalData.NarrativeEntry;
 import MWC.TacticalData.NarrativeWrapper;
 import MWC.TacticalData.temporal.ControllableTime;
 import MWC.TacticalData.temporal.TimeProvider;
+import MWC.Utilities.ReaderWriter.Word.NarrativeWriter;
 import MWC.Utilities.ReaderWriter.XML.LayerHandler;
 import MWC.Utilities.TextFormatting.GMTDateFormat;
 
@@ -756,9 +760,7 @@ public class NATViewerView extends ViewPart implements PropertyChangeListener, I
 		// and the DTG formatter
 		addDateFormats(menuManager);
 
-		menuManager.add(new Separator());
-		menuManager.add(CorePlugin.createOpenHelpAction("org.mwc.debrief.help.Narrative", null, this));
-
+		
 		final Action fontPlus = new Action("+", IAction.AS_PUSH_BUTTON) {
 
 			@Override
@@ -810,8 +812,30 @@ public class NATViewerView extends ViewPart implements PropertyChangeListener, I
 		toolManager.add(fontPlus);
 		toolManager.add(fontMin);
 
-	}
+		final Action exportToMSWordAction = new Action("Export to MSWord",IAction.AS_PUSH_BUTTON) {
+			public void runWithEvent(Event event) {
+				//show file dialog
+				//default directory, last directory, otherwise the user's home folder.
+				DirectoryDialog dialog = new DirectoryDialog(getViewSite().getShell());
+				String targetDirectory = dialog.open();
+				if(targetDirectory!=null) {
+					NarrativeWriter writer = new NarrativeWriter();
+					writer.write(myViewer.getVisibleNarratives(), myViewer.isShowingSource(), myViewer.isShowingType(), new File(targetDirectory));
+				}
+				
+			};
+		};
+		exportToMSWordAction.setText("Export to MSWord");
+		exportToMSWordAction.setImageDescriptor(CorePlugin.getImageDescriptor("icons/16/ex_2word.png"));
+		exportToMSWordAction.setToolTipText("Export visible narratives to MS Word Document");
+		menuManager.add(exportToMSWordAction);
+		toolManager.add(exportToMSWordAction);
 
+		menuManager.add(new Separator());
+		menuManager.add(CorePlugin.createOpenHelpAction("org.mwc.debrief.help.Narrative", null, this));
+
+		
+	}
 	/**
 	 * the user has selected a new time
 	 *

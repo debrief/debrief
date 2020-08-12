@@ -235,6 +235,7 @@ Export-Package:
  MWC.Utilities.Errors;uses:="MWC.GUI",
  MWC.Utilities.Errors.Testing;uses:="junit.framework",
  MWC.Utilities.ReaderWriter;uses:="javax.swing,MWC.GUI",
+ MWC.Utilities.ReaderWriter.Word,
  MWC.Utilities.ReaderWriter.XML;
   uses:="MWC.GenericData,
    javax.xml.parsers,
