@@ -1098,7 +1098,7 @@ public class DebriefLiteApp implements FileDropListener {
 							handleImportNisidaFile(file);
 						} else {
 							Trace.trace("This file type not handled:" + suff);
-							DialogFactory.showMessage("Open Debrief file", "This file type not handled:" + suff);
+							DialogFactory.showMessage("Open Debrief file", "This file type is not handled:" + suff);
 						}
 					}
 				}
