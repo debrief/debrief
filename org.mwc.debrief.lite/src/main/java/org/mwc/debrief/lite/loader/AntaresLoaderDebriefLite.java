@@ -104,15 +104,11 @@ public class AntaresLoaderDebriefLite {
 			}
 
 		};
-		cancelButton.addActionListener(new ActionListener() {
 
-			@Override
-			public void actionPerformed(final ActionEvent e) {
-				frame.dispose();
-			}
-		});
 
-		acceptButton.addActionListener(new ActionListener() {
+		// Let's add the action listeners at the end
+		
+		final ActionListener acceptActionListener = new ActionListener() {
 
 			@Override
 			public void actionPerformed(final ActionEvent e) {
@@ -141,10 +137,25 @@ public class AntaresLoaderDebriefLite {
 				}
 				frame.dispose();
 			}
+		};
+
+		acceptButton.addActionListener(acceptActionListener);
+		nameOfTheTrackTextField.addActionListener(acceptActionListener);
+		
+
+		cancelButton.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(final ActionEvent e) {
+				frame.dispose();
+			}
 		});
+		
 		frame.setLocationRelativeTo(null);
 		frame.getContentPane().add(mainPanel);
 		frame.pack();
 		frame.setVisible(true);
+		
+		
 	}
 }
