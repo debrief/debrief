@@ -35,7 +35,7 @@ public class AntaresLoaderDebriefLite {
 	private static String _persistencyMonth = "AntaresImportPersistenceMonth";
 
 	public static void handleImportAntares(final File file, final ImportAntares antaresImporter, final Layers theLayers,
-			final JFrame owner, final HashMap<String, String> persistency) {
+			final JFrame owner, final HashMap<String, String> persistency, final Runnable endImport) {
 		// We need to ask to the user the trackname, month and year.
 
 		antaresImporter.setLayers(theLayers);
@@ -105,9 +105,8 @@ public class AntaresLoaderDebriefLite {
 
 		};
 
-
 		// Let's add the action listeners at the end
-		
+
 		final ActionListener acceptActionListener = new ActionListener() {
 
 			@Override
@@ -122,6 +121,9 @@ public class AntaresLoaderDebriefLite {
 				antaresImporter.setTrackName(nameOfTheTrackTextField.getText());
 				try {
 					antaresImporter.importThis(file.getName(), new FileInputStream(file));
+					if (endImport != null) {
+						endImport.run();
+					}
 					final List<ImportAntaresException> errors = antaresImporter.getErrors();
 					if (!errors.isEmpty()) {
 						final StringBuilder builder = new StringBuilder();
@@ -141,7 +143,6 @@ public class AntaresLoaderDebriefLite {
 
 		acceptButton.addActionListener(acceptActionListener);
 		nameOfTheTrackTextField.addActionListener(acceptActionListener);
-		
 
 		cancelButton.addActionListener(new ActionListener() {
 
@@ -150,12 +151,11 @@ public class AntaresLoaderDebriefLite {
 				frame.dispose();
 			}
 		});
-		
+
 		frame.setLocationRelativeTo(null);
 		frame.getContentPane().add(mainPanel);
 		frame.pack();
 		frame.setVisible(true);
-		
-		
+
 	}
 }

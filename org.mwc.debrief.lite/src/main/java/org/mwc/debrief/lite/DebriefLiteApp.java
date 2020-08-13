@@ -1082,7 +1082,13 @@ public class DebriefLiteApp implements FileDropListener {
 						final ImportAntares antaresImporter = new ImportAntares();
 						if (antaresImporter.canImportThisFile(file.getAbsolutePath())) {
 							AntaresLoaderDebriefLite.handleImportAntares(file, antaresImporter, _theLayers,
-									getApplicationFrame(), getInstance().getGeneralPersistence());
+									getApplicationFrame(), getInstance().getGeneralPersistence(), new Runnable() {
+
+										@Override
+										public void run() {
+											finishTimeRelatedImport(getInstance());
+										}
+									});
 						}
 					} else {
 						// try nisida format - we can't rely on filename
@@ -1250,6 +1256,27 @@ public class DebriefLiteApp implements FileDropListener {
 		enableFileCloseButton(true);
 	}
 
+	private void finishTimeRelatedImport(final Object source) {
+		setCursor(Cursor.WAIT_CURSOR);
+		layerManager.createAndInitializeTree();
+		mapPane.repaint();
+		restoreCursor();
+		// update the time panel
+		final TimePeriod period = _theLayers.getTimePeriod();
+		if (period != null) {
+			_myOperations.setPeriod(period);
+			timeManager.setPeriod(source, period);
+			timeManager.setTime(source, period.getStartDTG(), true);
+		}
+		timeManager.firePeriodPropertyChange();
+
+		theTote.assignWatchables(true);
+
+		// and the spatial bounds
+		final FitToWindow fitMe = new FitToWindow(_theLayers, mapPane, projection, null);
+		fitMe.actionPerformed(null);
+	}
+
 	private void handleImportRep(final File[] fList) {
 
 		final DebriefLiteApp source = this;
@@ -1279,24 +1306,7 @@ public class DebriefLiteApp implements FileDropListener {
 						SwingUtilities.invokeLater(new Runnable() {
 							@Override
 							public void run() {
-								setCursor(Cursor.WAIT_CURSOR);
-								layerManager.createAndInitializeTree();
-								mapPane.repaint();
-								restoreCursor();
-								// update the time panel
-								final TimePeriod period = _theLayers.getTimePeriod();
-								if (period != null) {
-									_myOperations.setPeriod(period);
-									timeManager.setPeriod(source, period);
-									timeManager.setTime(source, period.getStartDTG(), true);
-								}
-								timeManager.firePeriodPropertyChange();
-
-								theTote.assignWatchables(true);
-
-								// and the spatial bounds
-								final FitToWindow fitMe = new FitToWindow(_theLayers, mapPane, projection, null);
-								fitMe.actionPerformed(null);
+								finishTimeRelatedImport(source);
 							}
 						});
 					}
