@@ -70,7 +70,7 @@ import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.dialogs.PreferencesUtil;
 import org.eclipse.ui.part.ViewPart;
-import org.mwc.cmap.NarrativeViewer.NarrativeViewerModel;
+import org.mwc.cmap.NarrativeViewer.app.Activator;
 import org.mwc.cmap.NarrativeViewer.model.TimeFormatter;
 import org.mwc.cmap.NarrativeViewer.preferences.NarrativeViewerPrefsPage;
 import org.mwc.cmap.core.CorePlugin;
@@ -100,6 +100,7 @@ import MWC.Utilities.TextFormatting.GMTDateFormat;
 
 public class NATViewerView extends ViewPart implements PropertyChangeListener, ISelectionProvider {
 	private static DateFormat _myFormat;
+	private static final String PREF_EXPORT_DIR = "NARR_VIEWER_EXPORT_DIR"; 
 
 	private static String _myFormatString;
 
@@ -374,7 +375,7 @@ public class NATViewerView extends ViewPart implements PropertyChangeListener, I
 			// the properties manager is expecting the integer index of the new
 			// format, not the string value.
 			// so store it as an integer index
-			final Integer thisIndex = new Integer(i);
+			final Integer thisIndex = 1;
 
 			// and create a new action to represent the change
 			final Action newFormat = new Action(thisFormat, IAction.AS_RADIO_BUTTON) {
@@ -817,8 +818,17 @@ public class NATViewerView extends ViewPart implements PropertyChangeListener, I
 				//show file dialog
 				//default directory, last directory, otherwise the user's home folder.
 				DirectoryDialog dialog = new DirectoryDialog(getViewSite().getShell());
+				String prefDir = Activator.getInstance().getPreferenceStore().getString(PREF_EXPORT_DIR);
+				String defaultDir = System.getProperty("user.home");
+				if(prefDir == null || prefDir.isBlank()) {
+					dialog.setFilterPath(defaultDir);
+				}
+				else {
+					dialog.setFilterPath(prefDir);
+				}
 				String targetDirectory = dialog.open();
 				if(targetDirectory!=null) {
+					Activator.getInstance().getPreferenceStore().setValue(PREF_EXPORT_DIR, targetDirectory);
 					NarrativeWriter writer = new NarrativeWriter();
 					writer.write(myViewer.getVisibleNarratives(), myViewer.isShowingSource(), myViewer.isShowingType(), new File(targetDirectory));
 				}
