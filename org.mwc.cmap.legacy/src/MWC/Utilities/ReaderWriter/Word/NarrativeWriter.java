@@ -14,8 +14,6 @@
  */
 package MWC.Utilities.ReaderWriter.Word;
 
-import static org.junit.Assert.assertNotEquals;
-
 import java.awt.Color;
 import java.io.File;
 import java.io.FileInputStream;
@@ -104,7 +102,6 @@ public class NarrativeWriter {
 					}
 					nextEntry = editableItems.hasMoreElements()?(NarrativeEntry)editableItems.nextElement():null;
 				}
-				
 				outStream = new FileOutputStream(fileName);
 				document.write(outStream);
 			} catch (IOException e) {
@@ -196,9 +193,6 @@ public class NarrativeWriter {
 			NarrativeWriter nw = new NarrativeWriter();
 			String currentDirectory = System.getProperty("user.dir");
 			nw.write(narr, true,true, new File(currentDirectory));
-			
-			
-			
 		}
 		public void testWritingNoType() {
 			final NarrativeWrapper narr = new NarrativeWrapper("Some title");

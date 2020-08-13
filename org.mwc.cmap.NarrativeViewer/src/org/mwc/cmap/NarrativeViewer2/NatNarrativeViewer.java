@@ -88,6 +88,7 @@ public class NatNarrativeViewer {
 
 		public SwitchColumnVisibilityAction(final String colLabel, final String name) {
 			this.colLabel = colLabel;
+			setChecked(true);
 			setText(name);
 
 		}
