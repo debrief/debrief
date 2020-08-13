@@ -96,7 +96,9 @@ public class ImportAntaresImpl {
 			while ((antaresLine = br.readLine()) != null) {
 				try {
 					++lineNumber;
-					loadThisLine(antaresLine, track, trackName, month, year);
+					if (!antaresLine.trim().isEmpty()) {
+						loadThisLine(antaresLine, track, trackName, month, year);
+					}
 				} catch (final Exception e) {
 					errors.add(new ImportAntaresException("Error in line " + lineNumber + "\n" + e.getMessage()));
 				}
