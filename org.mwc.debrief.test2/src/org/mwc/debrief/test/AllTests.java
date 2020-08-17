@@ -132,7 +132,8 @@ import org.junit.runners.Suite;
 		org.mwc.debrief.pepys.model.bean.Privacy.PrivaciesTest.class,
 		org.mwc.debrief.pepys.model.db.config.ConfigurationReader.ConfigurationReaderTest.class,
 		Debrief.Tools.Tote.Calculations.DeltaRateToteCalcImplementation.DeltaRateToteCalcImplementationTest.class,
-		Debrief.ReaderWriter.Nisida.ImportNisidaTest.class})
+		Debrief.ReaderWriter.Nisida.ImportNisidaTest.class,
+		Debrief.ReaderWriter.Antares.ImportAntaresTest.class})
 @RunWith(Suite.class)
 public class AllTests {
 
