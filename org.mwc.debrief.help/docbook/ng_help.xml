@@ -47,7 +47,7 @@
       </affiliation>
     </author>
     <edition>Documentation for Debrief NG</edition>
-    <pubdate>Autumn 2017</pubdate>
+    <pubdate>Autumn 2020</pubdate>
     <abstract>
       <title>Contact details</title>
       <para>Should you wish to learn more about <application>Debrief</application> please make contact the Project Manager:</para>
@@ -170,7 +170,7 @@
       </revision>
     </revhistory>
     <copyright>
-      <year>2000-2017</year>
+      <year>2000-2020</year>
       <holder>This library is free software; you can redistribute it and/or modify it under the terms of the Eclipse Public License v1.0 (http://www.eclipse.org/legal/epl-v10.html) This library is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.</holder>
     </copyright>
   </info>
@@ -3926,7 +3926,7 @@ and so on....</programlisting></para>
           <para>Debrief determines where to find the <glossterm linkend="g_etopo">ETOPO</glossterm> data using <indexterm>
               <primary>ETOPO Data</primary>
               <secondary>Configuring Debrief</secondary>
-            </indexterm>the <guibutton>ETOPO Data storage</guibutton> tab of the <guibutton>Preferences</guibutton> dialog from the <guimenu>Window</guimenu> menu. Indicate the location of your ETOPO.RAW datafile using the file-browser button.<figure xml:id="vpf_prefs">
+          </indexterm>the <guibutton>ETOPO Data storage</guibutton> tab of the <guibutton>Preferences</guibutton> dialog from the <guimenu>Window</guimenu> menu. Indicate the location of your ETOPO.RAW datafile using the file-browser button. </para><para>Note: recent distributions of ETOPO include the dataset in several different forms.  The one suited to Debrief is titled <filename>ETOPOv2c.i2_MSB.bin</filename> <figure xml:id="vpf_prefs">
               <title>ETOPO preferences</title>
 
               <screenshot>
@@ -7148,10 +7148,18 @@ YYYYMMDD HHMMSS.SSS "XYX XYX XYX" SY DD MM SS.SS H DDD MM SS.SS H CCC.C SS.S DDD
                       <para>This annotation places the specified icon as a symbol. Note: spaces not allowed. Icon name must be the exact name that appears in the SVG Section.</para>
                     </entry>
                   </row>
+                  <row>
+                    <entry>
+                      <para>[NEW_SEGMENT]</para>
+                    </entry>
+                    <entry>
+                      <para>Use this annotation to split the track at this point by creating a new segment</para>
+                    </entry>
+                  </row>
                 </tbody>
               </tgroup>
             </table> Please, take a look at the following example of the extended symbology at use <screen xml:id="extended_symbology_example">            <markup>
-951212 050700.000 NELSON @C[SYMBOL=missile] 22 11 10.08 N 21 43 20.34 W 270.5   2.0      0 
+951212 050700.000 NELSON @C[SYMBOL=missile,NEW_SEGMENT] 22 11 10.08 N 21 43 20.34 W 270.5   2.0      0 
 951212 050701.000 COLLINGWOOD @C[SYMBOL=torpedo,LAYER=Support] 22 11 10.08 N 21 43 20.34 W 270.5   2.0      0 
             </markup>      </screen>
           </para>
@@ -7293,6 +7301,7 @@ surrounded by quotes (").
 ;NARRATIVE2:  YYMMDD HHMMSS  TTT.TTT AA..AA XX..XX
  ;; dtg, track name, narrative entry-type, narrative entry.  Note the track name 
 and entry type can be multi-word if surrounded by quotes (").
+
             </markup>   </screen>
           </para>
         </sect2>

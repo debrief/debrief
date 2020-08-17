@@ -56,6 +56,7 @@ import Debrief.Wrappers.TMAContactWrapper;
 import MWC.GUI.Shapes.EllipseShape;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.WorldDistance;
+import MWC.GenericData.WorldLocation;
 import MWC.Utilities.ReaderWriter.AbstractPlainLineImporter;
 import MWC.Utilities.ReaderWriter.XML.MWCXMLReader;
 import MWC.Utilities.TextFormatting.DebriefFormatDateTime;
@@ -312,8 +313,8 @@ public final class ImportTMA_RngBrg extends AbstractPlainLineImporter {
 				orientation = MWCXMLReader.readThisDouble(next);
 				maxima = MWCXMLReader.readThisDouble(st.nextToken());
 				minima = MWCXMLReader.readThisDouble(st.nextToken());
-
-				theEllipse = new EllipseShape(null, orientation,
+				final WorldLocation origin = new WorldLocation(2, 2, 0);
+				theEllipse = new EllipseShape(origin, orientation,
 						new WorldDistance(MWC.Algorithms.Conversions.Yds2Degs(maxima), WorldDistance.DEGS),
 						new WorldDistance(MWC.Algorithms.Conversions.Yds2Degs(minima), WorldDistance.DEGS));
 
