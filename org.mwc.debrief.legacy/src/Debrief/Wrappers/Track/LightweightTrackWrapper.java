@@ -372,6 +372,8 @@ public class LightweightTrackWrapper extends PlainWrapper
 			e.resetName();
 		}
 
+		// Let's correct the time if necessary
+		FixWrapperCollisionCheck.correctTimeCollision(e, _thePositions);
 		// finally, store it.
 		_thePositions.add(e);
 	}

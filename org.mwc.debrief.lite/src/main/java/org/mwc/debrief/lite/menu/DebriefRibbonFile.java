@@ -48,10 +48,8 @@ import org.pushingpixels.flamingo.api.common.model.CommandGroup;
 import org.pushingpixels.flamingo.api.common.model.CommandMenuContentModel;
 import org.pushingpixels.flamingo.api.common.model.CommandPanelContentModel;
 import org.pushingpixels.flamingo.api.common.model.CommandPanelPresentationModel;
-import org.pushingpixels.flamingo.api.common.popup.JCommandPopupMenu;
 import org.pushingpixels.flamingo.api.common.popup.model.CommandPopupMenuPresentationModel;
 import org.pushingpixels.flamingo.api.common.projection.CommandButtonProjection;
-import org.pushingpixels.flamingo.api.common.projection.Projection;
 import org.pushingpixels.flamingo.api.ribbon.JRibbon;
 import org.pushingpixels.flamingo.api.ribbon.JRibbonBand;
 import org.pushingpixels.flamingo.api.ribbon.JRibbonBand.PresentationPriority;
@@ -272,19 +270,6 @@ public class DebriefRibbonFile {
 
 		}
 
-	}
-
-	private static class SavePopupMenu extends JCommandPopupMenu {
-		/**
-		 *
-		 */
-		private static final long serialVersionUID = 1L;
-
-		public SavePopupMenu(
-				final Projection<JCommandPopupMenu, CommandMenuContentModel, CommandPopupMenuPresentationModel> projection) {
-			super(projection);
-
-		}
 	}
 
 	private static final String LAST_FILE_OPEN_LOCATION = "last_fileopen_location";

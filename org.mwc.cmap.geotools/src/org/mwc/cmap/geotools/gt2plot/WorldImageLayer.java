@@ -198,6 +198,7 @@ public class WorldImageLayer extends GeoToolsLayer {
 		final AbstractGridFormat format = GridFormatFinder.findFormat(openFile);
 		final Hints hints = new Hints(Hints.FORCE_LONGITUDE_FIRST_AXIS_ORDER, Boolean.TRUE);
 
+		GeoToolsLayer.registerTifUrlServiceProvider();
 		tiffReader = format.getReader(openFile, hints);
 
 		/*

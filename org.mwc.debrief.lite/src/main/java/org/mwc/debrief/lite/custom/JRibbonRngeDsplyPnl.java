@@ -30,7 +30,7 @@ import org.pushingpixels.flamingo.api.ribbon.synapse.model.ComponentPresentation
  * @author Ayesha
  *
  */
-public class JRibbonRangeDisplayPanel extends JPanel {
+public class JRibbonRngeDsplyPnl extends JPanel {
 
 	/**
 	 *
@@ -40,9 +40,9 @@ public class JRibbonRangeDisplayPanel extends JPanel {
 	private final JLabel lblMinimumValue;
 	private final JLabel lblMaximumValue;
 
-	public JRibbonRangeDisplayPanel(
-			final Projection<JRibbonRangeDisplayPanel, RangeDisplayComponentContentModel, ComponentPresentationModel> projection) {
-		final RangeDisplayComponentContentModel contentModel = projection.getContentModel();
+	public JRibbonRngeDsplyPnl(
+			final Projection<JRibbonRngeDsplyPnl, RangeDsplyCompContMdl, ComponentPresentationModel> projection) {
+		final RangeDsplyCompContMdl contentModel = projection.getContentModel();
 		setEnabled(contentModel.isEnabled());
 		lblMinimumValue = new JLabel();
 		lblMaximumValue = new JLabel();

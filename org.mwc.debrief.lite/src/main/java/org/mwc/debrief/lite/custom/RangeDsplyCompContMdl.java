@@ -16,7 +16,6 @@
 package org.mwc.debrief.lite.custom;
 
 import java.awt.Color;
-import java.awt.event.ActionListener;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 
@@ -29,7 +28,7 @@ import org.pushingpixels.neon.api.icon.ResizableIcon.Factory;
  * @author Ayesha
  *
  */
-public class RangeDisplayComponentContentModel implements ComponentContentModel {
+public class RangeDsplyCompContMdl implements ComponentContentModel {
 
 	public static class Builder {
 		private final boolean isEnabled = true;
@@ -40,13 +39,10 @@ public class RangeDisplayComponentContentModel implements ComponentContentModel 
 		private String maxValueText;
 		private Color background;
 		private Color foreground;
-		private ActionListener actionListener;
-
-		public RangeDisplayComponentContentModel build() {
-			final RangeDisplayComponentContentModel model = new RangeDisplayComponentContentModel();
+		public RangeDsplyCompContMdl build() {
+			final RangeDsplyCompContMdl model = new RangeDsplyCompContMdl();
 			model.setMinValueText(this.minValueText);
 			model.setMaxValueText(this.maxValueText);
-			model.actionListener = this.actionListener;
 			model.isEnabled = this.isEnabled;
 			model.iconFactory = this.iconFactory;
 			model.caption = this.caption;
@@ -100,8 +96,6 @@ public class RangeDisplayComponentContentModel implements ComponentContentModel 
 	private Color foregroundColor;
 
 	private RichTooltip richTooltip;
-
-	private ActionListener actionListener;
 
 	private final PropertyChangeSupport pcs = new PropertyChangeSupport(this);
 

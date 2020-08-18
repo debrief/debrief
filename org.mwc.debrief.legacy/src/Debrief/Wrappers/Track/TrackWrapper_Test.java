@@ -992,20 +992,21 @@ public class TrackWrapper_Test extends TestCase {
 		sw.add(scw4);
 
 		final TMAWrapper tmw = new TMAWrapper("dummy tma");
+		final WorldLocation origin = new WorldLocation(2, 2, 0);
 		final TMAContactWrapper tc1 = new TMAContactWrapper("sola", "tracla", new HiResDate(2 * 60000), 12d, 14d, 22d,
-				12.2, 0d, Color.red, "bb", new EllipseShape(null, 12, new WorldDistance(12, WorldDistance.DEGS),
+				12.2, 0d, Color.red, "bb", new EllipseShape(origin, 12, new WorldDistance(12, WorldDistance.DEGS),
 						new WorldDistance(12, WorldDistance.DEGS)),
 				"aa");
 		final TMAContactWrapper tc2 = new TMAContactWrapper("sola", "tracla", new HiResDate(7 * 60000), 13d, 22d, 17d,
-				12.2, 0d, Color.red, "bb", new EllipseShape(null, 14, new WorldDistance(21, WorldDistance.DEGS),
+				12.2, 0d, Color.red, "bb", new EllipseShape(origin, 14, new WorldDistance(21, WorldDistance.DEGS),
 						new WorldDistance(15, WorldDistance.DEGS)),
 				"aa");
 		final TMAContactWrapper tc3 = new TMAContactWrapper("sola", "tracla", new HiResDate(9 * 60000), 21d, 23d, 15d,
-				12.2, 0d, Color.red, "bb", new EllipseShape(null, 19, new WorldDistance(29, WorldDistance.DEGS),
+				12.2, 0d, Color.red, "bb", new EllipseShape(origin, 19, new WorldDistance(29, WorldDistance.DEGS),
 						new WorldDistance(32, WorldDistance.DEGS)),
 				"aa");
 		final TMAContactWrapper tc4 = new TMAContactWrapper("sola", "tracla", new HiResDate(16 * 60000), 14d, 14d, 22d,
-				12.2, 0d, Color.red, "bb", new EllipseShape(null, 12, new WorldDistance(22, WorldDistance.DEGS),
+				12.2, 0d, Color.red, "bb", new EllipseShape(origin, 12, new WorldDistance(22, WorldDistance.DEGS),
 						new WorldDistance(12, WorldDistance.DEGS)),
 				"aa");
 
