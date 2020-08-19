@@ -123,9 +123,9 @@ public class DebriefRibbonFile {
 			} else if (TYPE_TIF.contentEquals(importFileType)) {
 				fileToOpen = showOpenDialog(initialFileLocation, new String[] { "tif" }, "TIF file (*.tif)");
 			} else if(TYPE_NISIDA.contentEquals(importFileType)) {
-				fileToOpen = showOpenDialog(initialFileLocation, new String[] { "txt" }, "NISIDA file (*.txt)");
+				fileToOpen = showOpenDialog(initialFileLocation, new String[] { "txt" }, "Nisida file (*.txt)");
 			} else if(TYPE_ANTARES.contentEquals(importFileType)) {
-				fileToOpen = showOpenDialog(initialFileLocation, new String[] { "txt" }, "ANTARES file (*.txt)");
+				fileToOpen = showOpenDialog(initialFileLocation, new String[] { "txt" }, "Antares file (*.txt)");
 			} else {
 				fileToOpen = showOpenDialog(initialFileLocation, new String[] { "dpf" }, "Debrief plot file (*.dpf)");
 			}
@@ -332,10 +332,10 @@ public class DebriefRibbonFile {
 				PresentationPriority.TOP, "Import an NMEA file");
 		MenuUtils.addCommand("TIF", "icons/24/map.png", new ImportFileAction(ImportFileAction.TYPE_TIF), importMenu,
 				PresentationPriority.TOP, "Import a TIF file");
-		MenuUtils.addCommand("NISIDA", "icons/24/nisida_file.png", new ImportFileAction(ImportFileAction.TYPE_NISIDA), importMenu,
+		MenuUtils.addCommand("Nisida", "icons/24/nisida_file.png", new ImportFileAction(ImportFileAction.TYPE_NISIDA), importMenu,
 				PresentationPriority.TOP, "Import a NISIDA file");
 		
-		MenuUtils.addCommand("ANTARES", "icons/24/antares_file.png", new ImportFileAction(ImportFileAction.TYPE_ANTARES), importMenu,
+		MenuUtils.addCommand("Antares", "icons/24/antares_file.png", new ImportFileAction(ImportFileAction.TYPE_ANTARES), importMenu,
 				PresentationPriority.TOP, "Import an ANTARES file");
 		
 
