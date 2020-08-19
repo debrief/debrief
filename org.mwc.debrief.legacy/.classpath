@@ -29,5 +29,6 @@
 	<classpathentry kind="lib" path="libs/poi-3.14-20160307.jar"/>
 	<classpathentry kind="lib" path="libs/poi-scratchpad-3.14-20160307.jar"/>
 	<classpathentry kind="lib" path="libs/sf-geojson-2.0.4.jar"/>
+	<classpathentry kind="lib" path="libs/sf-2.0.3.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

@@ -7,6 +7,7 @@ import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.List;
 
 import Debrief.ReaderWriter.XML.DebriefXMLReaderWriter;
 import Debrief.Wrappers.FixWrapper;
@@ -56,7 +57,7 @@ public class GenerateGeoJSON {
 						 * Let's use a MultiLineString because some tracks have multiples
 						 * segments, so we will have 1 line per segment :)
 						 */
-						final ArrayList<ArrayList<Position>> positionForTrackGeometry = new ArrayList<>();
+						final List<List<Position>> positionForTrackGeometry = new ArrayList<>();
 						
 						final SegmentList segmentList = currentTrack.getSegments();
 						final Enumeration<Editable> segmentEnumeration = segmentList.elements();
