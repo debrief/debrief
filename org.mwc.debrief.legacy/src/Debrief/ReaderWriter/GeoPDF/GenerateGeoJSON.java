@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
 
+import Debrief.GUI.Frames.Session;
 import Debrief.ReaderWriter.XML.DebriefXMLReaderWriter;
 import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.TrackWrapper;
@@ -16,12 +17,11 @@ import Debrief.Wrappers.Track.TrackSegment;
 import Debrief.Wrappers.Track.TrackWrapper_Support.SegmentList;
 import MWC.GUI.Editable;
 import MWC.GUI.Layers;
+import MWC.GUI.ToolParent;
 import junit.framework.TestCase;
 import mil.nga.sf.geojson.FeatureConverter;
-import mil.nga.sf.geojson.LineString;
 import mil.nga.sf.geojson.MultiLineString;
 import mil.nga.sf.geojson.Position;
-import mil.nga.sf.geojson.Point;
 
 public class GenerateGeoJSON {
 
@@ -80,7 +80,7 @@ public class GenerateGeoJSON {
 										 * LineString then.
 										 */
 										
-										final ArrayList<Position> coordinates = new ArrayList();
+										final ArrayList<Position> coordinates = new ArrayList<Position>();
 										if (fixWrapperEditable instanceof FixWrapper) {
 											final FixWrapper currentFixWrapper = (FixWrapper) fixWrapperEditable;
 											
@@ -133,10 +133,41 @@ public class GenerateGeoJSON {
 		
 		private final static String sampledpf = "../org.mwc.cmap.combined.feature/root_installs/sample_data/sample.dpf";
 		
+		private static class MockSession extends Session {
+
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
+			public MockSession(Layers theLayers) {
+				super(null, theLayers);
+			}
+
+			@Override
+			public void closeGUI() {
+			}
+
+			@Override
+			public void initialiseForm(ToolParent theParent) {
+			}
+
+			@Override
+			public void repaint() {
+			}
+
+			@Override
+			protected boolean wantsToClose() {
+				return false;
+			}
+		}
+		
+		
 		public void testCreateGeoJSON() throws FileNotFoundException {
-			final DebriefXMLReaderWriter reader = new DebriefXMLReaderWriter(null);
 			final Layers layers = new Layers();
-			reader.importThis("sample.dpf", new FileInputStream(sampledpf), layers);
+			Session session = new MockSession(layers);
+			final DebriefXMLReaderWriter reader = new DebriefXMLReaderWriter(null);
+			reader.importThis("sample.dpf", new FileInputStream(sampledpf), session);
 		
 			final OutputStream toStringOutputStream = new OutputStream() {
 				
