@@ -19,7 +19,12 @@ Bundle-ClassPath: debrief_legacy.jar,
  libs/commons-io-2.6.jar,
  libs/jsoup-1.11.3.jar,
  libs/xmlunit-core-2.6.0.jar,
- libs/zip4j-1.3.2.jar
+ libs/zip4j-1.3.2.jar,
+ libs/jackson-annotations-2.11.2.jar,
+ libs/jackson-core-2.11.2.jar,
+ libs/jackson-databind-2.11.2.jar,
+ libs/sf-2.0.3.jar,
+ libs/sf-geojson-2.0.4.jar
 Bundle-Vendor: MWC
 Export-Package: 
  Debrief.GUI;uses:="Debrief.GUI.Frames",
