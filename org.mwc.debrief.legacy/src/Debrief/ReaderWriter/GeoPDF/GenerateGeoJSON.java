@@ -12,6 +12,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import Debrief.GUI.Frames.Session;
+import Debrief.ReaderWriter.GeoPDF.GenerateGeoJSON.GeoJSONConfiguration;
 import Debrief.ReaderWriter.Replay.ImportReplay;
 import Debrief.ReaderWriter.XML.DebriefXMLReaderWriter;
 import Debrief.Wrappers.FixWrapper;
@@ -23,6 +24,7 @@ import MWC.GUI.Layers;
 import MWC.GUI.ToolParent;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.Watchable;
+import MWC.Utilities.TextFormatting.FormatRNDateTime;
 import junit.framework.TestCase;
 import mil.nga.sf.Geometry;
 import mil.nga.sf.LineString;
@@ -35,6 +37,31 @@ import mil.nga.sf.geojson.Position;
 
 public class GenerateGeoJSON {
 
+	public static class GeoJSONConfiguration{
+		private final int timeDeltaMinutes;
+		private final boolean isLabel;
+		private final boolean onlyFirstPoint;
+		
+		public GeoJSONConfiguration(int timeDeltaMinutes, boolean isLabel, boolean onlyFirstPoint) {
+			this.timeDeltaMinutes = timeDeltaMinutes;
+			this.isLabel = isLabel;
+			this.onlyFirstPoint = onlyFirstPoint;
+		}
+
+		public int getTimeDeltaMinutes() {
+			return timeDeltaMinutes;
+		}
+
+		public boolean isLabel() {
+			return isLabel;
+		}
+
+		public boolean isOnlyFirstPoint() {
+			return onlyFirstPoint;
+		}
+		
+	}
+	
 	public static void createGeoJSONTrackLine(final Layers layers, final OutputStream outputStream) {
 		/**
 		 * Let's write the output using an PrinterWriter
@@ -154,7 +181,7 @@ public class GenerateGeoJSON {
 	}
 
 	public static void createGeoJSONTrackPoints(final Layers layers, final OutputStream outputStream,
-			int timeDeltaMinutes) {
+			final GeoJSONConfiguration configuration) {
 		/**
 		 * Let's write the output using an PrinterWriter
 		 */
@@ -196,14 +223,20 @@ public class GenerateGeoJSON {
 							properties.put("heading", "null");
 							properties.put("course", point.getCourse());
 							properties.put("speed", point.getSpeed());
+							if (configuration.isLabel() && !configuration.isOnlyFirstPoint()) {
+								properties.put("time_str", FormatRNDateTime.toShortString(point.getTime().getDate().getTime()));
+							}
 
 							final Feature feature = FeatureConverter.toFeature(newPoint);
 							feature.setProperties(properties);
 							featuresCollection.addFeature(feature);
 
+							if (configuration.isOnlyFirstPoint()) {
+								break;
+							}
 						}
 						
-						currentTime = new HiResDate(currentTime.getMicros() / 1000 + timeDeltaMinutes * 60 * 1000, 0);
+						currentTime = new HiResDate(currentTime.getMicros() / 1000 + configuration.getTimeDeltaMinutes() * 60 * 1000, 0);
 					}
 
 					final String featureCollectionContent = FeatureConverter.toStringValue(featuresCollection);
@@ -328,12 +361,56 @@ public class GenerateGeoJSON {
 				public String toString() {
 					return builder.toString();
 				}
+				
 			};
-			GenerateGeoJSON.createGeoJSONTrackPoints(layers, toStringOutputStream, 10);
+			
+			GenerateGeoJSON.createGeoJSONTrackPoints(layers, toStringOutputStream, new GeoJSONConfiguration(10, false, false));
+			
+			System.out.println(toStringOutputStream.toString());
+			
+			final OutputStream toStringOutputStreamWithLabel = new OutputStream() {
+
+				private final StringBuilder builder = new StringBuilder();
+
+				@Override
+				public void write(int b) throws IOException {
+					builder.append((char) b);
+				}
+
+				@Override
+				public String toString() {
+					return builder.toString();
+				}
+				
+			};
+			
+			GenerateGeoJSON.createGeoJSONTrackPoints(layers, toStringOutputStreamWithLabel, new GeoJSONConfiguration(20, true, false));
 
 			// Test the JSON generated.
 
-			System.out.println(toStringOutputStream.toString());
+			System.out.println(toStringOutputStreamWithLabel.toString());
+			
+			final OutputStream toStringOutputStreamFirstItem = new OutputStream() {
+
+				private final StringBuilder builder = new StringBuilder();
+
+				@Override
+				public void write(int b) throws IOException {
+					builder.append((char) b);
+				}
+
+				@Override
+				public String toString() {
+					return builder.toString();
+				}
+				
+			};
+			
+			GenerateGeoJSON.createGeoJSONTrackPoints(layers, toStringOutputStreamFirstItem, new GeoJSONConfiguration(-1, true, true));
+
+			// Test the JSON generated.
+
+			System.out.println(toStringOutputStreamFirstItem.toString());
 		}
 	}
 }
