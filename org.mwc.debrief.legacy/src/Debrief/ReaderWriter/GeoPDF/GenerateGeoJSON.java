@@ -63,131 +63,81 @@ public class GenerateGeoJSON {
 	}
 
 	/**
-	 * Method that creates the Track Line in the GeoJSON format and write it in the
-	 * 2nd parameter. The final Structure of the GeoPDF is inserted inside the 3rd
-	 * parameter.
+	 * Method that creates the Track Line from the track given
 	 * 
-	 * @param layers          Layers where we are going to read the information
-	 *                        needed.
-	 * @param outputStream    (Output) Trackline in the GeoJSON format
-	 * @param geoPDFStructure (Output) GeoPDF structure.
+	 * @param currentTrack Track to create the GeoJSON.
+	 * @return GeoJSON of the TrackLine given
 	 */
-	public static void createGeoJSONTrackLine(final Layers layers, final OutputStream outputStream,
-			final GeoPDF geoPDFStructure) {
+	public static String createGeoJSONTrackLine(final TrackWrapper currentTrack) {
 		/**
-		 * Let's write the output using an PrinterWriter
+		 * Let's use a MultiLineString because some tracks have multiples segments, so
+		 * we will have 1 line per segment :)
 		 */
-		final PrintWriter printWriter = new PrintWriter(outputStream);
+		final List<LineString> positionForTrackGeometry = new ArrayList<>();
 
-		try {
-			/**
-			 * Let's iterate over all the layers to find the Tracks to export
-			 */
-			final Enumeration<Editable> enumeration = layers.elements();
-			while (enumeration.hasMoreElements()) {
-				final Editable currentEditable = enumeration.nextElement();
-				if (currentEditable instanceof TrackWrapper) {
-					/**
-					 * Ok, at this point we have a TrackWrapper. Now, let's create a Geometry of the
-					 * type Simple Features Geotools Library.
-					 */
-					final TrackWrapper currentTrack = (TrackWrapper) currentEditable;
+		final SegmentList segmentList = currentTrack.getSegments();
+		final Enumeration<Editable> segmentEnumeration = segmentList.elements();
+		while (segmentEnumeration.hasMoreElements()) {
+			final Editable segmentEditable = segmentEnumeration.nextElement();
+			if (segmentEditable instanceof TrackSegment) {
+				final TrackSegment trackSegment = (TrackSegment) segmentEditable;
 
-					/**
-					 * Let's draw only visible tracks.
-					 */
-					if (currentTrack.getVisible()) {
-						/**
-						 * To create the new Geometry, we need to have the points first.
-						 */
+				/**
+				 * Again let's draw only the visible items
+				 */
+				if (trackSegment.getVisible()) {
+					final Enumeration<Editable> fixWrapperEnumeration = trackSegment.elements();
+					while (fixWrapperEnumeration.hasMoreElements()) {
+						final Editable fixWrapperEditable = fixWrapperEnumeration.nextElement();
 
 						/**
-						 * Let's use a MultiLineString because some tracks have multiples segments, so
-						 * we will have 1 line per segment :)
+						 * We are getting ready to build the new LineString to add it to the geometry.
+						 * Let's create an array of positions for the LineString then.
 						 */
-						final List<LineString> positionForTrackGeometry = new ArrayList<>();
 
-						final SegmentList segmentList = currentTrack.getSegments();
-						final Enumeration<Editable> segmentEnumeration = segmentList.elements();
-						while (segmentEnumeration.hasMoreElements()) {
-							final Editable segmentEditable = segmentEnumeration.nextElement();
-							if (segmentEditable instanceof TrackSegment) {
-								final TrackSegment trackSegment = (TrackSegment) segmentEditable;
+						final ArrayList<Point> coordinates = new ArrayList<Point>();
+						if (fixWrapperEditable instanceof FixWrapper) {
+							final FixWrapper currentFixWrapper = (FixWrapper) fixWrapperEditable;
 
-								/**
-								 * Again let's draw only the visible items
-								 */
-								if (trackSegment.getVisible()) {
-									final Enumeration<Editable> fixWrapperEnumeration = trackSegment.elements();
-									while (fixWrapperEnumeration.hasMoreElements()) {
-										final Editable fixWrapperEditable = fixWrapperEnumeration.nextElement();
-
-										/**
-										 * We are getting ready to build the new LineString to add it to the geometry.
-										 * Let's create an array of positions for the LineString then.
-										 */
-
-										final ArrayList<Point> coordinates = new ArrayList<Point>();
-										if (fixWrapperEditable instanceof FixWrapper) {
-											final FixWrapper currentFixWrapper = (FixWrapper) fixWrapperEditable;
-
-											/**
-											 * Only visible objects :)
-											 */
-											if (currentFixWrapper.getVisible()) {
-												// Ok, so now let's add this position to the position list.
-												final Point newPosition = new Point(
-														currentFixWrapper.getLocation().getLong(),
-														currentFixWrapper.getLocation().getLat());
-												coordinates.add(newPosition);
-											}
-										}
-
-										/**
-										 * In case that we have any coordinate to add, let's add it to the geometry.
-										 */
-										if (!coordinates.isEmpty()) {
-											positionForTrackGeometry.add(new LineString(coordinates));
-										}
-									}
-								}
+							/**
+							 * Only visible objects :)
+							 */
+							if (currentFixWrapper.getVisible()) {
+								// Ok, so now let's add this position to the position list.
+								final Point newPosition = new Point(currentFixWrapper.getLocation().getLong(),
+										currentFixWrapper.getLocation().getLat());
+								coordinates.add(newPosition);
 							}
 						}
 
-						final MultiLineString trackAsGeometry = new MultiLineString(positionForTrackGeometry);
-
 						/**
-						 * Let's create the features
+						 * In case that we have any coordinate to add, let's add it to the geometry.
 						 */
-						final Feature feature = FeatureConverter.toFeature(trackAsGeometry);
-						final HashMap<String, Object> properties = new HashMap<>();
-
-						final SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ssZ");
-						properties.put("begin", simpleDateFormat.format(currentTrack.getStartDTG().getDate()));
-						properties.put("end", simpleDateFormat.format(currentTrack.getEndDTG().getDate()));
-						feature.setProperties(properties);
-						final FeatureCollection featureCollection = new FeatureCollection(feature);
-
-						final String featureCollectionContent = FeatureConverter.toStringValue(featureCollection);
-
-						/*
-						 * 
-						 * final String featureString = FeatureConverter.toStringValue(feature);
-						 */
-
-						/**
-						 * Let's write the new feature to the output stream.
-						 */
-						printWriter.println(featureCollectionContent);
+						if (!coordinates.isEmpty()) {
+							positionForTrackGeometry.add(new LineString(coordinates));
+						}
 					}
-
 				}
 			}
-		} finally {
-			if (printWriter != null) {
-				printWriter.close();
-			}
 		}
+
+		final MultiLineString trackAsGeometry = new MultiLineString(positionForTrackGeometry);
+
+		/**
+		 * Let's create the features
+		 */
+		final Feature feature = FeatureConverter.toFeature(trackAsGeometry);
+		final HashMap<String, Object> properties = new HashMap<>();
+
+		final SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ssZ");
+		properties.put("begin", simpleDateFormat.format(currentTrack.getStartDTG().getDate()));
+		properties.put("end", simpleDateFormat.format(currentTrack.getEndDTG().getDate()));
+		feature.setProperties(properties);
+		final FeatureCollection featureCollection = new FeatureCollection(feature);
+
+		final String featureCollectionContent = FeatureConverter.toStringValue(featureCollection);
+
+		return featureCollectionContent;
 
 	}
 
@@ -197,96 +147,61 @@ public class GenerateGeoJSON {
 	 * point GeoJSON. Output depends on the configuration passed in the 4rd
 	 * parameter
 	 * 
-	 * @param layers          Layers where we are going to read the information
-	 *                        needed
-	 * @param outputStream    OutputStream where we are going to write the GeoJSON
-	 *                        created
-	 * @param geoPDFStructure (Output) GeoPDF structure created.
-	 * @param configuration   It specifies the type of structure we will build.
+	 * @param currentTrack
+	 * @param configuration
 	 */
-	public static void createGeoJSONTrackPoints(final Layers layers, final OutputStream outputStream,
-			final GeoPDF geoPDfStructure, final GeoJSONConfiguration configuration) {
-		/**
-		 * Let's write the output using an PrinterWriter
-		 */
-		final PrintWriter printWriter = new PrintWriter(outputStream);
+	public static String createGeoJSONTrackPoints(final TrackWrapper currentTrack,
+			final GeoJSONConfiguration configuration) {
 
 		final SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ssZ");
-		try {
-			/**
-			 * Let's iterate over all the layers to find the Tracks to export
-			 */
-			final Enumeration<Editable> enumeration = layers.elements();
-			while (enumeration.hasMoreElements()) {
-				final Editable currentEditable = enumeration.nextElement();
-				if (currentEditable instanceof TrackWrapper) {
-					/**
-					 * Ok, at this point we have a TrackWrapper. Now, let's create a Geometry of the
-					 * type Simple Features Geotools Library.
-					 */
-					final TrackWrapper currentTrack = (TrackWrapper) currentEditable;
+		/**
+		 * Let's iterate all the track changing the time given.
+		 */
+		HiResDate currentTime = currentTrack.getStartDTG();
 
-					/**
-					 * Let's iterate all the track changing the time given.
-					 */
-					HiResDate currentTime = currentTrack.getStartDTG();
+		final FeatureCollection featuresCollection = new FeatureCollection();
+		while (currentTime.lessThanOrEqualTo(currentTrack.getEndDTG())) {
+			final Watchable[] points = currentTrack.getNearestTo(currentTime, true);
+			if (points.length > 0) {
+				// if we have a point.
+				final Watchable point = points[0];
 
-					final FeatureCollection featuresCollection = new FeatureCollection();
-					while (currentTime.lessThanOrEqualTo(currentTrack.getEndDTG())) {
-						final Watchable[] points = currentTrack.getNearestTo(currentTime, true);
-						if (points.length > 0) {
-							// if we have a point.
-							final Watchable point = points[0];
+				final Point newPoint = new Point(point.getLocation().getLong(), point.getLocation().getLat());
+				final HashMap<String, Object> properties = new HashMap<String, Object>();
 
-							final Point newPoint = new Point(point.getLocation().getLong(),
-									point.getLocation().getLat());
-							final HashMap<String, Object> properties = new HashMap<String, Object>();
+				properties.put("elevation", point.getDepth());
+				properties.put("time", simpleDateFormat.format(point.getTime().getDate()));
+				properties.put("heading", "null");
+				properties.put("course", point.getCourse());
+				properties.put("speed", point.getSpeed());
 
-							properties.put("elevation", point.getDepth());
-							properties.put("time", simpleDateFormat.format(point.getTime().getDate()));
-							properties.put("heading", "null");
-							properties.put("course", point.getCourse());
-							properties.put("speed", point.getSpeed());
+				/**
+				 * In this case, we are creating a label, so, let's add the time_str tag
+				 */
+				if (configuration.isLabel() && !configuration.isOnlyFirstPoint()) {
+					properties.put("time_str", FormatRNDateTime.toShortString(point.getTime().getDate().getTime()));
+				}
 
-							/**
-							 * In this case, we are creating a label, so, let's add the time_str tag
-							 */
-							if (configuration.isLabel() && !configuration.isOnlyFirstPoint()) {
-								properties.put("time_str",
-										FormatRNDateTime.toShortString(point.getTime().getDate().getTime()));
-							}
+				final Feature feature = FeatureConverter.toFeature(newPoint);
+				feature.setProperties(properties);
+				featuresCollection.addFeature(feature);
 
-							final Feature feature = FeatureConverter.toFeature(newPoint);
-							feature.setProperties(properties);
-							featuresCollection.addFeature(feature);
-
-							if (configuration.isOnlyFirstPoint()) {
-								break;
-							}
-						}
-
-						/**
-						 * Let's increase the time by the timeDelta given. Remember we need to pass it
-						 * to Milliseconds.
-						 */
-						currentTime = new HiResDate(
-								currentTime.getMicros() / 1000 + configuration.getTimeDeltaMinutes() * 60 * 1000, 0);
-					}
-
-					final String featureCollectionContent = FeatureConverter.toStringValue(featuresCollection);
-
-					/**
-					 * Let's write the new feature to the output stream.
-					 */
-					printWriter.println(featureCollectionContent);
-
+				if (configuration.isOnlyFirstPoint()) {
+					break;
 				}
 			}
-		} finally {
-			if (printWriter != null) {
-				printWriter.close();
-			}
+
+			/**
+			 * Let's increase the time by the timeDelta given. Remember we need to pass it
+			 * to Milliseconds.
+			 */
+			currentTime = new HiResDate(
+					currentTime.getMicros() / 1000 + configuration.getTimeDeltaMinutes() * 60 * 1000, 0);
 		}
+
+		final String featureCollectionContent = FeatureConverter.toStringValue(featuresCollection);
+
+		return featureCollectionContent;
 
 	}
 
@@ -330,25 +245,12 @@ public class GenerateGeoJSON {
 			final DebriefXMLReaderWriter reader = new DebriefXMLReaderWriter(null);
 			reader.importThis("sample.dpf", new FileInputStream(sampledpf), session);
 
-			final OutputStream toStringOutputStream = new OutputStream() {
-
-				private final StringBuilder builder = new StringBuilder();
-
-				@Override
-				public void write(int b) throws IOException {
-					builder.append((char) b);
-				}
-
-				@Override
-				public String toString() {
-					return builder.toString();
-				}
-			};
-			GenerateGeoJSON.createGeoJSONTrackLine(layers, toStringOutputStream, null);
+			// TODO
+			//GenerateGeoJSON.createGeoJSONTrackLine(layers, toStringOutputStream, null);
 
 			// Test the JSON generated.
 
-			System.out.println(toStringOutputStream.toString());
+			//System.out.println(toStringOutputStream.toString());
 		}
 
 		public void testCreateGeoJSON2() throws FileNotFoundException {
@@ -356,98 +258,38 @@ public class GenerateGeoJSON {
 			final ImportReplay replayImporter = new ImportReplay();
 			replayImporter.importThis("boat1.rep", new FileInputStream(boat1rep), layers);
 
-			final OutputStream toStringOutputStream = new OutputStream() {
-
-				private final StringBuilder builder = new StringBuilder();
-
-				@Override
-				public void write(int b) throws IOException {
-					builder.append((char) b);
-				}
-
-				@Override
-				public String toString() {
-					return builder.toString();
-				}
-			};
-			GenerateGeoJSON.createGeoJSONTrackLine(layers, toStringOutputStream, null);
+			final TrackWrapper track = (TrackWrapper) layers.findLayer("NELSON", true);
+			final String geoJsonData = GenerateGeoJSON.createGeoJSONTrackLine(track);
 
 			// Test the JSON generated.
 
-			System.out.println(toStringOutputStream.toString());
+			System.out.println(geoJsonData);
 		}
 
 		public void testCreateGeoJSON3() throws FileNotFoundException {
 			final Layers layers = new Layers();
 			final ImportReplay replayImporter = new ImportReplay();
 			replayImporter.importThis("boat1.rep", new FileInputStream(boat1rep), layers);
+			final TrackWrapper track = (TrackWrapper) layers.findLayer("NELSON", true);
 
-			final OutputStream toStringOutputStream = new OutputStream() {
-
-				private final StringBuilder builder = new StringBuilder();
-
-				@Override
-				public void write(int b) throws IOException {
-					builder.append((char) b);
-				}
-
-				@Override
-				public String toString() {
-					return builder.toString();
-				}
-
-			};
-
-			GenerateGeoJSON.createGeoJSONTrackPoints(layers, toStringOutputStream, null,
+			String geoJsonData = GenerateGeoJSON.createGeoJSONTrackPoints(track,
 					new GeoJSONConfiguration(10, false, false));
 
-			System.out.println(toStringOutputStream.toString());
+			System.out.println(geoJsonData);
 
-			final OutputStream toStringOutputStreamWithLabel = new OutputStream() {
-
-				private final StringBuilder builder = new StringBuilder();
-
-				@Override
-				public void write(int b) throws IOException {
-					builder.append((char) b);
-				}
-
-				@Override
-				public String toString() {
-					return builder.toString();
-				}
-
-			};
-
-			GenerateGeoJSON.createGeoJSONTrackPoints(layers, toStringOutputStreamWithLabel, null,
+			geoJsonData = GenerateGeoJSON.createGeoJSONTrackPoints(track,
 					new GeoJSONConfiguration(20, true, false));
 
 			// Test the JSON generated.
 
-			System.out.println(toStringOutputStreamWithLabel.toString());
+			System.out.println(geoJsonData);
 
-			final OutputStream toStringOutputStreamFirstItem = new OutputStream() {
-
-				private final StringBuilder builder = new StringBuilder();
-
-				@Override
-				public void write(int b) throws IOException {
-					builder.append((char) b);
-				}
-
-				@Override
-				public String toString() {
-					return builder.toString();
-				}
-
-			};
-
-			GenerateGeoJSON.createGeoJSONTrackPoints(layers, toStringOutputStreamFirstItem, null,
+			geoJsonData = GenerateGeoJSON.createGeoJSONTrackPoints(track,
 					new GeoJSONConfiguration(-1, true, true));
 
 			// Test the JSON generated.
 
-			System.out.println(toStringOutputStreamFirstItem.toString());
+			System.out.println(geoJsonData);
 		}
 	}
 }
