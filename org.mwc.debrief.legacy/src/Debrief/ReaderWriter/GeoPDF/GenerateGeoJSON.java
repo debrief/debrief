@@ -37,11 +37,11 @@ import mil.nga.sf.geojson.Position;
 
 public class GenerateGeoJSON {
 
-	public static class GeoJSONConfiguration{
+	public static class GeoJSONConfiguration {
 		private final int timeDeltaMinutes;
 		private final boolean isLabel;
 		private final boolean onlyFirstPoint;
-		
+
 		public GeoJSONConfiguration(int timeDeltaMinutes, boolean isLabel, boolean onlyFirstPoint) {
 			this.timeDeltaMinutes = timeDeltaMinutes;
 			this.isLabel = isLabel;
@@ -59,10 +59,21 @@ public class GenerateGeoJSON {
 		public boolean isOnlyFirstPoint() {
 			return onlyFirstPoint;
 		}
-		
+
 	}
-	
-	public static void createGeoJSONTrackLine(final Layers layers, final OutputStream outputStream) {
+
+	/**
+	 * Method that creates the Track Line in the GeoJSON format and write it in the
+	 * 2nd parameter. The final Structure of the GeoPDF is inserted inside the 3rd
+	 * parameter.
+	 * 
+	 * @param layers          Layers where we are going to read the information
+	 *                        needed.
+	 * @param outputStream    (Output) Trackline in the GeoJSON format
+	 * @param geoPDFStructure (Output) GeoPDF structure.
+	 */
+	public static void createGeoJSONTrackLine(final Layers layers, final OutputStream outputStream,
+			final GeoPDF geoPDFStructure) {
 		/**
 		 * Let's write the output using an PrinterWriter
 		 */
@@ -180,8 +191,21 @@ public class GenerateGeoJSON {
 
 	}
 
+	/**
+	 * Method used for creating a set of TrackPoints, used for the 10/15 mins
+	 * sequence. It can be also used for the label Track Points or for the first
+	 * point GeoJSON. Output depends on the configuration passed in the 4rd
+	 * parameter
+	 * 
+	 * @param layers          Layers where we are going to read the information
+	 *                        needed
+	 * @param outputStream    OutputStream where we are going to write the GeoJSON
+	 *                        created
+	 * @param geoPDFStructure (Output) GeoPDF structure created.
+	 * @param configuration   It specifies the type of structure we will build.
+	 */
 	public static void createGeoJSONTrackPoints(final Layers layers, final OutputStream outputStream,
-			final GeoJSONConfiguration configuration) {
+			final GeoPDF geoPDfStructure, final GeoJSONConfiguration configuration) {
 		/**
 		 * Let's write the output using an PrinterWriter
 		 */
@@ -223,8 +247,13 @@ public class GenerateGeoJSON {
 							properties.put("heading", "null");
 							properties.put("course", point.getCourse());
 							properties.put("speed", point.getSpeed());
+
+							/**
+							 * In this case, we are creating a label, so, let's add the time_str tag
+							 */
 							if (configuration.isLabel() && !configuration.isOnlyFirstPoint()) {
-								properties.put("time_str", FormatRNDateTime.toShortString(point.getTime().getDate().getTime()));
+								properties.put("time_str",
+										FormatRNDateTime.toShortString(point.getTime().getDate().getTime()));
 							}
 
 							final Feature feature = FeatureConverter.toFeature(newPoint);
@@ -235,8 +264,13 @@ public class GenerateGeoJSON {
 								break;
 							}
 						}
-						
-						currentTime = new HiResDate(currentTime.getMicros() / 1000 + configuration.getTimeDeltaMinutes() * 60 * 1000, 0);
+
+						/**
+						 * Let's increase the time by the timeDelta given. Remember we need to pass it
+						 * to Milliseconds.
+						 */
+						currentTime = new HiResDate(
+								currentTime.getMicros() / 1000 + configuration.getTimeDeltaMinutes() * 60 * 1000, 0);
 					}
 
 					final String featureCollectionContent = FeatureConverter.toStringValue(featuresCollection);
@@ -310,7 +344,7 @@ public class GenerateGeoJSON {
 					return builder.toString();
 				}
 			};
-			GenerateGeoJSON.createGeoJSONTrackLine(layers, toStringOutputStream);
+			GenerateGeoJSON.createGeoJSONTrackLine(layers, toStringOutputStream, null);
 
 			// Test the JSON generated.
 
@@ -336,13 +370,13 @@ public class GenerateGeoJSON {
 					return builder.toString();
 				}
 			};
-			GenerateGeoJSON.createGeoJSONTrackLine(layers, toStringOutputStream);
+			GenerateGeoJSON.createGeoJSONTrackLine(layers, toStringOutputStream, null);
 
 			// Test the JSON generated.
 
 			System.out.println(toStringOutputStream.toString());
 		}
-		
+
 		public void testCreateGeoJSON3() throws FileNotFoundException {
 			final Layers layers = new Layers();
 			final ImportReplay replayImporter = new ImportReplay();
@@ -361,13 +395,14 @@ public class GenerateGeoJSON {
 				public String toString() {
 					return builder.toString();
 				}
-				
+
 			};
-			
-			GenerateGeoJSON.createGeoJSONTrackPoints(layers, toStringOutputStream, new GeoJSONConfiguration(10, false, false));
-			
+
+			GenerateGeoJSON.createGeoJSONTrackPoints(layers, toStringOutputStream, null,
+					new GeoJSONConfiguration(10, false, false));
+
 			System.out.println(toStringOutputStream.toString());
-			
+
 			final OutputStream toStringOutputStreamWithLabel = new OutputStream() {
 
 				private final StringBuilder builder = new StringBuilder();
@@ -381,15 +416,16 @@ public class GenerateGeoJSON {
 				public String toString() {
 					return builder.toString();
 				}
-				
+
 			};
-			
-			GenerateGeoJSON.createGeoJSONTrackPoints(layers, toStringOutputStreamWithLabel, new GeoJSONConfiguration(20, true, false));
+
+			GenerateGeoJSON.createGeoJSONTrackPoints(layers, toStringOutputStreamWithLabel, null,
+					new GeoJSONConfiguration(20, true, false));
 
 			// Test the JSON generated.
 
 			System.out.println(toStringOutputStreamWithLabel.toString());
-			
+
 			final OutputStream toStringOutputStreamFirstItem = new OutputStream() {
 
 				private final StringBuilder builder = new StringBuilder();
@@ -403,10 +439,11 @@ public class GenerateGeoJSON {
 				public String toString() {
 					return builder.toString();
 				}
-				
+
 			};
-			
-			GenerateGeoJSON.createGeoJSONTrackPoints(layers, toStringOutputStreamFirstItem, new GeoJSONConfiguration(-1, true, true));
+
+			GenerateGeoJSON.createGeoJSONTrackPoints(layers, toStringOutputStreamFirstItem, null,
+					new GeoJSONConfiguration(-1, true, true));
 
 			// Test the JSON generated.
 
