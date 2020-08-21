@@ -1,9 +1,15 @@
 package Debrief.ReaderWriter.GeoPDF;
 
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.Writer;
 import java.util.ArrayList;
 import java.util.HashMap;
 
 import MWC.GenericData.WorldArea;
+import net.n3.nanoxml.IXMLElement;
+import net.n3.nanoxml.XMLElement;
+import net.n3.nanoxml.XMLWriter;
 
 public class GeoPDF {
 
@@ -60,15 +66,19 @@ public class GeoPDF {
 	public static class GeoPDFLayerVector {
 		private String style;
 		private String data;
+
 		public String getStyle() {
 			return style;
 		}
+
 		public void setStyle(String style) {
 			this.style = style;
 		}
+
 		public String getData() {
 			return data;
 		}
+
 		public void setData(String data) {
 			this.data = data;
 		}
@@ -123,6 +133,63 @@ public class GeoPDF {
 		return newPage;
 	}
 
+	public String getAuthor() {
+		return author;
+	}
+
+	public void setAuthor(String author) {
+		this.author = author;
+	}
+
+	public String toXML() throws IOException {
+		final XMLElement pdfComposition = new XMLElement("PDFComposition");
+		final XMLElement metadata = new XMLElement("Metadata");
+		pdfComposition.addChild(metadata);
+		final IXMLElement author = new XMLElement("Author");
+		metadata.addChild(author);
+		author.setContent(getAuthor());
+
+		final IXMLElement layerTree = new XMLElement("LayerTree");
+		pdfComposition.addChild(layerTree);
+		layerTree.setAttribute("displayOnlyOnVisiblePages", "true");
+
+		for (GeoPDFPage page : pages) {
+			for (GeoPDFLayer layer : page.getLayers()) {
+				final IXMLElement newLayerXML = new XMLElement("Layer");
+				layerTree.addChild(newLayerXML);
+				newLayerXML.setAttribute("id", layer.getId());
+				newLayerXML.setAttribute("name", layer.getName());
+			}
+		}
+
+		for (int i = 0; i < pages.size(); i++) {
+			final GeoPDFPage currentPage = pages.get(i);
+			final IXMLElement pageXML = new XMLElement("Page");
+			pdfComposition.addChild(pageXML);
+			pageXML.setAttribute("id", "page_" + (i + 1));
+			
+			final IXMLElement dpiXML = new XMLElement("DPI");
+			pageXML.addChild(dpiXML);
+			dpiXML.setContent(currentPage.getDpi() + "");
+			
+			final IXMLElement widthXML = new XMLElement("Width");
+			pageXML.addChild(widthXML);
+			widthXML.setContent(currentPage.getWidth() + "");
+			
+			final IXMLElement heightXML = new XMLElement("Height");
+			pageXML.addChild(heightXML);
+			heightXML.setContent(currentPage.getHeight() + "");
+			
+			
+		}
+		
+		XMLWriter xmlWrite = new XMLWriter(System.out);
+		
+		xmlWrite.write(pdfComposition);
+		
+		return null;
+	}
+
 	/**
 	 * We will create here the XML Composition.
 	 */
@@ -131,5 +198,4 @@ public class GeoPDF {
 		return "GeoPDF []";
 	}
 
-	
 }

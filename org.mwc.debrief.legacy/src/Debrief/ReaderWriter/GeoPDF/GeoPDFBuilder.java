@@ -3,6 +3,7 @@ package Debrief.ReaderWriter.GeoPDF;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Enumeration;
@@ -233,7 +234,7 @@ public class GeoPDFBuilder {
 			// TODO
 		}
 		
-		public void testBuild() throws FileNotFoundException {
+		public void testBuild() throws IOException {
 
 			final Layers layers = new Layers();
 			final ImportReplay replayImporter = new ImportReplay();
@@ -245,7 +246,7 @@ public class GeoPDFBuilder {
 			
 			final GeoPDF geoPdf = GeoPDFBuilder.build(layers, configuration);
 			
-			System.out.println(geoPdf);
+			System.out.println(geoPdf.toXML());
 		}
 	}
 }
