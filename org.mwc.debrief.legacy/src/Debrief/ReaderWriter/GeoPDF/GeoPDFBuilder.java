@@ -1,6 +1,7 @@
 package Debrief.ReaderWriter.GeoPDF;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
@@ -11,9 +12,11 @@ import Debrief.ReaderWriter.GeoPDF.GeoPDF.GeoPDFLayerBackground;
 import Debrief.ReaderWriter.GeoPDF.GeoPDF.GeoPDFLayerTrack;
 import Debrief.ReaderWriter.GeoPDF.GeoPDF.GeoPDFLayerVector;
 import Debrief.ReaderWriter.GeoPDF.GeoPDF.GeoPDFPage;
+import Debrief.ReaderWriter.Replay.ImportReplay;
 import Debrief.Wrappers.TrackWrapper;
 import MWC.GUI.Editable;
 import MWC.GUI.Layers;
+import junit.framework.TestCase;
 
 public class GeoPDFBuilder {
 
@@ -39,7 +42,7 @@ public class GeoPDFBuilder {
 
 	}
 
-	public static void build(final Layers layers, final GeoPDFConfiguration configuration)
+	public static GeoPDF build(final Layers layers, final GeoPDFConfiguration configuration)
 			throws FileNotFoundException {
 		final GeoPDF geoPDF = new GeoPDF();
 
@@ -121,6 +124,8 @@ public class GeoPDFBuilder {
 			}
 
 		}
+		
+		return geoPDF;
 	}
 
 	protected static void createOnePointLayer(final GeoPDFConfiguration configuration,
@@ -203,7 +208,8 @@ public class GeoPDFBuilder {
 	}
 
 	private static File createTempFile(final String fileName, final String data) throws FileNotFoundException {
-		final File newFile = new File(fileName);
+		final String tempFolder = System.getProperty("java.io.tmpdir");
+		final File newFile = new File(tempFolder + File.separatorChar + fileName);
 
 		PrintWriter print = null;
 		try {
@@ -217,5 +223,29 @@ public class GeoPDFBuilder {
 		}
 
 		return newFile;
+	}
+	
+	public static class GeoPDFBuilderTest extends TestCase{
+
+		private final static String boat1rep = "../org.mwc.cmap.combined.feature/root_installs/sample_data/boat2.rep";
+		
+		public void testCreateTempFile() {
+			// TODO
+		}
+		
+		public void testBuild() throws FileNotFoundException {
+
+			final Layers layers = new Layers();
+			final ImportReplay replayImporter = new ImportReplay();
+			replayImporter.importThis("boat1.rep", new FileInputStream(boat1rep), layers);
+			
+			final GeoPDFConfiguration configuration = new GeoPDFConfiguration();
+			configuration.setLabelDeltaMinutes(60);
+			configuration.setMarkDeltaMinutes(10);
+			
+			final GeoPDF geoPdf = GeoPDFBuilder.build(layers, configuration);
+			
+			System.out.println(geoPdf);
+		}
 	}
 }
