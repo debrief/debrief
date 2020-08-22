@@ -1,6 +1,7 @@
 package Debrief.ReaderWriter.GeoPDF;
 
 import java.io.IOException;
+import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.io.Writer;
 import java.util.ArrayList;
@@ -353,7 +354,29 @@ public class GeoPDF {
 
 	@Override
 	public String toString() {
-		return "GeoPDF []";
+		try {
+			final OutputStream outputStream = new OutputStream() {
+				
+				private StringBuilder builder = new StringBuilder();
+				
+				@Override
+				public void write(int b) throws IOException {
+					builder.append((char)b);
+				}
+				
+				public String toString() {
+					return builder.toString();
+				}
+			};
+			
+			final XMLWriter xmlWrite = new XMLWriter(outputStream);
+			xmlWrite.write(toXML(), true);
+			
+			return outputStream.toString();
+		} catch (IOException e) {
+			// This will never be called....
+		}
+		return null;
 	}
 
 }

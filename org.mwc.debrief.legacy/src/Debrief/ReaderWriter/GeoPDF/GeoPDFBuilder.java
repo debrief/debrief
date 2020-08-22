@@ -266,9 +266,7 @@ public class GeoPDFBuilder {
 
 			final GeoPDF geoPdf = GeoPDFBuilder.build(layers, configuration);
 
-			final XMLWriter xmlWrite = new XMLWriter(new FileOutputStream(new File("composition.xml")));
-
-			xmlWrite.write(geoPdf.toXML(), true);
+			System.out.println(geoPdf);
 		}
 	}
 }
