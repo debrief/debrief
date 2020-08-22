@@ -157,7 +157,7 @@ public class GeoPDFBuilder {
 		deltaMinutesVector.setData(deltaMinutesFile.getAbsolutePath());
 		deltaMinutesVector.setName(currentTrack.getName() + "_FirstPoint");
 		// TODO
-		deltaMinutesVector.setStyle(null);
+		deltaMinutesVector.setStyle("");
 
 		newTrackLayer.addVector(deltaMinutesVector);
 	}
@@ -181,7 +181,7 @@ public class GeoPDFBuilder {
 		deltaMinutesVector
 				.setName(currentTrack.getName() + "_PointsLabels_" + configuration.getLabelDeltaMinutes() + "mins");
 		// TODO
-		deltaMinutesVector.setStyle(null);
+		deltaMinutesVector.setStyle("");
 
 		newTrackLayer.addVector(deltaMinutesVector);
 	}
@@ -204,7 +204,7 @@ public class GeoPDFBuilder {
 		deltaMinutesVector.setData(deltaMinutesFile.getAbsolutePath());
 		deltaMinutesVector.setName(currentTrack.getName() + "_Points_" + configuration.getMarkDeltaMinutes() + "mins");
 		// TODO
-		deltaMinutesVector.setStyle(null);
+		deltaMinutesVector.setStyle("");
 		deltaMinutesVector.setLogicalStructure(new LogicalStructure(currentTrack.getName(), "time"));
 
 		newTrackLayer.addVector(deltaMinutesVector);
@@ -222,7 +222,7 @@ public class GeoPDFBuilder {
 		trackLineVector.setData(trackLineFile.getAbsolutePath());
 		trackLineVector.setName(currentTrack.getName() + "_Line");
 		// TODO
-		trackLineVector.setStyle(null);
+		trackLineVector.setStyle("");
 
 		newTrackLayer.addVector(trackLineVector);
 	}
@@ -266,9 +266,9 @@ public class GeoPDFBuilder {
 
 			final GeoPDF geoPdf = GeoPDFBuilder.build(layers, configuration);
 
-			final XMLWriter xmlWrite = new XMLWriter(new FileOutputStream(new File("C:\\Users\\saulh\\OneDrive\\Documentos\\tmp\\composition.xml")));
+			final XMLWriter xmlWrite = new XMLWriter(new FileOutputStream(new File("composition.xml")));
 
-			xmlWrite.write(geoPdf.toXML());
+			xmlWrite.write(geoPdf.toXML(), true);
 		}
 	}
 }

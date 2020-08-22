@@ -114,15 +114,15 @@ public class GeoPDF {
 
 			// TOP RIGHT
 			final IXMLElement topRightXML = new XMLElement("ControlPoint");
-			topLeftXML.setAttribute("x", "1");
-			topLeftXML.setAttribute("y", getHeight() + "");
-			topLeftXML.setAttribute("GeoY", plotArea.getTopRight().getLat() + "");
-			topLeftXML.setAttribute("GeoX", plotArea.getTopRight().getLong() + "");
+			topRightXML.setAttribute("x", "1");
+			topRightXML.setAttribute("y", getHeight() + "");
+			topRightXML.setAttribute("GeoY", plotArea.getTopRight().getLat() + "");
+			topRightXML.setAttribute("GeoX", plotArea.getTopRight().getLong() + "");
 			geoReferencingXML.addChild(topRightXML);
 
 			// BOTTOM LEFT
 			final IXMLElement bottomLeftXML = new XMLElement("ControlPoint");
-			bottomLeftXML.setAttribute("x", getHeight() + "");
+			bottomLeftXML.setAttribute("x", getWidth() + "");
 			bottomLeftXML.setAttribute("y", "1");
 			bottomLeftXML.setAttribute("GeoY", plotArea.getBottomLeft().getLat() + "");
 			bottomLeftXML.setAttribute("GeoX", plotArea.getBottomLeft().getLong() + "");
@@ -130,8 +130,8 @@ public class GeoPDF {
 
 			// BOTTOM RIGHT
 			final IXMLElement bottomRightXML = new XMLElement("ControlPoint");
-			bottomRightXML.setAttribute("x", getHeight() + "");
-			bottomRightXML.setAttribute("y", getWidth() + "");
+			bottomRightXML.setAttribute("x", getWidth() + "");
+			bottomRightXML.setAttribute("y", getHeight() + "");
 			bottomRightXML.setAttribute("GeoY", plotArea.getBottomRight().getLat() + "");
 			bottomRightXML.setAttribute("GeoX", plotArea.getBottomRight().getLong() + "");
 			geoReferencingXML.addChild(bottomRightXML);
