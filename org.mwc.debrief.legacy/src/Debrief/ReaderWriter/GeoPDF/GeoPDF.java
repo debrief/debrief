@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import MWC.GenericData.WorldArea;
+import MWC.GenericData.WorldLocation;
 import net.n3.nanoxml.IXMLElement;
 import net.n3.nanoxml.XMLElement;
 import net.n3.nanoxml.XMLWriter;
@@ -15,12 +16,17 @@ public class GeoPDF {
 
 	public static class GeoPDFPage {
 
+		private int id;
 		private int dpi;
 		private double width;
 		private double height;
 
 		private WorldArea area;
 		private ArrayList<GeoPDFLayer> layers = new ArrayList<GeoPDF.GeoPDFLayer>();
+
+		public GeoPDFPage(final int id) {
+			this.id = id;
+		}
 
 		public void addLayer(final GeoPDFLayer newLayer) {
 			layers.add(newLayer);
@@ -61,11 +67,121 @@ public class GeoPDF {
 		public ArrayList<GeoPDFLayer> getLayers() {
 			return layers;
 		}
+
+		public int getId() {
+			return id;
+		}
+
+		public IXMLElement toXML() {
+			final IXMLElement pageXML = new XMLElement("Page");
+			pageXML.setAttribute("id", "page_" + getId());
+
+			final IXMLElement dpiXML = new XMLElement("DPI");
+			pageXML.addChild(dpiXML);
+			dpiXML.setContent(getDpi() + "");
+
+			final IXMLElement widthXML = new XMLElement("Width");
+			pageXML.addChild(widthXML);
+			widthXML.setContent(getWidth() + "");
+
+			final IXMLElement heightXML = new XMLElement("Height");
+			pageXML.addChild(heightXML);
+			heightXML.setContent(getHeight() + "");
+
+			final IXMLElement geoReferencingXML = new XMLElement("Georeferencing");
+			pageXML.addChild(geoReferencingXML);
+
+			final String georeferencingId = "georeferenced_" + getId();
+			geoReferencingXML.setAttribute("id", georeferencingId);
+
+			final IXMLElement srsXML = new XMLElement("SRS");
+			srsXML.setContent("EPSG:4326");
+			geoReferencingXML.addChild(srsXML);
+
+			WorldArea plotArea = getArea();
+			if (plotArea == null) {
+				// TODO This is just for testing. Area should never be null
+				plotArea = new WorldArea(new WorldLocation(50, -0.8, 0), new WorldLocation(50.4, -0.1, 0));
+			}
+
+			// TOP LEFT
+			final IXMLElement topLeftXML = new XMLElement("ControlPoint");
+			topLeftXML.setAttribute("x", "1");
+			topLeftXML.setAttribute("y", "1");
+			topLeftXML.setAttribute("GeoY", plotArea.getTopLeft().getLat() + "");
+			topLeftXML.setAttribute("GeoX", plotArea.getTopLeft().getLong() + "");
+			geoReferencingXML.addChild(topLeftXML);
+
+			// TOP RIGHT
+			final IXMLElement topRightXML = new XMLElement("ControlPoint");
+			topLeftXML.setAttribute("x", "1");
+			topLeftXML.setAttribute("y", getHeight() + "");
+			topLeftXML.setAttribute("GeoY", plotArea.getTopRight().getLat() + "");
+			topLeftXML.setAttribute("GeoX", plotArea.getTopRight().getLong() + "");
+			geoReferencingXML.addChild(topRightXML);
+
+			// BOTTOM LEFT
+			final IXMLElement bottomLeftXML = new XMLElement("ControlPoint");
+			bottomLeftXML.setAttribute("x", getHeight() + "");
+			bottomLeftXML.setAttribute("y", "1");
+			bottomLeftXML.setAttribute("GeoY", plotArea.getBottomLeft().getLat() + "");
+			bottomLeftXML.setAttribute("GeoX", plotArea.getBottomLeft().getLong() + "");
+			geoReferencingXML.addChild(bottomLeftXML);
+
+			// BOTTOM RIGHT
+			final IXMLElement bottomRightXML = new XMLElement("ControlPoint");
+			bottomRightXML.setAttribute("x", getHeight() + "");
+			bottomRightXML.setAttribute("y", getWidth() + "");
+			bottomRightXML.setAttribute("GeoY", plotArea.getBottomRight().getLat() + "");
+			bottomRightXML.setAttribute("GeoX", plotArea.getBottomRight().getLong() + "");
+			geoReferencingXML.addChild(bottomRightXML);
+
+			final IXMLElement contentXml = new XMLElement("Content");
+			pageXML.addChild(contentXml);
+
+			/**
+			 * Now Let's add all the layers of the page.
+			 */
+			for (GeoPDFLayer layer : layers) {
+				contentXml.addChild(layer.toXML(georeferencingId));
+			}
+
+			return pageXML;
+		}
 	}
 
 	public static class GeoPDFLayerVector {
+
+		public static class LogicalStructure {
+			private String name;
+			private String fieldToDisplay;
+
+			public LogicalStructure(String name, String fieldToDisplay) {
+				this.name = name;
+				this.fieldToDisplay = fieldToDisplay;
+			}
+
+			public String getName() {
+				return name;
+			}
+
+			public String getFieldToDisplay() {
+				return fieldToDisplay;
+			}
+
+			public IXMLElement toXML() {
+				final IXMLElement logicalStructureXML = new XMLElement("LogicalStructure");
+				logicalStructureXML.setAttribute("displayLayerName", getName());
+				logicalStructureXML.setAttribute("fieldToDisplay", getFieldToDisplay());
+				return logicalStructureXML;
+			}
+
+		}
+
 		private String style;
 		private String data;
+		private String name;
+		private LogicalStructure logicalStructure;
 
 		public String getStyle() {
 			return style;
@@ -82,9 +198,39 @@ public class GeoPDF {
 		public void setData(String data) {
 			this.data = data;
 		}
+
+		public LogicalStructure getLogicalStructure() {
+			return logicalStructure;
+		}
+
+		public void setLogicalStructure(LogicalStructure logicalStructure) {
+			this.logicalStructure = logicalStructure;
+		}
+
+		public String getName() {
+			return name;
+		}
+
+		public void setName(String name) {
+			this.name = name;
+		}
+
+		public IXMLElement toXML(String geoReferenceId) {
+			final IXMLElement vectorXML = new XMLElement("Vector");
+			vectorXML.setAttribute("dataset", getData());
+			vectorXML.setAttribute("layer", getName());
+			vectorXML.setAttribute("georeferencingId", geoReferenceId);
+			vectorXML.setAttribute("ogrStyleString", getStyle());
+			
+			if (getLogicalStructure() != null) {
+				vectorXML.addChild(getLogicalStructure().toXML());
+			}
+			
+			return vectorXML;
+		}
 	}
 
-	public static class GeoPDFLayer {
+	public static abstract class GeoPDFLayer {
 		private String id;
 		private String name;
 
@@ -104,11 +250,34 @@ public class GeoPDF {
 			this.name = name;
 		}
 
+		public abstract IXMLElement toXML(final String geoReferenceId);
 	}
 
 	public static class GeoPDFLayerBackground extends GeoPDFLayer {
-		private ArrayList<HashMap<String, String>> raster = new ArrayList();
+		private ArrayList<String> rasters = new ArrayList<String>();
 
+		public ArrayList<String> getRasters() {
+			return rasters;
+		}
+
+		public void addRaster(final String rasterTif) {
+			rasters.add(rasterTif);
+		}
+
+		@Override
+		public IXMLElement toXML(final String geoReferenceId) {
+			final IXMLElement layer = new XMLElement("IfLayerOn");
+			layer.setAttribute("layerId", getId());
+
+			for (String raster : getRasters()) {
+				final IXMLElement rasterXML = new XMLElement("Raster");
+				rasterXML.setAttribute("dataset", raster);
+				rasterXML.setAttribute("georeferencingId", geoReferenceId);
+				layer.addChild(rasterXML);
+			}
+
+			return layer;
+		}
 	}
 
 	public static class GeoPDFLayerTrack extends GeoPDFLayer {
@@ -122,13 +291,25 @@ public class GeoPDF {
 		public ArrayList<GeoPDFLayerVector> getVectors() {
 			return vectors;
 		}
+
+		@Override
+		public IXMLElement toXML(final String geoReferenceId) {
+			final IXMLElement layer = new XMLElement("IfLayerOn");
+			layer.setAttribute("layerId", getId());
+
+			for (GeoPDFLayerVector vector : vectors) {
+				layer.addChild(vector.toXML(geoReferenceId));
+			}
+
+			return layer;
+		}
 	}
 
 	private String author;
 	private ArrayList<GeoPDFPage> pages = new ArrayList<GeoPDF.GeoPDFPage>();
 
 	public GeoPDFPage createNewPage() {
-		final GeoPDFPage newPage = new GeoPDFPage();
+		final GeoPDFPage newPage = new GeoPDFPage(pages.size() + 1);
 		pages.add(newPage);
 		return newPage;
 	}
@@ -141,7 +322,7 @@ public class GeoPDF {
 		this.author = author;
 	}
 
-	public String toXML() throws IOException {
+	public IXMLElement toXML() throws IOException {
 		final XMLElement pdfComposition = new XMLElement("PDFComposition");
 		final XMLElement metadata = new XMLElement("Metadata");
 		pdfComposition.addChild(metadata);
@@ -164,35 +345,12 @@ public class GeoPDF {
 
 		for (int i = 0; i < pages.size(); i++) {
 			final GeoPDFPage currentPage = pages.get(i);
-			final IXMLElement pageXML = new XMLElement("Page");
-			pdfComposition.addChild(pageXML);
-			pageXML.setAttribute("id", "page_" + (i + 1));
-			
-			final IXMLElement dpiXML = new XMLElement("DPI");
-			pageXML.addChild(dpiXML);
-			dpiXML.setContent(currentPage.getDpi() + "");
-			
-			final IXMLElement widthXML = new XMLElement("Width");
-			pageXML.addChild(widthXML);
-			widthXML.setContent(currentPage.getWidth() + "");
-			
-			final IXMLElement heightXML = new XMLElement("Height");
-			pageXML.addChild(heightXML);
-			heightXML.setContent(currentPage.getHeight() + "");
-			
-			
+			pdfComposition.addChild(currentPage.toXML());
 		}
-		
-		XMLWriter xmlWrite = new XMLWriter(System.out);
-		
-		xmlWrite.write(pdfComposition);
-		
-		return null;
+
+		return pdfComposition;
 	}
 
-	/**
-	 * We will create here the XML Composition.
-	 */
 	@Override
 	public String toString() {
 		return "GeoPDF []";

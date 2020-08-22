@@ -3,6 +3,7 @@ package Debrief.ReaderWriter.GeoPDF;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
@@ -12,18 +13,21 @@ import Debrief.ReaderWriter.GeoPDF.GenerateGeoJSON.GeoJSONConfiguration;
 import Debrief.ReaderWriter.GeoPDF.GeoPDF.GeoPDFLayerBackground;
 import Debrief.ReaderWriter.GeoPDF.GeoPDF.GeoPDFLayerTrack;
 import Debrief.ReaderWriter.GeoPDF.GeoPDF.GeoPDFLayerVector;
+import Debrief.ReaderWriter.GeoPDF.GeoPDF.GeoPDFLayerVector.LogicalStructure;
 import Debrief.ReaderWriter.GeoPDF.GeoPDF.GeoPDFPage;
 import Debrief.ReaderWriter.Replay.ImportReplay;
 import Debrief.Wrappers.TrackWrapper;
 import MWC.GUI.Editable;
 import MWC.GUI.Layers;
 import junit.framework.TestCase;
+import net.n3.nanoxml.XMLWriter;
 
 public class GeoPDFBuilder {
 
 	public static class GeoPDFConfiguration {
 		private int markDeltaMinutes;
 		private int labelDeltaMinutes;
+		private String author;
 
 		public int getMarkDeltaMinutes() {
 			return markDeltaMinutes;
@@ -41,11 +45,21 @@ public class GeoPDFBuilder {
 			this.labelDeltaMinutes = labelDeltaMinutes;
 		}
 
+		public String getAuthor() {
+			return author;
+		}
+
+		public void setAuthor(String author) {
+			this.author = author;
+		}
+
 	}
 
 	public static GeoPDF build(final Layers layers, final GeoPDFConfiguration configuration)
 			throws FileNotFoundException {
 		final GeoPDF geoPDF = new GeoPDF();
+
+		geoPDF.setAuthor(configuration.getAuthor());
 
 		final ArrayList<File> filesToDelete = new ArrayList<File>();
 
@@ -125,7 +139,7 @@ public class GeoPDFBuilder {
 			}
 
 		}
-		
+
 		return geoPDF;
 	}
 
@@ -141,6 +155,7 @@ public class GeoPDFBuilder {
 		filesToDelete.add(deltaMinutesFile);
 
 		deltaMinutesVector.setData(deltaMinutesFile.getAbsolutePath());
+		deltaMinutesVector.setName(currentTrack.getName() + "_FirstPoint");
 		// TODO
 		deltaMinutesVector.setStyle(null);
 
@@ -163,6 +178,8 @@ public class GeoPDFBuilder {
 		filesToDelete.add(deltaMinutesFile);
 
 		deltaMinutesVector.setData(deltaMinutesFile.getAbsolutePath());
+		deltaMinutesVector
+				.setName(currentTrack.getName() + "_PointsLabels_" + configuration.getLabelDeltaMinutes() + "mins");
 		// TODO
 		deltaMinutesVector.setStyle(null);
 
@@ -185,8 +202,10 @@ public class GeoPDFBuilder {
 		filesToDelete.add(deltaMinutesFile);
 
 		deltaMinutesVector.setData(deltaMinutesFile.getAbsolutePath());
+		deltaMinutesVector.setName(currentTrack.getName() + "_Points_" + configuration.getMarkDeltaMinutes() + "mins");
 		// TODO
 		deltaMinutesVector.setStyle(null);
+		deltaMinutesVector.setLogicalStructure(new LogicalStructure(currentTrack.getName(), "time"));
 
 		newTrackLayer.addVector(deltaMinutesVector);
 	}
@@ -201,7 +220,7 @@ public class GeoPDFBuilder {
 		filesToDelete.add(trackLineFile);
 
 		trackLineVector.setData(trackLineFile.getAbsolutePath());
-
+		trackLineVector.setName(currentTrack.getName() + "_Line");
 		// TODO
 		trackLineVector.setStyle(null);
 
@@ -225,28 +244,31 @@ public class GeoPDFBuilder {
 
 		return newFile;
 	}
-	
-	public static class GeoPDFBuilderTest extends TestCase{
+
+	public static class GeoPDFBuilderTest extends TestCase {
 
 		private final static String boat1rep = "../org.mwc.cmap.combined.feature/root_installs/sample_data/boat2.rep";
-		
+
 		public void testCreateTempFile() {
 			// TODO
 		}
-		
+
 		public void testBuild() throws IOException {
 
 			final Layers layers = new Layers();
 			final ImportReplay replayImporter = new ImportReplay();
 			replayImporter.importThis("boat1.rep", new FileInputStream(boat1rep), layers);
-			
+
 			final GeoPDFConfiguration configuration = new GeoPDFConfiguration();
 			configuration.setLabelDeltaMinutes(60);
 			configuration.setMarkDeltaMinutes(10);
-			
+			configuration.setAuthor("Saul Hidalgo");
+
 			final GeoPDF geoPdf = GeoPDFBuilder.build(layers, configuration);
-			
-			System.out.println(geoPdf.toXML());
+
+			final XMLWriter xmlWrite = new XMLWriter(new FileOutputStream(new File("C:\\Users\\saulh\\OneDrive\\Documentos\\tmp\\composition.xml")));
+
+			xmlWrite.write(geoPdf.toXML());
 		}
 	}
 }
