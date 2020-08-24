@@ -394,7 +394,8 @@ public class OutlinePanelView extends SwingLayerManager implements ClipboardOwne
 						clonedPlottables.add(data);
 						addBackData(data, _destination);
 					});
-					lastPastedItems = clonedPlottables;
+					lastPastedItems.clear();
+					lastPastedItems.addAll(clonedPlottables);
 					_myData.fireExtended(lastPastedItems.get(0), _destination);
 				}
 				if (!_isCopy) {
