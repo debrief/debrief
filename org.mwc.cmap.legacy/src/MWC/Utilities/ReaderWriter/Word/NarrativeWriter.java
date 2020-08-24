@@ -116,6 +116,7 @@ public class NarrativeWriter {
 					}
 				} catch (IOException e) {
 					//ignore
+					System.err.println("error closing file");
 				}
 			}
 		}
@@ -181,6 +182,8 @@ public class NarrativeWriter {
 						fileInputStream.close();
 					}
 				} catch (Exception ex) {
+					//ignore
+					System.err.println("Error closing file");
 				}
 			}
 			outFile.delete();
@@ -249,6 +252,7 @@ public class NarrativeWriter {
 						fileInputStream.close();
 					}
 				} catch (Exception ex) {
+					System.err.println("error closing file");
 				}
 			}
 			outFile.delete();
@@ -308,6 +312,7 @@ public class NarrativeWriter {
 						fileInputStream.close();
 					}
 				} catch (Exception ex) {
+					System.err.println("error closing file");
 				}
 			}
 			outFile.delete();
@@ -367,6 +372,7 @@ public class NarrativeWriter {
 						fileInputStream.close();
 					}
 				} catch (Exception ex) {
+					System.err.println("error closing file");
 				}
 			}
 			outFile.delete();
@@ -427,6 +433,7 @@ public class NarrativeWriter {
 						fileInputStream.close();
 					}
 				} catch (Exception ex) {
+					System.err.println("error closing file");
 				}
 			}
 			outFile.delete();

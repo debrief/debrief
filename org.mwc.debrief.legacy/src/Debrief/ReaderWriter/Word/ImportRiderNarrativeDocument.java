@@ -1084,7 +1084,7 @@ public class ImportRiderNarrativeDocument {
 
 		try {
 			doc = new HWPFDocument(inputStream);
-		} catch (final OfficeXmlFileException xw) {
+		} catch (final IllegalArgumentException xw) {
 			logError(ErrorLogger.WARNING, ".Doc file appears to contain .Docx data. Switching to other importer", xw);
 			// ok, it's .docx data in a .doc file
 			try {
