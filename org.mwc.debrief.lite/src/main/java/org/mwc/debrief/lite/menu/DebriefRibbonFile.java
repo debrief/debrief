@@ -60,6 +60,7 @@ import Debrief.GUI.Frames.Application;
 import Debrief.GUI.Frames.Session;
 import Debrief.ReaderWriter.XML.DebriefXMLReaderWriter;
 import MWC.GUI.ToolParent;
+import MWC.GUI.Dialogs.AWT.MessageDialog;
 
 public class DebriefRibbonFile {
 
@@ -96,7 +97,9 @@ public class DebriefRibbonFile {
 		private static final String TYPE_DPF = "dpf";
 		private static final String TYPE_NMEA = "log";
 		private static final String TYPE_TIF = "tif";
-
+		private static final String TYPE_NISIDA = "TXT_NISIDA";
+		private static final String TYPE_ANTARES = "TXT_ANTARES";
+		private static final String TYPE_TXT = "TXT";
 		/**
 		 *
 		 */
@@ -119,6 +122,10 @@ public class DebriefRibbonFile {
 				fileToOpen = showOpenDialog(initialFileLocation, new String[] { "log" }, "NMEA File (*.log)");
 			} else if (TYPE_TIF.contentEquals(importFileType)) {
 				fileToOpen = showOpenDialog(initialFileLocation, new String[] { "tif" }, "TIF file (*.tif)");
+			} else if(TYPE_NISIDA.contentEquals(importFileType)) {
+				fileToOpen = showOpenDialog(initialFileLocation, new String[] { "txt" }, "Nisida file (*.txt)");
+			} else if(TYPE_ANTARES.contentEquals(importFileType)) {
+				fileToOpen = showOpenDialog(initialFileLocation, new String[] { "txt" }, "Antares file (*.txt)");
 			} else {
 				fileToOpen = showOpenDialog(initialFileLocation, new String[] { "dpf" }, "Debrief plot file (*.dpf)");
 			}
@@ -129,7 +136,12 @@ public class DebriefRibbonFile {
 					DebriefLiteApp.openNMEAFile(fileToOpen);
 				} else if (TYPE_TIF.equalsIgnoreCase(importFileType)) {
 					DebriefLiteApp.handleImportTIFFile(fileToOpen);
-				} else {
+				} else if(TYPE_NISIDA.equalsIgnoreCase(importFileType)){
+					DebriefLiteApp.openNisidaFile(fileToOpen);
+				}else if(TYPE_ANTARES.equalsIgnoreCase(importFileType)){
+					DebriefLiteApp.handleImportAntaresFile(fileToOpen);
+				}
+				else {
 					DebriefLiteApp.openPlotFile(fileToOpen);
 				}
 				DebriefLiteApp.getDefault().setProperty(LAST_FILE_OPEN_LOCATION,
@@ -320,6 +332,12 @@ public class DebriefRibbonFile {
 				PresentationPriority.TOP, "Import an NMEA file");
 		MenuUtils.addCommand("TIF", "icons/24/map.png", new ImportFileAction(ImportFileAction.TYPE_TIF), importMenu,
 				PresentationPriority.TOP, "Import a TIF file");
+		MenuUtils.addCommand("Nisida", "icons/24/nisida_file.png", new ImportFileAction(ImportFileAction.TYPE_NISIDA), importMenu,
+				PresentationPriority.TOP, "Import a NISIDA file");
+		
+		MenuUtils.addCommand("Antares", "icons/24/antares_file.png", new ImportFileAction(ImportFileAction.TYPE_ANTARES), importMenu,
+				PresentationPriority.TOP, "Import an ANTARES file");
+		
 
 		importMenu.setResizePolicies(MenuUtils.getStandardRestrictivePolicies(importMenu));
 
