@@ -393,6 +393,15 @@ public class DebriefLiteApp implements FileDropListener {
 			Trace.trace(e);
 		}
 	}
+	
+	
+	public static void openNisidaFile(final File file) {
+		try {
+			_instance.handleImportNisidaFile(file);
+		} catch (final Exception e) {
+			Trace.trace(e);
+		}
+	}
 
 	public static void openPlotFile(final File file) {
 
@@ -1079,17 +1088,7 @@ public class DebriefLiteApp implements FileDropListener {
 						handleImportTIFFile(file);
 					} else if (suff.equalsIgnoreCase(".TXT")) {
 						// Maybe it is an antares file
-						final ImportAntares antaresImporter = new ImportAntares();
-						if (antaresImporter.canImportThisFile(file.getAbsolutePath())) {
-							AntaresLoaderDebriefLite.handleImportAntares(file, antaresImporter, _theLayers,
-									getApplicationFrame(), getInstance().getGeneralPersistence(), new Runnable() {
-
-										@Override
-										public void run() {
-											finishTimeRelatedImport(getInstance());
-										}
-									});
-						}
+						handleImportAntaresFile(file);
 					} else {
 						// try nisida format - we can't rely on filename
 						final FileInputStream fis = new FileInputStream(file);
@@ -1111,8 +1110,23 @@ public class DebriefLiteApp implements FileDropListener {
 		restoreCursor();
 	}
 
+	public static void handleImportAntaresFile(File file) {
+		final ImportAntares antaresImporter = new ImportAntares();
+		if (antaresImporter.canImportThisFile(file.getAbsolutePath())) {
+			AntaresLoaderDebriefLite.handleImportAntares(file, antaresImporter, _instance._theLayers,
+					getInstance().getApplicationFrame(), getInstance().getGeneralPersistence(), new Runnable() {
+
+						@Override
+						public void run() {
+							getInstance().finishTimeRelatedImport(getInstance());
+						}
+					});
+		}
+		
+	}
+
 	public JRibbonFrame getApplicationFrame() {
-		return _instance.theFrame;
+		return theFrame;
 
 	}
 
@@ -1200,30 +1214,33 @@ public class DebriefLiteApp implements FileDropListener {
 		}
 	}
 
-	private void handleImportNisidaFile(final File file) throws FileNotFoundException {
-		final FileInputStream fis = new FileInputStream(file);
+	public void handleImportNisidaFile(final File file) throws FileNotFoundException {
+		final FileInputStream fis = new FileInputStream(file); 
 		try {
 			ImportNisida.importThis(fis, _theLayers);
-		} finally {
-			try {
-				fis.close();
-			} catch (final IOException e) {
-				getDefault().logError(ToolParent.ERROR, "Failed to close NMEA file", e);
+			final TimePeriod period = _theLayers.getTimePeriod();
+			_myOperations.setPeriod(period);
+			timeManager.setPeriod(getInstance(), period);
+			if (period != null) {
+				timeManager.setTime(getInstance(), period.getStartDTG(), true);
+			}
+
+			_theLayers.fireModified(null);
+
+			// also tell the layers they've been reformatted
+			_theLayers.fireReformatted(null);
+			enableFileCloseButton(true);
+		}finally {
+			if(fis!=null) {
+				try {
+					fis.close();
+				} catch (final IOException e) {
+					getDefault().logError(ToolParent.ERROR, "Failed to close NMEA file", e);
+				}
 			}
 		}
 
-		final TimePeriod period = _theLayers.getTimePeriod();
-		_myOperations.setPeriod(period);
-		timeManager.setPeriod(this, period);
-		if (period != null) {
-			timeManager.setTime(this, period.getStartDTG(), true);
-		}
-
-		_theLayers.fireModified(null);
-
-		// also tell the layers they've been reformatted
-		_theLayers.fireReformatted(null);
-		enableFileCloseButton(true);
+		
 	}
 
 	private void handleImportNMEAFile(final File file) throws FileNotFoundException {
@@ -1579,5 +1596,6 @@ public class DebriefLiteApp implements FileDropListener {
 
 		projection.setDataArea(newArea);
 	}
+
 
 }
