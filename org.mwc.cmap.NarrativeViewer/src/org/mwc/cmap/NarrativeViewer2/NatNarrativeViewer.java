@@ -559,10 +559,12 @@ public class NatNarrativeViewer {
 	
 	public NarrativeWrapper getVisibleNarratives() {
 		NarrativeWrapper retVal = new NarrativeWrapper("Narratives");
-		NarrativeEntry[] entries = input.getNarrativeHistory(new String[] {});
-		for(NarrativeEntry entry:entries) {
-			if(entry.getVisible()) {
-				retVal.add(entry);
+		if(input!=null) {
+			NarrativeEntry[] entries = input.getNarrativeHistory(new String[] {});
+			for(NarrativeEntry entry:entries) {
+				if(entry.getVisible()) {
+					retVal.add(entry);
+				}
 			}
 		}
 

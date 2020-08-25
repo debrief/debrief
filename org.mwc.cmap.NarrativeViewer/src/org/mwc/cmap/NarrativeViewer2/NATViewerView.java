@@ -41,6 +41,7 @@ import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.InputDialog;
+import org.eclipse.jface.dialogs.MessageDialogWithToggle;
 import org.eclipse.jface.dialogs.TrayDialog;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.preference.PreferenceConverter;
@@ -817,20 +818,25 @@ public class NATViewerView extends ViewPart implements PropertyChangeListener, I
 			public void runWithEvent(Event event) {
 				//show file dialog
 				//default directory, last directory, otherwise the user's home folder.
-				DirectoryDialog dialog = new DirectoryDialog(getViewSite().getShell());
-				String prefDir = Activator.getInstance().getPreferenceStore().getString(PREF_EXPORT_DIR);
-				String defaultDir = System.getProperty("user.home");
-				if(prefDir == null || prefDir.isBlank()) {
-					dialog.setFilterPath(defaultDir);
+				if(myViewer.getVisibleNarratives()!=null && myViewer.getVisibleNarratives().size()>0) {
+					DirectoryDialog dialog = new DirectoryDialog(getViewSite().getShell());
+					String prefDir = Activator.getInstance().getPreferenceStore().getString(PREF_EXPORT_DIR);
+					String defaultDir = System.getProperty("user.home");
+					if(prefDir == null || prefDir.isBlank()) {
+						dialog.setFilterPath(defaultDir);
+					}
+					else {
+						dialog.setFilterPath(prefDir);
+					}
+					String targetDirectory = dialog.open();
+					if(targetDirectory!=null) {
+						Activator.getInstance().getPreferenceStore().setValue(PREF_EXPORT_DIR, targetDirectory);
+						NarrativeWriter writer = new NarrativeWriter();
+						writer.write(myViewer.getVisibleNarratives(), myViewer.isShowingSource(), myViewer.isShowingType(), new File(targetDirectory));
+					}
 				}
 				else {
-					dialog.setFilterPath(prefDir);
-				}
-				String targetDirectory = dialog.open();
-				if(targetDirectory!=null) {
-					Activator.getInstance().getPreferenceStore().setValue(PREF_EXPORT_DIR, targetDirectory);
-					NarrativeWriter writer = new NarrativeWriter();
-					writer.write(myViewer.getVisibleNarratives(), myViewer.isShowingSource(), myViewer.isShowingType(), new File(targetDirectory));
+					MessageDialogWithToggle.openWarning(getViewSite().getShell(), "Error exporting narratives", "No narratives to export");
 				}
 				
 			};
@@ -940,6 +946,7 @@ public class NATViewerView extends ViewPart implements PropertyChangeListener, I
 			// listening to the rolling narrative, since we
 			// may be switching back to a previous plot.
 			myViewer.setInput(_myRollingNarrative);
+			
 		}
 		// }
 	}
