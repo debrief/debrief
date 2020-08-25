@@ -34,5 +34,6 @@
 	<classpathentry kind="lib" path="libs/jackson-core-2.11.2.jar"/>
 	<classpathentry kind="lib" path="libs/jackson-annotations-2.11.2.jar"/>
 	<classpathentry kind="lib" path="libs/nanoxml-2.2.1.jar"/>
+	<classpathentry kind="lib" path="native/gdal/java/gdal.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
