@@ -222,11 +222,11 @@ public class GeoPDF {
 			vectorXML.setAttribute("layer", getName());
 			vectorXML.setAttribute("georeferencingId", geoReferenceId);
 			vectorXML.setAttribute("ogrStyleString", getStyle());
-			
+
 			if (getLogicalStructure() != null) {
 				vectorXML.addChild(getLogicalStructure().toXML());
 			}
-			
+
 			return vectorXML;
 		}
 	}
@@ -307,6 +307,12 @@ public class GeoPDF {
 	}
 
 	private String author;
+	private String producer;
+	private String creator;
+	private String creationDate;
+	private String subject;
+	private String title;
+	private String keywords;
 	private ArrayList<GeoPDFPage> pages = new ArrayList<GeoPDF.GeoPDFPage>();
 
 	public GeoPDFPage createNewPage() {
@@ -321,6 +327,62 @@ public class GeoPDF {
 
 	public void setAuthor(String author) {
 		this.author = author;
+	}
+
+	public String getProducer() {
+		return producer;
+	}
+
+	public void setProducer(String producer) {
+		this.producer = producer;
+	}
+
+	public String getCreator() {
+		return creator;
+	}
+
+	public void setCreator(String creator) {
+		this.creator = creator;
+	}
+
+	public String getCreationDate() {
+		return creationDate;
+	}
+
+	public void setCreationDate(String creationDate) {
+		this.creationDate = creationDate;
+	}
+
+	public String getSubject() {
+		return subject;
+	}
+
+	public void setSubject(String subject) {
+		this.subject = subject;
+	}
+
+	public String getTitle() {
+		return title;
+	}
+
+	public void setTitle(String title) {
+		this.title = title;
+	}
+
+	public String getKeywords() {
+		return keywords;
+	}
+
+	public void setKeywords(String keywords) {
+		this.keywords = keywords;
+	}
+
+	public ArrayList<GeoPDFPage> getPages() {
+		return pages;
+	}
+
+	public void setPages(ArrayList<GeoPDFPage> pages) {
+		this.pages = pages;
 	}
 
 	public IXMLElement toXML() throws IOException {
@@ -356,22 +418,22 @@ public class GeoPDF {
 	public String toString() {
 		try {
 			final OutputStream outputStream = new OutputStream() {
-				
+
 				private StringBuilder builder = new StringBuilder();
-				
+
 				@Override
 				public void write(int b) throws IOException {
-					builder.append((char)b);
+					builder.append((char) b);
 				}
-				
+
 				public String toString() {
 					return builder.toString();
 				}
 			};
-			
+
 			final XMLWriter xmlWrite = new XMLWriter(outputStream);
 			xmlWrite.write(toXML(), true);
-			
+
 			return outputStream.toString();
 		} catch (IOException e) {
 			// This will never be called....
