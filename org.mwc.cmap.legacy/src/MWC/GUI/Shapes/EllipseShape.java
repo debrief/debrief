@@ -148,6 +148,7 @@ import java.awt.Color;
 import java.awt.Point;
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
+import java.util.ArrayList;
 import java.util.Vector;
 
 import MWC.GUI.CanvasType;
@@ -240,7 +241,7 @@ public class EllipseShape extends PlainShape implements Editable, HasDraggableCo
 	/**
 	 * the series of world locations which represent this ellipse
 	 */
-	private Vector<WorldLocation> _theDataPoints;
+	private ArrayList<WorldLocation> _theDataPoints;
 
 	//////////////////////////////////////////////////
 	// constructor
@@ -300,9 +301,9 @@ public class EllipseShape extends PlainShape implements Editable, HasDraggableCo
 	 * calculate the shape as a series of WorldLocation points. Joined up, these
 	 * form a representation of the shape
 	 */
-	private Vector<WorldLocation> calcDataPoints() {
+	private ArrayList<WorldLocation> calcDataPoints() {
 		// get ready to store the list
-		final Vector<WorldLocation> res = new Vector<WorldLocation>(0, 1);
+		final ArrayList<WorldLocation> res = new ArrayList();
 
 		// produce the orientation in radians
 		final double orient = MWC.Algorithms.Conversions.Degs2Rads(_theOrientation);
@@ -521,7 +522,7 @@ public class EllipseShape extends PlainShape implements Editable, HasDraggableCo
 
 		// work through the list to create the list of screen coordinates
 		for (int i = 0; i < _theDataPoints.size(); i++) {
-			final WorldLocation location = _theDataPoints.elementAt(i);
+			final WorldLocation location = _theDataPoints.get(i);
 
 			final Point p2 = dest.toScreen(location);
 
