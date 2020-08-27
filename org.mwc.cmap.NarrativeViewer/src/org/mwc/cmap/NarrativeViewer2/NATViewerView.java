@@ -41,7 +41,7 @@ import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.InputDialog;
-import org.eclipse.jface.dialogs.MessageDialogWithToggle;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.TrayDialog;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.preference.PreferenceConverter;
@@ -836,7 +836,7 @@ public class NATViewerView extends ViewPart implements PropertyChangeListener, I
 					}
 				}
 				else {
-					MessageDialogWithToggle.openWarning(getViewSite().getShell(), "Error exporting narratives", "No narratives to export");
+					MessageDialog.openWarning(getViewSite().getShell(), "Error exporting narratives", "No narratives to export");
 				}
 				
 			};
