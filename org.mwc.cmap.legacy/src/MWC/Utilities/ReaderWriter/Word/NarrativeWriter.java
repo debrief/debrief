@@ -51,55 +51,55 @@ public class NarrativeWriter {
 			XWPFDocument document = null;
 			try {
 				document = new XWPFDocument();
-				int rowCount = 0;
-				int colCount=2;
+				int rows = 0;
+				int cols=2;
 				if(showSource) {
-					colCount++;
+					cols++;
 				}
 				if(showType) {
-					colCount++;
+					cols++;
 				}
-				final XWPFTable narrativesTable = document.createTable(rowCount+1,colCount);
-				final XWPFTableRow row = narrativesTable.getRow(rowCount);
-				row.getCell(0).setText("DTG ");
-				row.getCell(1).setText("Entry");
+				final XWPFTable narrativesTable = document.createTable(rows+1,cols);
+				final XWPFTableRow row = narrativesTable.getRow(rows);
+				int colCount=0;
+				row.getCell(colCount++).setText("Time");
 				if(showSource) {
-					row.getCell(2).setText("Track");
+					row.getCell(colCount++).setText("Source");
 				}
 				if(!showSource && showType) {
-					row.getCell(2).setText("Type");
+					row.getCell(colCount++).setText("Type");
 				}
 				else if(showSource && showType){
-					row.getCell(3).setText("Type");
+					row.getCell(colCount++).setText("Type");
 				}
-				
+				row.getCell(colCount).setText("Entry");
 				NarrativeEntry nextEntry = currentEntry;
 				
 				document.insertTable(1, narrativesTable);
 				
 				while(nextEntry!=null) {
+					int cellCount=0;
 					final XWPFTableRow dataRow = narrativesTable.createRow();
 					currentEntry = nextEntry;
-					XWPFTableCell cell1 = dataRow.getCell(0);
+					XWPFTableCell cell1 = dataRow.getCell(cellCount++);
 					String dtgString = currentEntry.getDTGString();
 					cell1.setText(dtgString);
-					XWPFTableCell cell2 = dataRow.getCell(1);
-					cell2.setText(currentEntry.getEntry());
-					
 					if(showSource && !isNullOrBlank(currentEntry.getSource())) {
-						XWPFTableCell sourceCell = dataRow.getCell(2);
+						XWPFTableCell sourceCell = dataRow.getCell(cellCount++);
 						sourceCell.setText(currentEntry.getSource());
 					}
 					if(showType && !isNullOrBlank(currentEntry.getType())) {
 						XWPFTableCell typeCell;
 						if(showSource && showType) {
-							typeCell = dataRow.getCell(3);
+							typeCell = dataRow.getCell(cellCount++);
 						}
 						else {
-							typeCell = dataRow.getCell(2);
+							typeCell = dataRow.getCell(cellCount++);
 						}
 						typeCell.setText(currentEntry.getType());	
 					}
+					XWPFTableCell cell2 = dataRow.getCell(cellCount++);
+					cell2.setText(currentEntry.getEntry());
 					nextEntry = editableItems.hasMoreElements()?(NarrativeEntry)editableItems.nextElement():null;
 				}
 				outStream = new FileOutputStream(fileName);
@@ -163,12 +163,12 @@ public class NarrativeWriter {
 				assertEquals("row count",3,tables.get(0).getNumberOfRows());
 				XWPFTableRow row1 = tables.get(0).getRow(1);
 				assertEquals(n1.getDTGString(),row1.getCell(0).getText());
-				assertEquals(n1.getEntry(),row1.getCell(1).getText());
+				assertEquals(n1.getSource(),row1.getCell(1).getText());
 				XWPFTableRow row2 = tables.get(0).getRow(2);
 				assertEquals(n2.getDTGString(),row2.getCell(0).getText());
-				assertEquals(n2.getEntry(),row2.getCell(1).getText());
-				assertEquals(n2.getSource(),row2.getCell(2).getText());
-				assertEquals(n2.getType(),row2.getCell(3).getText());
+				assertEquals(n2.getSource(),row2.getCell(1).getText());
+				assertEquals(n2.getType(),row2.getCell(2).getText());
+				assertEquals(n2.getEntry(),row2.getCell(3).getText());
 				
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -234,11 +234,11 @@ public class NarrativeWriter {
 				XWPFTableRow row1 = tables.get(0).getRow(1);
 				System.out.println("n1dtgstring:"+n1.getDTGString());
 				assertEquals(n1.getDTGString(),row1.getCell(0).getText());
-				assertEquals(n1.getEntry(),row1.getCell(1).getText());
+				assertEquals(n1.getSource(),row1.getCell(1).getText());
 				XWPFTableRow row2 = tables.get(0).getRow(2);
 				assertEquals(n2.getDTGString(),row2.getCell(0).getText());
-				assertEquals(n2.getEntry(),row2.getCell(1).getText());
-				assertEquals(n2.getSource(),row2.getCell(2).getText());
+				assertEquals(n2.getSource(),row2.getCell(1).getText());
+				assertEquals(n2.getEntry(),row2.getCell(2).getText());
 				
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -294,11 +294,11 @@ public class NarrativeWriter {
 				XWPFTableRow row1 = tables.get(0).getRow(1);
 				System.out.println("n1dtgstring:"+n1.getDTGString());
 				assertEquals(n1.getDTGString(),row1.getCell(0).getText());
-				assertEquals(n1.getEntry(),row1.getCell(1).getText());
+				assertEquals(n1.getSource(),row1.getCell(1).getText());
 				XWPFTableRow row2 = tables.get(0).getRow(2);
 				assertEquals(n2.getDTGString(),row2.getCell(0).getText());
-				assertEquals(n2.getEntry(),row2.getCell(1).getText());
-				assertEquals(n2.getSource(),row2.getCell(2).getText());
+				assertEquals(n2.getSource(),row2.getCell(1).getText());
+				assertEquals(n2.getEntry(),row2.getCell(2).getText());
 				
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -355,11 +355,11 @@ public class NarrativeWriter {
 				XWPFTableRow row1 = tables.get(0).getRow(1);
 				System.out.println("n1dtgstring:"+n1.getDTGString());
 				assertEquals(n1.getDTGString(),row1.getCell(0).getText());
-				assertEquals(n1.getEntry(),row1.getCell(1).getText());
+				assertEquals(n1.getType(),row1.getCell(1).getText());
 				XWPFTableRow row2 = tables.get(0).getRow(2);
 				assertEquals(n2.getDTGString(),row2.getCell(0).getText());
-				assertEquals(n2.getEntry(),row2.getCell(1).getText());
-				assertEquals(n2.getType(),row2.getCell(2).getText());
+				assertEquals(n2.getType(),row2.getCell(1).getText());
+				assertEquals(n2.getEntry(),row2.getCell(2).getText());
 			} catch (Exception e) {
 				e.printStackTrace();
 				fail("Error reading the word doc");
@@ -414,12 +414,12 @@ public class NarrativeWriter {
 				XWPFTableRow row1 = tables.get(0).getRow(1);
 				System.out.println("n1dtgstring:"+n1.getDTGString());
 				assertEquals(n1.getDTGString(),row1.getCell(0).getText());
-				assertEquals(n1.getEntry(),row1.getCell(1).getText());
+				assertEquals(n1.getSource(),row1.getCell(1).getText());
 				XWPFTableRow row2 = tables.get(0).getRow(2);
 				assertEquals(n2.getDTGString(),row2.getCell(0).getText());
-				assertEquals(n2.getEntry(),row2.getCell(1).getText());
-				assertEquals(n2.getSource(),row2.getCell(2).getText());
-				assertEquals(n2.getType(),row2.getCell(3).getText());
+				assertEquals(n2.getSource(),row2.getCell(1).getText());
+				assertEquals(n2.getType(),row2.getCell(2).getText());
+				assertEquals(n2.getEntry(),row2.getCell(3).getText());
 				
 			} catch (Exception e) {
 				e.printStackTrace();
