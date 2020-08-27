@@ -66,10 +66,7 @@ public class NarrativeWriter {
 				if(showSource) {
 					row.getCell(colCount++).setText("Source");
 				}
-				if(!showSource && showType) {
-					row.getCell(colCount++).setText("Type");
-				}
-				else if(showSource && showType){
+				if(showType) {
 					row.getCell(colCount++).setText("Type");
 				}
 				row.getCell(colCount).setText("Entry");
