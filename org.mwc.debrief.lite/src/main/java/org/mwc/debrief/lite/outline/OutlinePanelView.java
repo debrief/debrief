@@ -372,14 +372,14 @@ public class OutlinePanelView extends SwingLayerManager implements ClipboardOwne
 			/**
 			 *
 			 */
-			private ArrayList<Plottable> _lastPastedItems = new ArrayList<>();
+			private ArrayList<Plottable> itemsInUndoList = new ArrayList<>();
 			private final Layer _destination;
 			private final boolean _isCopy;
 
 			PasteAction(final Layer destination, final boolean iscopy, final ArrayList<Plottable> lastPastedItems) {
 				_destination = destination;
 				_isCopy = iscopy;
-				_lastPastedItems = lastPastedItems;
+				itemsInUndoList = lastPastedItems;
 
 			}
 
@@ -388,15 +388,16 @@ public class OutlinePanelView extends SwingLayerManager implements ClipboardOwne
 				// see if it is a layer or not
 				final ArrayList<Plottable> clonedPlottables = new ArrayList<>();
 				
-				if (!lastPastedItems.isEmpty()) {
-					lastPastedItems.forEach(data->{
+				if (!itemsInUndoList.isEmpty()) {
+					itemsInUndoList.forEach(data->{
 						data = CloneUtil.cloneThis(data);
 						clonedPlottables.add(data);
 						addBackData(data, _destination);
 					});
-					lastPastedItems.clear();
-					lastPastedItems.addAll(clonedPlottables);
-					_myData.fireExtended(lastPastedItems.get(0), _destination);
+					itemsInUndoList.clear();
+					itemsInUndoList.addAll(clonedPlottables);
+			
+					_myData.fireExtended(itemsInUndoList.get(0), _destination);
 				}
 				if (!_isCopy) {
 					// clear the clipboard
@@ -446,10 +447,10 @@ public class OutlinePanelView extends SwingLayerManager implements ClipboardOwne
 
 			@Override
 			public void undo() {
-				for (final Plottable item : _lastPastedItems) {
+				for (final Plottable item : itemsInUndoList) {
 					_destination.removeElement(item);
 				}
-				_myData.fireExtended(_lastPastedItems.get(0), _destination);
+				_myData.fireExtended(itemsInUndoList.get(0), _destination);
 			}
 		}
 
