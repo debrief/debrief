@@ -76,6 +76,7 @@ import org.mwc.cmap.NarrativeViewer.preferences.NarrativeViewerPrefsPage;
 import MWC.GenericData.HiResDate;
 import MWC.TacticalData.IRollingNarrativeProvider;
 import MWC.TacticalData.NarrativeEntry;
+import MWC.TacticalData.NarrativeWrapper;
 import ca.odell.glazedlists.TextFilterator;
 import ca.odell.glazedlists.matchers.TextMatcherEditor;
 
@@ -87,6 +88,7 @@ public class NatNarrativeViewer {
 
 		public SwitchColumnVisibilityAction(final String colLabel, final String name) {
 			this.colLabel = colLabel;
+			setChecked(true);
 			setText(name);
 
 		}
@@ -102,6 +104,7 @@ public class NatNarrativeViewer {
 			natTable.doCommand(new ShowAllColumnsCommand());
 			final int columnPositionBylabel = getColumnPositionBylabel(colLabel);
 			visible = !visible;
+			setChecked(visible);
 			if (visible) {
 				hiddenCols.remove(Integer.valueOf(columnPositionBylabel));
 				bodyLayer.getBodyDataLayer().setColumnWidthByPosition(columnPositionBylabel, 100);
@@ -150,6 +153,8 @@ public class NatNarrativeViewer {
 	private DefaultColumnHeaderDataProvider columnHeaderDataProvider;
 
 	private final List<Integer> hiddenCols = new ArrayList<Integer>();
+	private SwitchColumnVisibilityAction showSource;
+	private SwitchColumnVisibilityAction showType;
 
 	public NatNarrativeViewer(final Composite parent, final IPreferenceStore preferenceStore) {
 		this.preferenceStore = preferenceStore;
@@ -368,9 +373,9 @@ public class NatNarrativeViewer {
 
 	public void fillActionBars(final IActionBars actionBars) {
 		final IMenuManager menu = actionBars.getMenuManager();
-		final SwitchColumnVisibilityAction showSource = new SwitchColumnVisibilityAction(SOURCE_LBL, "Show source");
+		showSource = new SwitchColumnVisibilityAction(SOURCE_LBL, "Show source");
 		menu.add(showSource);
-		final SwitchColumnVisibilityAction showType = new SwitchColumnVisibilityAction(TYPE_LBL, "Show type");
+		showType = new SwitchColumnVisibilityAction(TYPE_LBL, "Show type");
 		menu.add(showType);
 		menu.addMenuListener(new IMenuListener() {
 			@Override
@@ -551,6 +556,20 @@ public class NatNarrativeViewer {
 		filteredNatTable.setFilterMode(checked);
 
 	}
+	
+	public NarrativeWrapper getVisibleNarratives() {
+		NarrativeWrapper retVal = new NarrativeWrapper("Narratives");
+		if(input!=null) {
+			NarrativeEntry[] entries = input.getNarrativeHistory(new String[] {});
+			for(NarrativeEntry entry:entries) {
+				if(entry.getVisible()) {
+					retVal.add(entry);
+				}
+			}
+		}
+
+		return retVal;
+	}
 
 	public void setInput(final IRollingNarrativeProvider input) {
 		this.input = input;
@@ -586,4 +605,11 @@ public class NatNarrativeViewer {
 
 	}
 
+	public boolean isShowingSource() {
+		return showSource.isChecked();
+	}
+	
+	public boolean isShowingType() {
+		return showType.isChecked();
+	}
 }

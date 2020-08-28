@@ -56,7 +56,7 @@ public class TestMenus extends BaseTestCase
     doAssertions(TestUtils.getRibbonBand(1,0),"File",new String[] {"New","Open","Save","Close"},false);
     // TODO: reinstate this test
     // assertSaveAs(TestUtils.getRibbonBand(1,0));
-    doAssertions(TestUtils.getRibbonBand(1,1),"Import",new String[] {"Replay","Plot","NMEA","TIF"},false);
+    doAssertions(TestUtils.getRibbonBand(1,1),"Import",new String[] {"Replay","Plot","NMEA","TIF","Nisida","Antares"},false);
     doAssertions(TestUtils.getRibbonBand(1,2),"Export",new String[] {"Clipboard"},false);
     }
     {
