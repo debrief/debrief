@@ -81,21 +81,18 @@ public class NarrativeWriter {
 					XWPFTableCell cell1 = dataRow.getCell(cellCount++);
 					String dtgString = currentEntry.getDTGString();
 					cell1.setText(dtgString);
-					if(showSource && !isNullOrBlank(currentEntry.getSource())) {
+					if(showSource) {
 						XWPFTableCell sourceCell = dataRow.getCell(cellCount++);
 						sourceCell.setText(currentEntry.getSource());
 					}
-					if(showType && !isNullOrBlank(currentEntry.getType())) {
+					if(showType) {
 						XWPFTableCell typeCell;
-						if(showSource && showType) {
+						if(showType) {
 							typeCell = dataRow.getCell(cellCount++);
+							typeCell.setText(currentEntry.getType());
 						}
-						else {
-							typeCell = dataRow.getCell(cellCount++);
-						}
-						typeCell.setText(currentEntry.getType());	
 					}
-					XWPFTableCell cell2 = dataRow.getCell(cellCount++);
+					XWPFTableCell cell2 = dataRow.getCell(cellCount);
 					cell2.setText(currentEntry.getEntry());
 					nextEntry = editableItems.hasMoreElements()?(NarrativeEntry)editableItems.nextElement():null;
 				}
@@ -121,12 +118,7 @@ public class NarrativeWriter {
 			//log empty file
 		}
 	}
-	private boolean isNullOrBlank(String text) {
-		if(text==null || text.isBlank()) {
-			return true;
-		}
-		return false;
-	}
+	
 	public static class TestMe extends TestCase {
 		public void testWritingNarratives() throws Exception{
 			final NarrativeWrapper narr = new NarrativeWrapper("Some title");
