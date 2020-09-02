@@ -120,14 +120,15 @@ public class NatNarrativeViewer {
 
 		}
 
-		private final int[] toIntArray(final List<Integer> list) {
-			final int[] ret = new int[list.size()];
-			int i = 0;
-			for (final Integer e : list)
-				ret[i++] = e.intValue();
-			return ret;
-		}
+		
 
+	}
+	private final int[] toIntArray(final List<Integer> list) {
+		final int[] ret = new int[list.size()];
+		int i = 0;
+		for (final Integer e : list)
+			ret[i++] = e.intValue();
+		return ret;
 	}
 
 	private static final String TYPE_LBL = "Type";
@@ -580,7 +581,17 @@ public class NatNarrativeViewer {
 
 				@Override
 				public void run() {
-					natTable.refresh(true);
+					natTable.doCommand(new ShowAllColumnsCommand());
+					natTable.refresh(false);
+					if(!isShowingSource()) {
+						hiddenCols.add(Integer.valueOf(1));
+					}
+					if(!isShowingType()) {
+						hiddenCols.add(Integer.valueOf(2));
+					}
+					if(hiddenCols.size()>0) {
+						natTable.doCommand(new MultiColumnHideCommand(natTable, toIntArray(hiddenCols)));
+					}
 				}
 			});
 		}
