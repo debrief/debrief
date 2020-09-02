@@ -28,6 +28,15 @@ public class GeoPDFBuilder {
 		private int markDeltaMinutes;
 		private int labelDeltaMinutes;
 		private String author;
+		private String background;
+		
+		public String getBackground() {
+			return background;
+		}
+
+		public void setBackground(String background) {
+			this.background = background;
+		}
 
 		public int getMarkDeltaMinutes() {
 			return markDeltaMinutes;
@@ -73,18 +82,18 @@ public class GeoPDFBuilder {
 		mainPage.setWidth(841.698);
 		mainPage.setHeight(595.14);
 
-		// TODO
-		// Set Area
-		mainPage.setArea(null);
+		mainPage.setArea(layers.getBounds());
 
 		/**
 		 * Let's create the BackGroundLayer;
 		 */
-		final GeoPDFLayerBackground backgroundLayer = new GeoPDFLayerBackground();
-		backgroundLayer.setName("Background chart");
-		backgroundLayer.setId("background");
-		// TODO COMPLETE THIS.
-		mainPage.addLayer(backgroundLayer);
+		if (configuration.getBackground() != null) {
+			final GeoPDFLayerBackground backgroundLayer = new GeoPDFLayerBackground();
+			backgroundLayer.setName("Background chart");
+			backgroundLayer.setId("background");
+			// TODO COMPLETE THIS.
+			mainPage.addLayer(backgroundLayer);
+		}
 
 		/**
 		 * Let's iterate over all the layers to find the Tracks to export
@@ -247,7 +256,7 @@ public class GeoPDFBuilder {
 
 	public static class GeoPDFBuilderTest extends TestCase {
 
-		private final static String boat1rep = "../org.mwc.cmap.combined.feature/root_installs/sample_data/boat2.rep";
+		private final static String boat1rep = "../org.mwc.cmap.combined.feature/root_installs/sample_data/boat1.rep";
 
 		public void testCreateTempFile() {
 			// TODO
