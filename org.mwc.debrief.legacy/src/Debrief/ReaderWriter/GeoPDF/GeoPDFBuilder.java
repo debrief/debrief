@@ -1,13 +1,15 @@
 package Debrief.ReaderWriter.GeoPDF;
 
+import java.awt.Color;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Enumeration;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
 
 import Debrief.ReaderWriter.GeoPDF.GenerateGeoJSON.GeoJSONConfiguration;
 import Debrief.ReaderWriter.GeoPDF.GeoPDF.GeoPDFLayerBackground;
@@ -20,7 +22,6 @@ import Debrief.Wrappers.TrackWrapper;
 import MWC.GUI.Editable;
 import MWC.GUI.Layers;
 import junit.framework.TestCase;
-import net.n3.nanoxml.XMLWriter;
 
 public class GeoPDFBuilder {
 
@@ -29,7 +30,7 @@ public class GeoPDFBuilder {
 		private int labelDeltaMinutes;
 		private String author;
 		private String background;
-		
+
 		public String getBackground() {
 			return background;
 		}
@@ -65,7 +66,7 @@ public class GeoPDFBuilder {
 	}
 
 	public static GeoPDF build(final Layers layers, final GeoPDFConfiguration configuration)
-			throws FileNotFoundException {
+			throws FileNotFoundException, JsonProcessingException {
 		final GeoPDF geoPDF = new GeoPDF();
 
 		geoPDF.setAuthor(configuration.getAuthor());
@@ -154,84 +155,96 @@ public class GeoPDFBuilder {
 
 	protected static void createOnePointLayer(final GeoPDFConfiguration configuration,
 			final ArrayList<File> filesToDelete, final TrackWrapper currentTrack, final GeoPDFLayerTrack newTrackLayer)
-			throws FileNotFoundException {
+			throws FileNotFoundException, JsonProcessingException {
 
-		final GeoJSONConfiguration geoJSONConfiguration = new GeoJSONConfiguration(-1, true, true);
+		final String layerName = currentTrack.getName() + "_FirstPoint";
+		final GeoJSONConfiguration geoJSONConfiguration = new GeoJSONConfiguration(-1, true, true, layerName);
 		final GeoPDFLayerVector deltaMinutesVector = new GeoPDFLayerVector();
 		final String vectorData = GenerateGeoJSON.createGeoJSONTrackPoints(currentTrack, geoJSONConfiguration);
 
-		final File deltaMinutesFile = createTempFile(currentTrack.getName() + "_FirstPoint.geojson", vectorData);
+		final File deltaMinutesFile = createTempFile(layerName + ".geojson", vectorData);
 		filesToDelete.add(deltaMinutesFile);
 
 		deltaMinutesVector.setData(deltaMinutesFile.getAbsolutePath());
-		deltaMinutesVector.setName(currentTrack.getName() + "_FirstPoint");
-		// TODO
-		deltaMinutesVector.setStyle("");
+		deltaMinutesVector.setName(layerName);
+		final Color trackColor = currentTrack.getColor();
+		final String colorHex = String.format("#%02x%02x%02x", trackColor.getRed(), trackColor.getGreen(),
+				trackColor.getBlue());
+		deltaMinutesVector
+				.setStyle("LABEL(t:\"" + currentTrack.getName() + "\",c: " + colorHex + ",s:24pt,p:2,dy:10mm,bo:1)");
 
 		newTrackLayer.addVector(deltaMinutesVector);
 	}
 
 	protected static void createLabelsLayer(final GeoPDFConfiguration configuration,
 			final ArrayList<File> filesToDelete, final TrackWrapper currentTrack, final GeoPDFLayerTrack newTrackLayer)
-			throws FileNotFoundException {
+			throws FileNotFoundException, JsonProcessingException {
 
+		final String layerName = currentTrack.getName() + "_PointsLabels_" + configuration.getLabelDeltaMinutes()
+				+ "mins";
 		final GeoJSONConfiguration geoJSONConfiguration = new GeoJSONConfiguration(configuration.getLabelDeltaMinutes(),
-				true, false);
+				true, false, layerName);
 		final GeoPDFLayerVector deltaMinutesVector = new GeoPDFLayerVector();
 		final String deltaMinutesVectorData = GenerateGeoJSON.createGeoJSONTrackPoints(currentTrack,
 				geoJSONConfiguration);
 
-		final File deltaMinutesFile = createTempFile(
-				currentTrack.getName() + "_PointsLabels_" + configuration.getLabelDeltaMinutes() + "mins.geojson",
-				deltaMinutesVectorData);
+		final File deltaMinutesFile = createTempFile(layerName + ".geojson", deltaMinutesVectorData);
 		filesToDelete.add(deltaMinutesFile);
 
 		deltaMinutesVector.setData(deltaMinutesFile.getAbsolutePath());
-		deltaMinutesVector
-				.setName(currentTrack.getName() + "_PointsLabels_" + configuration.getLabelDeltaMinutes() + "mins");
-		// TODO
-		deltaMinutesVector.setStyle("");
+		deltaMinutesVector.setName(layerName);
+		final Color trackColor = currentTrack.getColor();
+		final String colorHex = String.format("#%02x%02x%02x", trackColor.getRed(), trackColor.getGreen(),
+				trackColor.getBlue());
+		deltaMinutesVector.setStyle("LABEL(t:{time_str},c:" + colorHex + ",s:24pt,p:4,dx:7mm,bo:1)");
 
 		newTrackLayer.addVector(deltaMinutesVector);
 	}
 
 	protected static void createMinutesLayer(final GeoPDFConfiguration configuration,
 			final ArrayList<File> filesToDelete, final TrackWrapper currentTrack, final GeoPDFLayerTrack newTrackLayer)
-			throws FileNotFoundException {
+			throws FileNotFoundException, JsonProcessingException {
 
+		final String layerName = currentTrack.getName() + "_Points_" + configuration.getMarkDeltaMinutes() + "mins";
 		final GeoJSONConfiguration geoJSONConfiguration = new GeoJSONConfiguration(configuration.getMarkDeltaMinutes(),
-				false, false);
+				false, false, layerName);
 		final GeoPDFLayerVector deltaMinutesVector = new GeoPDFLayerVector();
 		final String deltaMinutesVectorData = GenerateGeoJSON.createGeoJSONTrackPoints(currentTrack,
 				geoJSONConfiguration);
 
-		final File deltaMinutesFile = createTempFile(
-				currentTrack.getName() + "_Points_" + configuration.getMarkDeltaMinutes() + "mins.geojson",
-				deltaMinutesVectorData);
+		final File deltaMinutesFile = createTempFile(layerName + ".geojson", deltaMinutesVectorData);
 		filesToDelete.add(deltaMinutesFile);
 
 		deltaMinutesVector.setData(deltaMinutesFile.getAbsolutePath());
-		deltaMinutesVector.setName(currentTrack.getName() + "_Points_" + configuration.getMarkDeltaMinutes() + "mins");
-		// TODO
-		deltaMinutesVector.setStyle("");
+		deltaMinutesVector.setName(layerName);
+
+		final Color trackColor = currentTrack.getColor();
+		final String colorHex = String.format("#%02x%02x%02x", trackColor.getRed(), trackColor.getGreen(),
+				trackColor.getBlue());
+		deltaMinutesVector.setStyle("SYMBOL(c:" + colorHex + ",s:2,id:\"ogr-sym-3\")");
+
 		deltaMinutesVector.setLogicalStructure(new LogicalStructure(currentTrack.getName(), "time"));
 
 		newTrackLayer.addVector(deltaMinutesVector);
 	}
 
 	protected static void createTrackLine(final ArrayList<File> filesToDelete, final TrackWrapper currentTrack,
-			final GeoPDFLayerTrack newTrackLayer) throws FileNotFoundException {
+			final GeoPDFLayerTrack newTrackLayer) throws FileNotFoundException, JsonProcessingException {
 
+		final String layerName = currentTrack.getName() + "_Line";
 		final GeoPDFLayerVector trackLineVector = new GeoPDFLayerVector();
-		final String vectorTrackLineData = GenerateGeoJSON.createGeoJSONTrackLine(currentTrack);
+		final GeoJSONConfiguration configuration = new GeoJSONConfiguration(0, false, false, layerName);
+		final String vectorTrackLineData = GenerateGeoJSON.createGeoJSONTrackLine(currentTrack, configuration);
 
-		final File trackLineFile = createTempFile(currentTrack.getName() + "_Line.geojson", vectorTrackLineData);
+		final File trackLineFile = createTempFile(layerName + ".geojson", vectorTrackLineData);
 		filesToDelete.add(trackLineFile);
 
 		trackLineVector.setData(trackLineFile.getAbsolutePath());
-		trackLineVector.setName(currentTrack.getName() + "_Line");
-		// TODO
-		trackLineVector.setStyle("");
+		trackLineVector.setName(layerName);
+		final Color trackColor = currentTrack.getColor();
+		final String colorHex = String.format("#%02x%02x%02x", trackColor.getRed(), trackColor.getGreen(),
+				trackColor.getBlue());
+		trackLineVector.setStyle("PEN(c:" + colorHex + ",w:5px)");
 
 		newTrackLayer.addVector(trackLineVector);
 	}
