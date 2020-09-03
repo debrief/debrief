@@ -88,7 +88,7 @@ public class NatNarrativeViewer {
 
 		public SwitchColumnVisibilityAction(final String colLabel, final String name) {
 			this.colLabel = colLabel;
-			setChecked(true);
+			setChecked(visible);
 			setText(name);
 
 		}
@@ -370,6 +370,9 @@ public class NatNarrativeViewer {
 
 		loadFont(preferenceStore);
 		natTable.refresh(false);
+		if(hiddenCols.size()>0) {
+			natTable.doCommand(new MultiColumnHideCommand(natTable, toIntArray(hiddenCols)));
+		}
 	}
 
 	public void fillActionBars(final IActionBars actionBars) {
@@ -573,25 +576,20 @@ public class NatNarrativeViewer {
 	}
 
 	public void setInput(final IRollingNarrativeProvider input) {
+		final boolean buildTable = this.input==null; 
 		this.input = input;
 		dateFormatter.clearCache();
 		if (!container.isDisposed()) {
-			buildTable();
+			if(buildTable) {
+				buildTable();
+			}
 			Display.getCurrent().asyncExec(new Runnable() {
 
 				@Override
 				public void run() {
-					natTable.doCommand(new ShowAllColumnsCommand());
-					natTable.refresh(false);
-					if(!isShowingSource()) {
-						hiddenCols.add(Integer.valueOf(1));
-					}
-					if(!isShowingType()) {
-						hiddenCols.add(Integer.valueOf(2));
-					}
-					if(hiddenCols.size()>0) {
-						natTable.doCommand(new MultiColumnHideCommand(natTable, toIntArray(hiddenCols)));
-					}
+					natTable.refresh(true);
+					showSource.refresh();
+					showType.refresh();
 				}
 			});
 		}
@@ -617,10 +615,10 @@ public class NatNarrativeViewer {
 	}
 
 	public boolean isShowingSource() {
-		return showSource.isChecked();
+		return showSource!=null?showSource.isChecked():true;
 	}
 	
 	public boolean isShowingType() {
-		return showType.isChecked();
+		return showType!=null?showType.isChecked():true;
 	}
 }
