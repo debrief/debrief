@@ -47,6 +47,7 @@ import org.eclipse.nebula.widgets.nattable.layer.CompositeLayer;
 import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ColumnLabelAccumulator;
 import org.eclipse.nebula.widgets.nattable.painter.NatTableBorderOverlayPainter;
+import org.eclipse.nebula.widgets.nattable.reorder.ColumnReorderLayer;
 import org.eclipse.nebula.widgets.nattable.selection.RowSelectionModel;
 import org.eclipse.nebula.widgets.nattable.selection.command.SelectRowsCommand;
 import org.eclipse.nebula.widgets.nattable.sort.SortHeaderLayer;
@@ -296,12 +297,13 @@ public class NatNarrativeViewer {
 		bodyLayer = new BodyLayerStack<INatEntry>(input, columnPropertyAccessor);
 		bodyLayer.addConfigLabelAccumulator(
 				new NarrativeEntryConfigLabelAccumulator(bodyLayer.getBodyDataProvider(), configRegistry));
-
+		
 		columnHeaderDataProvider = new DefaultColumnHeaderDataProvider(propertyNames, propertyToLabelMap);
 		final DataLayer columnHeaderDataLayer = new DataLayer(columnHeaderDataProvider);
 		final ColumnHeaderLayer columnHeaderLayer = new ColumnHeaderLayer(columnHeaderDataLayer, bodyLayer,
 				bodyLayer.getSelectionLayer());
-
+		
+		bodyLayer.getColumnReorderLayer().clearConfiguration();
 		final SortHeaderLayer<INatEntry> sortHeaderLayer = new SortHeaderLayer<INatEntry>(columnHeaderLayer,
 				new GlazedListsSortModel<INatEntry>(bodyLayer.getSortedList(), columnPropertyAccessor, configRegistry,
 						columnHeaderDataLayer));
