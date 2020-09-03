@@ -109,32 +109,32 @@ public class GeoPDF {
 			final IXMLElement topLeftXML = new XMLElement("ControlPoint");
 			topLeftXML.setAttribute("x", "1");
 			topLeftXML.setAttribute("y", "1");
-			topLeftXML.setAttribute("GeoX", plotArea.getTopLeft().getLat() + "");
-			topLeftXML.setAttribute("GeoY", plotArea.getTopLeft().getLong() + "");
+			topLeftXML.setAttribute("GeoX", plotArea.getBottomLeft().getLat() + "");
+			topLeftXML.setAttribute("GeoY", plotArea.getBottomLeft().getLong() + "");
 			geoReferencingXML.addChild(topLeftXML);
 
 			// TOP RIGHT
 			final IXMLElement topRightXML = new XMLElement("ControlPoint");
 			topRightXML.setAttribute("x", "1");
 			topRightXML.setAttribute("y", getHeight() + "");
-			topRightXML.setAttribute("GeoX", plotArea.getTopRight().getLat() + "");
-			topRightXML.setAttribute("GeoY", plotArea.getTopRight().getLong() + "");
+			topRightXML.setAttribute("GeoX", plotArea.getBottomRight().getLat() + "");
+			topRightXML.setAttribute("GeoY", plotArea.getBottomRight().getLong() + "");
 			geoReferencingXML.addChild(topRightXML);
 
 			// BOTTOM LEFT
 			final IXMLElement bottomLeftXML = new XMLElement("ControlPoint");
 			bottomLeftXML.setAttribute("x", getWidth() + "");
 			bottomLeftXML.setAttribute("y", "1");
-			bottomLeftXML.setAttribute("GeoX", plotArea.getBottomLeft().getLat() + "");
-			bottomLeftXML.setAttribute("GeoY", plotArea.getBottomLeft().getLong() + "");
+			bottomLeftXML.setAttribute("GeoX", plotArea.getTopLeft().getLat() + "");
+			bottomLeftXML.setAttribute("GeoY", plotArea.getTopLeft().getLong() + "");
 			geoReferencingXML.addChild(bottomLeftXML);
 
 			// BOTTOM RIGHT
 			final IXMLElement bottomRightXML = new XMLElement("ControlPoint");
 			bottomRightXML.setAttribute("x", getWidth() + "");
 			bottomRightXML.setAttribute("y", getHeight() + "");
-			bottomRightXML.setAttribute("GeoX", plotArea.getBottomRight().getLat() + "");
-			bottomRightXML.setAttribute("GeoY", plotArea.getBottomRight().getLong() + "");
+			bottomRightXML.setAttribute("GeoX", plotArea.getTopRight().getLat() + "");
+			bottomRightXML.setAttribute("GeoY", plotArea.getTopRight().getLong() + "");
 			geoReferencingXML.addChild(bottomRightXML);
 
 			final IXMLElement contentXml = new XMLElement("Content");
