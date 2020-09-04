@@ -28,12 +28,9 @@
 	<classpathentry kind="lib" path="/org.mwc.cmap.legacy/libs/commons-math3-3.3.jar" sourcepath="/contribs/commons-math3-3.3-src.zip"/>
 	<classpathentry kind="lib" path="libs/poi-3.14-20160307.jar"/>
 	<classpathentry kind="lib" path="libs/poi-scratchpad-3.14-20160307.jar"/>
-	<classpathentry kind="lib" path="libs/sf-geojson-2.0.4.jar" sourcepath="/tmp/.org.sf.feeling.decompiler1597757452671/source/sf-geojson-2.0.4-sources.jar"/>
-	<classpathentry kind="lib" path="libs/sf-2.0.3.jar" sourcepath="/tmp/.org.sf.feeling.decompiler1597921132644/source/sf-2.0.3-sources.jar"/>
 	<classpathentry kind="lib" path="libs/jackson-databind-2.11.2.jar"/>
 	<classpathentry kind="lib" path="libs/jackson-core-2.11.2.jar"/>
 	<classpathentry kind="lib" path="libs/jackson-annotations-2.11.2.jar"/>
 	<classpathentry kind="lib" path="libs/nanoxml-2.2.1.jar"/>
-	<classpathentry kind="lib" path="native/gdal/java/gdal.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
