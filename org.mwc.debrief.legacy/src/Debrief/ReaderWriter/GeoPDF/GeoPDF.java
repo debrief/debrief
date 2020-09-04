@@ -1,5 +1,6 @@
 package Debrief.ReaderWriter.GeoPDF;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintWriter;
@@ -14,6 +15,12 @@ import net.n3.nanoxml.XMLElement;
 import net.n3.nanoxml.XMLWriter;
 
 public class GeoPDF {
+
+	private final ArrayList<File> filesToDelete = new ArrayList<File>();
+	
+	public ArrayList<File> getFilesToDelete() {
+		return filesToDelete;
+	}
 
 	public static class GeoPDFPage {
 

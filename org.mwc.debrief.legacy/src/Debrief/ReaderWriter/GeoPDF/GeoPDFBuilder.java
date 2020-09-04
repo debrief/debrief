@@ -1,10 +1,12 @@
 package Debrief.ReaderWriter.GeoPDF;
 
 import java.awt.Color;
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Enumeration;
@@ -26,6 +28,10 @@ import junit.framework.TestCase;
 public class GeoPDFBuilder {
 
 	public static class GeoPDFConfiguration {
+		public static final String SUCCESS_GDAL_DONE = "done.";
+		public static final String GDALWARP_COMMAND_UNIX = "gdalwarp";
+		public static final String GDALWARP_COMMAND_WINDOWS = "gdalwarp.exe";
+		
 		private int markDeltaMinutes;
 		private int labelDeltaMinutes;
 		private String author;
@@ -34,6 +40,24 @@ public class GeoPDFBuilder {
 		private double pageWidth = 841.698;
 		private double pageHeight = 595.14;
 		private int pageDpi = 72;
+		private String gdalWarpCommand = GDALWARP_COMMAND_UNIX;
+		private String[] gdalWarpParams = "-t_srs EPSG:4326 -r cubic -of GTiff".split(" ");
+
+		public String getGdalWarpCommand() {
+			return gdalWarpCommand;
+		}
+
+		public void setGdalWarpCommand(String gdalWarpCommand) {
+			this.gdalWarpCommand = gdalWarpCommand;
+		}
+
+		public String[] getGdalWarpParams() {
+			return gdalWarpParams;
+		}
+
+		public void setGdalWarpParams(String gdalWarpParams) {
+			this.gdalWarpParams = gdalWarpParams.split(" ");
+		}
 
 		public double getPageWidth() {
 			return pageWidth;
@@ -101,13 +125,15 @@ public class GeoPDFBuilder {
 
 	}
 
+	public static File generatePDF(final GeoPDF geoPDF, final String path) {
+		return null;
+	}
+
 	public static GeoPDF build(final Layers layers, final GeoPDFConfiguration configuration)
-			throws FileNotFoundException, JsonProcessingException {
+			throws IOException, InterruptedException {
 		final GeoPDF geoPDF = new GeoPDF();
 
 		geoPDF.setAuthor(configuration.getAuthor());
-
-		final ArrayList<File> filesToDelete = new ArrayList<File>();
 
 		/**
 		 * For now let's work using only one page, but we will fix it eventually to have
@@ -125,10 +151,11 @@ public class GeoPDFBuilder {
 		 * Let's create the BackGroundLayer;
 		 */
 		if (configuration.getBackground() != null) {
+			final File backgroundFile = createBackgroundFile(configuration, geoPDF.getFilesToDelete());
 			final GeoPDFLayerBackground backgroundLayer = new GeoPDFLayerBackground();
 			backgroundLayer.setName("Background chart");
 			backgroundLayer.setId("background");
-			// TODO COMPLETE THIS.
+			backgroundLayer.addRaster(backgroundFile.getAbsolutePath());
 			mainPage.addLayer(backgroundLayer);
 		}
 
@@ -162,24 +189,24 @@ public class GeoPDFBuilder {
 					/**
 					 * TrackLine
 					 */
-					createTrackLine(filesToDelete, currentTrack, newTrackLayer);
+					createTrackLine(geoPDF.getFilesToDelete(), currentTrack, newTrackLayer);
 
 					// Let's create now the point-type vectors
 					/**
 					 * Minutes difference Layer
 					 */
-					createMinutesLayer(configuration, filesToDelete, currentTrack, newTrackLayer);
+					createMinutesLayer(configuration, geoPDF.getFilesToDelete(), currentTrack, newTrackLayer);
 
 					/**
 					 * Label Layer
 					 */
 
-					createLabelsLayer(configuration, filesToDelete, currentTrack, newTrackLayer);
+					createLabelsLayer(configuration, geoPDF.getFilesToDelete(), currentTrack, newTrackLayer);
 
 					/**
 					 * One point layer
 					 */
-					createOnePointLayer(configuration, filesToDelete, currentTrack, newTrackLayer);
+					createOnePointLayer(configuration, geoPDF.getFilesToDelete(), currentTrack, newTrackLayer);
 				}
 
 			}
@@ -187,6 +214,50 @@ public class GeoPDFBuilder {
 		}
 
 		return geoPDF;
+	}
+
+	private static File createBackgroundFile(final GeoPDFConfiguration configuration,
+			final ArrayList<File> filesToDelete) throws IOException, InterruptedException {
+		final File tmpFile = File.createTempFile("debriefgdalbackground", ".tif");
+
+		tmpFile.delete();
+
+		final Runtime runtime = Runtime.getRuntime();
+		//String[] command = new String[] { configuration.getGdalWarpCommand(), configuration.getGdalWarpParams(),
+		//		configuration.getBackground(), tmpFile.getAbsolutePath() };
+		final ArrayList<String> params = new ArrayList<String>();
+		params.add(configuration.getGdalWarpCommand());
+		for (String s : configuration.getGdalWarpParams()) {
+			params.add(s);
+		}
+		params.add(configuration.getBackground());
+		params.add(tmpFile.getAbsolutePath());
+		//final String[] command = new String[] {"gdalwarp", "--version"};
+
+		final Process process = runtime.exec(params.toArray(new String[] {}));
+		process.waitFor();
+		final BufferedReader gdalWarpOutputStream = new BufferedReader(new 
+			     InputStreamReader(process.getInputStream()));
+		
+		final BufferedReader gdalWarpErrorStream = new BufferedReader(new 
+			     InputStreamReader(process.getErrorStream()));
+		
+		final StringBuilder allOutput = new StringBuilder();
+		String line = null;
+		while ((line = gdalWarpOutputStream.readLine()) != null) {
+		    allOutput.append(line + "\n");
+		}
+		
+		if (allOutput.toString().trim().endsWith(GeoPDFConfiguration.SUCCESS_GDAL_DONE)) {
+			//SUCCESS
+			return tmpFile;
+		}
+		
+		allOutput.setLength(0);
+		while ((line = gdalWarpErrorStream.readLine()) != null) {
+		    allOutput.append(line + "\n");
+		}
+		throw new IOException(allOutput.toString());
 	}
 
 	protected static void createOnePointLayer(final GeoPDFConfiguration configuration,
@@ -312,7 +383,7 @@ public class GeoPDFBuilder {
 			// TODO
 		}
 
-		public void testBuild() throws IOException {
+		public void testBuild() throws IOException, InterruptedException {
 
 			final Layers layers = new Layers();
 			final ImportReplay replayImporter = new ImportReplay();
@@ -323,6 +394,7 @@ public class GeoPDFBuilder {
 			configuration.setLabelDeltaMinutes(60);
 			configuration.setMarkDeltaMinutes(10);
 			configuration.setMarginPercent(0.03);
+			configuration.setBackground("/home/saul/PycharmProjects/GeoPDF/2450_ANVIL_POINT_TO_BEACHY_H.tif");
 			configuration.setAuthor("Saul Hidalgo");
 
 			final GeoPDF geoPdf = GeoPDFBuilder.build(layers, configuration);
