@@ -5,6 +5,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
@@ -24,6 +25,7 @@ import Debrief.Wrappers.TrackWrapper;
 import MWC.GUI.Editable;
 import MWC.GUI.Layers;
 import junit.framework.TestCase;
+import net.n3.nanoxml.XMLWriter;
 
 public class GeoPDFBuilder {
 
@@ -31,7 +33,9 @@ public class GeoPDFBuilder {
 		public static final String SUCCESS_GDAL_DONE = "done.";
 		public static final String GDALWARP_COMMAND_UNIX = "gdalwarp";
 		public static final String GDALWARP_COMMAND_WINDOWS = "gdalwarp.exe";
-		
+		public static final String GDAL_CREATE_COMMAND_UNIX = "gdal_create";
+		public static final String GDAL_CREATE_COMMAND_WINDOWS = "gdal_create.exe";
+
 		private int markDeltaMinutes;
 		private int labelDeltaMinutes;
 		private String author;
@@ -42,6 +46,33 @@ public class GeoPDFBuilder {
 		private int pageDpi = 72;
 		private String gdalWarpCommand = GDALWARP_COMMAND_UNIX;
 		private String[] gdalWarpParams = "-t_srs EPSG:4326 -r cubic -of GTiff".split(" ");
+		private String gdalCreateCommand = GDAL_CREATE_COMMAND_UNIX;
+		private String[] gdalCreateParams = "-of PDF -co".split(" ");
+		private String pdfOutputPath;
+
+		public String getPdfOutputPath() {
+			return pdfOutputPath;
+		}
+
+		public void setPdfOutputPath(String pdfOutputPath) {
+			this.pdfOutputPath = pdfOutputPath;
+		}
+
+		public String getGdalCreateCommand() {
+			return gdalCreateCommand;
+		}
+
+		public void setGdalCreateCommand(String gdalCreateCommand) {
+			this.gdalCreateCommand = gdalCreateCommand;
+		}
+
+		public String[] getGdalCreateParams() {
+			return gdalCreateParams;
+		}
+
+		public void setGdalCreateParams(String[] gdalCreateParams) {
+			this.gdalCreateParams = gdalCreateParams;
+		}
 
 		public String getGdalWarpCommand() {
 			return gdalWarpCommand;
@@ -125,8 +156,47 @@ public class GeoPDFBuilder {
 
 	}
 
-	public static File generatePDF(final GeoPDF geoPDF, final String path) {
-		return null;
+	public static File generatePDF(final GeoPDF geoPDF, final GeoPDFConfiguration configuration) throws IOException, InterruptedException {
+		final File tmpFile = File.createTempFile("compositionFileDebrief", ".xml");
+
+		final FileOutputStream fileOutputStream = new FileOutputStream(tmpFile);
+		final XMLWriter xmlWrite = new XMLWriter(fileOutputStream);
+		xmlWrite.write(geoPDF.toXML(), true);
+		fileOutputStream.close();
+
+		final Runtime runtime = Runtime.getRuntime();
+		final ArrayList<String> params = new ArrayList<String>();
+		params.add(configuration.getGdalCreateCommand());
+		for (String s : configuration.getGdalCreateParams()) {
+			params.add(s);
+		}
+		params.add(tmpFile.getAbsolutePath());
+		params.add(configuration.getPdfOutputPath());
+
+		final Process process = runtime.exec(params.toArray(new String[] {}));
+		process.waitFor();
+		final BufferedReader gdalWarpOutputStream = new BufferedReader(new InputStreamReader(process.getInputStream()));
+
+		final BufferedReader gdalWarpErrorStream = new BufferedReader(new InputStreamReader(process.getErrorStream()));
+
+		final StringBuilder allOutput = new StringBuilder();
+		String line = null;
+		while ((line = gdalWarpOutputStream.readLine()) != null) {
+			allOutput.append(line + "\n");
+		}
+
+		if (allOutput.toString().trim().isEmpty()) {
+			// SUCCESS
+			return tmpFile;
+		}
+
+		allOutput.setLength(0);
+		while ((line = gdalWarpErrorStream.readLine()) != null) {
+			allOutput.append(line + "\n");
+		}
+		throw new IOException(allOutput.toString());
+
+		//return null;
 	}
 
 	public static GeoPDF build(final Layers layers, final GeoPDFConfiguration configuration)
@@ -223,8 +293,6 @@ public class GeoPDFBuilder {
 		tmpFile.delete();
 
 		final Runtime runtime = Runtime.getRuntime();
-		//String[] command = new String[] { configuration.getGdalWarpCommand(), configuration.getGdalWarpParams(),
-		//		configuration.getBackground(), tmpFile.getAbsolutePath() };
 		final ArrayList<String> params = new ArrayList<String>();
 		params.add(configuration.getGdalWarpCommand());
 		for (String s : configuration.getGdalWarpParams()) {
@@ -232,30 +300,28 @@ public class GeoPDFBuilder {
 		}
 		params.add(configuration.getBackground());
 		params.add(tmpFile.getAbsolutePath());
-		//final String[] command = new String[] {"gdalwarp", "--version"};
+		// final String[] command = new String[] {"gdalwarp", "--version"};
 
 		final Process process = runtime.exec(params.toArray(new String[] {}));
 		process.waitFor();
-		final BufferedReader gdalWarpOutputStream = new BufferedReader(new 
-			     InputStreamReader(process.getInputStream()));
-		
-		final BufferedReader gdalWarpErrorStream = new BufferedReader(new 
-			     InputStreamReader(process.getErrorStream()));
-		
+		final BufferedReader gdalWarpOutputStream = new BufferedReader(new InputStreamReader(process.getInputStream()));
+
+		final BufferedReader gdalWarpErrorStream = new BufferedReader(new InputStreamReader(process.getErrorStream()));
+
 		final StringBuilder allOutput = new StringBuilder();
 		String line = null;
 		while ((line = gdalWarpOutputStream.readLine()) != null) {
-		    allOutput.append(line + "\n");
+			allOutput.append(line + "\n");
 		}
-		
+
 		if (allOutput.toString().trim().endsWith(GeoPDFConfiguration.SUCCESS_GDAL_DONE)) {
-			//SUCCESS
+			// SUCCESS
 			return tmpFile;
 		}
-		
+
 		allOutput.setLength(0);
 		while ((line = gdalWarpErrorStream.readLine()) != null) {
-		    allOutput.append(line + "\n");
+			allOutput.append(line + "\n");
 		}
 		throw new IOException(allOutput.toString());
 	}
@@ -393,8 +459,9 @@ public class GeoPDFBuilder {
 			final GeoPDFConfiguration configuration = new GeoPDFConfiguration();
 			configuration.setLabelDeltaMinutes(60);
 			configuration.setMarkDeltaMinutes(10);
-			configuration.setMarginPercent(0.03);
+			configuration.setMarginPercent(0.1);
 			configuration.setBackground("/home/saul/PycharmProjects/GeoPDF/2450_ANVIL_POINT_TO_BEACHY_H.tif");
+
 			configuration.setAuthor("Saul Hidalgo");
 
 			final GeoPDF geoPdf = GeoPDFBuilder.build(layers, configuration);

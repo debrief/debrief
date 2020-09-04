@@ -128,7 +128,7 @@ public class GeoPDF {
 			} else {
 				plotArea.setCentredHeight(plotArea.getHeight() * getWidth() / plotArea.getWidth());
 			}
-			plotArea.grow(getMargin(), 0);
+			plotArea.grow(getMargin() * plotArea.getHeight() * plotArea.getWidth(), 0);
 			plotArea.normalise();
 
 			// Bottom LEFT
