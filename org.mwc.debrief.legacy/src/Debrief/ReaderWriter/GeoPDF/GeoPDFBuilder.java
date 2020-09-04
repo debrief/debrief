@@ -32,9 +32,9 @@ public class GeoPDFBuilder {
 	public static class GeoPDFConfiguration {
 		public static final String SUCCESS_GDAL_DONE = "done.";
 		public static final String GDALWARP_COMMAND_UNIX = "gdalwarp";
-		public static final String GDALWARP_COMMAND_WINDOWS = "gdalwarp.exe";
+		public static final String GDALWARP_COMMAND_WINDOWS = "..\\org.mwc.debrief.legacy\\native\\windows\\gdalwarp.exe";
 		public static final String GDAL_CREATE_COMMAND_UNIX = "gdal_create";
-		public static final String GDAL_CREATE_COMMAND_WINDOWS = "gdal_create.exe";
+		public static final String GDAL_CREATE_COMMAND_WINDOWS = "../org.mwc.debrief.legacy/native/windows/gdal_create.exe";
 
 		private int markDeltaMinutes;
 		private int labelDeltaMinutes;
@@ -302,7 +302,9 @@ public class GeoPDFBuilder {
 		params.add(tmpFile.getAbsolutePath());
 		// final String[] command = new String[] {"gdalwarp", "--version"};
 
-		final Process process = runtime.exec(params.toArray(new String[] {}));
+		final String[] command = new String[] {"pwd"};
+		//final Process process = runtime.exec(params.toArray(new String[] {}));
+		final Process process = runtime.exec(command);
 		process.waitFor();
 		final BufferedReader gdalWarpOutputStream = new BufferedReader(new InputStreamReader(process.getInputStream()));
 
@@ -460,8 +462,14 @@ public class GeoPDFBuilder {
 			configuration.setLabelDeltaMinutes(60);
 			configuration.setMarkDeltaMinutes(10);
 			configuration.setMarginPercent(0.1);
-			configuration.setBackground("/home/saul/PycharmProjects/GeoPDF/2450_ANVIL_POINT_TO_BEACHY_H.tif");
-
+			final String osName = System.getProperty("os.name").toLowerCase();
+			if (osName.contains("win")) {
+				configuration.setGdalCreateCommand(GeoPDFConfiguration.GDAL_CREATE_COMMAND_WINDOWS);
+				configuration.setGdalWarpCommand(GeoPDFConfiguration.GDALWARP_COMMAND_WINDOWS);
+				configuration.setBackground("C:\\Users\\saulh\\Downloads\\2450\\2450_ANVIL_POINT_TO_BEACHY_H.tif");
+			}else {
+				configuration.setBackground("/home/saul/PycharmProjects/GeoPDF/2450_ANVIL_POINT_TO_BEACHY_H.tif");
+			}
 			configuration.setAuthor("Saul Hidalgo");
 
 			final GeoPDF geoPdf = GeoPDFBuilder.build(layers, configuration);
