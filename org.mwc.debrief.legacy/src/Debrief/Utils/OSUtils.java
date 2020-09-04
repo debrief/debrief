@@ -13,7 +13,7 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
 
-package org.mwc.debrief.model.utils;
+package Debrief.Utils;
 
 import java.io.File;
 import java.io.IOException;

@@ -43,7 +43,6 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.TreeItem;
 import org.mwc.cmap.core.custom_widget.CWorldLocation;
 import org.mwc.debrief.core.DebriefPlugin;
-import org.mwc.debrief.model.utils.OSUtils;
 import org.mwc.debrief.pepys.model.AbstractConfiguration;
 import org.mwc.debrief.pepys.model.tree.TreeContentProvider;
 import org.mwc.debrief.pepys.model.tree.TreeNode;
@@ -51,6 +50,8 @@ import org.mwc.debrief.pepys.nebula.PShelf;
 import org.mwc.debrief.pepys.nebula.PShelfItem;
 import org.mwc.debrief.pepys.nebula.RedmondShelfRenderer;
 import org.mwc.debrief.pepys.view.tree.TreeNameLabelProvider;
+
+import Debrief.Utils.OSUtils;
 
 public class PepysImportView extends Dialog implements AbstractViewSWT {
 

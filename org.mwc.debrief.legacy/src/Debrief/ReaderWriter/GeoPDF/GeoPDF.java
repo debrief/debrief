@@ -3,10 +3,7 @@ package Debrief.ReaderWriter.GeoPDF;
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.io.PrintWriter;
-import java.io.Writer;
 import java.util.ArrayList;
-import java.util.HashMap;
 
 import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldLocation;

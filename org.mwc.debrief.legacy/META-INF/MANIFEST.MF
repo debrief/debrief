@@ -245,6 +245,7 @@ Export-Package:
    MWC.GUI.Tools",
  Debrief.Tools.Tote;uses:="MWC.GenericData,MWC.GUI,MWC.GUI.Tools",
  Debrief.Tools.Tote.Calculations;uses:="Debrief.Tools.Tote,MWC.GenericData,MWC.GUI",
+ Debrief.Utils,
  Debrief.Wrappers;
   uses:="Debrief.Wrappers.Track,
    MWC.GUI.Shapes.Symbols,
@@ -287,3 +288,4 @@ Export-Package:
  org.eclipse.january.metadata;uses:="org.eclipse.january.dataset,org.eclipse.january.io"
 Require-Bundle: org.mwc.cmap.legacy
 Bundle-RequiredExecutionEnvironment: JavaSE-11
+Import-Package: org.osgi.framework

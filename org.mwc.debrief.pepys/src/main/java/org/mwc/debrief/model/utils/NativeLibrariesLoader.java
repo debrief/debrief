@@ -25,6 +25,8 @@ import java.util.Set;
 import org.apache.commons.io.FileUtils;
 import org.mwc.debrief.pepys.Activator;
 
+import Debrief.Utils.OSUtils;
+
 public class NativeLibrariesLoader {
 
 	public static interface ModSpatialiteAssigner {
