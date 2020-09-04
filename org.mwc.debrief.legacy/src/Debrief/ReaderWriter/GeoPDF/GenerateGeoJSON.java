@@ -166,8 +166,8 @@ public class GenerateGeoJSON {
 							 */
 							if (currentFixWrapper.getVisible()) {
 								// Ok, so now let's add this position to the position list.
-								final Point newPosition = new Point(currentFixWrapper.getLocation().getLat(),
-										currentFixWrapper.getLocation().getLong());
+								final Point newPosition = new Point(currentFixWrapper.getLocation().getLong(),
+										currentFixWrapper.getLocation().getLat());
 								coordinates.add(newPosition);
 							}
 						}
@@ -243,7 +243,7 @@ public class GenerateGeoJSON {
 				// if we have a point.
 				final Watchable point = points[0];
 
-				final Point newPoint = new Point(point.getLocation().getLat(), point.getLocation().getLong());
+				final Point newPoint = new Point(point.getLocation().getLong(), point.getLocation().getLat());
 
 				properties.put("elevation", point.getDepth());
 				properties.put("time", simpleDateFormat.format(point.getTime().getDate()));

@@ -30,6 +30,42 @@ public class GeoPDFBuilder {
 		private int labelDeltaMinutes;
 		private String author;
 		private String background;
+		private double marginPercent;
+		private double pageWidth = 841.698;
+		private double pageHeight = 595.14;
+		private int pageDpi = 72;
+
+		public double getPageWidth() {
+			return pageWidth;
+		}
+
+		public void setPageWidth(double pageWidth) {
+			this.pageWidth = pageWidth;
+		}
+
+		public double getPageHeight() {
+			return pageHeight;
+		}
+
+		public void setPageHeight(double pageHeight) {
+			this.pageHeight = pageHeight;
+		}
+
+		public int getPageDpi() {
+			return pageDpi;
+		}
+
+		public void setPageDpi(int pageDpi) {
+			this.pageDpi = pageDpi;
+		}
+
+		public double getMarginPercent() {
+			return marginPercent;
+		}
+
+		public void setMarginPercent(double marginPercent) {
+			this.marginPercent = marginPercent;
+		}
 
 		public String getBackground() {
 			return background;
@@ -79,10 +115,10 @@ public class GeoPDFBuilder {
 		 */
 		final GeoPDFPage mainPage = geoPDF.createNewPage();
 
-		mainPage.setDpi(72);
-		mainPage.setWidth(841.698);
-		mainPage.setHeight(595.14);
-
+		mainPage.setDpi(configuration.getPageDpi());
+		mainPage.setWidth(configuration.getPageWidth());
+		mainPage.setHeight(configuration.getPageHeight());
+		mainPage.setMargin(configuration.getMarginPercent());
 		mainPage.setArea(layers.getBounds());
 
 		/**
@@ -270,6 +306,7 @@ public class GeoPDFBuilder {
 	public static class GeoPDFBuilderTest extends TestCase {
 
 		private final static String boat1rep = "../org.mwc.cmap.combined.feature/root_installs/sample_data/boat1.rep";
+		private final static String boat2rep = "../org.mwc.cmap.combined.feature/root_installs/sample_data/boat2.rep";
 
 		public void testCreateTempFile() {
 			// TODO
@@ -280,10 +317,12 @@ public class GeoPDFBuilder {
 			final Layers layers = new Layers();
 			final ImportReplay replayImporter = new ImportReplay();
 			replayImporter.importThis("boat1.rep", new FileInputStream(boat1rep), layers);
+			replayImporter.importThis("boat2.rep", new FileInputStream(boat2rep), layers);
 
 			final GeoPDFConfiguration configuration = new GeoPDFConfiguration();
 			configuration.setLabelDeltaMinutes(60);
 			configuration.setMarkDeltaMinutes(10);
+			configuration.setMarginPercent(0.03);
 			configuration.setAuthor("Saul Hidalgo");
 
 			final GeoPDF geoPdf = GeoPDFBuilder.build(layers, configuration);
