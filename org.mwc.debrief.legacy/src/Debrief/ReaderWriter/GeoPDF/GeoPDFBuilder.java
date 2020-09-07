@@ -24,6 +24,7 @@ import Debrief.ReaderWriter.Replay.ImportReplay;
 import Debrief.Wrappers.TrackWrapper;
 import MWC.GUI.Editable;
 import MWC.GUI.Layers;
+import MWC.GenericData.WorldArea;
 import junit.framework.TestCase;
 import net.n3.nanoxml.XMLWriter;
 
@@ -34,7 +35,8 @@ public class GeoPDFBuilder {
 		public static final String GDALWARP_COMMAND_UNIX = "gdalwarp";
 		public static final String GDALWARP_COMMAND_WINDOWS = "..\\org.mwc.debrief.legacy\\native\\windows\\gdalwarp.exe";
 		public static final String GDAL_CREATE_COMMAND_UNIX = "gdal_create";
-		public static final String GDAL_CREATE_COMMAND_WINDOWS = "../org.mwc.debrief.legacy/native/windows/gdal_create.exe";
+		public static final String GDAL_CREATE_COMMAND_WINDOWS = "..\\org.mwc.debrief.legacy\\native\\windows\\gdal_create.exe";
+		public static final String GDAL_CREATE_COMPOSITION_KEYWORD = "COMPOSITION_FILE=";
 
 		private int markDeltaMinutes;
 		private int labelDeltaMinutes;
@@ -43,12 +45,21 @@ public class GeoPDFBuilder {
 		private double marginPercent;
 		private double pageWidth = 841.698;
 		private double pageHeight = 595.14;
+		private WorldArea viewportArea;
 		private int pageDpi = 72;
 		private String gdalWarpCommand = GDALWARP_COMMAND_UNIX;
 		private String[] gdalWarpParams = "-t_srs EPSG:4326 -r cubic -of GTiff".split(" ");
 		private String gdalCreateCommand = GDAL_CREATE_COMMAND_UNIX;
 		private String[] gdalCreateParams = "-of PDF -co".split(" ");
 		private String pdfOutputPath;
+
+		public WorldArea getViewportArea() {
+			return viewportArea;
+		}
+
+		public void setViewportArea(WorldArea viewportArea) {
+			this.viewportArea = viewportArea;
+		}
 
 		public String getPdfOutputPath() {
 			return pdfOutputPath;
@@ -170,7 +181,7 @@ public class GeoPDFBuilder {
 		for (String s : configuration.getGdalCreateParams()) {
 			params.add(s);
 		}
-		params.add(tmpFile.getAbsolutePath());
+		params.add(GeoPDFConfiguration.GDAL_CREATE_COMPOSITION_KEYWORD + tmpFile.getAbsolutePath());
 		params.add(configuration.getPdfOutputPath());
 
 		final Process process = runtime.exec(params.toArray(new String[] {}));
@@ -195,8 +206,6 @@ public class GeoPDFBuilder {
 			allOutput.append(line + "\n");
 		}
 		throw new IOException(allOutput.toString());
-
-		//return null;
 	}
 
 	public static GeoPDF build(final Layers layers, final GeoPDFConfiguration configuration)
@@ -215,7 +224,12 @@ public class GeoPDFBuilder {
 		mainPage.setWidth(configuration.getPageWidth());
 		mainPage.setHeight(configuration.getPageHeight());
 		mainPage.setMargin(configuration.getMarginPercent());
-		mainPage.setArea(layers.getBounds());
+		if (configuration.getViewportArea() == null) {
+			mainPage.setArea(layers.getBounds());			
+		}else {
+			mainPage.setArea(configuration.getViewportArea());
+		}
+		
 
 		/**
 		 * Let's create the BackGroundLayer;
@@ -302,9 +316,9 @@ public class GeoPDFBuilder {
 		params.add(tmpFile.getAbsolutePath());
 		// final String[] command = new String[] {"gdalwarp", "--version"};
 
-		final String[] command = new String[] {"pwd"};
-		//final Process process = runtime.exec(params.toArray(new String[] {}));
-		final Process process = runtime.exec(command);
+		//final String[] command = new String[] {"pwd"};
+		final Process process = runtime.exec(params.toArray(new String[] {}));
+		//final Process process = runtime.exec(command);
 		process.waitFor();
 		final BufferedReader gdalWarpOutputStream = new BufferedReader(new InputStreamReader(process.getInputStream()));
 
@@ -474,6 +488,10 @@ public class GeoPDFBuilder {
 
 			final GeoPDF geoPdf = GeoPDFBuilder.build(layers, configuration);
 
+			configuration.setPdfOutputPath("C:\\Users\\saulh\\OneDrive\\Documentos\\tmp\\test.pdf");
+			GeoPDFBuilder.generatePDF(geoPdf, configuration);
+			
+			
 			System.out.println(geoPdf);
 		}
 	}
