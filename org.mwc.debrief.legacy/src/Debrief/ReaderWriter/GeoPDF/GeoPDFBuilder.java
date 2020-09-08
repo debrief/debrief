@@ -54,7 +54,7 @@ public class GeoPDFBuilder {
 		private int markDeltaMinutes = 10;
 		private int labelDeltaMinutes = 60;
 		private String author = "DebriefNG";
-		private String background;
+		private List<String> background = new ArrayList<String>();
 		private double marginPercent = 0.1;
 		private double pageWidth = 841.698;
 		private double pageHeight = 595.14;
@@ -151,12 +151,12 @@ public class GeoPDFBuilder {
 			this.marginPercent = marginPercent;
 		}
 
-		public String getBackground() {
+		public List<String> getBackground() {
 			return background;
 		}
 
-		public void setBackground(String background) {
-			this.background = background;
+		public void addBackground(String background) {
+			this.background.add(background);
 		}
 
 		public int getMarkDeltaMinutes() {
@@ -202,10 +202,8 @@ public class GeoPDFBuilder {
 					// We are inside the .jar file, we need to copy all the files to a temporal
 					// folder.
 
-					createTemporalEnvironmentWindows(System.getProperty("java.io.tmpdir"), "/windows-files.txt",
-							this);
-					registerEnvironmentVar(PROJ_ENV_VAR,
-							System.getProperty("java.io.tmpdir") + PROJ_PATH_TO_REGISTER);
+					createTemporalEnvironmentWindows(System.getProperty("java.io.tmpdir"), "/windows-files.txt", this);
+					registerEnvironmentVar(PROJ_ENV_VAR, System.getProperty("java.io.tmpdir") + PROJ_PATH_TO_REGISTER);
 				}
 
 			} // we don't do the else, because by default it is Unit command.
@@ -219,14 +217,14 @@ public class GeoPDFBuilder {
 
 		public static void createTemporalEnvironmentWindows(final String destinationFolder,
 				final String resourceFileListPath, final GeoPDFConfiguration configuration) throws IOException {
-			
-			final InputStream filesToCopyStream = OSUtils.getInputStreamResource(GeoPDFBuilder.class, resourceFileListPath, null);
+
+			final InputStream filesToCopyStream = OSUtils.getInputStreamResource(GeoPDFBuilder.class,
+					resourceFileListPath, null);
 
 			final Scanner scanner = new Scanner(filesToCopyStream);
 			while (scanner.hasNextLine()) {
 				final String line = scanner.nextLine();
 
-				System.out.println("To Load " + line);
 				final Path destinationPath = Paths.get(destinationFolder + line);
 				Files.createDirectories(destinationPath.getParent());
 
@@ -322,8 +320,8 @@ public class GeoPDFBuilder {
 		/**
 		 * Let's create the BackGroundLayer;
 		 */
-		if (configuration.getBackground() != null) {
-			final File backgroundFile = createBackgroundFile(configuration, geoPDF.getFilesToDelete());
+		for (String background : configuration.getBackground()) {
+			final File backgroundFile = createBackgroundFile(configuration, background, geoPDF.getFilesToDelete());
 			final GeoPDFLayerBackground backgroundLayer = new GeoPDFLayerBackground();
 			backgroundLayer.setName("Background chart");
 			backgroundLayer.setId("background");
@@ -388,7 +386,7 @@ public class GeoPDFBuilder {
 		return geoPDF;
 	}
 
-	private static File createBackgroundFile(final GeoPDFConfiguration configuration,
+	private static File createBackgroundFile(final GeoPDFConfiguration configuration, final String background,
 			final ArrayList<File> filesToDelete) throws IOException, InterruptedException {
 		final File tmpFile = File.createTempFile("debriefgdalbackground", ".tif");
 
@@ -400,7 +398,7 @@ public class GeoPDFBuilder {
 		for (String s : configuration.getGdalWarpParams()) {
 			params.add(s);
 		}
-		params.add(configuration.getBackground());
+		params.add(background);
 		params.add(tmpFile.getAbsolutePath());
 		final Process process = runtime.exec(params.toArray(new String[] {}),
 				configuration.getEnvVariables().toArray(new String[] {}));
@@ -559,7 +557,7 @@ public class GeoPDFBuilder {
 			replayImporter.importThis("boat2.rep", new FileInputStream(boat2rep), layers);
 
 			final GeoPDFConfiguration configuration = new GeoPDFConfiguration();
-			configuration.setBackground("../org.mwc.cmap.combined.feature/root_installs/sample_data/SP27GTIF.tif");
+			configuration.addBackground("../org.mwc.cmap.combined.feature/root_installs/sample_data/SP27GTIF.tif");
 
 			final GeoPDF geoPdf = GeoPDFBuilder.build(layers, configuration);
 
