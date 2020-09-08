@@ -51,11 +51,11 @@ public class GeoPDFBuilder {
 		public static final String PROJ_ENV_VAR = "PROJ_LIB";
 
 		private boolean isReady = false;
-		private int markDeltaMinutes;
-		private int labelDeltaMinutes;
-		private String author;
+		private int markDeltaMinutes = 10;
+		private int labelDeltaMinutes = 60;
+		private String author = "DebriefNG";
 		private String background;
-		private double marginPercent;
+		private double marginPercent = 0.1;
 		private double pageWidth = 841.698;
 		private double pageHeight = 595.14;
 		private WorldArea viewportArea;
@@ -557,11 +557,7 @@ public class GeoPDFBuilder {
 			replayImporter.importThis("boat2.rep", new FileInputStream(boat2rep), layers);
 
 			final GeoPDFConfiguration configuration = new GeoPDFConfiguration();
-			configuration.setLabelDeltaMinutes(60);
-			configuration.setMarkDeltaMinutes(10);
-			configuration.setMarginPercent(0.1);
 			configuration.setBackground("../org.mwc.cmap.combined.feature/root_installs/sample_data/SP27GTIF.tif");
-			configuration.setAuthor("Saul Hidalgo");
 
 			final GeoPDF geoPdf = GeoPDFBuilder.build(layers, configuration);
 
