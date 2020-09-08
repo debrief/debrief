@@ -19,7 +19,8 @@ Bundle-ClassPath: debrief_legacy.jar,
  libs/jackson-core-2.11.2.jar,
  libs/jackson-databind-2.11.2.jar,
  libs/sf-2.0.3.jar,
- libs/sf-geojson-2.0.4.jar
+ libs/sf-geojson-2.0.4.jar,
+ libs/nanoxml-2.2.1.jar
 Bundle-Vendor: MWC
 Export-Package: 
  Debrief.GUI;uses:="Debrief.GUI.Frames",
