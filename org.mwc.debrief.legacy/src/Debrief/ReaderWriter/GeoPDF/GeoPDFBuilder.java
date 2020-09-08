@@ -205,7 +205,7 @@ public class GeoPDFBuilder {
 					createTemporalEnvironmentWindows(System.getProperty("java.io.tmpdir"), "/native/windows-files.txt",
 							this);
 					registerEnvironmentVar(PROJ_ENV_VAR,
-							System.getProperty("java.io.tmpdir") + File.separatorChar + PROJ_PATH_TO_REGISTER);
+							System.getProperty("java.io.tmpdir") + PROJ_PATH_TO_REGISTER);
 				}
 
 			} // we don't do the else, because by default it is Unit command.
@@ -266,7 +266,8 @@ public class GeoPDFBuilder {
 		params.add(GeoPDFConfiguration.GDAL_CREATE_COMPOSITION_KEYWORD + tmpFile.getAbsolutePath());
 		params.add(configuration.getPdfOutputPath());
 
-		final Process process = runtime.exec(params.toArray(new String[] {}), configuration.getEnvVariables().toArray(new String[] {}));
+		final Process process = runtime.exec(params.toArray(new String[] {}),
+				configuration.getEnvVariables().toArray(new String[] {}));
 		process.waitFor();
 		final BufferedReader gdalWarpOutputStream = new BufferedReader(new InputStreamReader(process.getInputStream()));
 
@@ -399,7 +400,8 @@ public class GeoPDFBuilder {
 		}
 		params.add(configuration.getBackground());
 		params.add(tmpFile.getAbsolutePath());
-		final Process process = runtime.exec(params.toArray(new String[] {}), configuration.getEnvVariables().toArray(new String[] {}));
+		final Process process = runtime.exec(params.toArray(new String[] {}),
+				configuration.getEnvVariables().toArray(new String[] {}));
 		process.waitFor();
 		final BufferedReader gdalWarpOutputStream = new BufferedReader(new InputStreamReader(process.getInputStream()));
 
@@ -521,7 +523,7 @@ public class GeoPDFBuilder {
 
 	private static File createTempFile(final String fileName, final String data) throws FileNotFoundException {
 		final String tempFolder = System.getProperty("java.io.tmpdir");
-		final File newFile = new File(tempFolder + File.separatorChar + fileName);
+		final File newFile = new File(tempFolder + fileName);
 
 		PrintWriter print = null;
 		try {
@@ -558,18 +560,15 @@ public class GeoPDFBuilder {
 			configuration.setLabelDeltaMinutes(60);
 			configuration.setMarkDeltaMinutes(10);
 			configuration.setMarginPercent(0.1);
-			if (OSUtils.WIN) {
-				configuration.setBackground("C:\\Users\\saulh\\Downloads\\2450\\2450_ANVIL_POINT_TO_BEACHY_H.tif");
-			} else {
-				configuration.setBackground("/home/saul/PycharmProjects/GeoPDF/2450_ANVIL_POINT_TO_BEACHY_H.tif");
-			}
+			configuration.setBackground("../org.mwc.cmap.combined.feature/root_installs/sample_data/SP27GTIF.tif");
 			configuration.setAuthor("Saul Hidalgo");
 
 			final GeoPDF geoPdf = GeoPDFBuilder.build(layers, configuration);
 
-			configuration.setPdfOutputPath("C:\\Users\\saulh\\OneDrive\\Documentos\\tmp\\test.pdf");
+			configuration.setPdfOutputPath(System.getProperty("java.io.tmpdir") + "test.pdf");
 			GeoPDFBuilder.generatePDF(geoPdf, configuration);
 
+			System.out.println("PDF successfully generated at " + configuration.getPdfOutputPath());
 			System.out.println(geoPdf);
 		}
 	}
