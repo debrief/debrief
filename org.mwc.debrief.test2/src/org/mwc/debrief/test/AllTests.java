@@ -135,8 +135,7 @@ import org.junit.runners.Suite;
 		Debrief.ReaderWriter.Nisida.ImportNisidaTest.class,
 		Debrief.ReaderWriter.Antares.ImportAntaresTest.class,
 		Debrief.ReaderWriter.GeoPDF.GenerateGeoJSON.GenerateGeoJSONTest.class,
-		Debrief.ReaderWriter.GeoPDF.GeoPDFBuilder.GeoPDFBuilderTest.class,
-		Debrief.ReaderWriter.GeoPDF.GeoPDFCompiler.GeoPDFCompilerTest.class})
+		Debrief.ReaderWriter.GeoPDF.GeoPDFBuilder.GeoPDFBuilderTest.class})
 @RunWith(Suite.class)
 public class AllTests {
 

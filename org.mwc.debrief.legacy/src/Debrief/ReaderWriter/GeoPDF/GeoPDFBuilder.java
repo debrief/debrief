@@ -16,6 +16,7 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.List;
 import java.util.Scanner;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -40,12 +41,15 @@ public class GeoPDFBuilder {
 	public static class GeoPDFConfiguration {
 		public static final String SUCCESS_GDAL_DONE = "done.";
 		public static final String GDALWARP_RAW_COMMAND = "gdalwarp";
-		public static final String GDALWARP_COMMAND_WINDOWS = "..\\org.mwc.debrief.legacy\\native\\windows\\gdalwarp.exe";
+		public static final String ECLIPSE_GDAL_BIN_NATIVE_PATH = "..\\org.mwc.debrief.legacy\\native\\";
+		public static final String GDALWARP_COMMAND_WINDOWS = ECLIPSE_GDAL_BIN_NATIVE_PATH + "windows\\gdalwarp.exe";
 		public static final String GDAL_CREATE_RAW_COMMAND = "gdal_create";
-		public static final String GDAL_CREATE_COMMAND_WINDOWS = "..\\org.mwc.debrief.legacy\\native\\windows\\gdal_create.exe";
+		public static final String GDAL_CREATE_COMMAND_WINDOWS = ECLIPSE_GDAL_BIN_NATIVE_PATH
+				+ "windows\\gdal_create.exe";
 		public static final String GDAL_CREATE_COMPOSITION_KEYWORD = "COMPOSITION_FILE=";
-		
-		
+		public static final String PROJ_PATH_TO_REGISTER = "windows\\proj6\\share";
+		public static final String PROJ_ENV_VAR = "PROJ_LIB";
+
 		private boolean isReady = false;
 		private int markDeltaMinutes;
 		private int labelDeltaMinutes;
@@ -61,6 +65,11 @@ public class GeoPDFBuilder {
 		private String gdalCreateCommand = GDAL_CREATE_RAW_COMMAND;
 		private String[] gdalCreateParams = "-of PDF -co".split(" ");
 		private String pdfOutputPath;
+		private List<String> envVariables = new ArrayList<String>();
+
+		public List<String> getEnvVariables() {
+			return envVariables;
+		}
 
 		public WorldArea getViewportArea() {
 			return viewportArea;
@@ -178,7 +187,8 @@ public class GeoPDFBuilder {
 			return isReady;
 		}
 
-		public void prepareGdalEnvironment() throws IOException {
+		public void prepareGdalEnvironment() throws IOException, NoSuchFieldException, SecurityException,
+				IllegalArgumentException, IllegalAccessException, ClassNotFoundException {
 			if (OSUtils.WIN) {
 				final File createCommandPath = new File(GeoPDFConfiguration.GDAL_CREATE_COMMAND_WINDOWS);
 				if (createCommandPath.exists()) {
@@ -186,17 +196,25 @@ public class GeoPDFBuilder {
 
 					this.setGdalCreateCommand(GeoPDFConfiguration.GDAL_CREATE_COMMAND_WINDOWS);
 					this.setGdalWarpCommand(GeoPDFConfiguration.GDALWARP_COMMAND_WINDOWS);
+					final File projFile = new File(ECLIPSE_GDAL_BIN_NATIVE_PATH + PROJ_PATH_TO_REGISTER);
+					registerEnvironmentVar(PROJ_ENV_VAR, projFile.getAbsolutePath());
 				} else {
 					// We are inside the .jar file, we need to copy all the files to a temporal
 					// folder.
 
 					createTemporalEnvironmentWindows(System.getProperty("java.io.tmpdir"), "/native/windows-files.txt",
 							this);
+					registerEnvironmentVar(PROJ_ENV_VAR,
+							System.getProperty("java.io.tmpdir") + File.separatorChar + PROJ_PATH_TO_REGISTER);
 				}
 
 			} // we don't do the else, because by default it is Unit command.
 
 			isReady = true;
+		}
+
+		private void registerEnvironmentVar(final String key, final String value) {
+			envVariables.add(key + "=" + value);
 		}
 
 		public static void createTemporalEnvironmentWindows(final String destinationFolder,
@@ -248,7 +266,7 @@ public class GeoPDFBuilder {
 		params.add(GeoPDFConfiguration.GDAL_CREATE_COMPOSITION_KEYWORD + tmpFile.getAbsolutePath());
 		params.add(configuration.getPdfOutputPath());
 
-		final Process process = runtime.exec(params.toArray(new String[] {}));
+		final Process process = runtime.exec(params.toArray(new String[] {}), configuration.getEnvVariables().toArray(new String[] {}));
 		process.waitFor();
 		final BufferedReader gdalWarpOutputStream = new BufferedReader(new InputStreamReader(process.getInputStream()));
 
@@ -273,7 +291,8 @@ public class GeoPDFBuilder {
 	}
 
 	public static GeoPDF build(final Layers layers, final GeoPDFConfiguration configuration)
-			throws IOException, InterruptedException {
+			throws IOException, InterruptedException, NoSuchFieldException, SecurityException, IllegalArgumentException,
+			IllegalAccessException, ClassNotFoundException {
 		if (!configuration.isReady()) {
 			configuration.prepareGdalEnvironment();
 		}
@@ -380,11 +399,7 @@ public class GeoPDFBuilder {
 		}
 		params.add(configuration.getBackground());
 		params.add(tmpFile.getAbsolutePath());
-		// final String[] command = new String[] {"gdalwarp", "--version"};
-
-		// final String[] command = new String[] {"pwd"};
-		final Process process = runtime.exec(params.toArray(new String[] {}));
-		// final Process process = runtime.exec(command);
+		final Process process = runtime.exec(params.toArray(new String[] {}), configuration.getEnvVariables().toArray(new String[] {}));
 		process.waitFor();
 		final BufferedReader gdalWarpOutputStream = new BufferedReader(new InputStreamReader(process.getInputStream()));
 
@@ -531,7 +546,8 @@ public class GeoPDFBuilder {
 			// TODO
 		}
 
-		public void testBuild() throws IOException, InterruptedException {
+		public void testBuild() throws IOException, InterruptedException, NoSuchFieldException, SecurityException,
+				IllegalArgumentException, IllegalAccessException, ClassNotFoundException {
 
 			final Layers layers = new Layers();
 			final ImportReplay replayImporter = new ImportReplay();
