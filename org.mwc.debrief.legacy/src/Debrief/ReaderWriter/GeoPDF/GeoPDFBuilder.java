@@ -7,10 +7,16 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.Scanner;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
@@ -21,6 +27,7 @@ import Debrief.ReaderWriter.GeoPDF.GeoPDF.GeoPDFLayerVector;
 import Debrief.ReaderWriter.GeoPDF.GeoPDF.GeoPDFLayerVector.LogicalStructure;
 import Debrief.ReaderWriter.GeoPDF.GeoPDF.GeoPDFPage;
 import Debrief.ReaderWriter.Replay.ImportReplay;
+import Debrief.Utils.OSUtils;
 import Debrief.Wrappers.TrackWrapper;
 import MWC.GUI.Editable;
 import MWC.GUI.Layers;
@@ -32,12 +39,14 @@ public class GeoPDFBuilder {
 
 	public static class GeoPDFConfiguration {
 		public static final String SUCCESS_GDAL_DONE = "done.";
-		public static final String GDALWARP_COMMAND_UNIX = "gdalwarp";
+		public static final String GDALWARP_RAW_COMMAND = "gdalwarp";
 		public static final String GDALWARP_COMMAND_WINDOWS = "..\\org.mwc.debrief.legacy\\native\\windows\\gdalwarp.exe";
-		public static final String GDAL_CREATE_COMMAND_UNIX = "gdal_create";
+		public static final String GDAL_CREATE_RAW_COMMAND = "gdal_create";
 		public static final String GDAL_CREATE_COMMAND_WINDOWS = "..\\org.mwc.debrief.legacy\\native\\windows\\gdal_create.exe";
 		public static final String GDAL_CREATE_COMPOSITION_KEYWORD = "COMPOSITION_FILE=";
-
+		
+		
+		private boolean isReady = false;
 		private int markDeltaMinutes;
 		private int labelDeltaMinutes;
 		private String author;
@@ -47,9 +56,9 @@ public class GeoPDFBuilder {
 		private double pageHeight = 595.14;
 		private WorldArea viewportArea;
 		private int pageDpi = 72;
-		private String gdalWarpCommand = GDALWARP_COMMAND_UNIX;
+		private String gdalWarpCommand = GDALWARP_RAW_COMMAND;
 		private String[] gdalWarpParams = "-t_srs EPSG:4326 -r cubic -of GTiff".split(" ");
-		private String gdalCreateCommand = GDAL_CREATE_COMMAND_UNIX;
+		private String gdalCreateCommand = GDAL_CREATE_RAW_COMMAND;
 		private String[] gdalCreateParams = "-of PDF -co".split(" ");
 		private String pdfOutputPath;
 
@@ -165,9 +174,64 @@ public class GeoPDFBuilder {
 			this.author = author;
 		}
 
+		public boolean isReady() {
+			return isReady;
+		}
+
+		public void prepareGdalEnvironment() throws IOException {
+			if (OSUtils.WIN) {
+				final File createCommandPath = new File(GeoPDFConfiguration.GDAL_CREATE_COMMAND_WINDOWS);
+				if (createCommandPath.exists()) {
+					// We are running from Eclipse, we let's just run the command directly
+
+					this.setGdalCreateCommand(GeoPDFConfiguration.GDAL_CREATE_COMMAND_WINDOWS);
+					this.setGdalWarpCommand(GeoPDFConfiguration.GDALWARP_COMMAND_WINDOWS);
+				} else {
+					// We are inside the .jar file, we need to copy all the files to a temporal
+					// folder.
+
+					createTemporalEnvironmentWindows(System.getProperty("java.io.tmpdir"), "/native/windows-files.txt",
+							this);
+				}
+
+			} // we don't do the else, because by default it is Unit command.
+
+			isReady = true;
+		}
+
+		public static void createTemporalEnvironmentWindows(final String destinationFolder,
+				final String resourceFileListPath, final GeoPDFConfiguration configuration) throws IOException {
+			final InputStream filesToCopyStream = GeoPDFConfiguration.class.getResourceAsStream(resourceFileListPath);
+
+			final Scanner scanner = new Scanner(filesToCopyStream);
+			while (scanner.hasNextLine()) {
+				final String line = scanner.nextLine();
+
+				final Path destinationPath = Paths.get(destinationFolder + line);
+				Files.createDirectories(destinationPath.getParent());
+
+				Files.copy(GeoPDFConfiguration.class.getResourceAsStream(line), destinationPath,
+						StandardCopyOption.REPLACE_EXISTING);
+
+				if (line.contains(GDALWARP_RAW_COMMAND)) {
+					configuration.setGdalWarpCommand(destinationPath.toString());
+				}
+				if (line.contains(GDAL_CREATE_RAW_COMMAND)) {
+					configuration.setGdalCreateCommand(destinationPath.toString());
+				}
+			}
+
+			scanner.close();
+			try {
+				filesToCopyStream.close();
+			} catch (IOException e) {
+				// Nothing to do, we are just closing the resource....
+			}
+		}
 	}
 
-	public static File generatePDF(final GeoPDF geoPDF, final GeoPDFConfiguration configuration) throws IOException, InterruptedException {
+	public static File generatePDF(final GeoPDF geoPDF, final GeoPDFConfiguration configuration)
+			throws IOException, InterruptedException {
 		final File tmpFile = File.createTempFile("compositionFileDebrief", ".xml");
 
 		final FileOutputStream fileOutputStream = new FileOutputStream(tmpFile);
@@ -210,6 +274,9 @@ public class GeoPDFBuilder {
 
 	public static GeoPDF build(final Layers layers, final GeoPDFConfiguration configuration)
 			throws IOException, InterruptedException {
+		if (!configuration.isReady()) {
+			configuration.prepareGdalEnvironment();
+		}
 		final GeoPDF geoPDF = new GeoPDF();
 
 		geoPDF.setAuthor(configuration.getAuthor());
@@ -225,11 +292,10 @@ public class GeoPDFBuilder {
 		mainPage.setHeight(configuration.getPageHeight());
 		mainPage.setMargin(configuration.getMarginPercent());
 		if (configuration.getViewportArea() == null) {
-			mainPage.setArea(layers.getBounds());			
-		}else {
+			mainPage.setArea(layers.getBounds());
+		} else {
 			mainPage.setArea(configuration.getViewportArea());
 		}
-		
 
 		/**
 		 * Let's create the BackGroundLayer;
@@ -316,9 +382,9 @@ public class GeoPDFBuilder {
 		params.add(tmpFile.getAbsolutePath());
 		// final String[] command = new String[] {"gdalwarp", "--version"};
 
-		//final String[] command = new String[] {"pwd"};
+		// final String[] command = new String[] {"pwd"};
 		final Process process = runtime.exec(params.toArray(new String[] {}));
-		//final Process process = runtime.exec(command);
+		// final Process process = runtime.exec(command);
 		process.waitFor();
 		final BufferedReader gdalWarpOutputStream = new BufferedReader(new InputStreamReader(process.getInputStream()));
 
@@ -476,12 +542,9 @@ public class GeoPDFBuilder {
 			configuration.setLabelDeltaMinutes(60);
 			configuration.setMarkDeltaMinutes(10);
 			configuration.setMarginPercent(0.1);
-			final String osName = System.getProperty("os.name").toLowerCase();
-			if (osName.contains("win")) {
-				configuration.setGdalCreateCommand(GeoPDFConfiguration.GDAL_CREATE_COMMAND_WINDOWS);
-				configuration.setGdalWarpCommand(GeoPDFConfiguration.GDALWARP_COMMAND_WINDOWS);
+			if (OSUtils.WIN) {
 				configuration.setBackground("C:\\Users\\saulh\\Downloads\\2450\\2450_ANVIL_POINT_TO_BEACHY_H.tif");
-			}else {
+			} else {
 				configuration.setBackground("/home/saul/PycharmProjects/GeoPDF/2450_ANVIL_POINT_TO_BEACHY_H.tif");
 			}
 			configuration.setAuthor("Saul Hidalgo");
@@ -490,8 +553,7 @@ public class GeoPDFBuilder {
 
 			configuration.setPdfOutputPath("C:\\Users\\saulh\\OneDrive\\Documentos\\tmp\\test.pdf");
 			GeoPDFBuilder.generatePDF(geoPdf, configuration);
-			
-			
+
 			System.out.println(geoPdf);
 		}
 	}
