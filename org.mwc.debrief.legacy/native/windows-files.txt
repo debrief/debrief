@@ -33,10 +33,8 @@
 /windows/msvcp140.dll
 /windows/netcdf.dll
 /windows/openjp2.dll
-/windows/proj
 /windows/proj.db
 /windows/proj.dll
-/windows/proj6
 /windows/proj_6_1.dll
 /windows/spatialite.dll
 /windows/sqlite3.dll
@@ -48,8 +46,6 @@
 /windows/xdrdll.dll
 /windows/xerces-c_3_2.dll
 /windows/zlib1.dll
-/windows/proj/SHARE
-/windows/proj/apps
 /windows/proj/SHARE/GL27
 /windows/proj/SHARE/IGNF
 /windows/proj/SHARE/MD
@@ -80,8 +76,6 @@
 /windows/proj/apps/geod.exe
 /windows/proj/apps/nad2bin.exe
 /windows/proj/apps/proj.exe
-/windows/proj6/apps
-/windows/proj6/share
 /windows/proj6/apps/cct.exe
 /windows/proj6/apps/cs2cs.exe
 /windows/proj6/apps/geod.exe

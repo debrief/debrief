@@ -202,7 +202,7 @@ public class GeoPDFBuilder {
 					// We are inside the .jar file, we need to copy all the files to a temporal
 					// folder.
 
-					createTemporalEnvironmentWindows(System.getProperty("java.io.tmpdir"), "/native/windows-files.txt",
+					createTemporalEnvironmentWindows(System.getProperty("java.io.tmpdir"), "/windows-files.txt",
 							this);
 					registerEnvironmentVar(PROJ_ENV_VAR,
 							System.getProperty("java.io.tmpdir") + PROJ_PATH_TO_REGISTER);
@@ -226,6 +226,7 @@ public class GeoPDFBuilder {
 			while (scanner.hasNextLine()) {
 				final String line = scanner.nextLine();
 
+				System.out.println("To Load " + line);
 				final Path destinationPath = Paths.get(destinationFolder + line);
 				Files.createDirectories(destinationPath.getParent());
 

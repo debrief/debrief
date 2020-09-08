@@ -18,15 +18,17 @@ public class ExportAsGeoPDFHandler extends CoreEditorAction {
 			final PlainChart theChart = getChart();
 			final Layers theLayers = theChart.getLayers();
 			final GeoPDFConfiguration configuration = new GeoPDFConfiguration();
+			configuration.setViewportArea(theChart.getProjectionArea());
 
-			configuration.setBackground("../org.mwc.cmap.combined.feature/root_installs/sample_data/SP27GTIF.tif");
+			configuration.setBackground("C:\\Users\\saulh\\eclipse-workspace\\debrief\\org.mwc.cmap.combined.feature\\root_installs\\sample_data\\SP27GTIF.tif");
 
 			final FileDialog dialog = new FileDialog(getShell(), SWT.SAVE);
 			dialog.setFilterNames(new String[] { "PDF Files", "All Files (*.*)" });
 			dialog.setFilterExtensions(new String[] { "*.pdf", "*.*" });
 			
-			if (dialog.open() != null && dialog.getFileName() != null && !dialog.getFileName().isEmpty()) {
-				configuration.setPdfOutputPath(dialog.getFileName());
+			final String userFileName = dialog.open();
+			if (userFileName != null && !userFileName.isEmpty()) {
+				configuration.setPdfOutputPath(userFileName);
 				GeoPDF geoPdf = GeoPDFBuilder.build(theLayers, configuration);
 				GeoPDFBuilder.generatePDF(geoPdf, configuration);
 			}
