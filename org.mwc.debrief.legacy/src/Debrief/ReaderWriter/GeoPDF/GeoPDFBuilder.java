@@ -61,7 +61,7 @@ public class GeoPDFBuilder {
 		private WorldArea viewportArea;
 		private int pageDpi = 72;
 		private String gdalWarpCommand = GDALWARP_RAW_COMMAND;
-		private String[] gdalWarpParams = "-t_srs EPSG:4326 -r cubic -of GTiff".split(" ");
+		private String[] gdalWarpParams = "-t_srs EPSG:4326 -r near -of GTiff".split(" ");
 		private String gdalCreateCommand = GDAL_CREATE_RAW_COMMAND;
 		private String[] gdalCreateParams = "-of PDF -co".split(" ");
 		private String pdfOutputPath;
