@@ -219,7 +219,8 @@ public class GeoPDFBuilder {
 
 		public static void createTemporalEnvironmentWindows(final String destinationFolder,
 				final String resourceFileListPath, final GeoPDFConfiguration configuration) throws IOException {
-			final InputStream filesToCopyStream = GeoPDFConfiguration.class.getResourceAsStream(resourceFileListPath);
+			
+			final InputStream filesToCopyStream = OSUtils.getInputStreamResource(GeoPDFBuilder.class, resourceFileListPath, null);
 
 			final Scanner scanner = new Scanner(filesToCopyStream);
 			while (scanner.hasNextLine()) {
