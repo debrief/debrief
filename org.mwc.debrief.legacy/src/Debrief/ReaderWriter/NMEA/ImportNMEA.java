@@ -307,8 +307,8 @@ public class ImportNMEA {
 
 			// and the DR equivalents
 			assertEquals("got speed", 4.1d, parseMySpeed(speedPatternLOG, test10_drSpd), 0.001);
+			assertEquals("got speed", 4.0d, parseMySpeed(speedPatternLOG, "$POSL,VEL,SPL,a,b,4.0,a,b,c,d"), 0.001);
 			assertEquals("got course", 111.2d, parseMyCourse(coursePatternHDG, test11_drCrse), 0.001);
-
 		}
 
 		public void testMultiGPSImport() throws Exception {
@@ -440,8 +440,10 @@ public class ImportNMEA {
 	final private static Pattern speedPatternGPS = Pattern.compile("\\$POSL,VEL,GPS,.*,(?<SPEED>\\d+.\\d+),.*");
 	/**
 	 * $POSL,VEL,SPL,,,4.0,0.0,4.0*12
+	 * Note: we allow for text or numeric values in the above
+	 * empty fields in slots 4 and 5.
 	 */
-	final private static Pattern speedPatternLOG = Pattern.compile("\\$POSL,VEL,SPL,,,(?<SPEED>\\d+.\\d+),.*");
+	final private static Pattern speedPatternLOG = Pattern.compile("\\$POSL,VEL,SPL,[A-Za-z0-9.]*,[A-Za-z0-9.]*,(?<SPEED>\\d+.\\d+),.*");
 	/**
 	 * "$POSL,POS,GPS,1122.2222,N,12312.1234,W,0.00,,Center of Rotation,N,,,,,*41";
 	 */
@@ -789,7 +791,7 @@ public class ImportNMEA {
 				case OS_SPEED:
 					if (importOS) {
 						// ok, extract the rest of the body
-						final double drSpeedDegs = parseMySpeed(speedPatternLOG, nmea_sentence);
+						final double drSpeedKts = parseMySpeed(speedPatternLOG, nmea_sentence);
 
 						// are we taking DR from GPS?
 						if (DRfromGPS) {
@@ -798,7 +800,7 @@ public class ImportNMEA {
 							// do we know our origin?
 							if (origin != null && drCourse != null) {
 								// ok, grow the DR track
-								storeDRFix(origin, drCourse, drSpeedDegs, date, myName, myDepth, DebriefColors.BLUE);
+								storeDRFix(origin, drCourse, drSpeedKts, date, myName, myDepth, DebriefColors.BLUE);
 							}
 						}
 					}
