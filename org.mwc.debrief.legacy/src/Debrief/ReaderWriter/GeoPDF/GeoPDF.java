@@ -117,16 +117,6 @@ public class GeoPDF {
 				// TODO This is just for testing. Area should never be null
 				plotArea = new WorldArea(new WorldLocation(50, -0.8, 0), new WorldLocation(50.4, -0.1, 0));
 			}
-			final double pageRatio = ((double) getWidth()) / getHeight();
-			final double areaRatio = plotArea.getWidth() / plotArea.getHeight();
-
-			if (pageRatio > areaRatio) {
-				plotArea.setCentredWidth(plotArea.getHeight() * getWidth() / getHeight());
-			} else {
-				plotArea.setCentredHeight(plotArea.getHeight() * getWidth() / plotArea.getWidth());
-			}
-			plotArea.grow(getMargin() * plotArea.getHeight() * plotArea.getWidth(), 0);
-			plotArea.normalise();
 
 			// Bottom LEFT
 			final IXMLElement topLeftXML = new XMLElement("ControlPoint");
