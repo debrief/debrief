@@ -18,6 +18,7 @@ package org.mwc.cmap.NarrativeViewer2;
 import java.awt.Color;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.io.File;
 import java.text.DateFormat;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -40,6 +41,7 @@ import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.InputDialog;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.TrayDialog;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.preference.PreferenceConverter;
@@ -59,6 +61,7 @@ import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.DirectoryDialog;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.ui.IEditorInput;
@@ -68,6 +71,7 @@ import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.dialogs.PreferencesUtil;
 import org.eclipse.ui.part.ViewPart;
+import org.mwc.cmap.NarrativeViewer.app.Activator;
 import org.mwc.cmap.NarrativeViewer.model.TimeFormatter;
 import org.mwc.cmap.NarrativeViewer.preferences.NarrativeViewerPrefsPage;
 import org.mwc.cmap.core.CorePlugin;
@@ -91,11 +95,13 @@ import MWC.TacticalData.NarrativeEntry;
 import MWC.TacticalData.NarrativeWrapper;
 import MWC.TacticalData.temporal.ControllableTime;
 import MWC.TacticalData.temporal.TimeProvider;
+import MWC.Utilities.ReaderWriter.Word.NarrativeWriter;
 import MWC.Utilities.ReaderWriter.XML.LayerHandler;
 import MWC.Utilities.TextFormatting.GMTDateFormat;
 
 public class NATViewerView extends ViewPart implements PropertyChangeListener, ISelectionProvider {
 	private static DateFormat _myFormat;
+	private static final String PREF_EXPORT_DIR = "NARR_VIEWER_EXPORT_DIR"; 
 
 	private static String _myFormatString;
 
@@ -370,7 +376,7 @@ public class NATViewerView extends ViewPart implements PropertyChangeListener, I
 			// the properties manager is expecting the integer index of the new
 			// format, not the string value.
 			// so store it as an integer index
-			final Integer thisIndex = new Integer(i);
+			final Integer thisIndex = 1;
 
 			// and create a new action to represent the change
 			final Action newFormat = new Action(thisFormat, IAction.AS_RADIO_BUTTON) {
@@ -756,9 +762,7 @@ public class NATViewerView extends ViewPart implements PropertyChangeListener, I
 		// and the DTG formatter
 		addDateFormats(menuManager);
 
-		menuManager.add(new Separator());
-		menuManager.add(CorePlugin.createOpenHelpAction("org.mwc.debrief.help.Narrative", null, this));
-
+		
 		final Action fontPlus = new Action("+", IAction.AS_PUSH_BUTTON) {
 
 			@Override
@@ -810,8 +814,44 @@ public class NATViewerView extends ViewPart implements PropertyChangeListener, I
 		toolManager.add(fontPlus);
 		toolManager.add(fontMin);
 
-	}
+		final Action exportToMSWordAction = new Action("Export to MSWord",IAction.AS_PUSH_BUTTON) {
+			public void runWithEvent(Event event) {
+				//show file dialog
+				//default directory, last directory, otherwise the user's home folder.
+				if(myViewer.getVisibleNarratives()!=null && myViewer.getVisibleNarratives().size()>0) {
+					DirectoryDialog dialog = new DirectoryDialog(getViewSite().getShell());
+					String prefDir = Activator.getInstance().getPreferenceStore().getString(PREF_EXPORT_DIR);
+					String defaultDir = System.getProperty("user.home");
+					if(prefDir == null || prefDir.isBlank()) {
+						dialog.setFilterPath(defaultDir);
+					}
+					else {
+						dialog.setFilterPath(prefDir);
+					}
+					String targetDirectory = dialog.open();
+					if(targetDirectory!=null) {
+						Activator.getInstance().getPreferenceStore().setValue(PREF_EXPORT_DIR, targetDirectory);
+						NarrativeWriter writer = new NarrativeWriter();
+						writer.write(myViewer.getVisibleNarratives(), myViewer.isShowingSource(), myViewer.isShowingType(), new File(targetDirectory));
+					}
+				}
+				else {
+					MessageDialog.openWarning(getViewSite().getShell(), "Error exporting narratives", "No narratives to export");
+				}
+				
+			};
+		};
+		exportToMSWordAction.setText("Export to MSWord");
+		exportToMSWordAction.setImageDescriptor(CorePlugin.getImageDescriptor("icons/16/ex_2word.png"));
+		exportToMSWordAction.setToolTipText("Export visible narratives to MS Word Document");
+		menuManager.add(exportToMSWordAction);
+		toolManager.add(exportToMSWordAction);
 
+		menuManager.add(new Separator());
+		menuManager.add(CorePlugin.createOpenHelpAction("org.mwc.debrief.help.Narrative", null, this));
+
+		
+	}
 	/**
 	 * the user has selected a new time
 	 *
@@ -906,6 +946,7 @@ public class NATViewerView extends ViewPart implements PropertyChangeListener, I
 			// listening to the rolling narrative, since we
 			// may be switching back to a previous plot.
 			myViewer.setInput(_myRollingNarrative);
+			
 		}
 		// }
 	}

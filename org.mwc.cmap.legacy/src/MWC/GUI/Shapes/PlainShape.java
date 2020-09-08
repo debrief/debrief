@@ -212,7 +212,7 @@ abstract public class PlainShape implements Serializable, DraggableItem, ClassWi
 	 * property change support for this shape, this allows us to store a list of
 	 * objects which are intererested in modification to this
 	 */
-	private final PropertyChangeSupport _pSupport;
+	private final transient PropertyChangeSupport _pSupport;
 
 	private boolean _isVisible;
 
