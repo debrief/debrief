@@ -202,7 +202,9 @@ public class GeoPDFBuilder {
 
 		public void prepareGdalEnvironment() throws IOException, NoSuchFieldException, SecurityException,
 				IllegalArgumentException, IllegalAccessException, ClassNotFoundException {
-			if (OSUtils.WIN) {
+			final String os = System.getProperty("os.name").toLowerCase();
+			if (os.indexOf("win") != -1) {
+				// We are on Windows
 				final File createCommandPath = new File(GeoPDFConfiguration.GDAL_CREATE_COMMAND_WINDOWS);
 				if (createCommandPath.exists()) {
 					// We are running from Eclipse, we let's just run the command directly
@@ -216,7 +218,7 @@ public class GeoPDFBuilder {
 					// folder.
 
 					createTemporalEnvironmentWindows(System.getProperty("java.io.tmpdir") + File.separatorChar,
-							"windows-files.txt", this);
+							"/windows-files.txt", this);
 					registerEnvironmentVar(PROJ_ENV_VAR,
 							System.getProperty("java.io.tmpdir") + File.separatorChar + PROJ_PATH_TO_REGISTER);
 				}
@@ -233,8 +235,7 @@ public class GeoPDFBuilder {
 		public static void createTemporalEnvironmentWindows(final String destinationFolder,
 				final String resourceFileListPath, final GeoPDFConfiguration configuration) throws IOException {
 
-			final InputStream filesToCopyStream = OSUtils.getInputStreamResource(GeoPDFBuilder.class,
-					resourceFileListPath, null);
+			final InputStream filesToCopyStream = GeoPDFBuilder.class.getResourceAsStream(resourceFileListPath);
 
 			final Scanner scanner = new Scanner(filesToCopyStream);
 			while (scanner.hasNextLine()) {
