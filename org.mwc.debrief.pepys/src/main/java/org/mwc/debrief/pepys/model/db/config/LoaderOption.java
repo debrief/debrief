@@ -5,10 +5,9 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
+import org.mwc.debrief.model.utils.OSUtils;
 import org.mwc.debrief.pepys.Activator;
 import org.mwc.debrief.pepys.model.db.DatabaseConnection;
-
-import Debrief.Utils.OSUtils;
 
 /**
  * Class used to specify where we are reading the database from and what type of

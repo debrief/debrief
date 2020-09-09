@@ -38,6 +38,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
+import org.mwc.debrief.model.utils.OSUtils;
 import org.mwc.debrief.pepys.Activator;
 import org.mwc.debrief.pepys.model.PepsysException;
 import org.mwc.debrief.pepys.model.bean.AbstractBean;
@@ -54,7 +55,6 @@ import org.mwc.debrief.pepys.model.db.config.DatabaseConfiguration;
 
 import com.mchange.v2.c3p0.ComboPooledDataSource;
 
-import Debrief.Utils.OSUtils;
 import MWC.GenericData.TimePeriod;
 import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldLocation;
