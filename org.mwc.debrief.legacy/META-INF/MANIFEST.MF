@@ -241,7 +241,6 @@ Export-Package:
    MWC.GUI.Tools",
  Debrief.Tools.Tote;uses:="MWC.GenericData,MWC.GUI,MWC.GUI.Tools",
  Debrief.Tools.Tote.Calculations;uses:="Debrief.Tools.Tote,MWC.GenericData,MWC.GUI",
- Debrief.Utils,
  Debrief.Wrappers;
   uses:="Debrief.Wrappers.Track,
    MWC.GUI.Shapes.Symbols,
