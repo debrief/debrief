@@ -202,8 +202,10 @@ public class GeoPDFBuilder {
 					// We are inside the .jar file, we need to copy all the files to a temporal
 					// folder.
 
-					createTemporalEnvironmentWindows(System.getProperty("java.io.tmpdir"), "/windows-files.txt", this);
-					registerEnvironmentVar(PROJ_ENV_VAR, System.getProperty("java.io.tmpdir") + PROJ_PATH_TO_REGISTER);
+					createTemporalEnvironmentWindows(System.getProperty("java.io.tmpdir") + File.separatorChar,
+							"windows-files.txt", this);
+					registerEnvironmentVar(PROJ_ENV_VAR,
+							System.getProperty("java.io.tmpdir") + File.separatorChar + PROJ_PATH_TO_REGISTER);
 				}
 
 			} // we don't do the else, because by default it is Unit command.
@@ -523,7 +525,7 @@ public class GeoPDFBuilder {
 
 	private static File createTempFile(final String fileName, final String data) throws FileNotFoundException {
 		final String tempFolder = System.getProperty("java.io.tmpdir");
-		final File newFile = new File(tempFolder + fileName);
+		final File newFile = new File(tempFolder + File.separatorChar + fileName);
 
 		PrintWriter print = null;
 		try {
@@ -561,7 +563,7 @@ public class GeoPDFBuilder {
 
 			final GeoPDF geoPdf = GeoPDFBuilder.build(layers, configuration);
 
-			configuration.setPdfOutputPath(System.getProperty("java.io.tmpdir") + "test.pdf");
+			configuration.setPdfOutputPath(System.getProperty("java.io.tmpdir") + File.separatorChar + "test.pdf");
 			GeoPDFBuilder.generatePDF(geoPdf, configuration);
 
 			System.out.println("PDF successfully generated at " + configuration.getPdfOutputPath());
