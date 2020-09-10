@@ -21,6 +21,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -107,7 +108,7 @@ public class GenerateGeoJSON {
 		jsonRoot.put("type", "FeatureCollection");
 		if (configuration.getLayerName() != null) {
 			jsonRoot.put("name", configuration.getLayerName());
-		}else {
+		} else {
 			jsonRoot.put("name", currentTrack.getName());
 		}
 
@@ -328,58 +329,248 @@ public class GenerateGeoJSON {
 			}
 		}
 
-		public void testCreateGeoJSON() throws FileNotFoundException {
-			final Layers layers = new Layers();
-			Session session = new MockSession(layers);
-			final DebriefXMLReaderWriter reader = new DebriefXMLReaderWriter(null);
-			reader.importThis("sample.dpf", new FileInputStream(sampledpf), session);
-
-			// TODO
-			// GenerateGeoJSON.createGeoJSONTrackLine(layers, toStringOutputStream, null);
-
-			// Test the JSON generated.
-
-			// System.out.println(toStringOutputStream.toString());
-		}
-
-		public void testCreateGeoJSON2() throws FileNotFoundException, JsonProcessingException {
+		public void testCreateGeoJSON() throws FileNotFoundException, JsonProcessingException {
 			final Layers layers = new Layers();
 			final ImportReplay replayImporter = new ImportReplay();
 			replayImporter.importThis("boat1.rep", new FileInputStream(boat1rep), layers);
 
-			final TrackWrapper track = (TrackWrapper) layers.findLayer("NELSON", true);
+			final TrackWrapper track = (TrackWrapper) layers.findLayer("COLLINGWOOD", true);
 			final GeoJSONConfiguration config = new GeoJSONConfiguration(-1, false, false, null);
-			final String geoJsonData = GenerateGeoJSON.createGeoJSONTrackLine(track, config);
+			final String jsonTrackLineString = GenerateGeoJSON.createGeoJSONTrackLine(track, config);
 
-			// Test the JSON generated.
+			final ObjectMapper mapper = new ObjectMapper();
+			final ObjectNode collingwood = mapper.readValue(jsonTrackLineString, ObjectNode.class);
 
-			System.out.println(geoJsonData);
+			final JsonNode collingWoodName = collingwood.get("name");
+			assertEquals("Correct name", "COLLINGWOOD", collingWoodName.textValue());
+			assertEquals("Correct type", "FeatureCollection", collingwood.get("type").textValue());
+
+			final JsonNode crsNode = collingwood.get("crs");
+
+			final JsonNode crsType = crsNode.get("type");
+
+			assertEquals("Correct crs name", "name", crsType.textValue());
+
+			final JsonNode crsProperty = crsNode.get("properties");
+
+			final JsonNode crsPropertyName = crsProperty.get("name");
+
+			assertEquals("Correct crs property name", "urn:ogc:def:crs:OGC:1.3:CRS84", crsPropertyName.textValue());
+
+			final JsonNode featuresNode = collingwood.get("features");
+			final JsonNode featureNodeChild = featuresNode.get(0);
+			final JsonNode typeFeature = featureNodeChild.get("type");
+			assertEquals("Correct type features", "Feature", typeFeature.textValue());
+
+			final JsonNode beginNode = featureNodeChild.get("properties").get("begin");
+			assertEquals("Correct beginning", "1995/12/12 06:03:00+0100", beginNode.textValue());
+
+			final JsonNode endNode = featureNodeChild.get("properties").get("end");
+			assertEquals("Correct beginning", "1995/12/12 12:45:00+0100", endNode.textValue());
+
+			final JsonNode geometryTypeJsonNode = featureNodeChild.get("geometry").get("type");
+			assertEquals("Correct Geometry Type", "MultiLineString", geometryTypeJsonNode.textValue());
+
+			final JsonNode coordinatesJsonNode = featureNodeChild.get("geometry").get("coordinates").get(0);
+
+			assertEquals("Amount of coordinates ", 403, coordinatesJsonNode.size());
+
+			final JsonNode firstCoordinate = coordinatesJsonNode.get(0);
+
+			assertEquals("Correct First X coordinate", -21.593774999999997, firstCoordinate.get(0).doubleValue(), 1e-8);
+			assertEquals("Correct First Y coordinate", 21.894219444444445, firstCoordinate.get(1).doubleValue(), 1e-8);
+
+			final JsonNode lastCoordinate = coordinatesJsonNode.get(coordinatesJsonNode.size() - 1);
+
+			assertEquals("Correct First X coordinate", -21.733580555555555, lastCoordinate.get(0).doubleValue(), 1e-8);
+			assertEquals("Correct First Y coordinate", 22.142258333333334, lastCoordinate.get(1).doubleValue(), 1e-8);
 		}
 
 		public void testCreateGeoJSON3() throws FileNotFoundException, JsonProcessingException {
 			final Layers layers = new Layers();
 			final ImportReplay replayImporter = new ImportReplay();
 			replayImporter.importThis("boat1.rep", new FileInputStream(boat1rep), layers);
-			final TrackWrapper track = (TrackWrapper) layers.findLayer("NELSON", true);
+			final TrackWrapper track = (TrackWrapper) layers.findLayer("COLLINGWOOD", true);
 
 			String geoJsonData = GenerateGeoJSON.createGeoJSONTrackPoints(track,
 					new GeoJSONConfiguration(10, false, false, null));
+			
+			final ObjectMapper mapper = new ObjectMapper();
+			final ObjectNode collingwood = mapper.readValue(geoJsonData, ObjectNode.class);
 
-			System.out.println(geoJsonData);
+			final JsonNode collingWoodName = collingwood.get("name");
+			assertEquals("Correct name", "COLLINGWOOD", collingWoodName.textValue());
+			assertEquals("Correct type", "FeatureCollection", collingwood.get("type").textValue());
 
-			geoJsonData = GenerateGeoJSON.createGeoJSONTrackPoints(track,
+			final JsonNode crsNode = collingwood.get("crs");
+
+			final JsonNode crsType = crsNode.get("type");
+
+			assertEquals("Correct crs name", "name", crsType.textValue());
+
+			final JsonNode crsProperty = crsNode.get("properties");
+
+			final JsonNode crsPropertyName = crsProperty.get("name");
+
+			assertEquals("Correct crs property name", "urn:ogc:def:crs:OGC:1.3:CRS84", crsPropertyName.textValue());
+
+			final JsonNode featuresNode = collingwood.get("features");
+			
+			assertEquals("Correct amount of child", 41, featuresNode.size());
+			
+			final JsonNode firstNodeChild = featuresNode.get(0);
+			final JsonNode typeFeature = firstNodeChild.get("type");
+			assertEquals("Correct type features", "Feature", typeFeature.textValue());
+
+			final JsonNode propertiesFirstNodeChild = firstNodeChild.get("properties");
+			assertEquals("Correct course ", 0.005235987755982988, propertiesFirstNodeChild.get("course").doubleValue(), 1e-8);
+			assertEquals("Correct speed ", 3.5, propertiesFirstNodeChild.get("speed").doubleValue(), 1e-8);
+			assertEquals("Correct time ", "1995/12/12 06:03:00+0100", propertiesFirstNodeChild.get("time").textValue());
+			
+			final JsonNode geometryFirstNodeChild = firstNodeChild.get("geometry");
+			assertEquals("Correct type for geometry", "Point", geometryFirstNodeChild.get("type").textValue());
+			final JsonNode coordinates = geometryFirstNodeChild.get("coordinates");
+			
+			assertEquals("Correct X coordinate ", -21.593774999999997, coordinates.get(0).asDouble(), 1e-8);
+			assertEquals("Correct Y coordinate ", 21.894219444444445, coordinates.get(1).asDouble(), 1e-8);
+			
+			final JsonNode lastNodeChild = featuresNode.get(featuresNode.size() - 1);
+			final JsonNode lastTypeFeature = lastNodeChild.get("type");
+			assertEquals("Correct type features", "Feature", lastTypeFeature.textValue());
+
+			final JsonNode propertiesLastNodeChild = lastNodeChild.get("properties");
+			assertEquals("Correct course ", 0.35255650890285456, propertiesLastNodeChild.get("course").doubleValue(), 1e-8);
+			assertEquals("Correct speed ", 3.5, propertiesLastNodeChild.get("speed").doubleValue(), 1e-8);
+			assertEquals("Correct time ", "1995/12/12 12:43:00+0100", propertiesLastNodeChild.get("time").textValue());
+			
+			final JsonNode geometryLastNodeChild = firstNodeChild.get("geometry");
+			assertEquals("Correct type for geometry", "Point", geometryLastNodeChild.get("type").textValue());
+			final JsonNode lastCoordinates = geometryLastNodeChild.get("coordinates");
+			
+			assertEquals("Correct X coordinate ", -21.593774999999997, lastCoordinates.get(0).asDouble(), 1e-8);
+			assertEquals("Correct Y coordinate ", 21.894219444444445, lastCoordinates.get(1).asDouble(), 1e-8);
+		}
+		
+		public void testCreateGeoJSON4() throws FileNotFoundException, JsonProcessingException {
+			final Layers layers = new Layers();
+			final ImportReplay replayImporter = new ImportReplay();
+			replayImporter.importThis("boat1.rep", new FileInputStream(boat1rep), layers);
+			final TrackWrapper track = (TrackWrapper) layers.findLayer("COLLINGWOOD", true);
+
+			String geoJsonData = GenerateGeoJSON.createGeoJSONTrackPoints(track,
 					new GeoJSONConfiguration(20, true, false, null));
+			
+			final ObjectMapper mapper = new ObjectMapper();
+			final ObjectNode collingwood = mapper.readValue(geoJsonData, ObjectNode.class);
 
-			// Test the JSON generated.
+			final JsonNode collingWoodName = collingwood.get("name");
+			assertEquals("Correct name", "COLLINGWOOD", collingWoodName.textValue());
+			assertEquals("Correct type", "FeatureCollection", collingwood.get("type").textValue());
 
-			System.out.println(geoJsonData);
+			final JsonNode crsNode = collingwood.get("crs");
 
-			geoJsonData = GenerateGeoJSON.createGeoJSONTrackPoints(track,
-					new GeoJSONConfiguration(-1, true, true, null));
+			final JsonNode crsType = crsNode.get("type");
 
-			// Test the JSON generated.
+			assertEquals("Correct crs name", "name", crsType.textValue());
 
-			System.out.println(geoJsonData);
+			final JsonNode crsProperty = crsNode.get("properties");
+
+			final JsonNode crsPropertyName = crsProperty.get("name");
+
+			assertEquals("Correct crs property name", "urn:ogc:def:crs:OGC:1.3:CRS84", crsPropertyName.textValue());
+
+			final JsonNode featuresNode = collingwood.get("features");
+			
+			assertEquals("Correct amount of child", 21, featuresNode.size());
+			
+			final JsonNode firstNodeChild = featuresNode.get(0);
+			final JsonNode typeFeature = firstNodeChild.get("type");
+			assertEquals("Correct type features", "Feature", typeFeature.textValue());
+
+			final JsonNode propertiesFirstNodeChild = firstNodeChild.get("properties");
+			assertEquals("Correct course ", 0.005235987755982988, propertiesFirstNodeChild.get("course").doubleValue(), 1e-8);
+			assertEquals("Correct speed ", 3.5, propertiesFirstNodeChild.get("speed").doubleValue(), 1e-8);
+			assertEquals("Correct time ", "1995/12/12 06:03:00+0100", propertiesFirstNodeChild.get("time").textValue());
+			
+			final JsonNode geometryFirstNodeChild = firstNodeChild.get("geometry");
+			assertEquals("Correct type for geometry", "Point", geometryFirstNodeChild.get("type").textValue());
+			final JsonNode coordinates = geometryFirstNodeChild.get("coordinates");
+			
+			assertEquals("Correct X coordinate ", -21.593774999999997, coordinates.get(0).asDouble(), 1e-8);
+			assertEquals("Correct Y coordinate ", 21.894219444444445, coordinates.get(1).asDouble(), 1e-8);
+			
+			final JsonNode lastNodeChild = featuresNode.get(featuresNode.size() - 1);
+			final JsonNode lastTypeFeature = lastNodeChild.get("type");
+			assertEquals("Correct type features", "Feature", lastTypeFeature.textValue());
+
+			final JsonNode propertiesLastNodeChild = lastNodeChild.get("properties");
+			assertEquals("Correct course ", 0.35255650890285456, propertiesLastNodeChild.get("course").doubleValue(), 1e-8);
+			assertEquals("Correct speed ", 3.5, propertiesLastNodeChild.get("speed").doubleValue(), 1e-8);
+			assertEquals("Correct time ", "1995/12/12 12:43:00+0100", propertiesLastNodeChild.get("time").textValue());
+			
+			final JsonNode geometryLastNodeChild = firstNodeChild.get("geometry");
+			assertEquals("Correct type for geometry", "Point", geometryLastNodeChild.get("type").textValue());
+			final JsonNode lastCoordinates = geometryLastNodeChild.get("coordinates");
+			
+			assertEquals("Correct X coordinate ", -21.593774999999997, lastCoordinates.get(0).asDouble(), 1e-8);
+			assertEquals("Correct Y coordinate ", 21.894219444444445, lastCoordinates.get(1).asDouble(), 1e-8);
+		}
+		
+		public void testCreateGeoJSON2() throws FileNotFoundException, JsonProcessingException {
+			final Layers layers = new Layers();
+			final ImportReplay replayImporter = new ImportReplay();
+			replayImporter.importThis("boat1.rep", new FileInputStream(boat1rep), layers);
+			final TrackWrapper track = (TrackWrapper) layers.findLayer("COLLINGWOOD", true);
+
+			String geoJsonData = GenerateGeoJSON.createGeoJSONTrackLine(track,
+					new GeoJSONConfiguration(-1, true, false, null));
+			
+			final ObjectMapper mapper = new ObjectMapper();
+			final ObjectNode collingwood = mapper.readValue(geoJsonData, ObjectNode.class);
+
+			final JsonNode collingWoodName = collingwood.get("name");
+			assertEquals("Correct name", "COLLINGWOOD", collingWoodName.textValue());
+			assertEquals("Correct type", "FeatureCollection", collingwood.get("type").textValue());
+
+			final JsonNode crsNode = collingwood.get("crs");
+
+			final JsonNode crsType = crsNode.get("type");
+
+			assertEquals("Correct crs name", "name", crsType.textValue());
+
+			final JsonNode crsProperty = crsNode.get("properties");
+
+			final JsonNode crsPropertyName = crsProperty.get("name");
+
+			assertEquals("Correct crs property name", "urn:ogc:def:crs:OGC:1.3:CRS84", crsPropertyName.textValue());
+
+			final JsonNode featuresNode = collingwood.get("features");
+			final JsonNode featureNodeChild = featuresNode.get(0);
+			final JsonNode typeFeature = featureNodeChild.get("type");
+			assertEquals("Correct type features", "Feature", typeFeature.textValue());
+
+			final JsonNode beginNode = featureNodeChild.get("properties").get("begin");
+			assertEquals("Correct beginning", "1995/12/12 06:03:00+0100", beginNode.textValue());
+
+			final JsonNode endNode = featureNodeChild.get("properties").get("end");
+			assertEquals("Correct beginning", "1995/12/12 12:45:00+0100", endNode.textValue());
+
+			final JsonNode geometryTypeJsonNode = featureNodeChild.get("geometry").get("type");
+			assertEquals("Correct Geometry Type", "MultiLineString", geometryTypeJsonNode.textValue());
+
+			final JsonNode coordinatesJsonNode = featureNodeChild.get("geometry").get("coordinates").get(0);
+
+			assertEquals("Amount of coordinates ", 403, coordinatesJsonNode.size());
+
+			final JsonNode firstCoordinate = coordinatesJsonNode.get(0);
+
+			assertEquals("Correct First X coordinate", -21.593774999999997, firstCoordinate.get(0).doubleValue(), 1e-8);
+			assertEquals("Correct First Y coordinate", 21.894219444444445, firstCoordinate.get(1).doubleValue(), 1e-8);
+
+			final JsonNode lastCoordinate = coordinatesJsonNode.get(coordinatesJsonNode.size() - 1);
+
+			assertEquals("Correct First X coordinate", -21.733580555555555, lastCoordinate.get(0).doubleValue(), 1e-8);
+			assertEquals("Correct First Y coordinate", 22.142258333333334, lastCoordinate.get(1).doubleValue(), 1e-8);
 		}
 	}
 }
