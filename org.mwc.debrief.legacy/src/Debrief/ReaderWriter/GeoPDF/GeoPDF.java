@@ -129,7 +129,6 @@ public class GeoPDF {
 
 			WorldArea plotArea = getArea();
 			if (plotArea == null) {
-				// TODO This is just for testing. Area should never be null
 				plotArea = new WorldArea(new WorldLocation(50, -0.8, 0), new WorldLocation(50.4, -0.1, 0));
 			}
 
