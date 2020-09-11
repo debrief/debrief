@@ -115,8 +115,9 @@ public class NatNarrativeViewer {
 
 			if (hiddenCols.size() > 0)
 				natTable.doCommand(new MultiColumnHideCommand(natTable, toIntArray(hiddenCols)));
-
-			natTable.layout(true);
+			if(!natTable.isDisposed()) {
+				natTable.layout(true);
+			}
 
 		}
 
@@ -576,23 +577,32 @@ public class NatNarrativeViewer {
 	}
 
 	public void setInput(final IRollingNarrativeProvider input) {
-		final boolean buildTable = this.input==null; 
-		this.input = input;
-		dateFormatter.clearCache();
-		if (!container.isDisposed()) {
-			if(buildTable) {
-				buildTable();
-			}
-			Display.getCurrent().asyncExec(new Runnable() {
-
-				@Override
-				public void run() {
-					natTable.refresh(true);
-					showSource.refresh();
-					showType.refresh();
+		if(input!=null){
+			final boolean buildTable = this.input==null; 
+			this.input = input;
+			dateFormatter.clearCache();
+			if (!container.isDisposed()) {
+				if(buildTable) {
+					buildTable();
 				}
-			});
+				Display.getCurrent().asyncExec(new Runnable() {
+
+					@Override
+					public void run() {
+
+						natTable.refresh(true);
+						showSource.refresh();
+						showType.refresh();
+					}
+				});
+			}
 		}
+//			else {
+//				
+//				bodyLayer.getBodyDataProvider().getList().clear();
+//				this.input = input;
+//				
+//		}
 	}
 
 	public void setSearchMode(final boolean checked) {
