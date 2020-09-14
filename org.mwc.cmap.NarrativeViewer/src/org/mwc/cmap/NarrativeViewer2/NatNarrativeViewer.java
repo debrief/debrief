@@ -88,7 +88,7 @@ public class NatNarrativeViewer {
 
 		public SwitchColumnVisibilityAction(final String colLabel, final String name) {
 			this.colLabel = colLabel;
-			setChecked(true);
+			setChecked(visible);
 			setText(name);
 
 		}
@@ -115,19 +115,21 @@ public class NatNarrativeViewer {
 
 			if (hiddenCols.size() > 0)
 				natTable.doCommand(new MultiColumnHideCommand(natTable, toIntArray(hiddenCols)));
-
-			natTable.layout(true);
+			if(!natTable.isDisposed()) {
+				natTable.layout(true);
+			}
 
 		}
 
-		private final int[] toIntArray(final List<Integer> list) {
-			final int[] ret = new int[list.size()];
-			int i = 0;
-			for (final Integer e : list)
-				ret[i++] = e.intValue();
-			return ret;
-		}
+		
 
+	}
+	private final int[] toIntArray(final List<Integer> list) {
+		final int[] ret = new int[list.size()];
+		int i = 0;
+		for (final Integer e : list)
+			ret[i++] = e.intValue();
+		return ret;
 	}
 
 	private static final String TYPE_LBL = "Type";
@@ -369,6 +371,9 @@ public class NatNarrativeViewer {
 
 		loadFont(preferenceStore);
 		natTable.refresh(false);
+		if(hiddenCols.size()>0) {
+			natTable.doCommand(new MultiColumnHideCommand(natTable, toIntArray(hiddenCols)));
+		}
 	}
 
 	public void fillActionBars(final IActionBars actionBars) {
@@ -572,17 +577,38 @@ public class NatNarrativeViewer {
 	}
 
 	public void setInput(final IRollingNarrativeProvider input) {
-		this.input = input;
-		dateFormatter.clearCache();
-		if (!container.isDisposed()) {
-			buildTable();
-			Display.getCurrent().asyncExec(new Runnable() {
-
-				@Override
-				public void run() {
-					natTable.refresh(true);
+		if(input!=null){
+			final boolean buildTable = this.input==null; 
+			this.input = input;
+			dateFormatter.clearCache();
+			if (!container.isDisposed()) {
+				if(buildTable) {
+					buildTable();
 				}
-			});
+				Display.getCurrent().asyncExec(new Runnable() {
+
+					@Override
+					public void run() {
+
+						natTable.refresh(true);
+						showSource.refresh();
+						showType.refresh();
+					}
+				});
+			}
+		}
+			else {
+				if(!isShowingSource()) {
+					showSource.run();
+				}
+				if(!isShowingType()) {
+					showType.run();
+				}
+				hiddenCols.clear();
+				
+				bodyLayer.getBodyDataProvider().getList().clear();
+				this.input = input;
+				
 		}
 	}
 
@@ -606,10 +632,10 @@ public class NatNarrativeViewer {
 	}
 
 	public boolean isShowingSource() {
-		return showSource.isChecked();
+		return !hiddenCols.contains(1);
 	}
 	
 	public boolean isShowingType() {
-		return showType.isChecked();
+		return !hiddenCols.contains(2);
 	}
 }

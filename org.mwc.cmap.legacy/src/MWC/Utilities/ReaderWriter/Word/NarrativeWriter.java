@@ -81,18 +81,13 @@ public class NarrativeWriter {
 					XWPFTableCell cell1 = dataRow.getCell(cellCount++);
 					String dtgString = currentEntry.getDTGString();
 					cell1.setText(dtgString);
-					if(showSource && !isNullOrBlank(currentEntry.getSource())) {
+					if(showSource) {
 						XWPFTableCell sourceCell = dataRow.getCell(cellCount++);
 						sourceCell.setText(currentEntry.getSource());
 					}
-					if(showType && !isNullOrBlank(currentEntry.getType())) {
+					if(showType) {
 						XWPFTableCell typeCell;
-						if(showSource && showType) {
-							typeCell = dataRow.getCell(cellCount++);
-						}
-						else {
-							typeCell = dataRow.getCell(cellCount++);
-						}
+						typeCell = dataRow.getCell(cellCount++);
 						typeCell.setText(currentEntry.getType());	
 					}
 					XWPFTableCell cell2 = dataRow.getCell(cellCount++);
@@ -121,12 +116,7 @@ public class NarrativeWriter {
 			//log empty file
 		}
 	}
-	private boolean isNullOrBlank(String text) {
-		if(text==null || text.isBlank()) {
-			return true;
-		}
-		return false;
-	}
+	
 	public static class TestMe extends TestCase {
 		public void testWritingNarratives() throws Exception{
 			final NarrativeWrapper narr = new NarrativeWrapper("Some title");
@@ -258,63 +248,7 @@ public class NarrativeWriter {
 		}
 		
 		
-		public void testNarrativeBlankEntry() {
-			final NarrativeWrapper narr = new NarrativeWrapper("Some title");
-			assertEquals("empty", 0, narr.size());
-			HiResDate date1 = new HiResDate(3000);
-			final NarrativeEntry n1 = new NarrativeEntry("track", date1, "");
-			narr.add(n1);
 
-			assertEquals("has one", 1, narr.size());
-
-			final NarrativeEntry n2 = new NarrativeEntry("track", new HiResDate(3100), "");
-			narr.add(n2);
-
-			assertEquals("has two", 2, narr.size());
-			
-			n2.setSource("src");
-			NarrativeWriter nw = new NarrativeWriter();
-			String currentDirectory = System.getProperty("user.dir");
-			nw.write(narr, true,true, new File(currentDirectory));
-			String fileName = n1.getDTGString()+".docx";
-			File outFile =new File(fileName);
-			assertTrue(outFile.exists());
-			XWPFDocument document = null;
-			FileInputStream fileInputStream = null;
-			try {
-				File fileToBeRead = new File(fileName);
-				System.out.println(fileToBeRead.getAbsolutePath());
-				fileInputStream = new FileInputStream(fileToBeRead);
-				document = new XWPFDocument(fileInputStream);
-				List<XWPFTable> tables = document.getTables();
-				assertEquals("row count",3,tables.get(0).getNumberOfRows());
-				XWPFTableRow row1 = tables.get(0).getRow(1);
-				System.out.println("n1dtgstring:"+n1.getDTGString());
-				assertEquals(n1.getDTGString(),row1.getCell(0).getText());
-				assertEquals(n1.getSource(),row1.getCell(1).getText());
-				XWPFTableRow row2 = tables.get(0).getRow(2);
-				assertEquals(n2.getDTGString(),row2.getCell(0).getText());
-				assertEquals(n2.getSource(),row2.getCell(1).getText());
-				assertEquals(n2.getEntry(),row2.getCell(2).getText());
-				
-			} catch (Exception e) {
-				e.printStackTrace();
-				fail("Error reading the word doc");
-			} finally {
-				try {
-					if (document != null) {
-						document.close();
-					}
-					if (fileInputStream != null) {
-						fileInputStream.close();
-					}
-				} catch (Exception ex) {
-					System.err.println("error closing file");
-				}
-			}
-			outFile.delete();
-			
-		}
 		public void testNarrativeNoSource() {
 			final NarrativeWrapper narr = new NarrativeWrapper("Some title");
 			assertEquals("empty", 0, narr.size());
