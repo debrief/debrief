@@ -597,12 +597,19 @@ public class NatNarrativeViewer {
 				});
 			}
 		}
-//			else {
-//				
-//				bodyLayer.getBodyDataProvider().getList().clear();
-//				this.input = input;
-//				
-//		}
+			else {
+				if(!isShowingSource()) {
+					showSource.run();
+				}
+				if(!isShowingType()) {
+					showType.run();
+				}
+				hiddenCols.clear();
+				
+				bodyLayer.getBodyDataProvider().getList().clear();
+				this.input = input;
+				
+		}
 	}
 
 	public void setSearchMode(final boolean checked) {
@@ -625,10 +632,10 @@ public class NatNarrativeViewer {
 	}
 
 	public boolean isShowingSource() {
-		return showSource!=null?showSource.isChecked():true;
+		return !hiddenCols.contains(1);
 	}
 	
 	public boolean isShowingType() {
-		return showType!=null?showType.isChecked():true;
+		return !hiddenCols.contains(2);
 	}
 }
