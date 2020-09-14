@@ -68,7 +68,7 @@ public class RightClickPasteAdaptor implements RightClickEdit.PlottableMenuCreat
 
 			// remember stuff
 			// try to take a fresh clone of the data item
-			_data = cloneThis(data);
+			_data = CloneUtil.cloneThis(data);
 			_myClipboard = clipboard;
 			_theDestination = theDestination;
 			_theLayers = theLayers;
@@ -233,51 +233,7 @@ public class RightClickPasteAdaptor implements RightClickEdit.PlottableMenuCreat
 
 	private static Clipboard _clipboard;
 
-	//////////////////////////////////////////////
-	// clone items, using "Serializable" interface
-	/////////////////////////////////////////////////
-	static public Plottable cloneThis(final Plottable item) {
-		Plottable res = null;
-		try {
-			final ByteArrayOutputStream bas = new ByteArrayOutputStream();
-			final ObjectOutputStream oos = new ObjectOutputStream(bas);
-			oos.writeObject(item);
-			// get closure
-			oos.close();
-			bas.close();
-
-			// now get the item
-			final byte[] bt = bas.toByteArray();
-
-			// and read it back in as a new item
-			final ByteArrayInputStream bis = new ByteArrayInputStream(bt);
-
-			// create the reader with class loader from original ClassLoader
-			final ObjectInputStream iis = new ObjectInputStream(bis) {
-
-				@Override
-				protected Class<?> resolveClass(final ObjectStreamClass desc)
-						throws IOException, ClassNotFoundException {
-					return item.getClass().getClassLoader().loadClass(desc.getName());
-				}
-			};
-
-			// and read it in
-			final Object oj = iis.readObject();
-
-			// get more closure
-			bis.close();
-			iis.close();
-
-			if (oj instanceof Plottable) {
-				res = (Plottable) oj;
-			}
-		} catch (final Exception e) {
-			MWC.Utilities.Errors.Trace.trace(e);
-		}
-		return res;
-	}
-
+	
 	public RightClickPasteAdaptor() {
 	}
 
