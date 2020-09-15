@@ -407,6 +407,8 @@ public class GeoPDFBuilder {
 		final File tmpFile = File.createTempFile("debriefgdalbackground", ".tif");
 
 		tmpFile.delete();
+		
+		filesToDelete.add(tmpFile);
 
 		final Runtime runtime = Runtime.getRuntime();
 		final ArrayList<String> params = new ArrayList<String>();
