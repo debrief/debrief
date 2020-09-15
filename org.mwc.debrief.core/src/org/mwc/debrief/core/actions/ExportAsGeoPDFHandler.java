@@ -1,7 +1,13 @@
 package org.mwc.debrief.core.actions;
 
+import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.List;
 
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.MultiStatus;
+import org.eclipse.core.runtime.Status;
+import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.FileDialog;
 import org.mwc.cmap.geotools.gt2plot.WorldImageLayer;
@@ -37,10 +43,29 @@ public class ExportAsGeoPDFHandler extends CoreEditorAction {
 			}
 
 		} catch (Exception e) {
-			e.printStackTrace();
+			final MultiStatus status = createMultiStatus(e.getLocalizedMessage(), e);
+			
+			ErrorDialog.openError(getShell(), "Error", e.getMessage(), status);
 		}
 
 	}
+	
+	private static MultiStatus createMultiStatus(String msg, Throwable t) {
+
+        final List<Status> childStatuses = new ArrayList<>();
+        final StackTraceElement[] stackTraces = Thread.currentThread().getStackTrace();
+
+        for (StackTraceElement stackTrace: stackTraces) {
+            Status status = new Status(IStatus.ERROR,
+                    "Export GeoPDF", stackTrace.toString());
+            childStatuses.add(status);
+        }
+
+        final MultiStatus ms = new MultiStatus("com.vogella.tasks.ui",
+                IStatus.ERROR, childStatuses.toArray(new Status[] {}),
+                t.toString(), t);
+        return ms;
+    }
 
 	public void loadBackgroundLayers(final Layers theLayers, final GeoPDFConfiguration configuration) {
 		final Enumeration<Editable> enume = theLayers.elements();
