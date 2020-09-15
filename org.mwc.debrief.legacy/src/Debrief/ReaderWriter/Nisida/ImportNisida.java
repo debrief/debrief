@@ -378,7 +378,7 @@ public class ImportNisida {
 		// [DayTime/ATT/WPN/TGT Bearing/TGT RNGE in NM/TN / Own Lat/ Own Lon /Position
 		// Source /Remarks/]
 
-		// capture another “FixWrapper” for Own lat/lon
+		// capture another FixWrapper for Own lat/lon
 
 		// This is a comment, with "Attack" as Comment-Type
 
@@ -470,7 +470,7 @@ public class ImportNisida {
 			}
 
 			/**
-			 * Create a FixWrapper on the parent track for the “Own Lat/OwnLon” position.
+			 * Create a FixWrapper on the parent track for the “Own Lat/Long position.
 			 * Course/speed are zeroes
 			 */
 
@@ -551,7 +551,7 @@ public class ImportNisida {
 		// Lat/Buoy Lon/Remarks/]
 
 		// This is a comment (NarrativeEntry). As with other comments, we can use the
-		// current track name as “track”.
+		// current track name as tracks
 		final String operation = tokens[1];
 		final String operationUpper = operation.toUpperCase();
 		final String type;
