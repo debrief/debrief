@@ -76,6 +76,11 @@
 				<exclude name="**/package.htm*"/>
 			</fileset>
 		</copy>
+		<!-- Copy gdal binaries -->
+		<copy todir="${temp.folder}/debrief_legacy.jar.bin" failonerror="true" overwrite="false">
+			<fileset dir="native/" />
+		</copy>
+		
 		<jar destfile="${temp.folder}/debrief_legacy.jar" basedir="${temp.folder}/debrief_legacy.jar.bin">
 			<manifest>
 				<attribute name="Main-Class" value="Debrief.GUI.DebriefApp"/>

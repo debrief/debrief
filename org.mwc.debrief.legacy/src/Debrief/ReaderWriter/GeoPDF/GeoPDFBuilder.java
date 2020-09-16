@@ -17,7 +17,6 @@ package Debrief.ReaderWriter.GeoPDF;
 import java.awt.Color;
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -41,7 +40,6 @@ import Debrief.ReaderWriter.GeoPDF.GeoPDF.GeoPDFLayerTrack;
 import Debrief.ReaderWriter.GeoPDF.GeoPDF.GeoPDFLayerVector;
 import Debrief.ReaderWriter.GeoPDF.GeoPDF.GeoPDFLayerVector.LogicalStructure;
 import Debrief.ReaderWriter.GeoPDF.GeoPDF.GeoPDFPage;
-import Debrief.ReaderWriter.Replay.ImportReplay;
 import Debrief.Wrappers.TrackWrapper;
 import MWC.GUI.Editable;
 import MWC.GUI.Layers;
@@ -51,6 +49,8 @@ import net.n3.nanoxml.XMLWriter;
 
 public class GeoPDFBuilder {
 
+	public static String GDAL_NATIVE_PREFIX_FOLDER = "/native";
+	
 	public static class GeoPDFConfiguration {
 		public static final String SUCCESS_GDAL_DONE = "done.";
 		public static final String GDALWARP_RAW_COMMAND = "gdalwarp";
@@ -235,7 +235,16 @@ public class GeoPDFBuilder {
 		public static void createTemporalEnvironmentWindows(final String destinationFolder,
 				final String resourceFileListPath, final GeoPDFConfiguration configuration) throws IOException {
 
-			final InputStream filesToCopyStream = GeoPDFBuilder.class.getResourceAsStream(resourceFileListPath);
+			
+			final InputStream filesToCopyStream;
+			final String path = GeoPDFBuilder.class.getProtectionDomain().getCodeSource().getLocation().getPath();
+			if (path.endsWith("jar")) {
+				// we are running from a .jar
+				filesToCopyStream = GeoPDFBuilder.class.getResourceAsStream(GDAL_NATIVE_PREFIX_FOLDER + resourceFileListPath);
+			} else {
+				// we are running from Eclipse or an unit test
+				filesToCopyStream = GeoPDFBuilder.class.getResourceAsStream(resourceFileListPath);
+			}
 
 			final Scanner scanner = new Scanner(filesToCopyStream);
 			while (scanner.hasNextLine()) {
@@ -244,9 +253,14 @@ public class GeoPDFBuilder {
 				final Path destinationPath = Paths.get(destinationFolder + line);
 				Files.createDirectories(destinationPath.getParent());
 
-				Files.copy(GeoPDFConfiguration.class.getResourceAsStream(line), destinationPath,
-						StandardCopyOption.REPLACE_EXISTING);
-
+				if (path.endsWith("jar")) {
+					// we are running from a .jar
+					Files.copy(GeoPDFConfiguration.class.getResourceAsStream(GDAL_NATIVE_PREFIX_FOLDER + line), destinationPath,
+							StandardCopyOption.REPLACE_EXISTING);
+				}else {
+					Files.copy(GeoPDFConfiguration.class.getResourceAsStream(line), destinationPath,
+							StandardCopyOption.REPLACE_EXISTING);
+				}
 				if (line.contains(GDALWARP_RAW_COMMAND)) {
 					configuration.setGdalWarpCommand(destinationPath.toString());
 				}
@@ -407,7 +421,7 @@ public class GeoPDFBuilder {
 		final File tmpFile = File.createTempFile("debriefgdalbackground", ".tif");
 
 		tmpFile.delete();
-		
+
 		filesToDelete.add(tmpFile);
 
 		final Runtime runtime = Runtime.getRuntime();
@@ -564,32 +578,36 @@ public class GeoPDFBuilder {
 
 		public void testCreateTempFile() throws FileNotFoundException {
 			final File test = createTempFile("test.txt", "Test");
-			
+
 			final Scanner scanner = new Scanner(test);
 			assertEquals("Correct file writted with data", "Test", scanner.next());
 			scanner.close();
-			
+
 		}
 
 		public void testBuild() throws IOException, InterruptedException, NoSuchFieldException, SecurityException,
 				IllegalArgumentException, IllegalAccessException, ClassNotFoundException {
 
-			/*final Layers layers = new Layers();
-			final ImportReplay replayImporter = new ImportReplay();
-			replayImporter.importThis("boat1.rep", new FileInputStream(boat1rep), layers);
-			replayImporter.importThis("boat2.rep", new FileInputStream(boat2rep), layers);
-
-			final GeoPDFConfiguration configuration = new GeoPDFConfiguration();
-			configuration.addBackground("../org.mwc.cmap.combined.feature/root_installs/sample_data/SP27GTIF.tif");
-
-			final GeoPDF geoPdf = GeoPDFBuilder.build(layers, configuration);
-
-			configuration.setPdfOutputPath(System.getProperty("java.io.tmpdir") + File.separatorChar + "test.pdf");
-			GeoPDFBuilder.generatePDF(geoPdf, configuration);
-
-			System.out.println("PDF successfully generated at " + configuration.getPdfOutputPath());
-			System.out.println(geoPdf);*/
-			// We will cover this in the ticket 
+			/*
+			 * final Layers layers = new Layers(); final ImportReplay replayImporter = new
+			 * ImportReplay(); replayImporter.importThis("boat1.rep", new
+			 * FileInputStream(boat1rep), layers); replayImporter.importThis("boat2.rep",
+			 * new FileInputStream(boat2rep), layers);
+			 * 
+			 * final GeoPDFConfiguration configuration = new GeoPDFConfiguration();
+			 * configuration.addBackground(
+			 * "../org.mwc.cmap.combined.feature/root_installs/sample_data/SP27GTIF.tif");
+			 * 
+			 * final GeoPDF geoPdf = GeoPDFBuilder.build(layers, configuration);
+			 * 
+			 * configuration.setPdfOutputPath(System.getProperty("java.io.tmpdir") +
+			 * File.separatorChar + "test.pdf"); GeoPDFBuilder.generatePDF(geoPdf,
+			 * configuration);
+			 * 
+			 * System.out.println("PDF successfully generated at " +
+			 * configuration.getPdfOutputPath()); System.out.println(geoPdf);
+			 */
+			// We will cover this in the ticket
 			// https://github.com/debrief/debrief/issues/4969
 		}
 	}
