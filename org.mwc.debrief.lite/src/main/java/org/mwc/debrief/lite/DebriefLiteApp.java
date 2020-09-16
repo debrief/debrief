@@ -587,10 +587,7 @@ public class DebriefLiteApp implements FileDropListener {
 					Application.logError2(ToolParent.WARNING,
 							"We need to keep one background layer, to enable correct projection", null);
 				}
-			} else if(Layers.CHART_FEATURES.equals(theLayer.getName())){
-				Application.logError2(ToolParent.WARNING,
-						"Chart Features layer should always be present", null);
-			}else {
+			} else {
 				// and remove from the actual list
 				super.removeThisLayer(theLayer);
 			}
