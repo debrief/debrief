@@ -1,5 +1,6 @@
 package org.mwc.debrief.core.actions;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
@@ -61,7 +62,7 @@ public class ExportAsGeoPDFHandler extends CoreEditorAction {
             childStatuses.add(status);
         }
 
-        final MultiStatus ms = new MultiStatus("com.vogella.tasks.ui",
+        final MultiStatus ms = new MultiStatus("org.mwc.debrief.core",
                 IStatus.ERROR, childStatuses.toArray(new Status[] {}),
                 t.toString(), t);
         return ms;
@@ -73,7 +74,7 @@ public class ExportAsGeoPDFHandler extends CoreEditorAction {
 			final Editable currentEditable = enume.nextElement();
 			if (currentEditable instanceof WorldImageLayer) {
 				final WorldImageLayer tif = (WorldImageLayer) currentEditable;
-				if ("GeoTiff".equals(tif.getDataType())) {
+				if ("GeoTiff".equals(tif.getDataType()) && new File(tif.getName()).exists()) {
 					configuration.addBackground(tif.getFilename());
 				}
 			}
