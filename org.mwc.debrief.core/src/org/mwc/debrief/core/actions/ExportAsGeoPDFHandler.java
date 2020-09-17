@@ -75,7 +75,7 @@ public class ExportAsGeoPDFHandler extends CoreEditorAction {
 			final Editable currentEditable = enume.nextElement();
 			if (currentEditable instanceof WorldImageLayer) {
 				final WorldImageLayer tif = (WorldImageLayer) currentEditable;
-				if ("GeoTiff".equals(tif.getDataType()) && new File(tif.getName()).exists()) {
+				if ("GeoTiff".equals(tif.getDataType()) && new File(tif.getFilename()).exists()) {
 					configuration.addBackground(tif.getFilename());
 				}
 			}
