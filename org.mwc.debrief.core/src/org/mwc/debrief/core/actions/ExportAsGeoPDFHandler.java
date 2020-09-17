@@ -43,6 +43,7 @@ import MWC.GUI.Editable;
 import MWC.GUI.Layers;
 import MWC.GUI.PlainChart;
 import MWC.GUI.ToolParent;
+import MWC.GUI.Shapes.ChartBoundsWrapper;
 
 public class ExportAsGeoPDFHandler extends CoreEditorAction {
 
@@ -99,7 +100,7 @@ public class ExportAsGeoPDFHandler extends CoreEditorAction {
 			final Editable currentEditable = enume.nextElement();
 			if (currentEditable instanceof WorldImageLayer) {
 				final WorldImageLayer tif = (WorldImageLayer) currentEditable;
-				if ("GeoTiff".equals(tif.getDataType())) {
+				if (ChartBoundsWrapper.WORLDIMAGE_TYPE.equals(tif.getDataType())) {
 					if (new File(tif.getFilename()).exists()) {
 						configuration.addBackground(tif.getFilename());
 					} else {
