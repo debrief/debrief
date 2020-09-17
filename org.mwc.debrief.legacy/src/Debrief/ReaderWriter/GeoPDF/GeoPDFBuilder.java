@@ -621,8 +621,8 @@ public class GeoPDFBuilder {
 
 	public static class GeoPDFBuilderTest extends TestCase {
 
-		private final static String boat1rep = "../org.mwc.cmap.combined.feature/root_installs/sample_data/boat1.rep";
-		private final static String boat2rep = "../org.mwc.cmap.combined.feature/root_installs/sample_data/boat2.rep";
+//		private final static String boat1rep = "../org.mwc.cmap.combined.feature/root_installs/sample_data/boat1.rep";
+//		private final static String boat2rep = "../org.mwc.cmap.combined.feature/root_installs/sample_data/boat2.rep";
 
 		public void testCreateTempFile() throws FileNotFoundException {
 			final File test = createTempFile("test.txt", "Test");
