@@ -19,12 +19,19 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
 
+import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.MultiStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.FileDialog;
+import org.eclipse.ui.IEditorInput;
+import org.eclipse.ui.IEditorPart;
+import org.eclipse.ui.IWorkbenchPage;
+import org.eclipse.ui.IWorkbenchWindow;
+import org.eclipse.ui.PlatformUI;
 import org.mwc.cmap.geotools.gt2plot.WorldImageLayer;
 import org.mwc.cmap.plotViewer.actions.CoreEditorAction;
 
@@ -86,16 +93,47 @@ public class ExportAsGeoPDFHandler extends CoreEditorAction {
 	}
 
 	public void loadBackgroundLayers(final Layers theLayers, final GeoPDFConfiguration configuration) {
+
 		final Enumeration<Editable> enume = theLayers.elements();
 		while (enume.hasMoreElements()) {
 			final Editable currentEditable = enume.nextElement();
 			if (currentEditable instanceof WorldImageLayer) {
 				final WorldImageLayer tif = (WorldImageLayer) currentEditable;
-				if ("GeoTiff".equals(tif.getDataType()) && new File(tif.getFilename()).exists()) {
-					configuration.addBackground(tif.getFilename());
-				} else {
-					Application.logError3(ToolParent.INFO, "Ignoring background " + tif.getName()
-							+ " because it has a type non-geotif or file not found", null, false);
+				if ("GeoTiff".equals(tif.getDataType())) {
+					if (new File(tif.getFilename()).exists()) {
+						configuration.addBackground(tif.getFilename());
+					} else {
+
+						boolean found = false;
+						IWorkbenchWindow window = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
+						IWorkbenchPage activePage = window.getActivePage();
+
+						IEditorPart activeEditor = activePage.getActiveEditor();
+
+						if (activeEditor != null) {
+							IEditorInput input = activeEditor.getEditorInput();
+
+							IProject project = input.getAdapter(IProject.class);
+							if (project == null) {
+								IResource resource = input.getAdapter(IResource.class);
+								if (resource != null) {
+									project = resource.getProject();
+									final File fileInProjectFolder = new File(
+											project.getLocation().toString() + File.separatorChar + tif.getFilename());
+									if (fileInProjectFolder.exists()) {
+										found = true;
+										configuration.addBackground(fileInProjectFolder.getAbsolutePath());
+									}
+								}
+							}
+						}
+
+						if (!found) {
+							Application.logError3(ToolParent.INFO, "Ignoring background " + tif.getName()
+									+ " because it has a type non-geotif or file not found", null, false);
+						}
+					}
+
 				}
 			}
 		}
