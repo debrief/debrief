@@ -28,7 +28,6 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import Debrief.GUI.Frames.Session;
 import Debrief.ReaderWriter.Replay.ImportReplay;
-import Debrief.ReaderWriter.XML.DebriefXMLReaderWriter;
 import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.TrackWrapper;
 import Debrief.Wrappers.Track.TrackSegment;
