@@ -31,6 +31,7 @@ public class ExportAsGeoPDFHandler extends CoreEditorAction {
 			final GeoPDFConfiguration configuration = new GeoPDFConfiguration();
 			loadBackgroundLayers(theLayers, configuration);
 			configuration.setViewportArea(theChart.getProjectionArea());
+			configuration.setLandscape(theChart.getScreenSize().getWidth() > theChart.getScreenSize().getHeight());
 			
 			final FileDialog dialog = new FileDialog(getShell(), SWT.SAVE);
 			dialog.setFilterNames(new String[] { "PDF Files", "All Files (*.*)" });

@@ -106,13 +106,6 @@ public class GeoPDFBuilder {
 			this.viewportArea = viewportArea;
 		}
 
-		public void changePageOrientationAccordingToViewportArea() {
-			if (this.viewportArea != null) {
-				boolean desiredLandscape = this.viewportArea.getWidth() > this.viewportArea.getHeight();
-				setLandscape(desiredLandscape);
-			}
-		}
-
 		public String getPdfOutputPath() {
 			return pdfOutputPath;
 		}
