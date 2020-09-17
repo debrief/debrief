@@ -66,7 +66,7 @@ public class ExportAsGeoPDFHandler extends CoreEditorAction {
 				configuration.setPdfOutputPath(userFileName);
 				GeoPDF geoPdf = GeoPDFBuilder.build(theLayers, configuration);
 				Application.logError3(ToolParent.INFO,
-						"GeoPDF Compose files, background and environment are ready to be compiled.", null, false);
+						"GeoPDF- Compose files, background and environment are ready to be compiled.", null, false);
 				GeoPDFBuilder.generatePDF(geoPdf, configuration);
 			}
 
@@ -130,7 +130,7 @@ public class ExportAsGeoPDFHandler extends CoreEditorAction {
 						}
 
 						if (!found) {
-							Application.logError3(ToolParent.INFO, "Ignoring background " + tif.getName()
+							Application.logError3(ToolParent.INFO, "GeoPDF-Ignoring background " + tif.getName()
 									+ " because it has a type non-geotif or file not found", null, false);
 						}
 					}
