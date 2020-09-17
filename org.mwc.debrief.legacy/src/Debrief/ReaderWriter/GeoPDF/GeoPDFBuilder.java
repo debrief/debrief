@@ -220,14 +220,15 @@ public class GeoPDFBuilder {
 				IllegalArgumentException, IllegalAccessException, ClassNotFoundException {
 			final String os = System.getProperty("os.name").toLowerCase();
 			if (os.indexOf("win") != -1) {
-				Application.logError3(ToolParent.INFO, "Windows has been detected as the OS.", null, false);
+				Application.logError3(ToolParent.INFO, "GeoPDF-Windows has been detected as the OS.", null, false);
 				// We are on Windows
 				final File createCommandPath = new File(GeoPDFConfiguration.GDAL_CREATE_COMMAND_WINDOWS);
 				Application.logError3(ToolParent.INFO,
-						"We are going to check if the gdal binaries are available from a relative path.",
-						null, false);
+						"GeoPDF-We are going to check if the gdal binaries are available from a relative path.", null,
+						false);
 				if (createCommandPath.exists()) {
-					Application.logError3(ToolParent.INFO, "We are running Gdal binaries from relative path.", null, false);
+					Application.logError3(ToolParent.INFO, "GeoPDF-We are running Gdal binaries from relative path.",
+							null, false);
 					// We are running from Eclipse, we let's just run the command directly
 
 					this.setGdalCreateCommand(GeoPDFConfiguration.GDAL_CREATE_COMMAND_WINDOWS);
@@ -235,8 +236,8 @@ public class GeoPDFBuilder {
 					final File projFile = new File(ECLIPSE_GDAL_BIN_NATIVE_PATH + PROJ_PATH_TO_REGISTER);
 					registerEnvironmentVar(PROJ_ENV_VAR, projFile.getAbsolutePath());
 				} else {
-					Application.logError3(ToolParent.INFO, "We didn't find the files. We need to create a temporary environment",
-							null, false);
+					Application.logError3(ToolParent.INFO,
+							"GeoPDF-We didn't find the files. We need to create a temporary environment", null, false);
 					// We are inside the .jar file, we need to copy all the files to a Temporary
 					// folder.
 
@@ -249,10 +250,10 @@ public class GeoPDFBuilder {
 			} // we don't do the else, because by default it is Unit command.
 			else {
 				Application.logError3(ToolParent.INFO,
-						"We have detected an Unix-like system. We will assume gdal is installed.", null, false);
+						"GeoPDF-We have detected an Unix-like system. We will assume gdal is installed.", null, false);
 			}
 
-			Application.logError3(ToolParent.INFO, "Temporary environment is ready.", null, false);
+			Application.logError3(ToolParent.INFO, "GeoPDF-Temporary environment is ready.", null, false);
 			isReady = true;
 		}
 
@@ -263,8 +264,8 @@ public class GeoPDFBuilder {
 		public static void createTemporaryEnvironmentWindows(final String destinationFolder,
 				final String resourceFileListPath, final GeoPDFConfiguration configuration) throws IOException {
 
-			Application.logError3(ToolParent.INFO, "We are creating the Gdal binaries folder in " + destinationFolder,
-					null, false);
+			Application.logError3(ToolParent.INFO,
+					"GeoPDF-We are creating the Gdal binaries folder in " + destinationFolder, null, false);
 			final InputStream filesToCopyStream;
 			filesToCopyStream = GeoPDFBuilder.class
 					.getResourceAsStream(GDAL_NATIVE_PREFIX_FOLDER + resourceFileListPath);
@@ -287,7 +288,7 @@ public class GeoPDFBuilder {
 			}
 
 			scanner.close();
-			Application.logError3(ToolParent.INFO, "All binaries has been successfully copied.", null, false);
+			Application.logError3(ToolParent.INFO, "GeoPDF-All binaries has been successfully copied.", null, false);
 			try {
 				filesToCopyStream.close();
 			} catch (IOException e) {
@@ -319,7 +320,7 @@ public class GeoPDFBuilder {
 			paramsLog.append(p);
 			paramsLog.append(" ");
 		}
-		Application.logError3(ToolParent.INFO, paramsLog.toString(), null, false);
+		Application.logError3(ToolParent.INFO, "GeoPDF-" + paramsLog.toString(), null, false);
 		final Process process = runtime.exec(params.toArray(new String[] {}),
 				configuration.getEnvVariables().toArray(new String[] {}));
 		process.waitFor();
@@ -333,7 +334,7 @@ public class GeoPDFBuilder {
 			allOutput.append(line + "\n");
 		}
 
-		Application.logError3(ToolParent.INFO, "Output: " + allOutput.toString(), null, false);
+		Application.logError3(ToolParent.INFO, "GeoPDF-Output: " + allOutput.toString(), null, false);
 		if (allOutput.toString().trim().isEmpty()) {
 			// SUCCESS
 			return tmpFile;
@@ -343,7 +344,7 @@ public class GeoPDFBuilder {
 		while ((line = gdalWarpErrorStream.readLine()) != null) {
 			allOutput.append(line + "\n");
 		}
-		Application.logError3(ToolParent.INFO, "Error generating the PDF: " + allOutput.toString(), null, false);
+		Application.logError3(ToolParent.INFO, "GeoPDF-Error generating the PDF: " + allOutput.toString(), null, false);
 		throw new IOException(allOutput.toString());
 	}
 
@@ -351,7 +352,8 @@ public class GeoPDFBuilder {
 			throws IOException, InterruptedException, NoSuchFieldException, SecurityException, IllegalArgumentException,
 			IllegalAccessException, ClassNotFoundException {
 		if (!configuration.isReady()) {
-			Application.logError3(ToolParent.INFO, "GDAL Temporary environment is about to be prepared.", null, false);
+			Application.logError3(ToolParent.INFO, "GeoPDF-GDAL Temporary environment is about to be prepared.", null,
+					false);
 			configuration.prepareGdalEnvironment();
 		}
 		final GeoPDF geoPDF = new GeoPDF();
@@ -459,13 +461,13 @@ public class GeoPDFBuilder {
 		}
 		params.add(background);
 		params.add(tmpFile.getAbsolutePath());
-		
+
 		final StringBuilder paramsLog = new StringBuilder();
 		for (String p : params) {
 			paramsLog.append(p);
 			paramsLog.append(" ");
 		}
-		Application.logError3(ToolParent.INFO, paramsLog.toString(), null, false);
+		Application.logError3(ToolParent.INFO, "GeoPDF-" + paramsLog.toString(), null, false);
 		final Process process = runtime.exec(params.toArray(new String[] {}),
 				configuration.getEnvVariables().toArray(new String[] {}));
 		process.waitFor();
@@ -479,20 +481,22 @@ public class GeoPDFBuilder {
 			allOutput.append(line + "\n");
 		}
 
-		Application.logError3(ToolParent.INFO, "Output: " + allOutput.toString(), null, false);
+		Application.logError3(ToolParent.INFO, "GeoPDF-Output: " + allOutput.toString(), null, false);
 		if (allOutput.toString().trim().endsWith(GeoPDFConfiguration.SUCCESS_GDAL_DONE)) {
 			// SUCCESS
-			Application.logError3(ToolParent.INFO, "Reported as a successful background conversion.", null, false);
+			Application.logError3(ToolParent.INFO, "GeoPDF-Reported as a successful background conversion.", null,
+					false);
 			return tmpFile;
 		}
 		// SUCCESS
-		Application.logError3(ToolParent.INFO, "Problem detected while converting the background file.", null, false);
+		Application.logError3(ToolParent.INFO, "GeoPDF-Problem detected while converting the background file.", null,
+				false);
 
 		allOutput.setLength(0);
 		while ((line = gdalWarpErrorStream.readLine()) != null) {
 			allOutput.append(line + "\n");
 		}
-		Application.logError3(ToolParent.INFO, allOutput.toString(), null, false);
+		Application.logError3(ToolParent.INFO, "GeoPDF-" + allOutput.toString(), null, false);
 		throw new IOException(allOutput.toString());
 	}
 
