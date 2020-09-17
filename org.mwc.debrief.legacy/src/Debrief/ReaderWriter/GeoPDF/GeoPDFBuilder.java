@@ -50,7 +50,7 @@ import net.n3.nanoxml.XMLWriter;
 public class GeoPDFBuilder {
 
 	public static String GDAL_NATIVE_PREFIX_FOLDER = "/native";
-	
+
 	public static class GeoPDFConfiguration {
 		public static final String SUCCESS_GDAL_DONE = "done.";
 		public static final String GDALWARP_RAW_COMMAND = "gdalwarp";
@@ -78,7 +78,21 @@ public class GeoPDFBuilder {
 		private String gdalCreateCommand = GDAL_CREATE_RAW_COMMAND;
 		private String[] gdalCreateParams = "-of PDF -co".split(" ");
 		private String pdfOutputPath;
+		private boolean landscape = true;
 		private List<String> envVariables = new ArrayList<String>();
+
+		public boolean isLandscape() {
+			return landscape;
+		}
+
+		public void setLandscape(boolean landscape) {
+			if (this.landscape != landscape) {
+				this.landscape = landscape;
+				double tmp = pageWidth;
+				pageWidth = pageHeight;
+				pageHeight = tmp;
+			}
+		}
 
 		public List<String> getEnvVariables() {
 			return envVariables;
@@ -90,6 +104,13 @@ public class GeoPDFBuilder {
 
 		public void setViewportArea(WorldArea viewportArea) {
 			this.viewportArea = viewportArea;
+		}
+
+		public void changePageOrientationAccordingToViewportArea() {
+			if (this.viewportArea != null) {
+				boolean desiredLandscape = this.viewportArea.getWidth() > this.viewportArea.getHeight();
+				setLandscape(desiredLandscape);
+			}
 		}
 
 		public String getPdfOutputPath() {
@@ -235,16 +256,9 @@ public class GeoPDFBuilder {
 		public static void createTemporalEnvironmentWindows(final String destinationFolder,
 				final String resourceFileListPath, final GeoPDFConfiguration configuration) throws IOException {
 
-			
 			final InputStream filesToCopyStream;
-			final String path = GeoPDFBuilder.class.getProtectionDomain().getCodeSource().getLocation().getPath();
-			if (path.endsWith("jar")) {
-				// we are running from a .jar
-				filesToCopyStream = GeoPDFBuilder.class.getResourceAsStream(GDAL_NATIVE_PREFIX_FOLDER + resourceFileListPath);
-			} else {
-				// we are running from Eclipse or an unit test
-				filesToCopyStream = GeoPDFBuilder.class.getResourceAsStream(resourceFileListPath);
-			}
+			filesToCopyStream = GeoPDFBuilder.class
+					.getResourceAsStream(GDAL_NATIVE_PREFIX_FOLDER + resourceFileListPath);
 
 			final Scanner scanner = new Scanner(filesToCopyStream);
 			while (scanner.hasNextLine()) {
@@ -253,14 +267,8 @@ public class GeoPDFBuilder {
 				final Path destinationPath = Paths.get(destinationFolder + line);
 				Files.createDirectories(destinationPath.getParent());
 
-				if (path.endsWith("jar")) {
-					// we are running from a .jar
-					Files.copy(GeoPDFConfiguration.class.getResourceAsStream(GDAL_NATIVE_PREFIX_FOLDER + line), destinationPath,
-							StandardCopyOption.REPLACE_EXISTING);
-				}else {
-					Files.copy(GeoPDFConfiguration.class.getResourceAsStream(line), destinationPath,
-							StandardCopyOption.REPLACE_EXISTING);
-				}
+				Files.copy(GeoPDFConfiguration.class.getResourceAsStream(GDAL_NATIVE_PREFIX_FOLDER + line),
+						destinationPath, StandardCopyOption.REPLACE_EXISTING);
 				if (line.contains(GDALWARP_RAW_COMMAND)) {
 					configuration.setGdalWarpCommand(destinationPath.toString());
 				}
