@@ -54,7 +54,7 @@ public class ExportAsGeoPDFHandler extends CoreEditorAction {
 	private static MultiStatus createMultiStatus(String msg, Throwable t) {
 
         final List<Status> childStatuses = new ArrayList<>();
-        final StackTraceElement[] stackTraces = Thread.currentThread().getStackTrace();
+        final StackTraceElement[] stackTraces = t.getStackTrace();
 
         for (StackTraceElement stackTrace: stackTraces) {
             Status status = new Status(IStatus.ERROR,
