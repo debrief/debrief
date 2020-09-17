@@ -482,7 +482,7 @@ public class GeoPDFBuilder {
 		Application.logError3(ToolParent.INFO, "Output: " + allOutput.toString(), null, false);
 		if (allOutput.toString().trim().endsWith(GeoPDFConfiguration.SUCCESS_GDAL_DONE)) {
 			// SUCCESS
-			Application.logError3(ToolParent.INFO, "Determined like a successful background conversion.", null, false);
+			Application.logError3(ToolParent.INFO, "Reported as a successful background conversion.", null, false);
 			return tmpFile;
 		}
 		// SUCCESS
