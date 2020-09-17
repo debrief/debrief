@@ -486,7 +486,7 @@ public class GeoPDFBuilder {
 			return tmpFile;
 		}
 		// SUCCESS
-		Application.logError3(ToolParent.INFO, "Problem detected while convering the background file.", null, false);
+		Application.logError3(ToolParent.INFO, "Problem detected while converting the background file.", null, false);
 
 		allOutput.setLength(0);
 		while ((line = gdalWarpErrorStream.readLine()) != null) {
