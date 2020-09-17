@@ -300,6 +300,8 @@ public class GeoPDFBuilder {
 	public static File generatePDF(final GeoPDF geoPDF, final GeoPDFConfiguration configuration)
 			throws IOException, InterruptedException {
 		final File tmpFile = File.createTempFile("compositionFileDebrief", ".xml");
+		Application.logError3(ToolParent.INFO, "GeoPDF-Creating temporary composition file in " + tmpFile.getAbsolutePath() , null,
+				false);
 
 		final FileOutputStream fileOutputStream = new FileOutputStream(tmpFile);
 		final XMLWriter xmlWrite = new XMLWriter(fileOutputStream);
@@ -599,6 +601,8 @@ public class GeoPDFBuilder {
 	private static File createTempFile(final String fileName, final String data) throws FileNotFoundException {
 		final String tempFolder = System.getProperty("java.io.tmpdir");
 		final File newFile = new File(tempFolder + File.separatorChar + fileName);
+		Application.logError3(ToolParent.INFO, "GeoPDF-Creating temporary file in " + newFile.getAbsolutePath() , null,
+				false);
 
 		PrintWriter print = null;
 		try {
