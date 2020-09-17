@@ -237,10 +237,10 @@ public class GeoPDFBuilder {
 				} else {
 					Application.logError3(ToolParent.INFO, "We didn't find the files. We need to create a temporary environment",
 							null, false);
-					// We are inside the .jar file, we need to copy all the files to a temporal
+					// We are inside the .jar file, we need to copy all the files to a Temporary
 					// folder.
 
-					createTemporalEnvironmentWindows(System.getProperty("java.io.tmpdir") + File.separatorChar,
+					createTemporaryEnvironmentWindows(System.getProperty("java.io.tmpdir") + File.separatorChar,
 							"/windows-files.txt", this);
 					registerEnvironmentVar(PROJ_ENV_VAR,
 							System.getProperty("java.io.tmpdir") + File.separatorChar + PROJ_PATH_TO_REGISTER);
@@ -252,7 +252,7 @@ public class GeoPDFBuilder {
 						"We have detected an Unix-like system. We will assume gdal is installed.", null, false);
 			}
 
-			Application.logError3(ToolParent.INFO, "Temporal environment is ready.", null, false);
+			Application.logError3(ToolParent.INFO, "Temporary environment is ready.", null, false);
 			isReady = true;
 		}
 
@@ -260,7 +260,7 @@ public class GeoPDFBuilder {
 			envVariables.add(key + "=" + value);
 		}
 
-		public static void createTemporalEnvironmentWindows(final String destinationFolder,
+		public static void createTemporaryEnvironmentWindows(final String destinationFolder,
 				final String resourceFileListPath, final GeoPDFConfiguration configuration) throws IOException {
 
 			Application.logError3(ToolParent.INFO, "We are creating the Gdal binaries folder in " + destinationFolder,
@@ -351,7 +351,7 @@ public class GeoPDFBuilder {
 			throws IOException, InterruptedException, NoSuchFieldException, SecurityException, IllegalArgumentException,
 			IllegalAccessException, ClassNotFoundException {
 		if (!configuration.isReady()) {
-			Application.logError3(ToolParent.INFO, "GDAL Temporal environment is about to be prepared.", null, false);
+			Application.logError3(ToolParent.INFO, "GDAL Temporary environment is about to be prepared.", null, false);
 			configuration.prepareGdalEnvironment();
 		}
 		final GeoPDF geoPDF = new GeoPDF();
