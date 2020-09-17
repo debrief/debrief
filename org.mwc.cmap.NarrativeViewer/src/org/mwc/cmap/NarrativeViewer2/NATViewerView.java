@@ -294,7 +294,7 @@ public class NATViewerView extends ViewPart implements PropertyChangeListener, I
 			}
 
 			private void uiUpdate() {
-				Display.getDefault().syncExec(new Runnable() {
+				Display.getDefault().asyncExec(new Runnable() {
 					@Override
 					public void run() {
 						setInput(_myRollingNarrative);
