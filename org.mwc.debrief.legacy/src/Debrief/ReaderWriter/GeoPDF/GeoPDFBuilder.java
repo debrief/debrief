@@ -40,6 +40,7 @@ import Debrief.ReaderWriter.GeoPDF.GeoPDF.GeoPDFLayerBackground;
 import Debrief.ReaderWriter.GeoPDF.GeoPDF.GeoPDFLayerTrack;
 import Debrief.ReaderWriter.GeoPDF.GeoPDF.GeoPDFLayerVector;
 import Debrief.ReaderWriter.GeoPDF.GeoPDF.GeoPDFLayerVector.LogicalStructure;
+import Debrief.ReaderWriter.GeoPDF.GeoPDF.GeoPDFLayerVectorLabel;
 import Debrief.ReaderWriter.GeoPDF.GeoPDF.GeoPDFPage;
 import Debrief.Wrappers.TrackWrapper;
 import MWC.GUI.Editable;
@@ -508,7 +509,7 @@ public class GeoPDFBuilder {
 
 		final String layerName = currentTrack.getName() + "_FirstPoint";
 		final GeoJSONConfiguration geoJSONConfiguration = new GeoJSONConfiguration(-1, true, true, layerName);
-		final GeoPDFLayerVector deltaMinutesVector = new GeoPDFLayerVector();
+		final GeoPDFLayerVectorLabel deltaMinutesVector = new GeoPDFLayerVectorLabel();
 		final String vectorData = GenerateGeoJSON.createGeoJSONTrackPoints(currentTrack, geoJSONConfiguration);
 
 		final File deltaMinutesFile = createTempFile(layerName + ".geojson", vectorData);
@@ -533,7 +534,7 @@ public class GeoPDFBuilder {
 				+ "mins";
 		final GeoJSONConfiguration geoJSONConfiguration = new GeoJSONConfiguration(configuration.getLabelDeltaMinutes(),
 				true, false, layerName);
-		final GeoPDFLayerVector deltaMinutesVector = new GeoPDFLayerVector();
+		final GeoPDFLayerVectorLabel deltaMinutesVector = new GeoPDFLayerVectorLabel();
 		final String deltaMinutesVectorData = GenerateGeoJSON.createGeoJSONTrackPoints(currentTrack,
 				geoJSONConfiguration);
 

@@ -29,7 +29,7 @@ import net.n3.nanoxml.XMLWriter;
 public class GeoPDF {
 
 	private final ArrayList<File> filesToDelete = new ArrayList<File>();
-	
+
 	public ArrayList<File> getFilesToDelete() {
 		return filesToDelete;
 	}
@@ -256,6 +256,17 @@ public class GeoPDF {
 
 			return vectorXML;
 		}
+	}
+
+	public static class GeoPDFLayerVectorLabel extends GeoPDFLayerVector {
+
+		@Override
+		public IXMLElement toXML(String geoReferenceId) {
+			final IXMLElement ans = super.toXML(geoReferenceId);
+			ans.setName("VectorLabel");
+			return ans;
+		}
+		
 	}
 
 	public static abstract class GeoPDFLayer {
