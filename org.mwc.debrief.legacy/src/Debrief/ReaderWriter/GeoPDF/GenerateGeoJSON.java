@@ -255,7 +255,6 @@ public class GenerateGeoJSON {
 
 				properties.put("elevation", point.getDepth());
 				properties.put("time", simpleDateFormat.format(point.getTime().getDate()));
-				properties.put("heading", "null");
 				properties.put("course", point.getCourse());
 				properties.put("speed", point.getSpeed());
 
