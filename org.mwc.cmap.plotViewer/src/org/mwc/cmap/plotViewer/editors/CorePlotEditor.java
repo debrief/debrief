@@ -25,7 +25,9 @@ import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.image.BufferedImage;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.io.File;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.util.Iterator;
 import java.util.Vector;
 
@@ -75,6 +77,7 @@ import org.eclipse.ui.SubActionBars2;
 import org.eclipse.ui.actions.ActionFactory;
 import org.eclipse.ui.contexts.IContextActivation;
 import org.eclipse.ui.contexts.IContextService;
+import org.eclipse.ui.ide.FileStoreEditorInput;
 import org.eclipse.ui.operations.RedoActionHandler;
 import org.eclipse.ui.operations.UndoActionHandler;
 import org.eclipse.ui.part.EditorPart;
@@ -359,7 +362,8 @@ public abstract class CorePlotEditor extends EditorPart implements IResourceProv
 				if (theLayer instanceof ExternallyManagedDataLayer) {
 					final ExternallyManagedDataLayer dl = (ExternallyManagedDataLayer) theLayer;
 					if (dl.getDataType().equals(MWC.GUI.Shapes.ChartBoundsWrapper.WORLDIMAGE_TYPE)) {
-						final GeoToolsLayer gt = new WorldImageLayer(dl.getName(), dl.getFilename());
+						
+						final GeoToolsLayer gt = new WorldImageLayer(dl.getName(), getFixedFilePath(dl.getFilename()));
 
 						gt.setVisible(dl.getVisible());
 						_myGeoHandler.addGeoToolsLayer(gt);
@@ -530,6 +534,35 @@ public abstract class CorePlotEditor extends EditorPart implements IResourceProv
 		// return "SELECTION PAINTER";
 		// }
 		// };
+	}
+
+	protected String getFixedFilePath(final String fileName) {
+		String tiffFilePath = null;
+		final File tifFile = new File(fileName);
+		if(tifFile.exists()) {
+			//this is a valid absolute path, so load this file
+			tiffFilePath = tifFile.getAbsolutePath();
+		}
+		else {
+			//check the file open in editor and get its file system location.
+			IEditorInput input = (IEditorInput)getEditorInput();
+			if(input instanceof IFileEditorInput) {
+				String dpfFilePath = ((IFileEditorInput)getEditorInput()).getFile().getParent().getLocation().toFile().getAbsolutePath();
+				tiffFilePath = dpfFilePath+File.separator+tifFile;
+			}
+			else if(input instanceof FileStoreEditorInput) {
+				//if the file is dragged from outside workspace, get the location of the plot file 
+				try {
+					File localFile = new File(((FileStoreEditorInput)input).getURI().toURL().getFile());
+					if(localFile!=null) {
+						tiffFilePath = localFile.getParentFile().getAbsolutePath()+File.separator+tifFile;
+					}
+				} catch (MalformedURLException e) {
+					MWC.Utilities.Errors.Trace.trace(e, fileName+"File doesnt exist and couldnt be loaded");
+				}
+			}
+		}
+		return tiffFilePath;
 	}
 
 	/**
