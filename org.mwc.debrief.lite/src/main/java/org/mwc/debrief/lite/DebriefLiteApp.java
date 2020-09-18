@@ -585,7 +585,7 @@ public class DebriefLiteApp implements FileDropListener {
 					super.removeThisLayer(theLayer);
 				} else {
 					Application.logError2(ToolParent.WARNING,
-							"We need to keep one backround layer, to enable correct projection", null);
+							"We need to keep one background layer, to enable correct projection", null);
 				}
 			} else {
 				// and remove from the actual list
