@@ -378,7 +378,13 @@ abstract public class PlainCreate extends PlainTool {
 	 * @return Chart Features layer
 	 */
 	private Layer getDestinationLayer() {
-		final Layer layer = _theData.findLayer(Layers.CHART_FEATURES);
+		Layer layer = _theData.findLayer(Layers.CHART_FEATURES);
+		if(layer == null) {
+			layer = new BaseLayer();
+			layer.setName(Layers.CHART_FEATURES);
+			_theData.addThisLayer(layer);
+			
+		}
 		return layer;
 	}
 
