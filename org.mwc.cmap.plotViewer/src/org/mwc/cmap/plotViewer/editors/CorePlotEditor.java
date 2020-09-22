@@ -50,6 +50,7 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IAction;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.ISelectionProvider;
@@ -561,6 +562,11 @@ public abstract class CorePlotEditor extends EditorPart implements IResourceProv
 					MWC.Utilities.Errors.Trace.trace(e, fileName+"File doesnt exist and couldnt be loaded");
 				}
 			}
+		}
+		File tiffFile = new File(tiffFilePath);
+		if(!tiffFile.exists()) {
+			CorePlugin.showMessage("Error loading file", "Could not find the GeoTiff File. Please fix the path in the file and load again");
+			return fileName;	
 		}
 		return tiffFilePath;
 	}
