@@ -363,12 +363,14 @@ public abstract class CorePlotEditor extends EditorPart implements IResourceProv
 				if (theLayer instanceof ExternallyManagedDataLayer) {
 					final ExternallyManagedDataLayer dl = (ExternallyManagedDataLayer) theLayer;
 					if (dl.getDataType().equals(MWC.GUI.Shapes.ChartBoundsWrapper.WORLDIMAGE_TYPE)) {
-						
-						final GeoToolsLayer gt = new WorldImageLayer(dl.getName(), getFixedFilePath(dl.getFilename()));
+						final String filePath = getFixedFilePath(dl.getFilename());
+						if(filePath!=null) {
+							final GeoToolsLayer gt = new WorldImageLayer(dl.getName(), getFixedFilePath(dl.getFilename()));
 
-						gt.setVisible(dl.getVisible());
-						_myGeoHandler.addGeoToolsLayer(gt);
-						wrappedLayer = gt;
+							gt.setVisible(dl.getVisible());
+							_myGeoHandler.addGeoToolsLayer(gt);
+							wrappedLayer = gt;
+						}
 					} else if (dl.getDataType().equals(MWC.GUI.Shapes.ChartBoundsWrapper.SHAPEFILE_TYPE)) {
 						// just see if it's a raster extent layer (special processing)
 						if (dl.getName().equals(WorldImageLayer.RASTER_FILE)) {
