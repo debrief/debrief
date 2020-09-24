@@ -32,8 +32,11 @@ import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
+import org.mwc.cmap.core.interfaces.TimeControllerOperation;
 import org.mwc.cmap.geotools.gt2plot.WorldImageLayer;
 import org.mwc.cmap.plotViewer.actions.CoreEditorAction;
+import org.mwc.cmap.plotViewer.actions.IChartBasedEditor;
+import org.mwc.debrief.core.editors.PlotEditor;
 
 import Debrief.GUI.Frames.Application;
 import Debrief.ReaderWriter.GeoPDF.GeoPDF;
@@ -45,6 +48,7 @@ import MWC.GUI.PlainChart;
 import MWC.GUI.ToolParent;
 import MWC.GUI.Shapes.ChartBoundsWrapper;
 import MWC.GenericData.TimePeriod;
+import MWC.TacticalData.temporal.TimeControlPreferences;
 
 public class ExportAsGeoPDFHandler extends CoreEditorAction {
 
@@ -55,6 +59,15 @@ public class ExportAsGeoPDFHandler extends CoreEditorAction {
 			final Layers theLayers = theChart.getLayers();
 			final TimePeriod period = theLayers.getTimePeriod();
 			final GeoPDFConfiguration configuration = new GeoPDFConfiguration();
+			final IChartBasedEditor editorBasedEditor = getEditor();
+
+			if (editorBasedEditor instanceof PlotEditor) {
+				final PlotEditor actualEditor = (PlotEditor) editorBasedEditor;
+				final TimeControlPreferences pref = (TimeControlPreferences) actualEditor.getAdapter(TimeControlPreferences.class);
+				if (pref != null) {
+					configuration.setStepDeltaMilliSeconds(pref.getLargeStep().getMillis());
+				}
+			}
 			loadBackgroundLayers(theLayers, configuration);
 			configuration.setViewportArea(theChart.getCanvas().getProjection().getVisibleDataArea());
 			configuration.setLandscape(theChart.getScreenSize().getWidth() > theChart.getScreenSize().getHeight());

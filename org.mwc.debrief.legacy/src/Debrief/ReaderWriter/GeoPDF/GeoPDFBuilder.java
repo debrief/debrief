@@ -603,7 +603,8 @@ public class GeoPDFBuilder {
 			final TimePeriod period) throws FileNotFoundException, JsonProcessingException {
 
 		final String layerName = currentTrack.getName() + "_FirstPoint";
-		final GeoJSONConfiguration geoJSONConfiguration = new GeoJSONConfiguration(-1, true, true, layerName, null);
+		final GeoJSONConfiguration geoJSONConfiguration = new GeoJSONConfiguration(-1, true, true, layerName, null,
+				null);
 		final GeoPDFLayerVectorLabel deltaMinutesVector = new GeoPDFLayerVectorLabel();
 		final String vectorData = GenerateGeoJSON.createGeoJSONTrackPoints(currentTrack, geoJSONConfiguration);
 
@@ -628,7 +629,7 @@ public class GeoPDFBuilder {
 		final String layerName = currentTrack.getName() + "_PointsLabels_" + configuration.getLabelDeltaMinutes()
 				+ "mins" + "_" + HiResDateToFileName(period.getStartDTG());
 		final GeoJSONConfiguration geoJSONConfiguration = new GeoJSONConfiguration(configuration.getLabelDeltaMinutes(),
-				true, false, layerName, period);
+				true, false, layerName, period, new HiResDate(configuration.getStepDeltaMilliSeconds()));
 		final GeoPDFLayerVectorLabel deltaMinutesVector = new GeoPDFLayerVectorLabel();
 		final String deltaMinutesVectorData = GenerateGeoJSON.createGeoJSONTrackPoints(currentTrack,
 				geoJSONConfiguration);
@@ -653,7 +654,7 @@ public class GeoPDFBuilder {
 		final String layerName = currentTrack.getName() + "_Points_" + configuration.getMarkDeltaMinutes() + "mins"
 				+ "_" + HiResDateToFileName(period.getStartDTG());
 		final GeoJSONConfiguration geoJSONConfiguration = new GeoJSONConfiguration(configuration.getMarkDeltaMinutes(),
-				false, false, layerName, period);
+				false, false, layerName, period, new HiResDate(configuration.getStepDeltaMilliSeconds()));
 		final GeoPDFLayerVector deltaMinutesVector = new GeoPDFLayerVector();
 		final String deltaMinutesVectorData = GenerateGeoJSON.createGeoJSONTrackPoints(currentTrack,
 				geoJSONConfiguration);
@@ -691,7 +692,7 @@ public class GeoPDFBuilder {
 
 		final String layerName = currentTrack.getName() + "_Line_" + HiResDateToFileName(period.getStartDTG());
 		final GeoPDFLayerVector trackLineVector = new GeoPDFLayerVector();
-		final GeoJSONConfiguration configuration = new GeoJSONConfiguration(0, false, false, layerName, period);
+		final GeoJSONConfiguration configuration = new GeoJSONConfiguration(0, false, false, layerName, period, null);
 		final String vectorTrackLineData = GenerateGeoJSON.createGeoJSONTrackLine(currentTrack, configuration);
 
 		final File trackLineFile = createTempFile(layerName + ".geojson", vectorTrackLineData);

@@ -50,15 +50,21 @@ public class GenerateGeoJSON {
 		private final boolean onlyFirstPoint;
 		private final String layerName;
 		private final TimePeriod period;
+		private final HiResDate step;
 
 		public GeoJSONConfiguration(int timeDeltaMinutes, boolean isLabel, boolean onlyFirstPoint, String layerName,
-				final TimePeriod period) {
+				TimePeriod period, HiResDate step) {
 			super();
 			this.timeDeltaMinutes = timeDeltaMinutes;
 			this.isLabel = isLabel;
 			this.onlyFirstPoint = onlyFirstPoint;
 			this.layerName = layerName;
 			this.period = period;
+			this.step = step;
+		}
+
+		public HiResDate getStep() {
+			return step;
 		}
 
 		public String getLayerName() {
@@ -120,6 +126,12 @@ public class GenerateGeoJSON {
 			jsonRoot.put("name", currentTrack.getName());
 		}
 
+		final TimePeriod periodToUse;
+		if (configuration.getPeriod() != null) {
+			periodToUse = configuration.getPeriod();
+		}else {
+			periodToUse = new BaseTimePeriod(currentTrack.getStartDTG(), currentTrack.getEndDTG());
+		}
 		final ObjectNode crcJson = mapper.createObjectNode();
 		crcJson.put("type", "name");
 
@@ -139,8 +151,8 @@ public class GenerateGeoJSON {
 		final ObjectNode featuresProperty = mapper.createObjectNode();
 
 		final SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ssZ");
-		featuresProperty.put("begin", simpleDateFormat.format(currentTrack.getStartDTG().getDate()));
-		featuresProperty.put("end", simpleDateFormat.format(currentTrack.getEndDTG().getDate()));
+		featuresProperty.put("begin", simpleDateFormat.format(periodToUse.getStartDTG().getDate()));
+		featuresProperty.put("end", simpleDateFormat.format(periodToUse.getEndDTG().getDate()));
 
 		featureJson.set("properties", featuresProperty);
 
@@ -181,8 +193,7 @@ public class GenerateGeoJSON {
 							/**
 							 * Only visible objects :)
 							 */
-							if (currentFixWrapper.getVisible() && (configuration.getPeriod() == null
-									|| configuration.getPeriod().contains(currentFixWrapper.getDTG()))) {
+							if (currentFixWrapper.getVisible() && periodToUse.contains(currentFixWrapper.getDTG())) {
 								// Ok, so now let's add this position to the position list.
 								final Point newPosition = new Point(currentFixWrapper.getLocation().getLong(),
 										currentFixWrapper.getLocation().getLat());
@@ -350,7 +361,7 @@ public class GenerateGeoJSON {
 			replayImporter.importThis("boat1.rep", new FileInputStream(boat1rep), layers);
 
 			final TrackWrapper track = (TrackWrapper) layers.findLayer("COLLINGWOOD", true);
-			final GeoJSONConfiguration config = new GeoJSONConfiguration(-1, false, false, null, null);
+			final GeoJSONConfiguration config = new GeoJSONConfiguration(-1, false, false, null, null, null);
 			final String jsonTrackLineString = GenerateGeoJSON.createGeoJSONTrackLine(track, config);
 
 			final ObjectMapper mapper = new ObjectMapper();
@@ -410,7 +421,7 @@ public class GenerateGeoJSON {
 			final TrackWrapper track = (TrackWrapper) layers.findLayer("COLLINGWOOD", true);
 
 			String geoJsonData = GenerateGeoJSON.createGeoJSONTrackPoints(track,
-					new GeoJSONConfiguration(10, false, false, null, null));
+					new GeoJSONConfiguration(10, false, false, null, null, null));
 
 			final ObjectMapper mapper = new ObjectMapper();
 			final ObjectNode collingwood = mapper.readValue(geoJsonData, ObjectNode.class);
@@ -479,7 +490,7 @@ public class GenerateGeoJSON {
 			final TrackWrapper track = (TrackWrapper) layers.findLayer("COLLINGWOOD", true);
 
 			String geoJsonData = GenerateGeoJSON.createGeoJSONTrackPoints(track,
-					new GeoJSONConfiguration(20, true, false, null, null));
+					new GeoJSONConfiguration(20, true, false, null, null, null));
 
 			final ObjectMapper mapper = new ObjectMapper();
 			final ObjectNode collingwood = mapper.readValue(geoJsonData, ObjectNode.class);
@@ -548,7 +559,7 @@ public class GenerateGeoJSON {
 			final TrackWrapper track = (TrackWrapper) layers.findLayer("COLLINGWOOD", true);
 
 			String geoJsonData = GenerateGeoJSON.createGeoJSONTrackLine(track,
-					new GeoJSONConfiguration(-1, true, false, null, null));
+					new GeoJSONConfiguration(-1, true, false, null, null, null));
 
 			final ObjectMapper mapper = new ObjectMapper();
 			final ObjectNode collingwood = mapper.readValue(geoJsonData, ObjectNode.class);
