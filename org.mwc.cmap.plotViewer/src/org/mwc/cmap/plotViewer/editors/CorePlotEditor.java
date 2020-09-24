@@ -365,7 +365,7 @@ public abstract class CorePlotEditor extends EditorPart implements IResourceProv
 					if (dl.getDataType().equals(MWC.GUI.Shapes.ChartBoundsWrapper.WORLDIMAGE_TYPE)) {
 						final String filePath = getFixedFilePath(dl.getFilename());
 						if(filePath!=null) {
-							final GeoToolsLayer gt = new WorldImageLayer(dl.getName(), getFixedFilePath(dl.getFilename()));
+							final GeoToolsLayer gt = new WorldImageLayer(dl.getName(), filePath);
 
 							gt.setVisible(dl.getVisible());
 							_myGeoHandler.addGeoToolsLayer(gt);
