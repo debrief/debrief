@@ -309,7 +309,7 @@ public abstract class CorePlotEditor extends EditorPart implements IResourceProv
 
 			@Override
 			public void addThisLayer(final Layer theLayer) {
-				Layer wrappedLayer = null;
+				final Layer wrappedLayer;
 
 				// ok, if this is an externally managed layer (and we're doing
 				// GT-plotting, we will wrap it, and actually add the wrapped layer
@@ -322,6 +322,8 @@ public abstract class CorePlotEditor extends EditorPart implements IResourceProv
 							gt.setVisible(dl.getVisible());
 							_myGeoHandler.addGeoToolsLayer(gt);
 							wrappedLayer = gt;
+						} else {
+							wrappedLayer = null;
 						}
 					} else if (dl.getDataType().equals(MWC.GUI.Shapes.ChartBoundsWrapper.SHAPEFILE_TYPE)) {
 						// just see if it's a raster extent layer (special processing)
@@ -340,6 +342,8 @@ public abstract class CorePlotEditor extends EditorPart implements IResourceProv
 						gt.setVisible(dl.getVisible());
 						_myGeoHandler.addGeoToolsLayer(gt);
 						wrappedLayer = gt;
+					} else {
+						wrappedLayer = null;
 					}
 					if (wrappedLayer != null)
 						super.addThisLayer(wrappedLayer);
