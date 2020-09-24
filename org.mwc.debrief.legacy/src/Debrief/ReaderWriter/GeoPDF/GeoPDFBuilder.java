@@ -27,13 +27,15 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
-import java.time.Period;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Scanner;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import Debrief.GUI.Frames.Application;
 import Debrief.ReaderWriter.GeoPDF.GenerateGeoJSON.GeoJSONConfiguration;
@@ -56,6 +58,8 @@ import net.n3.nanoxml.XMLWriter;
 public class GeoPDFBuilder {
 
 	public static String GDAL_NATIVE_PREFIX_FOLDER = "/native";
+	public static String JAVASCRIPT_TEMPLATE_PATH = "/geopdf_animation_from_example.js";
+	public static String JAVASCRIPT_TIMESTAMP_TAG = "!!JS_TIMESTAMPS";
 
 	public static class GeoPDFConfiguration {
 		public static final String SUCCESS_GDAL_DONE = "done.";
@@ -421,6 +425,11 @@ public class GeoPDFBuilder {
 			mainPage.addLayer(backgroundLayer);
 		}
 
+		final StringBuilder javaScriptReplacementJsTimestamps = new StringBuilder();
+		javaScriptReplacementJsTimestamps.append("var timestamps = ");
+		final ObjectMapper mapper = new ObjectMapper();
+		final ArrayNode jsonTimestamps = mapper.createArrayNode();
+
 		HiResDate currentTime = configuration.getStartTime();
 
 		while (currentTime.lessThan(configuration.getEndTime())) {
@@ -430,9 +439,17 @@ public class GeoPDFBuilder {
 			final TimePeriod period = new TimePeriod.BaseTimePeriod(currentTime, topCurrentPeriod);
 
 			final GeoPDFLayerTrack periodTrack = new GeoPDFLayerTrack();
+
+			// TODO IMPROVE THIS. Saul.
+			final String periodName = period.getStartDTG().toString();
 			mainPage.addLayer(periodTrack);
-			periodTrack.setId(period.getStartDTG().toString());
-			periodTrack.setName(period.getStartDTG().toString());
+			periodTrack.setId(periodName);
+			periodTrack.setName(periodName);
+
+			final ObjectNode timeStampNode = mapper.createObjectNode();
+			timeStampNode.put("name", periodName);
+			timeStampNode.put("ocg_name", periodName);
+			jsonTimestamps.add(timeStampNode);
 
 			/**
 			 * Let's iterate over all the layers to find the Tracks to export
@@ -494,7 +511,36 @@ public class GeoPDFBuilder {
 			currentTime = topCurrentPeriod;
 		}
 
+		final String jsonTimestampsContent = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(jsonTimestamps);
+		javaScriptReplacementJsTimestamps.append(jsonTimestampsContent);
+		javaScriptReplacementJsTimestamps.append(";");
+
+		geoPDF.setJavascript(
+				createJavascriptContent(javaScriptReplacementJsTimestamps.toString(), JAVASCRIPT_TEMPLATE_PATH));
+
 		return geoPDF;
+	}
+
+	private static String createJavascriptContent(final String javaScriptTS, final String filePath) throws IOException {
+		final InputStream javascriptContentInputStream = GeoPDFBuilder.class.getResourceAsStream(filePath);
+
+		BufferedReader javascriptBufferReader = null;
+		try {
+			javascriptBufferReader = new BufferedReader(new InputStreamReader(javascriptContentInputStream));
+
+			final StringBuilder content = new StringBuilder();
+
+			String line = null;
+			while ((line = javascriptBufferReader.readLine()) != null) {
+				content.append(line + "\n");
+			}
+
+			return content.toString().replaceAll(JAVASCRIPT_TIMESTAMP_TAG, javaScriptTS);
+		} finally {
+			if (javascriptBufferReader != null) {
+				javascriptBufferReader.close();
+			}
+		}
 	}
 
 	private static File createBackgroundFile(final GeoPDFConfiguration configuration, final String background,
@@ -579,8 +625,8 @@ public class GeoPDFBuilder {
 			final ArrayList<File> filesToDelete, final TrackWrapper currentTrack, final GeoPDFLayerTrack newTrackLayer,
 			final TimePeriod period) throws FileNotFoundException, JsonProcessingException {
 
-		final String layerName = currentTrack.getName() + "_PointsLabels_" + configuration.getLabelDeltaMinutes() +
-				"mins" + "_" + HiResDateToFileName(period.getStartDTG());
+		final String layerName = currentTrack.getName() + "_PointsLabels_" + configuration.getLabelDeltaMinutes()
+				+ "mins" + "_" + HiResDateToFileName(period.getStartDTG());
 		final GeoJSONConfiguration geoJSONConfiguration = new GeoJSONConfiguration(configuration.getLabelDeltaMinutes(),
 				true, false, layerName, period);
 		final GeoPDFLayerVectorLabel deltaMinutesVector = new GeoPDFLayerVectorLabel();
@@ -604,7 +650,8 @@ public class GeoPDFBuilder {
 			final ArrayList<File> filesToDelete, final TrackWrapper currentTrack, final GeoPDFLayerTrack newTrackLayer,
 			final TimePeriod period) throws FileNotFoundException, JsonProcessingException {
 
-		final String layerName = currentTrack.getName() + "_Points_" + configuration.getMarkDeltaMinutes() + "mins" + "_" + HiResDateToFileName(period.getStartDTG());
+		final String layerName = currentTrack.getName() + "_Points_" + configuration.getMarkDeltaMinutes() + "mins"
+				+ "_" + HiResDateToFileName(period.getStartDTG());
 		final GeoJSONConfiguration geoJSONConfiguration = new GeoJSONConfiguration(configuration.getMarkDeltaMinutes(),
 				false, false, layerName, period);
 		final GeoPDFLayerVector deltaMinutesVector = new GeoPDFLayerVector();
