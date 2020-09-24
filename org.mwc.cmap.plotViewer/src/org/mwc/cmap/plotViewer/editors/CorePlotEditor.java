@@ -123,9 +123,6 @@ public abstract class CorePlotEditor extends EditorPart implements IResourceProv
 		ISelectionProvider, IPlotGUI, IChartBasedEditor, IUndoable, CanvasType.ScreenUpdateProvider, INameablePart {
 
 	private static final String CONTEXT_ID = "org.mwc.cmap.plotEditorContext";
-	// //////////////////////////////
-	// member data
-	// //////////////////////////////
 
 	/**
 	 * the chart we store/manager
@@ -156,26 +153,16 @@ public abstract class CorePlotEditor extends EditorPart implements IResourceProv
 	 */
 	protected PlainProjection _pendingProjection;
 
-	// drag-drop bits
-
 	protected DropTarget target;
 
 	private Vector<ISelectionChangedListener> _selectionListeners;
 
-	// private ISelectionChangedListener _selectionChangeListener;
-
 	private ISelection _currentSelection;
-
-	// private CanvasType.PaintListener _selectionPainter;
 
 	/**
 	 * keep track of whether the current plot is dirty...
 	 */
 	protected boolean _plotIsDirty = false;
-
-	// ///////////////////////////////////////////////
-	// dummy bits applicable for our dummy interface
-	// ///////////////////////////////////////////////
 
 	protected DataListener2 _listenForMods;
 
@@ -258,39 +245,6 @@ public abstract class CorePlotEditor extends EditorPart implements IResourceProv
 			}
 		}
 	};
-
-	// //////////////////////////////
-	// constructor
-	// //////////////////////////////
-
-	/**
-	 * get the first NNN valid items from the selection
-	 *
-	 * @param ss the current structured selection
-	 * @return the first 20 items
-	 */
-	// private List<EditableWrapper> getSelItems(final IStructuredSelection ss)
-	// {
-	// List<EditableWrapper> res = new ArrayList<EditableWrapper>();
-	// final Iterator<?> selIterator = ss.iterator();
-	//
-	// // limit how many entities to highlight
-	// final int MAX_HIGHLIGHT = 20;
-	//
-	// while (selIterator.hasNext() && res.size() < MAX_HIGHLIGHT)
-	// {
-	// final Object o = selIterator.next();
-	// if (o instanceof EditableWrapper)
-	// {
-	// final EditableWrapper pw = (EditableWrapper) o;
-	// if (pw.getEditable() instanceof Plottable)
-	// {
-	// res.add(pw);
-	// }
-	// }
-	// }
-	// return res;
-	// }
 
 	private final IPartListener partListener = new IPartListener() {
 
@@ -461,80 +415,6 @@ public abstract class CorePlotEditor extends EditorPart implements IResourceProv
 				fireDirty();
 			}
 		};
-
-		// _selectionChangeListener = new ISelectionChangedListener()
-		// {
-		//
-		// @Override
-		// public void selectionChanged(final SelectionChangedEvent event)
-		// {
-		// final ISelection sel = event.getSelection();
-		// if (!(sel instanceof IStructuredSelection))
-		// return;
-		//
-		// final IStructuredSelection ss = (IStructuredSelection) sel;
-		// SWTChart theChart = getChart();
-		// if (theChart == null)
-		// return;
-		//
-		// final CanvasType can = theChart.getCanvas();
-		//
-		// // unselect the current selection
-		// if (_currentSelection != null
-		// && _currentSelection instanceof IStructuredSelection)
-		// {
-		// can.removePainter(_selectionPainter);
-		// final List<EditableWrapper> eds =
-		// getSelItems((IStructuredSelection) _currentSelection);
-		// for (EditableWrapper ed : eds)
-		// {
-		// getChart().update(ed.getTopLevelLayer());
-		// }
-		// }
-		// // store the new selection
-		// _currentSelection = ss;
-		//
-		// // select the current selection
-		// can.addPainter(_selectionPainter);
-		// final List<EditableWrapper> eds = getSelItems(ss);
-		// for (EditableWrapper ed : eds)
-		// {
-		// getChart().update(ed.getTopLevelLayer());
-		// }
-		// }
-		// };
-
-		// _selectionPainter = new CanvasType.PaintAdaptor()
-		// {
-		// @Override
-		// public void paintMe(CanvasType dest)
-		// {
-		// if (_currentSelection != null
-		// && _currentSelection instanceof IStructuredSelection)
-		// {
-		// List<EditableWrapper> selItems =
-		// getSelItems((IStructuredSelection) _currentSelection);
-		// for (EditableWrapper ed : selItems)
-		// {
-		// if (ed != null)
-		// {
-		// Plottable theE = (Plottable) ed.getEditable();
-		// if (theE.getVisible())
-		// {
-		// // if (!(theE instanceof DoNotHighlightMe))
-		// drawHighlightedBorder(dest, theE.getBounds());
-		// }
-		// }
-		// }
-		// }
-		// }
-		//
-		// @Override
-		// public String getName()
-		// {
-		// return "SELECTION PAINTER";
-		// }
-		// };
 	}
 
 	/**
@@ -823,49 +703,6 @@ public abstract class CorePlotEditor extends EditorPart implements IResourceProv
 			});
 		}
 	}
-
-	// private void drawHighlightedBorder(final CanvasType can,
-	// final WorldArea worldArea)
-	// {
-	// if (worldArea == null)
-	// return;
-	//
-	// can.setColor(new Color(255, 255, 255, 45));
-	// can.setLineStyle(CanvasType.DOT_DASH);
-	// can.setLineWidth(2);
-	//
-	// // ok, get the TL & BR coordinates
-	// WorldLocation tl = worldArea.getTopLeft();
-	// WorldLocation br = worldArea.getBottomRight();
-	//
-	// // now put them into a rectangle in screen coords
-	// Rectangle rect = new Rectangle(can.toScreen(tl));
-	// rect.add(can.toScreen(br));
-	//
-	// // now expand the rectangle
-	// final int BORDER = 3;
-	// rect.grow(BORDER, BORDER);
-	//
-	// // and draw the rectangle
-	// can.drawRect(rect.x, rect.y, rect.width, rect.height);
-	//
-	// // lastly, loop through the points
-	// PathIterator pi = rect.getPathIterator(new AffineTransform());
-	// double[] coords = new double[2];
-	// while (!pi.isDone())
-	// {
-	// int code = pi.currentSegment(coords);
-	// // is this a new coordinate?
-	// if (code == PathIterator.SEG_LINETO)
-	// {
-	// // yes, draw a corner marker
-	// can.fillRect((int) coords[0] - 2, (int) coords[1] - 2, 4, 4);
-	// }
-	// // and move to the next
-	// pi.next();
-	// }
-	//
-	// }
 
 	public void fireSelectionChanged(final ISelection sel) {
 		// just double-check that we're not already processing this
