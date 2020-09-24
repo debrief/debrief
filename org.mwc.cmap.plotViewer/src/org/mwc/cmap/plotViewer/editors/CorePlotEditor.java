@@ -538,7 +538,7 @@ public abstract class CorePlotEditor extends EditorPart implements IResourceProv
 	}
 
 	protected String getFixedFilePath(final String fileName) {
-		String tiffFilePath = null;
+		final String tiffFilePath;
 		final File tifFile = new File(fileName);
 		if(tifFile.exists()) {
 			//this is a valid absolute path, so load this file
@@ -553,14 +553,17 @@ public abstract class CorePlotEditor extends EditorPart implements IResourceProv
 			}
 			else if(input instanceof FileStoreEditorInput) {
 				//if the file is dragged from outside workspace, get the location of the plot file 
+				String tmpFilePath;
 				try {
 					File localFile = new File(((FileStoreEditorInput)input).getURI().toURL().getFile());
-					if(localFile!=null) {
-						tiffFilePath = localFile.getParentFile().getAbsolutePath()+File.separator+tifFile;
-					}
+					tmpFilePath = localFile.getParentFile().getAbsolutePath()+File.separator+tifFile;
 				} catch (MalformedURLException e) {
 					MWC.Utilities.Errors.Trace.trace(e, fileName+"File doesnt exist and couldnt be loaded");
+					tmpFilePath = null;
 				}
+				tiffFilePath = tmpFilePath;
+			} else {
+				tiffFilePath = null;
 			}
 		}
 		File tiffFile = new File(tiffFilePath);
