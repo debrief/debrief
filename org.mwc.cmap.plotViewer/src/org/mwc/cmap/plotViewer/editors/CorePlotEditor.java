@@ -365,7 +365,6 @@ public abstract class CorePlotEditor extends EditorPart implements IResourceProv
 						final String filePath = getFixedFilePath(dl.getFilename());
 						if(filePath!=null) {
 							final GeoToolsLayer gt = new WorldImageLayer(dl.getName(), filePath);
-
 							gt.setVisible(dl.getVisible());
 							_myGeoHandler.addGeoToolsLayer(gt);
 							wrappedLayer = gt;
@@ -536,43 +535,6 @@ public abstract class CorePlotEditor extends EditorPart implements IResourceProv
 		// return "SELECTION PAINTER";
 		// }
 		// };
-	}
-
-	protected String getFixedFilePath(final String fileName) {
-		final String tiffFilePath;
-		final File tifFile = new File(fileName);
-		if(tifFile.exists()) {
-			//this is a valid absolute path, so load this file
-			tiffFilePath = tifFile.getAbsolutePath();
-		}
-		else {
-			//check the file open in editor and get its file system location.
-			IEditorInput input = (IEditorInput)getEditorInput();
-			if(input instanceof IFileEditorInput) {
-				String dpfFilePath = ((IFileEditorInput)getEditorInput()).getFile().getParent().getLocation().toFile().getAbsolutePath();
-				tiffFilePath = dpfFilePath+File.separator+tifFile;
-			}
-			else if(input instanceof FileStoreEditorInput) {
-				//if the file is dragged from outside workspace, get the location of the plot file 
-				String tmpFilePath;
-				try {
-					File localFile = new File(((FileStoreEditorInput)input).getURI().toURL().getFile());
-					tmpFilePath = localFile.getParentFile().getAbsolutePath()+File.separator+tifFile;
-				} catch (MalformedURLException e) {
-					MWC.Utilities.Errors.Trace.trace(e, fileName+"File doesnt exist and couldnt be loaded");
-					tmpFilePath = null;
-				}
-				tiffFilePath = tmpFilePath;
-			} else {
-				tiffFilePath = null;
-			}
-		}
-		File tiffFile = new File(tiffFilePath);
-		if(!tiffFile.exists()) {
-			CorePlugin.showMessage("Error loading file", "Could not find the GeoTiff File. Please fix the path in the file and load again");
-			return fileName;	
-		}
-		return tiffFilePath;
 	}
 
 	/**
@@ -845,6 +807,23 @@ public abstract class CorePlotEditor extends EditorPart implements IResourceProv
 		System.out.println("Files dropped");
 	}
 
+	/**
+	 * make a note that the data is now dirty, and needs saving.
+	 */
+	public void fireDirty() {
+		if (!_ignoreDirtyCalls) {
+			_plotIsDirty = true;
+
+			// fire the modified event, in the display thread
+			Display.getDefault().syncExec(new Runnable() {
+				@Override
+				public void run() {
+					firePropertyChange(PROP_DIRTY);
+				}
+			});
+		}
+	}
+
 	// private void drawHighlightedBorder(final CanvasType can,
 	// final WorldArea worldArea)
 	// {
@@ -887,23 +866,6 @@ public abstract class CorePlotEditor extends EditorPart implements IResourceProv
 	// }
 	//
 	// }
-
-	/**
-	 * make a note that the data is now dirty, and needs saving.
-	 */
-	public void fireDirty() {
-		if (!_ignoreDirtyCalls) {
-			_plotIsDirty = true;
-
-			// fire the modified event, in the display thread
-			Display.getDefault().syncExec(new Runnable() {
-				@Override
-				public void run() {
-					firePropertyChange(PROP_DIRTY);
-				}
-			});
-		}
-	}
 
 	public void fireSelectionChanged(final ISelection sel) {
 		// just double-check that we're not already processing this
@@ -973,6 +935,44 @@ public abstract class CorePlotEditor extends EditorPart implements IResourceProv
 
 	private IContextService getContextService() {
 		return getSite().getService(IContextService.class);
+	}
+
+	protected String getFixedFilePath(final String fileName) {
+		final String tiffFilePath;
+		final File tifFile = new File(fileName);
+		if (tifFile.exists()) {
+			// this is a valid absolute path, so load this file
+			tiffFilePath = tifFile.getAbsolutePath();
+		} else {
+			// check the file open in editor and get its file system location.
+			final IEditorInput input = getEditorInput();
+			if (input instanceof IFileEditorInput) {
+				final String dpfFilePath = ((IFileEditorInput) getEditorInput()).getFile().getParent().getLocation()
+						.toFile().getAbsolutePath();
+				tiffFilePath = dpfFilePath + File.separator + tifFile;
+			} else if (input instanceof FileStoreEditorInput) {
+				// if the file is dragged from outside workspace, get the location of the plot
+				// file
+				String tmpFilePath;
+				try {
+					final File localFile = new File(((FileStoreEditorInput) input).getURI().toURL().getFile());
+					tmpFilePath = localFile.getParentFile().getAbsolutePath() + File.separator + tifFile;
+				} catch (final MalformedURLException e) {
+					MWC.Utilities.Errors.Trace.trace(e, fileName + "File doesnt exist and couldnt be loaded");
+					tmpFilePath = null;
+				}
+				tiffFilePath = tmpFilePath;
+			} else {
+				tiffFilePath = null;
+			}
+		}
+		final File tiffFile = new File(tiffFilePath);
+		if (!tiffFile.exists()) {
+			CorePlugin.showMessage("Error loading file",
+					"Could not find the GeoTiff File. Please fix the path in the file and load again");
+			return fileName;
+		}
+		return tiffFilePath;
 	}
 
 	@Override
