@@ -44,6 +44,7 @@ import MWC.GUI.Layers;
 import MWC.GUI.PlainChart;
 import MWC.GUI.ToolParent;
 import MWC.GUI.Shapes.ChartBoundsWrapper;
+import MWC.GenericData.TimePeriod;
 
 public class ExportAsGeoPDFHandler extends CoreEditorAction {
 
@@ -52,10 +53,13 @@ public class ExportAsGeoPDFHandler extends CoreEditorAction {
 		try {
 			final PlainChart theChart = getChart();
 			final Layers theLayers = theChart.getLayers();
+			final TimePeriod period = theLayers.getTimePeriod();
 			final GeoPDFConfiguration configuration = new GeoPDFConfiguration();
 			loadBackgroundLayers(theLayers, configuration);
 			configuration.setViewportArea(theChart.getCanvas().getProjection().getVisibleDataArea());
 			configuration.setLandscape(theChart.getScreenSize().getWidth() > theChart.getScreenSize().getHeight());
+			configuration.setStartTime(period.getStartDTG());
+			configuration.setEndTime(period.getEndDTG());
 
 			final FileDialog dialog = new FileDialog(getShell(), SWT.SAVE);
 			dialog.setFilterNames(new String[] { "PDF Files", "All Files (*.*)" });
