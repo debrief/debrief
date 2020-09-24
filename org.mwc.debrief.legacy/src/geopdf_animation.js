@@ -15,7 +15,7 @@
     var lastSliderButtonLocation = 0;
 
     // List of non-interactive layers
-    !!NONINTERACTLAYERS
+    //!!NONINTERACTLAYERS
 
     // Array of objects containing the name of the timestamp
     // and a name of the OCG to turn on for that timestep.
@@ -38,7 +38,7 @@
         // Once we find one that is off we know that all the rest to the right
         // of that one will also be off, so we can stop there.
         var upwards_idx = idx + 1;
-        while ((upwards_idx &lt; timestamps.length) &amp;&amp; (timestamps[upwards_idx].ocg.state == true)) {
+        while ((upwards_idx < timestamps.length) && (timestamps[upwards_idx].ocg.state == true)) {
             timestamps[upwards_idx].ocg.state = false;
             upwards_idx = upwards_idx + 1;
         }
@@ -46,7 +46,7 @@
         // Same as above, but going to the left - if we know it is off then we need
         // to turn it on, until we find a block of ones that are on
         var downwards_idx = idx - 1;
-        while ((downwards_idx &gt;= 0) &amp;&amp; (timestamps[downwards_idx].ocg.state == false)) {
+        while ((downwards_idx >= 0) && (timestamps[downwards_idx].ocg.state == false)) {
             timestamps[downwards_idx].ocg.state = true;
             downwards_idx = downwards_idx - 1;
         }
@@ -88,7 +88,7 @@
 
             unmarkSliderPart(lastSliderButtonLocation);
 
-            for (i = 0; i &lt; nonInteractiveLayers.length; i += 1) {
+            for (i = 0; i < nonInteractiveLayers.length; i += 1) {
                 getOCGByName(nonInteractiveLayers[i]).state = true;
             }
             getOCGByName("Interactive Layers").state = false;
@@ -99,7 +99,7 @@
             // Darken Down Colors
             event.target.fillColor = darkBlue;
 
-            for (i = 0; i &lt; nonInteractiveLayers.length; i += 1) {
+            for (i = 0; i < nonInteractiveLayers.length; i += 1) {
                 getOCGByName(nonInteractiveLayers[i]).state = false;
             }
             getOCGByName("Interactive Layers").state = true;
@@ -111,7 +111,7 @@
         toggleObjectVisible("btnNext");
         toggleObjectVisible("btnPrev");
         toggleObjectVisible("txtTime");
-        for (i = 0; i &lt; timestamps.length; i += 1) {
+        for (i = 0; i < timestamps.length; i += 1) {
             toggleObjectVisible("btnSlider_" + i);
         }
 
@@ -119,7 +119,7 @@
     }
 
     function nextTimestep() {
-        if (current_index &gt;= 0) {
+        if (current_index >= 0) {
             unmarkSliderPart(lastSliderButtonLocation);
         }
         current_index += 1;
@@ -164,7 +164,7 @@
 
         current_index -= 1;
 
-        if (current_index &lt; 0) {
+        if (current_index < 0) {
             current_index = 0;
         }
 
@@ -185,7 +185,7 @@
             animationRunning = false;
         }
         else {
-            animate = app.setInterval(&quot;nextTimestep()&quot;, 1000);
+            animate = app.setInterval("nextTimestep()", 1000);
             animationRunning = true;
         }
     }
@@ -216,7 +216,7 @@
         // Gets an OCG (a layer) by name
         var ocgs = this.getOCGs();
 
-        for (var i = 0; i &lt; ocgs.length; i += 1) {
+        for (var i = 0; i < ocgs.length; i += 1) {
             if (ocgs[i].name == name) {
                 return ocgs[i];
             }
@@ -267,7 +267,7 @@
         var curView = eval(this.viewState.toSource());
 
         // If nothing has changed since last time, then return
-        if ((curView.pageViewX == lastPageViewX) &amp; (curView.pageViewY == lastPageViewY) &amp; (curView.pageViewZoom == lastPageViewZoom)) {
+        if ((curView.pageViewX == lastPageViewX) & (curView.pageViewY == lastPageViewY) & (curView.pageViewZoom == lastPageViewZoom)) {
             return null;
         }
 
@@ -277,11 +277,11 @@
         lastPageViewZoom = curView.pageViewZoom;       
 
         // Get a zoom factor which is either the current zoom, or 1 if the current zoom is less than 1
-        var zoomFactor = curView.pageViewZoom &lt; 1 ? 1 : curView.pageViewZoom;
+        var zoomFactor = curView.pageViewZoom < 1 ? 1 : curView.pageViewZoom;
 
         // Calculate the new X and Y base positions based on the factor, the zoom and the current X and Y coords
-        var yPos = curView.pageViewY &gt;=0 ? (curView.pageViewY + 4) * factor / curView.pageViewZoom : 0;
-        var xPos = curView.pageViewX &gt;=0 ? (curView.pageViewX + 4) * factor / curView.pageViewZoom : 0;
+        var yPos = curView.pageViewY >=0 ? (curView.pageViewY + 4) * factor / curView.pageViewZoom : 0;
+        var xPos = curView.pageViewX >=0 ? (curView.pageViewX + 4) * factor / curView.pageViewZoom : 0;
 
         // the Y values for pageViewY count down from the top of the page, whereas the Y values for locating objects
         // on the page count up from the bottom. Take away the co-ords of the top to switch between them.
@@ -327,7 +327,7 @@
         moveField("txtTime", xPos, yPos, zoomFactor);
 
         // Move the many buttons that make up the slider
-        for (i = 0; i &lt; timestamps.length; i += 1) {
+        for (i = 0; i < timestamps.length; i += 1) {
             moveField("btnSlider_" + i, xPos, yPos, zoomFactor);
         }
 
@@ -486,13 +486,13 @@
 
         // Iterate only once over the list of OCGs, creating a dict
         // mapping OCG name to OCG object
-        for (var i = 0; i &lt; ocgs.length; i += 1) {
+        for (var i = 0; i < ocgs.length; i += 1) {
             ocg_name_to_ocg[ocgs[i].name] = ocgs[i];
         }
 
         // Iterate over the list of timestamps, setting the .ocg
         // property to the OCG object using the dict created above
-        for (i = 0; i &lt; timestamps.length; i += 1) {
+        for (i = 0; i < timestamps.length; i += 1) {
             timestamps[i].ocg = ocg_name_to_ocg[timestamps[i].ocg_name];
         }
     }
@@ -508,9 +508,9 @@
     var overall_left = 10;
     var overall_top = -10;
     createButton("btnDynamicToggle", "", 0, overall_left, overall_top - 25, 36, 36, false, "toggleDynamic();");
-    createButton("btnPrev", "&lt;&lt;", 0, overall_left + 40, overall_top - 25, 36, 36, true, "prevTimestep();");
-    createButton("btnPlayPause", "&gt;", 0, overall_left + (2 * 40), overall_top - 25, 36, 36, true, "playPause();");
-    createButton("btnNext", "&gt;&gt;", 0, overall_left + (3 * 40), overall_top - 25, 36, 36, true, "nextTimestep();");
+    createButton("btnPrev", "<<", 0, overall_left + 40, overall_top - 25, 36, 36, true, "prevTimestep();");
+    createButton("btnPlayPause", ">", 0, overall_left + (2 * 40), overall_top - 25, 36, 36, true, "playPause();");
+    createButton("btnNext", ">>", 0, overall_left + (3 * 40), overall_top - 25, 36, 36, true, "nextTimestep();");
     createTextbox("txtTime", "", 0, overall_left, overall_top - 65, 156, 20, true);
 
     // Set font and text to get plane logo on toggle button
@@ -520,7 +520,7 @@
 
     // Create many small buttons for the slider
     var smallButtonSize = 156 / timestamps.length;
-    for (i = 0; i &lt; timestamps.length; i += 1) {
+    for (i = 0; i < timestamps.length; i += 1) {
         createSliderButton("btnSlider_" + i, "", 0, overall_left+(smallButtonSize*i), overall_top, smallButtonSize, 20, true, "onSliderButtonEnter(" + i + ");");
     }
 
@@ -528,7 +528,7 @@
     moveAllFields();
 
     // Set up timer to move all fields at 1 second intervals
-    moveTimer = app.setInterval(&quot;moveAllFields()&quot;, 1000);
+    moveTimer = app.setInterval("moveAllFields()", 1000);
     // Stop timer on document close
     this.setAction("WillClose", "app.clearInterval(moveTimer);");
 
