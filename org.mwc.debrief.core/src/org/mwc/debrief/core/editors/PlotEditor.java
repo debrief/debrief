@@ -745,7 +745,7 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor {
 						// I am forcing the period refresh in case we have some filter
 						// applied and we import another file with exactly the same period.
 						// Saul
-						if (oldTimePeriod.equals(timePeriod)) {
+						if (oldTimePeriod != null && oldTimePeriod.equals(timePeriod)) {
 							_timeManager.firePeriodPropertyChange();
 						}
 
