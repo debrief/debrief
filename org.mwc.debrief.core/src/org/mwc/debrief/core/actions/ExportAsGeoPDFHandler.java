@@ -66,6 +66,7 @@ public class ExportAsGeoPDFHandler extends CoreEditorAction {
 				final TimeControlPreferences pref = (TimeControlPreferences) actualEditor.getAdapter(TimeControlPreferences.class);
 				if (pref != null) {
 					configuration.setStepDeltaMilliSeconds(pref.getLargeStep().getMillis());
+					configuration.setDateFormat(pref.getDTGFormat());
 				}
 			}
 			loadBackgroundLayers(theLayers, configuration);

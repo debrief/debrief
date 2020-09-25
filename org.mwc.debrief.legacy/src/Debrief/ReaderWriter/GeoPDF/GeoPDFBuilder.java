@@ -27,6 +27,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
@@ -82,6 +83,7 @@ public class GeoPDFBuilder {
 		private double pageWidth = 841.698;
 		private double pageHeight = 595.14;
 		private long stepDeltaMilliSeconds = 15 * 60 * 1000;
+		private String dateFormat;
 		private HiResDate startTime;
 		private HiResDate endTime;
 		private WorldArea viewportArea;
@@ -93,6 +95,14 @@ public class GeoPDFBuilder {
 		private String pdfOutputPath;
 		private boolean landscape = true;
 		private List<String> envVariables = new ArrayList<String>();
+
+		public String getDateFormat() {
+			return dateFormat;
+		}
+
+		public void setDateFormat(String dateFormat) {
+			this.dateFormat = dateFormat;
+		}
 
 		public HiResDate getStartTime() {
 			return startTime;
@@ -439,9 +449,13 @@ public class GeoPDFBuilder {
 			final TimePeriod period = new TimePeriod.BaseTimePeriod(currentTime, topCurrentPeriod);
 
 			final GeoPDFLayerTrack periodTrack = new GeoPDFLayerTrack();
+			final String periodName;
+			if (configuration.getDateFormat() != null) {
+				periodName = new SimpleDateFormat(configuration.getDateFormat()).format(period.getStartDTG().getDate());
+			} else {
+				periodName = period.getStartDTG().toString();
+			}
 
-			// TODO IMPROVE THIS. Saul.
-			final String periodName = period.getStartDTG().toString();
 			mainPage.addLayer(periodTrack);
 			periodTrack.setId(periodName);
 			periodTrack.setName(periodName);
