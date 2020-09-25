@@ -283,7 +283,7 @@
                     </fix>
                 </TrackSegment>
             </track>
-            <externalDatafile DataType="GeoTiff" LayerName="SP27GTIF.tif" LayerPath="sample_data/SP27GTIF.tif" Visible="true"/>
+            <externalDatafile DataType="GeoTiff" LayerName="SP27GTIF.tif" LayerPath="SP27GTIF.tif" Visible="true"/>
         </layers>
         <projection Border="1.100" PrimaryOriented="false" PrimaryOrigin="false" Type="Flat">
             <tl>
