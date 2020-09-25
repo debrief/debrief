@@ -15,7 +15,7 @@
     var lastSliderButtonLocation = 0;
 
     // List of non-interactive layers
-    //!!NONINTERACTLAYERS
+    !!NONINTERACTLAYERS
 
     // Array of objects containing the name of the timestamp
     // and a name of the OCG to turn on for that timestep.
