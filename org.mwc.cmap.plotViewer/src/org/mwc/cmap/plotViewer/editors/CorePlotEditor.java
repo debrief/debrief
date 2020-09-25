@@ -25,7 +25,9 @@ import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.image.BufferedImage;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.io.File;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.util.Iterator;
 import java.util.Vector;
 
@@ -75,6 +77,7 @@ import org.eclipse.ui.SubActionBars2;
 import org.eclipse.ui.actions.ActionFactory;
 import org.eclipse.ui.contexts.IContextActivation;
 import org.eclipse.ui.contexts.IContextService;
+import org.eclipse.ui.ide.FileStoreEditorInput;
 import org.eclipse.ui.operations.RedoActionHandler;
 import org.eclipse.ui.operations.UndoActionHandler;
 import org.eclipse.ui.part.EditorPart;
@@ -120,9 +123,6 @@ public abstract class CorePlotEditor extends EditorPart implements IResourceProv
 		ISelectionProvider, IPlotGUI, IChartBasedEditor, IUndoable, CanvasType.ScreenUpdateProvider, INameablePart {
 
 	private static final String CONTEXT_ID = "org.mwc.cmap.plotEditorContext";
-	// //////////////////////////////
-	// member data
-	// //////////////////////////////
 
 	/**
 	 * the chart we store/manager
@@ -153,26 +153,16 @@ public abstract class CorePlotEditor extends EditorPart implements IResourceProv
 	 */
 	protected PlainProjection _pendingProjection;
 
-	// drag-drop bits
-
 	protected DropTarget target;
 
 	private Vector<ISelectionChangedListener> _selectionListeners;
 
-	// private ISelectionChangedListener _selectionChangeListener;
-
 	private ISelection _currentSelection;
-
-	// private CanvasType.PaintListener _selectionPainter;
 
 	/**
 	 * keep track of whether the current plot is dirty...
 	 */
 	protected boolean _plotIsDirty = false;
-
-	// ///////////////////////////////////////////////
-	// dummy bits applicable for our dummy interface
-	// ///////////////////////////////////////////////
 
 	protected DataListener2 _listenForMods;
 
@@ -256,39 +246,6 @@ public abstract class CorePlotEditor extends EditorPart implements IResourceProv
 		}
 	};
 
-	// //////////////////////////////
-	// constructor
-	// //////////////////////////////
-
-	/**
-	 * get the first NNN valid items from the selection
-	 *
-	 * @param ss the current structured selection
-	 * @return the first 20 items
-	 */
-	// private List<EditableWrapper> getSelItems(final IStructuredSelection ss)
-	// {
-	// List<EditableWrapper> res = new ArrayList<EditableWrapper>();
-	// final Iterator<?> selIterator = ss.iterator();
-	//
-	// // limit how many entities to highlight
-	// final int MAX_HIGHLIGHT = 20;
-	//
-	// while (selIterator.hasNext() && res.size() < MAX_HIGHLIGHT)
-	// {
-	// final Object o = selIterator.next();
-	// if (o instanceof EditableWrapper)
-	// {
-	// final EditableWrapper pw = (EditableWrapper) o;
-	// if (pw.getEditable() instanceof Plottable)
-	// {
-	// res.add(pw);
-	// }
-	// }
-	// }
-	// return res;
-	// }
-
 	private final IPartListener partListener = new IPartListener() {
 
 		private void activateContext(final IWorkbenchPart part) {
@@ -352,18 +309,22 @@ public abstract class CorePlotEditor extends EditorPart implements IResourceProv
 
 			@Override
 			public void addThisLayer(final Layer theLayer) {
-				Layer wrappedLayer = null;
+				final Layer wrappedLayer;
 
 				// ok, if this is an externally managed layer (and we're doing
 				// GT-plotting, we will wrap it, and actually add the wrapped layer
 				if (theLayer instanceof ExternallyManagedDataLayer) {
 					final ExternallyManagedDataLayer dl = (ExternallyManagedDataLayer) theLayer;
 					if (dl.getDataType().equals(MWC.GUI.Shapes.ChartBoundsWrapper.WORLDIMAGE_TYPE)) {
-						final GeoToolsLayer gt = new WorldImageLayer(dl.getName(), dl.getFilename());
-
-						gt.setVisible(dl.getVisible());
-						_myGeoHandler.addGeoToolsLayer(gt);
-						wrappedLayer = gt;
+						final String filePath = getFixedFilePath(dl.getFilename());
+						if(filePath!=null) {
+							final GeoToolsLayer gt = new WorldImageLayer(dl.getName(), filePath);
+							gt.setVisible(dl.getVisible());
+							_myGeoHandler.addGeoToolsLayer(gt);
+							wrappedLayer = gt;
+						} else {
+							wrappedLayer = null;
+						}
 					} else if (dl.getDataType().equals(MWC.GUI.Shapes.ChartBoundsWrapper.SHAPEFILE_TYPE)) {
 						// just see if it's a raster extent layer (special processing)
 						if (dl.getName().equals(WorldImageLayer.RASTER_FILE)) {
@@ -381,6 +342,8 @@ public abstract class CorePlotEditor extends EditorPart implements IResourceProv
 						gt.setVisible(dl.getVisible());
 						_myGeoHandler.addGeoToolsLayer(gt);
 						wrappedLayer = gt;
+					} else {
+						wrappedLayer = null;
 					}
 					if (wrappedLayer != null)
 						super.addThisLayer(wrappedLayer);
@@ -456,80 +419,6 @@ public abstract class CorePlotEditor extends EditorPart implements IResourceProv
 				fireDirty();
 			}
 		};
-
-		// _selectionChangeListener = new ISelectionChangedListener()
-		// {
-		//
-		// @Override
-		// public void selectionChanged(final SelectionChangedEvent event)
-		// {
-		// final ISelection sel = event.getSelection();
-		// if (!(sel instanceof IStructuredSelection))
-		// return;
-		//
-		// final IStructuredSelection ss = (IStructuredSelection) sel;
-		// SWTChart theChart = getChart();
-		// if (theChart == null)
-		// return;
-		//
-		// final CanvasType can = theChart.getCanvas();
-		//
-		// // unselect the current selection
-		// if (_currentSelection != null
-		// && _currentSelection instanceof IStructuredSelection)
-		// {
-		// can.removePainter(_selectionPainter);
-		// final List<EditableWrapper> eds =
-		// getSelItems((IStructuredSelection) _currentSelection);
-		// for (EditableWrapper ed : eds)
-		// {
-		// getChart().update(ed.getTopLevelLayer());
-		// }
-		// }
-		// // store the new selection
-		// _currentSelection = ss;
-		//
-		// // select the current selection
-		// can.addPainter(_selectionPainter);
-		// final List<EditableWrapper> eds = getSelItems(ss);
-		// for (EditableWrapper ed : eds)
-		// {
-		// getChart().update(ed.getTopLevelLayer());
-		// }
-		// }
-		// };
-
-		// _selectionPainter = new CanvasType.PaintAdaptor()
-		// {
-		// @Override
-		// public void paintMe(CanvasType dest)
-		// {
-		// if (_currentSelection != null
-		// && _currentSelection instanceof IStructuredSelection)
-		// {
-		// List<EditableWrapper> selItems =
-		// getSelItems((IStructuredSelection) _currentSelection);
-		// for (EditableWrapper ed : selItems)
-		// {
-		// if (ed != null)
-		// {
-		// Plottable theE = (Plottable) ed.getEditable();
-		// if (theE.getVisible())
-		// {
-		// // if (!(theE instanceof DoNotHighlightMe))
-		// drawHighlightedBorder(dest, theE.getBounds());
-		// }
-		// }
-		// }
-		// }
-		// }
-		//
-		// @Override
-		// public String getName()
-		// {
-		// return "SELECTION PAINTER";
-		// }
-		// };
 	}
 
 	/**
@@ -802,49 +691,6 @@ public abstract class CorePlotEditor extends EditorPart implements IResourceProv
 		System.out.println("Files dropped");
 	}
 
-	// private void drawHighlightedBorder(final CanvasType can,
-	// final WorldArea worldArea)
-	// {
-	// if (worldArea == null)
-	// return;
-	//
-	// can.setColor(new Color(255, 255, 255, 45));
-	// can.setLineStyle(CanvasType.DOT_DASH);
-	// can.setLineWidth(2);
-	//
-	// // ok, get the TL & BR coordinates
-	// WorldLocation tl = worldArea.getTopLeft();
-	// WorldLocation br = worldArea.getBottomRight();
-	//
-	// // now put them into a rectangle in screen coords
-	// Rectangle rect = new Rectangle(can.toScreen(tl));
-	// rect.add(can.toScreen(br));
-	//
-	// // now expand the rectangle
-	// final int BORDER = 3;
-	// rect.grow(BORDER, BORDER);
-	//
-	// // and draw the rectangle
-	// can.drawRect(rect.x, rect.y, rect.width, rect.height);
-	//
-	// // lastly, loop through the points
-	// PathIterator pi = rect.getPathIterator(new AffineTransform());
-	// double[] coords = new double[2];
-	// while (!pi.isDone())
-	// {
-	// int code = pi.currentSegment(coords);
-	// // is this a new coordinate?
-	// if (code == PathIterator.SEG_LINETO)
-	// {
-	// // yes, draw a corner marker
-	// can.fillRect((int) coords[0] - 2, (int) coords[1] - 2, 4, 4);
-	// }
-	// // and move to the next
-	// pi.next();
-	// }
-	//
-	// }
-
 	/**
 	 * make a note that the data is now dirty, and needs saving.
 	 */
@@ -930,6 +776,44 @@ public abstract class CorePlotEditor extends EditorPart implements IResourceProv
 
 	private IContextService getContextService() {
 		return getSite().getService(IContextService.class);
+	}
+
+	protected String getFixedFilePath(final String fileName) {
+		final String tiffFilePath;
+		final File tifFile = new File(fileName);
+		if (tifFile.exists()) {
+			// this is a valid absolute path, so load this file
+			tiffFilePath = tifFile.getAbsolutePath();
+		} else {
+			// check the file open in editor and get its file system location.
+			final IEditorInput input = getEditorInput();
+			if (input instanceof IFileEditorInput) {
+				final String dpfFilePath = ((IFileEditorInput) getEditorInput()).getFile().getParent().getLocation()
+						.toFile().getAbsolutePath();
+				tiffFilePath = dpfFilePath + File.separator + tifFile;
+			} else if (input instanceof FileStoreEditorInput) {
+				// if the file is dragged from outside workspace, get the location of the plot
+				// file
+				String tmpFilePath;
+				try {
+					final File localFile = new File(((FileStoreEditorInput) input).getURI().toURL().getFile());
+					tmpFilePath = localFile.getParentFile().getAbsolutePath() + File.separator + tifFile;
+				} catch (final MalformedURLException e) {
+					MWC.Utilities.Errors.Trace.trace(e, fileName + "File doesnt exist and couldnt be loaded");
+					tmpFilePath = null;
+				}
+				tiffFilePath = tmpFilePath;
+			} else {
+				tiffFilePath = null;
+			}
+		}
+		final File tiffFile = new File(tiffFilePath);
+		if (!tiffFile.exists()) {
+			CorePlugin.showMessage("Error loading file",
+					"Could not find the GeoTiff File. Please fix the path in the file and load again");
+			return fileName;
+		}
+		return tiffFilePath;
 	}
 
 	@Override
