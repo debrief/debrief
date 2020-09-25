@@ -486,7 +486,7 @@ public class GeoPDFBuilder {
 						final GeoPDFLayerTrack newTrackLayer = new GeoPDFLayerTrack();
 						periodTrack.addChild(newTrackLayer);
 
-						newTrackLayer.setId(currentTrack.getName() + " " + period.getStartDTG().toString());
+						newTrackLayer.setId(currentTrack.getName() + " " + periodName);
 						newTrackLayer.setName(currentTrack.getName());
 
 						/**
@@ -495,21 +495,22 @@ public class GeoPDFBuilder {
 						/**
 						 * TrackLine
 						 */
-						createTrackLine(geoPDF.getFilesToDelete(), currentTrack, newTrackLayer, period);
+						createTrackLine(geoPDF.getFilesToDelete(), currentTrack, newTrackLayer, period,
+								configuration.getDateFormat());
 
 						// Let's create now the point-type vectors
 						/**
 						 * Minutes difference Layer
 						 */
 						createMinutesLayer(configuration, geoPDF.getFilesToDelete(), currentTrack, newTrackLayer,
-								period);
+								period, configuration.getDateFormat());
 
 						/**
 						 * Label Layer
 						 */
 
-						createLabelsLayer(configuration, geoPDF.getFilesToDelete(), currentTrack, newTrackLayer,
-								period);
+						createLabelsLayer(configuration, geoPDF.getFilesToDelete(), currentTrack, newTrackLayer, period,
+								configuration.getDateFormat());
 
 						/**
 						 * One point layer
@@ -638,10 +639,10 @@ public class GeoPDFBuilder {
 
 	protected static void createLabelsLayer(final GeoPDFConfiguration configuration,
 			final ArrayList<File> filesToDelete, final TrackWrapper currentTrack, final GeoPDFLayerTrack newTrackLayer,
-			final TimePeriod period) throws FileNotFoundException, JsonProcessingException {
+			final TimePeriod period, final String dateFormat) throws FileNotFoundException, JsonProcessingException {
 
 		final String layerName = currentTrack.getName() + "_PointsLabels_" + configuration.getLabelDeltaMinutes()
-				+ "mins" + "_" + HiResDateToFileName(period.getStartDTG());
+				+ "mins" + "_" + HiResDateToFileName(period.getStartDTG(), dateFormat);
 		final GeoJSONConfiguration geoJSONConfiguration = new GeoJSONConfiguration(configuration.getLabelDeltaMinutes(),
 				true, false, layerName, period, new HiResDate(configuration.getStepDeltaMilliSeconds()));
 		final GeoPDFLayerVectorLabel deltaMinutesVector = new GeoPDFLayerVectorLabel();
@@ -663,10 +664,10 @@ public class GeoPDFBuilder {
 
 	protected static void createMinutesLayer(final GeoPDFConfiguration configuration,
 			final ArrayList<File> filesToDelete, final TrackWrapper currentTrack, final GeoPDFLayerTrack newTrackLayer,
-			final TimePeriod period) throws FileNotFoundException, JsonProcessingException {
+			final TimePeriod period, final String dateFormat) throws FileNotFoundException, JsonProcessingException {
 
 		final String layerName = currentTrack.getName() + "_Points_" + configuration.getMarkDeltaMinutes() + "mins"
-				+ "_" + HiResDateToFileName(period.getStartDTG());
+				+ "_" + HiResDateToFileName(period.getStartDTG(), dateFormat);
 		final GeoJSONConfiguration geoJSONConfiguration = new GeoJSONConfiguration(configuration.getMarkDeltaMinutes(),
 				false, false, layerName, period, new HiResDate(configuration.getStepDeltaMilliSeconds()));
 		final GeoPDFLayerVector deltaMinutesVector = new GeoPDFLayerVector();
@@ -696,15 +697,20 @@ public class GeoPDFBuilder {
 	 * @param date Date to convert to filename
 	 * @return filename
 	 */
-	protected static String HiResDateToFileName(final HiResDate date) {
-		return date.toString().replaceAll("[\\\\/:*?\"<>|]", "");
+	protected static String HiResDateToFileName(final HiResDate date, final String dateFormat) {
+		if (dateFormat == null) {
+			return date.toString().replaceAll("[\\\\/:*?\"<>|]", "");
+		}else {
+			return new SimpleDateFormat(dateFormat).format(date.getDate()).replaceAll("[\\\\/:*?\"<>|]", "");
+		}
 	}
 
 	protected static void createTrackLine(final ArrayList<File> filesToDelete, final TrackWrapper currentTrack,
-			final GeoPDFLayerTrack newTrackLayer, final TimePeriod period)
+			final GeoPDFLayerTrack newTrackLayer, final TimePeriod period, String dateFormat)
 			throws FileNotFoundException, JsonProcessingException {
 
-		final String layerName = currentTrack.getName() + "_Line_" + HiResDateToFileName(period.getStartDTG());
+		final String layerName = currentTrack.getName() + "_Line_"
+				+ HiResDateToFileName(period.getStartDTG(), dateFormat);
 		final GeoPDFLayerVector trackLineVector = new GeoPDFLayerVector();
 		final GeoJSONConfiguration configuration = new GeoJSONConfiguration(0, false, false, layerName, period, null);
 		final String vectorTrackLineData = GenerateGeoJSON.createGeoJSONTrackLine(currentTrack, configuration);
