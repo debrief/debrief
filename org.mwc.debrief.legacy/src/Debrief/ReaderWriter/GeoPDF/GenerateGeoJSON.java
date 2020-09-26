@@ -107,7 +107,7 @@ public class GenerateGeoJSON {
 			return y;
 		}
 	}
-
+	
 	/**
 	 * Method that creates the Track Line from the track given
 	 * 

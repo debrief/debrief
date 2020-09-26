@@ -40,8 +40,9 @@ import org.mwc.debrief.core.editors.PlotEditor;
 
 import Debrief.GUI.Frames.Application;
 import Debrief.ReaderWriter.GeoPDF.GeoPDF;
-import Debrief.ReaderWriter.GeoPDF.GeoPDFBuilder;
-import Debrief.ReaderWriter.GeoPDF.GeoPDFBuilder.GeoPDFConfiguration;
+import Debrief.ReaderWriter.GeoPDF.GeoPDFLegacyBuilder;
+import Debrief.ReaderWriter.GeoPDF.AbstractGeoPDFBuilder;
+import Debrief.ReaderWriter.GeoPDF.AbstractGeoPDFBuilder.GeoPDFConfiguration;
 import MWC.GUI.Editable;
 import MWC.GUI.Layers;
 import MWC.GUI.PlainChart;
@@ -82,10 +83,11 @@ public class ExportAsGeoPDFHandler extends CoreEditorAction {
 			final String userFileName = dialog.open();
 			if (userFileName != null && !userFileName.isEmpty()) {
 				configuration.setPdfOutputPath(userFileName);
-				GeoPDF geoPdf = GeoPDFBuilder.build(theLayers, configuration);
+				AbstractGeoPDFBuilder.setImplementation(new GeoPDFLegacyBuilder());
+				GeoPDF geoPdf = AbstractGeoPDFBuilder.getImplementation().build(theLayers, configuration);
 				Application.logError3(ToolParent.INFO,
 						"GeoPDF- Compose files, background and environment are ready to be compiled.", null, false);
-				GeoPDFBuilder.generatePDF(geoPdf, configuration);
+				AbstractGeoPDFBuilder.getImplementation().generatePDF(geoPdf, configuration);
 			}
 
 		} catch (Exception e) {
