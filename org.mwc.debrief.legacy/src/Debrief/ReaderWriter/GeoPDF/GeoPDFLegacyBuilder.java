@@ -28,8 +28,7 @@ import MWC.GUI.ToolParent;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.TimePeriod;
 
-
-public class GeoPDFLegacyBuilder extends AbstractGeoPDFBuilder{
+public class GeoPDFLegacyBuilder extends AbstractGeoPDFBuilder {
 
 	public GeoPDF build(Layers layers, GeoPDFConfiguration configuration)
 			throws IOException, InterruptedException, NoSuchFieldException, SecurityException, IllegalArgumentException,
@@ -127,7 +126,8 @@ public class GeoPDFLegacyBuilder extends AbstractGeoPDFBuilder{
 					/**
 					 * One point layer
 					 */
-					createTrackNameLayer(configuration, geoPDF.getFilesToDelete(), currentTrack, newTrackLayer, null);
+					createTrackNameLayer(configuration, geoPDF.getFilesToDelete(), currentTrack, newTrackLayer, null,
+							configuration.getDateFormat());
 
 				}
 
@@ -225,7 +225,7 @@ public class GeoPDFLegacyBuilder extends AbstractGeoPDFBuilder{
 						 * One point layer
 						 */
 						createTrackNameLayer(configuration, geoPDF.getFilesToDelete(), currentTrack, newTrackLayer,
-								period);
+								period, configuration.getDateFormat());
 
 					}
 
@@ -245,9 +245,9 @@ public class GeoPDFLegacyBuilder extends AbstractGeoPDFBuilder{
 		return geoPDF;
 	}
 
-	public void createMinutesLayer(final GeoPDFConfiguration configuration,
-			final ArrayList<File> filesToDelete, final TrackWrapper currentTrack, final GeoPDFLayerTrack newTrackLayer,
-			final TimePeriod period, final String dateFormat) throws FileNotFoundException, JsonProcessingException{
+	public void createMinutesLayer(final GeoPDFConfiguration configuration, final ArrayList<File> filesToDelete,
+			final TrackWrapper currentTrack, final GeoPDFLayerTrack newTrackLayer, final TimePeriod period,
+			final String dateFormat) throws FileNotFoundException, JsonProcessingException {
 		final String fileNameSuffix;
 		if (period != null) {
 			fileNameSuffix = HiResDateToFileName(period.getStartDTG(), dateFormat);
@@ -340,7 +340,7 @@ public class GeoPDFLegacyBuilder extends AbstractGeoPDFBuilder{
 
 	@Override
 	protected void createTrackNameLayer(GeoPDFConfiguration configuration, ArrayList<File> filesToDelete,
-			TrackWrapper currentTrack, GeoPDFLayerTrack newTrackLayer, TimePeriod period)
+			TrackWrapper currentTrack, GeoPDFLayerTrack newTrackLayer, TimePeriod period, final String dateFormat)
 			throws FileNotFoundException, JsonProcessingException {
 
 		if (period == null || period.contains(currentTrack.getStartDTG())) {

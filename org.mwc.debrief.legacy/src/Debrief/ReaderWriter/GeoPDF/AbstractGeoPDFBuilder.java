@@ -496,7 +496,7 @@ public abstract class AbstractGeoPDFBuilder {
 
 	protected abstract void createTrackNameLayer(final GeoPDFConfiguration configuration,
 			final ArrayList<File> filesToDelete, final TrackWrapper currentTrack, final GeoPDFLayerTrack newTrackLayer,
-			final TimePeriod period) throws FileNotFoundException, JsonProcessingException ;
+			final TimePeriod period, final String dateFormat) throws FileNotFoundException, JsonProcessingException ;
 
 	protected abstract void createLabelsLayer(final GeoPDFConfiguration configuration,
 			final ArrayList<File> filesToDelete, final TrackWrapper currentTrack, final GeoPDFLayerTrack newTrackLayer,
