@@ -134,7 +134,7 @@ public class GeoPDFLegacyBuilder extends AbstractGeoPDFBuilder {
 			}
 
 		}
-		javascriptNonInteractiveLayerIndex.append("]");
+		javascriptNonInteractiveLayerIndex.append("];");
 
 		/**
 		 * Now the interactive Layers
