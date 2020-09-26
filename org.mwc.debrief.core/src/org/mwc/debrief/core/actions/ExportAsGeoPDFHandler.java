@@ -32,7 +32,6 @@ import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
-import org.mwc.cmap.core.interfaces.TimeControllerOperation;
 import org.mwc.cmap.geotools.gt2plot.WorldImageLayer;
 import org.mwc.cmap.plotViewer.actions.CoreEditorAction;
 import org.mwc.cmap.plotViewer.actions.IChartBasedEditor;
@@ -40,7 +39,6 @@ import org.mwc.debrief.core.editors.PlotEditor;
 
 import Debrief.GUI.Frames.Application;
 import Debrief.ReaderWriter.GeoPDF.GeoPDF;
-import Debrief.ReaderWriter.GeoPDF.GeoPDFLegacyBuilder;
 import Debrief.ReaderWriter.GeoPDF.GeoPDFSegmentedBuilder;
 import Debrief.ReaderWriter.GeoPDF.AbstractGeoPDFBuilder;
 import Debrief.ReaderWriter.GeoPDF.AbstractGeoPDFBuilder.GeoPDFConfiguration;
