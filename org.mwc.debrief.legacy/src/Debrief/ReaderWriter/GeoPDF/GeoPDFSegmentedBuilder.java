@@ -4,12 +4,14 @@ import java.awt.Color;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Enumeration;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import Debrief.GUI.Frames.Application;
 import Debrief.ReaderWriter.GeoPDF.GenerateSegmentedGeoJSON.GeometryType;
@@ -25,6 +27,7 @@ import Debrief.Wrappers.TrackWrapper;
 import MWC.GUI.Editable;
 import MWC.GUI.Layers;
 import MWC.GUI.ToolParent;
+import MWC.GenericData.HiResDate;
 import MWC.GenericData.TimePeriod;
 import MWC.Utilities.TextFormatting.FormatRNDateTime;
 
@@ -138,10 +141,104 @@ public class GeoPDFSegmentedBuilder extends AbstractGeoPDFBuilder {
 		}
 		javascriptNonInteractiveLayerIndex.append("];");
 
+		/**
+		 * Now the interactive Layers
+		 */
+		final GeoPDFLayerTrack interactiveLayer = new GeoPDFLayerTrack();
+		interactiveLayer.setId(INTERACTIVE_LAYER_NAME);
+		interactiveLayer.setName(INTERACTIVE_LAYER_NAME);
+		mainPage.addLayer(interactiveLayer);
+		
 		final StringBuilder javaScriptReplacementJsTimestamps = new StringBuilder();
 		javaScriptReplacementJsTimestamps.append("var timestamps = ");
 		final ArrayNode jsonTimestamps = mapper.createArrayNode();
 
+		HiResDate currentTime = configuration.getStartTime();
+
+		while (currentTime.lessThan(configuration.getEndTime())) {
+			final HiResDate topCurrentPeriod = HiResDate.min(
+					new HiResDate(currentTime.getMicros() / 1000 + configuration.getStepDeltaMilliSeconds()),
+					configuration.getEndTime());
+			final TimePeriod period = new TimePeriod.BaseTimePeriod(currentTime, topCurrentPeriod);
+
+			final GeoPDFLayerTrack periodTrack = new GeoPDFLayerTrack();
+			final String periodName;
+			if (configuration.getDateFormat() != null) {
+				periodName = new SimpleDateFormat(configuration.getDateFormat()).format(period.getStartDTG().getDate());
+			} else {
+				periodName = period.getStartDTG().toString();
+			}
+
+			interactiveLayer.addChild(periodTrack);
+			periodTrack.setId(periodName);
+			periodTrack.setName(periodName);
+
+			final ObjectNode timeStampNode = mapper.createObjectNode();
+			timeStampNode.put("name", periodName);
+			timeStampNode.put("ocg_name", periodName);
+			jsonTimestamps.add(timeStampNode);
+
+			/**
+			 * Let's iterate over all the layers to find the Tracks to export
+			 */
+			final Enumeration<Editable> enumeration = layers.elements();
+			while (enumeration.hasMoreElements()) {
+				final Editable currentEditable = enumeration.nextElement();
+				if (currentEditable instanceof TrackWrapper) {
+					/**
+					 * Ok, at this point we have a TrackWrapper. Now, let's create a Geometry of the
+					 * type Simple Features Geotools Library.
+					 */
+					final TrackWrapper currentTrack = (TrackWrapper) currentEditable;
+
+					/**
+					 * Let's draw only visible tracks.
+					 */
+					if (currentTrack.getVisible()) {
+
+						final GeoPDFLayerTrack newTrackLayer = new GeoPDFLayerTrack();
+						periodTrack.addChild(newTrackLayer);
+
+						newTrackLayer.setId(currentTrack.getName() + " " + periodName);
+						newTrackLayer.setName(currentTrack.getName());
+
+						/**
+						 * Let's create the different parts of the layer
+						 */
+						/**
+						 * TrackLine
+						 */
+						createTrackLine(geoPDF.getFilesToDelete(), currentTrack, newTrackLayer, period,
+								configuration.getDateFormat());
+
+						// Let's create now the point-type vectors
+						/**
+						 * Minutes difference Layer
+						 */
+						createTicksLayer(configuration, geoPDF.getFilesToDelete(), currentTrack, newTrackLayer,
+								period, configuration.getDateFormat());
+
+						/**
+						 * Label Layer
+						 */
+
+						createLabelsLayer(configuration, geoPDF.getFilesToDelete(), currentTrack, newTrackLayer, period,
+								configuration.getDateFormat());
+
+						/**
+						 * One point layer
+						 */
+						createTrackNameLayer(configuration, geoPDF.getFilesToDelete(), currentTrack, newTrackLayer,
+								period, configuration.getDateFormat());
+
+					}
+
+				}
+
+			}
+			currentTime = topCurrentPeriod;
+		}
+		
 		final String jsonTimestampsContent = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(jsonTimestamps);
 		javaScriptReplacementJsTimestamps.append(jsonTimestampsContent);
 		javaScriptReplacementJsTimestamps.append(";");
