@@ -106,7 +106,7 @@ public class GeoPDFSegmentedBuilder extends AbstractGeoPDFBuilder {
 					newTrackLayer.setId(currentTrack.getName());
 					newTrackLayer.setName(currentTrack.getName() + NON_INTERACTIVE_SUFFIX);
 					javascriptNonInteractiveLayerIndex
-							.append('\'' + currentTrack.getName() + NON_INTERACTIVE_SUFFIX + '\'');
+							.append('\'' + currentTrack.getName() + NON_INTERACTIVE_SUFFIX + '\'' + ',');
 
 					/**
 					 * TrackLine
