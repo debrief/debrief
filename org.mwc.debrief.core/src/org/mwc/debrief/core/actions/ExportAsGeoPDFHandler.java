@@ -41,6 +41,7 @@ import org.mwc.debrief.core.editors.PlotEditor;
 import Debrief.GUI.Frames.Application;
 import Debrief.ReaderWriter.GeoPDF.GeoPDF;
 import Debrief.ReaderWriter.GeoPDF.GeoPDFLegacyBuilder;
+import Debrief.ReaderWriter.GeoPDF.GeoPDFSegmentedBuilder;
 import Debrief.ReaderWriter.GeoPDF.AbstractGeoPDFBuilder;
 import Debrief.ReaderWriter.GeoPDF.AbstractGeoPDFBuilder.GeoPDFConfiguration;
 import MWC.GUI.Editable;
@@ -83,7 +84,7 @@ public class ExportAsGeoPDFHandler extends CoreEditorAction {
 			final String userFileName = dialog.open();
 			if (userFileName != null && !userFileName.isEmpty()) {
 				configuration.setPdfOutputPath(userFileName);
-				AbstractGeoPDFBuilder.setImplementation(new GeoPDFLegacyBuilder());
+				AbstractGeoPDFBuilder.setImplementation(new GeoPDFSegmentedBuilder());
 				GeoPDF geoPdf = AbstractGeoPDFBuilder.getImplementation().build(theLayers, configuration);
 				Application.logError3(ToolParent.INFO,
 						"GeoPDF- Compose files, background and environment are ready to be compiled.", null, false);

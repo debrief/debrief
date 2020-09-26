@@ -127,7 +127,7 @@ public class GeoPDFLegacyBuilder extends AbstractGeoPDFBuilder{
 					/**
 					 * One point layer
 					 */
-					createOnePointLayer(configuration, geoPDF.getFilesToDelete(), currentTrack, newTrackLayer, null);
+					createTrackNameLayer(configuration, geoPDF.getFilesToDelete(), currentTrack, newTrackLayer, null);
 
 				}
 
@@ -224,7 +224,7 @@ public class GeoPDFLegacyBuilder extends AbstractGeoPDFBuilder{
 						/**
 						 * One point layer
 						 */
-						createOnePointLayer(configuration, geoPDF.getFilesToDelete(), currentTrack, newTrackLayer,
+						createTrackNameLayer(configuration, geoPDF.getFilesToDelete(), currentTrack, newTrackLayer,
 								period);
 
 					}
@@ -245,7 +245,6 @@ public class GeoPDFLegacyBuilder extends AbstractGeoPDFBuilder{
 		return geoPDF;
 	}
 
-	@Override
 	public void createMinutesLayer(final GeoPDFConfiguration configuration,
 			final ArrayList<File> filesToDelete, final TrackWrapper currentTrack, final GeoPDFLayerTrack newTrackLayer,
 			final TimePeriod period, final String dateFormat) throws FileNotFoundException, JsonProcessingException{
@@ -340,7 +339,7 @@ public class GeoPDFLegacyBuilder extends AbstractGeoPDFBuilder{
 	}
 
 	@Override
-	protected void createOnePointLayer(GeoPDFConfiguration configuration, ArrayList<File> filesToDelete,
+	protected void createTrackNameLayer(GeoPDFConfiguration configuration, ArrayList<File> filesToDelete,
 			TrackWrapper currentTrack, GeoPDFLayerTrack newTrackLayer, TimePeriod period)
 			throws FileNotFoundException, JsonProcessingException {
 

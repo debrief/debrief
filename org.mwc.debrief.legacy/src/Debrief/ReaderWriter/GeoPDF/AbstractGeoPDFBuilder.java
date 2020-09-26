@@ -494,18 +494,14 @@ public abstract class AbstractGeoPDFBuilder {
 		throw new IOException(allOutput.toString());
 	}
 
-	protected abstract void createOnePointLayer(final GeoPDFConfiguration configuration,
+	protected abstract void createTrackNameLayer(final GeoPDFConfiguration configuration,
 			final ArrayList<File> filesToDelete, final TrackWrapper currentTrack, final GeoPDFLayerTrack newTrackLayer,
 			final TimePeriod period) throws FileNotFoundException, JsonProcessingException ;
 
 	protected abstract void createLabelsLayer(final GeoPDFConfiguration configuration,
 			final ArrayList<File> filesToDelete, final TrackWrapper currentTrack, final GeoPDFLayerTrack newTrackLayer,
 			final TimePeriod period, final String dateFormat) throws FileNotFoundException, JsonProcessingException ;
-
-	public abstract void createMinutesLayer(final GeoPDFConfiguration configuration,
-			final ArrayList<File> filesToDelete, final TrackWrapper currentTrack, final GeoPDFLayerTrack newTrackLayer,
-			final TimePeriod period, final String dateFormat) throws FileNotFoundException, JsonProcessingException;
-
+	
 	/**
 	 * For now let's just remove the invalid characters, but we could improve this
 	 * if needed.

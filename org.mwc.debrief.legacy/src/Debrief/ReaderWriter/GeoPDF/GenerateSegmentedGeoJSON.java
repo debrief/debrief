@@ -8,8 +8,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
-import Debrief.Wrappers.FixWrapper;
-
 public class GenerateSegmentedGeoJSON {
 
 	public static enum GeometryType{MultiLineString, Point};
@@ -52,8 +50,7 @@ public class GenerateSegmentedGeoJSON {
 		
 	}
 
-	public static String createGeoJsonFixSegment(final FixWrapper[] fixWrappers,
-			final SegmentedGeoJSONConfiguration configuration) throws JsonProcessingException {
+	public static String createGeoJsonFixSegment(final SegmentedGeoJSONConfiguration configuration) throws JsonProcessingException {
 		final ObjectMapper mapper = new ObjectMapper();
 		final ObjectNode jsonRoot = mapper.createObjectNode();
 		jsonRoot.put("type", "FeatureCollection");
@@ -95,18 +92,16 @@ public class GenerateSegmentedGeoJSON {
 			final ArrayNode subcoordinatesArray = mapper.createArrayNode();
 			coordinatesJson.add(subcoordinatesArray);
 			
-			for (FixWrapper fix : fixWrappers) {
+			for (double[] fix : configuration.getCoordinates()) {
 				final ArrayNode coordinateJson = mapper.createArrayNode();
-				coordinateJson.add(fix.getLocation().getLong());
-				coordinateJson.add(fix.getLocation().getLat());
+				coordinateJson.add(fix[0]);
+				coordinateJson.add(fix[1]);
 				subcoordinatesArray.add(coordinateJson);
 			}
 		}else {
-			for (FixWrapper fix : fixWrappers) {
-				final ArrayNode coordinateJson = mapper.createArrayNode();
-				coordinateJson.add(fix.getLocation().getLong());
-				coordinateJson.add(fix.getLocation().getLat());
-				coordinatesJson.add(coordinateJson);
+			for (double[] fix : configuration.getCoordinates()) {
+				coordinatesJson.add(fix[0]);
+				coordinatesJson.add(fix[1]);
 			}
 		}
 		
