@@ -2,8 +2,9 @@
     var animationRunning = false;
 
     // Colours for the UI components
-    var lightBlue = new Array("RGB", 0.815, 0.886, 0.949);
-    var darkBlue = new Array("RGB", 0.443, 0.662, 0.854);
+    var lightBlue = new Array("RGB", 0.0, 0, 0.2);
+    var darkBlue = new Array("RGB", 0.0, 0.0, 0.2);
+    var red = new Array("RGB", 0.8, 0.0, 0.2);
 
     var current_index = 0;
     var firstRun = true;
@@ -227,7 +228,7 @@
 
     function markSliderPart(index) {
         var btn = this.getField("btnSlider_" + index);
-        btn.fillColor = darkBlue;
+        btn.fillColor = red;
     }
 
     function unmarkSliderPart(index) {
@@ -352,7 +353,7 @@
             oFld.buttonSetCaption(caption);
             oFld.borderStyle == border.i;
             oFld.strokeColor = color.black;
-            oFld.textColor = color.black;
+            oFld.textColor = red;
             oFld.textSize = 20;
             oFld.fillColor = lightBlue;
             oFld.lineWidth = 0;
@@ -422,9 +423,9 @@
             oFld.readonly = true;
             oFld.alignment = "center";
             oFld.borderStyle == border.i;
-            oFld.textColor = color.green;
+            oFld.textColor = red;
             oFld.textSize = 16;
-            oFld.fillColor = color.black;
+            oFld.fillColor = darkBlue;
             oFld.lineWidth = 0;
             if (hidden) {
                 oFld.display = display.hidden;
@@ -517,6 +518,7 @@
     var btn = this.getField("btnDynamicToggle");
     btn.textFont = font.ZapfD;
     btn.buttonSetCaption("(");
+    btn.textFont = font.TimesB;
 
     // Create many small buttons for the slider
     var smallButtonSize = 156 / timestamps.length;
