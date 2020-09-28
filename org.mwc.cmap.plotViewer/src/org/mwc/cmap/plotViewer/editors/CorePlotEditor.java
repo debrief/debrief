@@ -795,9 +795,11 @@ public abstract class CorePlotEditor extends EditorPart implements IResourceProv
 				// if the file is dragged from outside workspace, get the location of the plot
 				// file
 				String tmpFilePath;
+				
 				try {
 					final File localFile = new File(((FileStoreEditorInput) input).getURI().toURL().getFile());
-					tmpFilePath = localFile.getParentFile().getAbsolutePath() + File.separator + tifFile;
+					
+					tmpFilePath = localFile.getParentFile().getAbsolutePath() + File.separator + getFileNameFromAbsoluteFile(tifFile.getAbsolutePath());
 				} catch (final MalformedURLException e) {
 					MWC.Utilities.Errors.Trace.trace(e, fileName + "File doesnt exist and couldnt be loaded");
 					tmpFilePath = null;
@@ -814,6 +816,18 @@ public abstract class CorePlotEditor extends EditorPart implements IResourceProv
 			return fileName;
 		}
 		return tiffFilePath;
+	}
+	
+	private String getFileNameFromAbsoluteFile(String fileName) {
+		final String retVal;
+		if(fileName.contains(File.separator)) {
+			int lastIndex = fileName.lastIndexOf(File.separator);
+			retVal =fileName.substring(lastIndex+1); 
+		}
+		else {
+			retVal = fileName;
+		}
+		return retVal;
 	}
 
 	@Override
