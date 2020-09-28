@@ -39,7 +39,8 @@ public class ExternallyManagedDataLayer extends BaseLayer {
 		public PropertyDescriptor[] getPropertyDescriptors() {
 			try {
 				final PropertyDescriptor[] res = { prop("Visible", "the Layer visibility", VISIBILITY),
-						prop("Name", "the name of the Layer", FORMAT) };
+						prop("Name", "the name of the Layer", FORMAT),
+						displayReadOnlyProp("Filename", "Filename", FORMAT) };
 
 				return res;
 
