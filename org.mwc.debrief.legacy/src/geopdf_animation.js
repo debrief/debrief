@@ -2,8 +2,8 @@
     var animationRunning = false;
 
     // Colours for the UI components
-    var textColor = new Array("RGB", 0.8, 0.0, 0.2);
-    var backgroundColor = new Array("RGB", 0.0, 0.0, 0.2);
+    var redColor = new Array("RGB", 0.8, 0.0, 0.2);
+    var blueColor = new Array("RGB", 0.0, 0.0, 0.2);
 
     var current_index = 0;
     var firstRun = true;
@@ -82,8 +82,8 @@
             var btn = this.getField("btnDynamicToggle");
             btn.borderStyle = border.b; // Bevelled border - looks unpressed
             // Restore Up Colors
-            btn.fillColor = backgroundColor;
-            btn.textColor = textColor;
+            btn.fillColor = redColor;
+            btn.textColor = blueColor;
 
 
             unmarkSliderPart(lastSliderButtonLocation);
@@ -93,13 +93,17 @@
             }
             getOCGByName("Interactive Layers").state = false;
             interactive = false;
+
+            if (animationRunning) {
+                playPause();
+            }
         } else {
             // Perform Push Down Actions - ie. switch to interactive
             var btn = this.getField("btnDynamicToggle");
             btn.borderStyle = border.i; // Inset border - looks pressed
             // Darken Down Colors
-            btn.fillColor = textColor;
-            btn.textColor = backgroundColor;
+            btn.fillColor = blueColor;
+            btn.textColor = redColor;
 
             for (i = 0; i < nonInteractiveLayers.length; i += 1) {
                 getOCGByName(nonInteractiveLayers[i]).state = false;
@@ -144,8 +148,8 @@
             var btn = this.getField("btnPlayPause");
             btn.borderStyle = border.b;
             btn.buttonSetCaption(">");
-            btn.fillColor = backgroundColor;
-            btn.textColor = textColor;
+            btn.fillColor = blueColor;
+            btn.textColor = redColor;
             return;
         }
 
@@ -163,15 +167,16 @@
     }
 
     function prevTimestep() {
+        if (current_index == 0) {
+            current_index = 0;
+            return;
+        }
+
         // Turn off the current OCG (layer)
         timestamps[current_index].ocg.state = false;
         unmarkSliderPart(lastSliderButtonLocation);
 
         current_index -= 1;
-
-        if (current_index < 0) {
-            current_index = 0;
-        }
 
         // Update the displayed time
         var txt = this.getField("txtTime");
@@ -200,21 +205,22 @@
         // then actually plays/pauses the animation
         // Again, this uses the button border style to tell us whether we need to
         // play or pause
-        if (event.target.borderStyle == border.i) {
+        var btn = this.getField("btnPlayPause");
+        if (btn.borderStyle == border.i) {
             // Perform Pop Up Actions
-            event.target.borderStyle = border.b; // Bevelled - ie. unpressed
-            event.target.buttonSetCaption(">");
+            btn.borderStyle = border.b; // Bevelled - ie. unpressed
+            btn.buttonSetCaption(">");
             // Restore Up Colors
-            event.target.fillColor = backgroundColor;
-            event.target.textColor = textColor;
+            btn.fillColor = blueColor;
+            btn.textColor = redColor;
             playPauseAnimation();
         } else {
             // Perform Push Down Actions
-            event.target.borderStyle = border.i; // Inset - ie. pressed
-            event.target.buttonSetCaption("||");
+            btn.borderStyle = border.i; // Inset - ie. pressed
+            btn.buttonSetCaption("||");
             // Darken Down Colors
-            event.target.fillColor = textColor;
-            event.target.textColor = backgroundColor;
+            btn.fillColor = redColor;
+            btn.textColor = blueColor;
             playPauseAnimation();
         }
     }
@@ -234,12 +240,12 @@
 
     function markSliderPart(index) {
         var btn = this.getField("btnSlider_" + index);
-        btn.fillColor = textColor;
+        btn.fillColor = redColor;
     }
 
     function unmarkSliderPart(index) {
         var btn = this.getField("btnSlider_" + index);
-        btn.fillColor = backgroundColor;
+        btn.fillColor = blueColor;
     }
 
 
@@ -343,7 +349,19 @@
         this.dirty = false;
     }
 
-    function createButton(cName, caption, nPage, xOffset, yOffset, xSize, ySize, hidden, jsCode) {
+    function buttonUpColor() {
+        event.target.fillColor = blueColor;
+        event.target.textColor = redColor;
+        this.dirty = false;
+    }
+
+    function buttonDownColor() {
+        event.target.fillColor = redColor;
+        event.target.textColor = blueColor;
+        this.dirty = false;
+    }
+
+    function createButton(cName, caption, nPage, xOffset, yOffset, xSize, ySize, hidden, jsCodeOnDown, jsCodeOnUp) {
         // Acquire the crop box (visible area) for the current page
         var pgRect = this.getPageBox("Crop", nPage);
         // Create array for size/location
@@ -360,13 +378,15 @@
             oFld.borderStyle == border.i;
             oFld.strokeColor = color.black;
             oFld.textSize = 20;
-            oFld.fillColor = backgroundColor;
-            oFld.textColor = textColor;
+            oFld.fillColor = blueColor;
+            oFld.textColor = redColor;
+            oFld.highlight = highlight.n // Stops Adobe changing the colours when we press the button, we do this manually
             oFld.lineWidth = 0;
             if (hidden) {
                 oFld.display = display.hidden;
             }
-            oFld.setAction("MouseUp", jsCode);
+            oFld.setAction("MouseUp", jsCodeOnUp);
+            oFld.setAction("MouseDown", jsCodeOnDown);
 
             // Store offsets and size in attributes so we can use them later to reposition the button
             oFld._xOffset = xOffset;
@@ -394,8 +414,8 @@
             oFld.buttonSetCaption(caption);
             oFld.borderStyle == border.s; // Solid border
             oFld.strokeColor = color.transparent;
-            oFld.textColor = textColor;
-            oFld.fillColor = backgroundColor;
+            oFld.textColor = redColor;
+            oFld.fillColor = blueColor;
             oFld.lineWidth = 0;
             if (hidden) {
                 oFld.display = display.hidden;
@@ -429,9 +449,9 @@
             oFld.readonly = true;
             oFld.alignment = "center";
             oFld.borderStyle == border.i;
-            oFld.textColor = textColor;
+            oFld.textColor = redColor;
             oFld.textSize = 16;
-            oFld.fillColor = backgroundColor;
+            oFld.fillColor = blueColor;
             oFld.lineWidth = 0;
             if (hidden) {
                 oFld.display = display.hidden;
@@ -515,10 +535,10 @@
     // Create main UI components
     var overall_left = 10;
     var overall_top = -10;
-    createButton("btnDynamicToggle", "", 0, overall_left, overall_top - 25, 36, 36, false, "toggleDynamic();");
-    createButton("btnPrev", "<<", 0, overall_left + 40, overall_top - 25, 36, 36, true, "prevTimestep();");
-    createButton("btnPlayPause", ">", 0, overall_left + (2 * 40), overall_top - 25, 36, 36, true, "playPause();");
-    createButton("btnNext", ">>", 0, overall_left + (3 * 40), overall_top - 25, 36, 36, true, "nextTimestep();");
+    createButton("btnDynamicToggle", "", 0, overall_left, overall_top - 25, 36, 36, false, "toggleDynamic();", "");
+    createButton("btnPrev", "<<", 0, overall_left + 40, overall_top - 25, 36, 36, true, "buttonDownColor();", "buttonUpColor(); prevTimestep();");
+    createButton("btnPlayPause", ">", 0, overall_left + (2 * 40), overall_top - 25, 36, 36, true, "", "playPause();");
+    createButton("btnNext", ">>", 0, overall_left + (3 * 40), overall_top - 25, 36, 36, true, "buttonDownColor();", "buttonUpColor(); nextTimestep();");
     createTextbox("txtTime", "", 0, overall_left, overall_top - 65, 156, 20, true);
 
     // Set font and text to get plane logo on toggle button
@@ -530,6 +550,9 @@
     btn.textSize = 30;
     btn._origTextSize = 30;
     btn.buttonSetCaption("(");
+    btn.userName = "Enter fly-through mode";
+    btn.textColor = blueColor;
+    btn.fillColor = redColor;
 
     // Create many small buttons for the slider
     var smallButtonSize = 156 / timestamps.length;
