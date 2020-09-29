@@ -34,16 +34,20 @@ import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
 import org.mwc.cmap.geotools.gt2plot.WorldImageLayer;
 import org.mwc.cmap.plotViewer.actions.CoreEditorAction;
+import org.mwc.cmap.plotViewer.actions.IChartBasedEditor;
+import org.mwc.debrief.core.editors.PlotEditor;
 
 import Debrief.GUI.Frames.Application;
+import Debrief.ReaderWriter.GeoPDF.AbstractGeoPDFBuilder.GeoPDFConfiguration;
 import Debrief.ReaderWriter.GeoPDF.GeoPDF;
-import Debrief.ReaderWriter.GeoPDF.GeoPDFBuilder;
-import Debrief.ReaderWriter.GeoPDF.GeoPDFBuilder.GeoPDFConfiguration;
+import Debrief.ReaderWriter.GeoPDF.GeoPDFSegmentedBuilder;
 import MWC.GUI.Editable;
 import MWC.GUI.Layers;
 import MWC.GUI.PlainChart;
 import MWC.GUI.ToolParent;
 import MWC.GUI.Shapes.ChartBoundsWrapper;
+import MWC.GenericData.TimePeriod;
+import MWC.TacticalData.temporal.TimeControlPreferences;
 
 public class ExportAsGeoPDFHandler extends CoreEditorAction {
 
@@ -52,10 +56,23 @@ public class ExportAsGeoPDFHandler extends CoreEditorAction {
 		try {
 			final PlainChart theChart = getChart();
 			final Layers theLayers = theChart.getLayers();
+			final TimePeriod period = theLayers.getTimePeriod();
 			final GeoPDFConfiguration configuration = new GeoPDFConfiguration();
+			final IChartBasedEditor editorBasedEditor = getEditor();
+
+			if (editorBasedEditor instanceof PlotEditor) {
+				final PlotEditor actualEditor = (PlotEditor) editorBasedEditor;
+				final TimeControlPreferences pref = (TimeControlPreferences) actualEditor.getAdapter(TimeControlPreferences.class);
+				if (pref != null) {
+					configuration.setStepDeltaMilliSeconds(pref.getSmallStep().getMillis());
+					configuration.setDateFormat(pref.getDTGFormat());
+				}
+			}
 			loadBackgroundLayers(theLayers, configuration);
 			configuration.setViewportArea(theChart.getCanvas().getProjection().getVisibleDataArea());
 			configuration.setLandscape(theChart.getScreenSize().getWidth() > theChart.getScreenSize().getHeight());
+			configuration.setStartTime(period.getStartDTG());
+			configuration.setEndTime(period.getEndDTG());
 
 			final FileDialog dialog = new FileDialog(getShell(), SWT.SAVE);
 			dialog.setFilterNames(new String[] { "PDF Files", "All Files (*.*)" });
@@ -64,10 +81,11 @@ public class ExportAsGeoPDFHandler extends CoreEditorAction {
 			final String userFileName = dialog.open();
 			if (userFileName != null && !userFileName.isEmpty()) {
 				configuration.setPdfOutputPath(userFileName);
-				GeoPDF geoPdf = GeoPDFBuilder.build(theLayers, configuration);
+				final GeoPDFSegmentedBuilder builder = new GeoPDFSegmentedBuilder();
+				GeoPDF geoPdf = builder.build(theLayers, configuration);
 				Application.logError3(ToolParent.INFO,
 						"GeoPDF- Compose files, background and environment are ready to be compiled.", null, false);
-				GeoPDFBuilder.generatePDF(geoPdf, configuration);
+				builder.generatePDF(geoPdf, configuration);
 			}
 
 		} catch (Exception e) {

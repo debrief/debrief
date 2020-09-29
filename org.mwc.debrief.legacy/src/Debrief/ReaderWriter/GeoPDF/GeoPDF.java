@@ -272,7 +272,16 @@ public class GeoPDF {
 	public static abstract class GeoPDFLayer {
 		private String id;
 		private String name;
+		private ArrayList<GeoPDFLayerTrack> children = new ArrayList<GeoPDF.GeoPDFLayerTrack>();
 
+		public ArrayList<GeoPDFLayerTrack> getChildren() {
+			return children;
+		}
+
+		public void addChild(final GeoPDFLayerTrack child) {
+			children.add(child);
+		}
+		
 		public String getId() {
 			return id;
 		}
@@ -340,6 +349,10 @@ public class GeoPDF {
 				layer.addChild(vector.toXML(geoReferenceId));
 			}
 
+			for (GeoPDFLayerTrack child : getChildren()) {
+				layer.addChild(child.toXML(geoReferenceId));
+			}
+			
 			return layer;
 		}
 	}
@@ -352,11 +365,20 @@ public class GeoPDF {
 	private String title;
 	private String keywords;
 	private ArrayList<GeoPDFPage> pages = new ArrayList<GeoPDF.GeoPDFPage>();
+	private String javascript;
 
 	public GeoPDFPage createNewPage() {
 		final GeoPDFPage newPage = new GeoPDFPage(pages.size() + 1);
 		pages.add(newPage);
 		return newPage;
+	}
+
+	public void setJavascript(String javascript) {
+		this.javascript = javascript;
+	}
+
+	public String getJavascript() {
+		return javascript;
 	}
 
 	public String getAuthor() {
@@ -422,6 +444,16 @@ public class GeoPDF {
 	public void setPages(ArrayList<GeoPDFPage> pages) {
 		this.pages = pages;
 	}
+	
+	private IXMLElement createLayerIndex(final GeoPDFLayer layer) {
+		final IXMLElement newLayerXML = new XMLElement("Layer");
+		newLayerXML.setAttribute("id", layer.getId());
+		newLayerXML.setAttribute("name", layer.getName());
+		for (GeoPDFLayer child : layer.getChildren()) {
+			newLayerXML.addChild(createLayerIndex(child));
+		}
+		return newLayerXML;
+	}
 
 	public IXMLElement toXML() throws IOException {
 		final XMLElement pdfComposition = new XMLElement("PDFComposition");
@@ -430,6 +462,12 @@ public class GeoPDF {
 		final IXMLElement author = new XMLElement("Author");
 		metadata.addChild(author);
 		author.setContent(getAuthor());
+		
+		if (getJavascript() != null) {
+			IXMLElement javascript = new XMLElement("Javascript");
+			javascript.setContent(getJavascript());
+			pdfComposition.addChild(javascript);
+		}
 
 		final IXMLElement layerTree = new XMLElement("LayerTree");
 		pdfComposition.addChild(layerTree);
@@ -437,10 +475,7 @@ public class GeoPDF {
 
 		for (GeoPDFPage page : pages) {
 			for (GeoPDFLayer layer : page.getLayers()) {
-				final IXMLElement newLayerXML = new XMLElement("Layer");
-				layerTree.addChild(newLayerXML);
-				newLayerXML.setAttribute("id", layer.getId());
-				newLayerXML.setAttribute("name", layer.getName());
+				layerTree.addChild(createLayerIndex(layer));
 			}
 		}
 

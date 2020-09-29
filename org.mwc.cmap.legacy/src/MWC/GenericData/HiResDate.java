@@ -86,7 +86,7 @@ public class HiResDate implements Serializable, Comparable<HiResDate> {
 	 * @return Return the max of two HiResDate
 	 */
 	public static HiResDate max(final HiResDate a, final HiResDate b) {
-		if (a.compareTo(b) <= 0) {
+		if (a.compareTo(b) > 0) {
 			return a;
 		} else {
 			return b;
@@ -101,7 +101,7 @@ public class HiResDate implements Serializable, Comparable<HiResDate> {
 	 * @return min of two HiResDate
 	 */
 	public static HiResDate min(final HiResDate a, final HiResDate b) {
-		if (a.compareTo(b) > 0) {
+		if (a.compareTo(b) <= 0) {
 			return a;
 		} else {
 			return b;
