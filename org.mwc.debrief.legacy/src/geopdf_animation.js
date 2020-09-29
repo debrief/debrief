@@ -2,9 +2,8 @@
     var animationRunning = false;
 
     // Colours for the UI components
-    var lightBlue = new Array("RGB", 0.0, 0, 0.2);
-    var darkBlue = new Array("RGB", 0.0, 0.0, 0.2);
-    var red = new Array("RGB", 0.8, 0.0, 0.2);
+    var textColor = new Array("RGB", 0.8, 0.0, 0.2);
+    var backgroundColor = new Array("RGB", 0.0, 0.0, 0.2);
 
     var current_index = 0;
     var firstRun = true;
@@ -14,6 +13,7 @@
     var lastPageViewY = null;
     var lastPageViewZoom = null;
     var lastSliderButtonLocation = 0;
+    var interactive = false;
 
     // List of non-interactive layers
     !!NONINTERACTLAYERS
@@ -76,16 +76,15 @@
         //  - toggling the state of the toggle button
         //  - turning on/off the static/dynamic layers
         //  - making the other UI components visible/invisible
-        // We use the borderStyle of the button to tell us what
-        // state it is in
-        // If it is currently Inset (border.i) then it looks 'pressed' and we
-        // want to 'unpress' it
-        if (event.target.borderStyle == border.i) {
+        if (interactive) {
             // Perform Pop Up Actions - ie. switch back to non-interactive
 
-            event.target.borderStyle = border.b; // Bevelled border - looks unpressed
+            var btn = this.getField("btnDynamicToggle");
+            btn.borderStyle = border.b; // Bevelled border - looks unpressed
             // Restore Up Colors
-            event.target.fillColor = lightBlue;
+            btn.fillColor = backgroundColor;
+            btn.textColor = textColor;
+
 
             unmarkSliderPart(lastSliderButtonLocation);
 
@@ -93,12 +92,14 @@
                 getOCGByName(nonInteractiveLayers[i]).state = true;
             }
             getOCGByName("Interactive Layers").state = false;
+            interactive = false;
         } else {
             // Perform Push Down Actions - ie. switch to interactive
-
-            event.target.borderStyle = border.i; // Inset border - looks pressed
+            var btn = this.getField("btnDynamicToggle");
+            btn.borderStyle = border.i; // Inset border - looks pressed
             // Darken Down Colors
-            event.target.fillColor = darkBlue;
+            btn.fillColor = textColor;
+            btn.textColor = backgroundColor;
 
             for (i = 0; i < nonInteractiveLayers.length; i += 1) {
                 getOCGByName(nonInteractiveLayers[i]).state = false;
@@ -106,6 +107,7 @@
             getOCGByName("Interactive Layers").state = true;
             
             goToFirstTimestep();
+            interactive = true;
         }
 
         toggleObjectVisible("btnPlayPause");
@@ -118,6 +120,7 @@
 
         this.dirty = false;
     }
+
 
     function nextTimestep() {
         if (current_index >= 0) {
@@ -141,7 +144,8 @@
             var btn = this.getField("btnPlayPause");
             btn.borderStyle = border.b;
             btn.buttonSetCaption(">");
-            btn.fillColor = lightBlue;
+            btn.fillColor = backgroundColor;
+            btn.textColor = textColor;
             return;
         }
 
@@ -201,14 +205,16 @@
             event.target.borderStyle = border.b; // Bevelled - ie. unpressed
             event.target.buttonSetCaption(">");
             // Restore Up Colors
-            event.target.fillColor = lightBlue;
+            event.target.fillColor = backgroundColor;
+            event.target.textColor = textColor;
             playPauseAnimation();
         } else {
             // Perform Push Down Actions
             event.target.borderStyle = border.i; // Inset - ie. pressed
             event.target.buttonSetCaption("||");
             // Darken Down Colors
-            event.target.fillColor = darkBlue;
+            event.target.fillColor = textColor;
+            event.target.textColor = backgroundColor;
             playPauseAnimation();
         }
     }
@@ -228,12 +234,12 @@
 
     function markSliderPart(index) {
         var btn = this.getField("btnSlider_" + index);
-        btn.fillColor = red;
+        btn.fillColor = textColor;
     }
 
     function unmarkSliderPart(index) {
         var btn = this.getField("btnSlider_" + index);
-        btn.fillColor = lightBlue;
+        btn.fillColor = backgroundColor;
     }
 
 
@@ -353,9 +359,9 @@
             oFld.buttonSetCaption(caption);
             oFld.borderStyle == border.i;
             oFld.strokeColor = color.black;
-            oFld.textColor = red;
             oFld.textSize = 20;
-            oFld.fillColor = lightBlue;
+            oFld.fillColor = backgroundColor;
+            oFld.textColor = textColor;
             oFld.lineWidth = 0;
             if (hidden) {
                 oFld.display = display.hidden;
@@ -388,8 +394,8 @@
             oFld.buttonSetCaption(caption);
             oFld.borderStyle == border.s; // Solid border
             oFld.strokeColor = color.transparent;
-            oFld.textColor = color.black;
-            oFld.fillColor = lightBlue;
+            oFld.textColor = textColor;
+            oFld.fillColor = backgroundColor;
             oFld.lineWidth = 0;
             if (hidden) {
                 oFld.display = display.hidden;
@@ -423,9 +429,9 @@
             oFld.readonly = true;
             oFld.alignment = "center";
             oFld.borderStyle == border.i;
-            oFld.textColor = red;
+            oFld.textColor = textColor;
             oFld.textSize = 16;
-            oFld.fillColor = darkBlue;
+            oFld.fillColor = backgroundColor;
             oFld.lineWidth = 0;
             if (hidden) {
                 oFld.display = display.hidden;
@@ -468,6 +474,7 @@
         }
 
         // initialize the media object to read pageWindowRect, because AcrobatJS...
+        console.println(this.media);
         //compare pixel width of application page window area, the current zoom level,
         // and the page width in inches to get user display DPI.  Round to clean up FP errors; but +/- 1 PPI isn't the end of the world.
         userDPI  = Math.round((doc.pageWindowRect[2] - doc.pageWindowRect[0]) / refView.pageViewZoom / pWidth);
@@ -517,8 +524,12 @@
     // Set font and text to get plane logo on toggle button
     var btn = this.getField("btnDynamicToggle");
     btn.textFont = font.ZapfD;
+    // We're setting a custom textSize for this button to make the plane large and easily visible
+    // We need to set the _origTextSize attribute too, as that is used when resizing the buttons
+    // when zooming
+    btn.textSize = 30;
+    btn._origTextSize = 30;
     btn.buttonSetCaption("(");
-    btn.textFont = font.TimesB;
 
     // Create many small buttons for the slider
     var smallButtonSize = 156 / timestamps.length;
