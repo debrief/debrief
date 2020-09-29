@@ -64,7 +64,7 @@ public class ExportAsGeoPDFHandler extends CoreEditorAction {
 				final PlotEditor actualEditor = (PlotEditor) editorBasedEditor;
 				final TimeControlPreferences pref = (TimeControlPreferences) actualEditor.getAdapter(TimeControlPreferences.class);
 				if (pref != null) {
-					configuration.setStepDeltaMilliSeconds(pref.getLargeStep().getMillis());
+					configuration.setStepDeltaMilliSeconds(pref.getSmallStep().getMillis());
 					configuration.setDateFormat(pref.getDTGFormat());
 				}
 			}
