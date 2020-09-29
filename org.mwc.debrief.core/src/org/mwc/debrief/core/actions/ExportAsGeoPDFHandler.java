@@ -38,10 +38,9 @@ import org.mwc.cmap.plotViewer.actions.IChartBasedEditor;
 import org.mwc.debrief.core.editors.PlotEditor;
 
 import Debrief.GUI.Frames.Application;
+import Debrief.ReaderWriter.GeoPDF.AbstractGeoPDFBuilder.GeoPDFConfiguration;
 import Debrief.ReaderWriter.GeoPDF.GeoPDF;
 import Debrief.ReaderWriter.GeoPDF.GeoPDFSegmentedBuilder;
-import Debrief.ReaderWriter.GeoPDF.AbstractGeoPDFBuilder;
-import Debrief.ReaderWriter.GeoPDF.AbstractGeoPDFBuilder.GeoPDFConfiguration;
 import MWC.GUI.Editable;
 import MWC.GUI.Layers;
 import MWC.GUI.PlainChart;
