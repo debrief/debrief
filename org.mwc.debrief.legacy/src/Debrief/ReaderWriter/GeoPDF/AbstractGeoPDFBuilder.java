@@ -46,12 +46,12 @@ import net.n3.nanoxml.XMLWriter;
 
 public abstract class AbstractGeoPDFBuilder {
 
-	public static String GDAL_NATIVE_PREFIX_FOLDER = "/native";
-	public static String JAVASCRIPT_TEMPLATE_PATH = "/geopdf_animation.js";
-	public static String JAVASCRIPT_TIMESTAMP_TAG = "!!JS_TIMESTAMPS";
-	public static String JAVASCRIPT_TIMESTAMP_TAG_NON_INTERATIVE = "!!NONINTERACTLAYERS";
-	public static String NON_INTERACTIVE_SUFFIX = " (non-interactive)";
-	public static String INTERACTIVE_LAYER_NAME = "Interactive Layers";
+	public static final String GDAL_NATIVE_PREFIX_FOLDER = "/native";
+	public static final String JAVASCRIPT_TEMPLATE_PATH = "/geopdf_animation.js";
+	public static final String JAVASCRIPT_TIMESTAMP_TAG = "!!JS_TIMESTAMPS";
+	public static final String JAVASCRIPT_TIMESTAMP_TAG_NON_INTERATIVE = "!!NONINTERACTLAYERS";
+	public static final String NON_INTERACTIVE_SUFFIX = " (non-interactive)";
+	public static final String INTERACTIVE_LAYER_NAME = "Interactive Layers";
 
 	public static class GeoPDFConfiguration {
 		public static final String SUCCESS_GDAL_DONE = "done.";
