@@ -82,11 +82,11 @@ public class ExportAsGeoPDFHandler extends CoreEditorAction {
 			final String userFileName = dialog.open();
 			if (userFileName != null && !userFileName.isEmpty()) {
 				configuration.setPdfOutputPath(userFileName);
-				AbstractGeoPDFBuilder.setImplementation(new GeoPDFSegmentedBuilder());
-				GeoPDF geoPdf = AbstractGeoPDFBuilder.getImplementation().build(theLayers, configuration);
+				final GeoPDFSegmentedBuilder builder = new GeoPDFSegmentedBuilder();
+				GeoPDF geoPdf = builder.build(theLayers, configuration);
 				Application.logError3(ToolParent.INFO,
 						"GeoPDF- Compose files, background and environment are ready to be compiled.", null, false);
-				AbstractGeoPDFBuilder.getImplementation().generatePDF(geoPdf, configuration);
+				builder.generatePDF(geoPdf, configuration);
 			}
 
 		} catch (Exception e) {
