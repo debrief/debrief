@@ -790,7 +790,8 @@ public abstract class CorePlotEditor extends EditorPart implements IResourceProv
 			if (input instanceof IFileEditorInput) {
 				final String dpfFilePath = ((IFileEditorInput) getEditorInput()).getFile().getParent().getLocation()
 						.toFile().getAbsolutePath();
-				tiffFilePath = dpfFilePath + File.separator + tifFile;
+				
+				tiffFilePath = dpfFilePath + File.separator + getFileNameFromAbsoluteFile(tifFile.getAbsolutePath());
 			} else if (input instanceof FileStoreEditorInput) {
 				// if the file is dragged from outside workspace, get the location of the plot
 				// file
@@ -812,7 +813,7 @@ public abstract class CorePlotEditor extends EditorPart implements IResourceProv
 		final File tiffFile = new File(tiffFilePath);
 		if (!tiffFile.exists()) {
 			CorePlugin.showMessage("Error loading file",
-					"Could not find the GeoTiff File. Please fix the path in the file and load again");
+					"Could not find the GeoTiff File:"+fileName+"\n Please fix the path in the file and load again");
 			return fileName;
 		}
 		return tiffFilePath;
