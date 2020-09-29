@@ -952,4 +952,31 @@ public final class WorldArea implements Serializable {
 
 	}
 
+	/**
+	 * Increase the width or the area, keeping the centre in the same position.
+	 * @param newWidth
+	 */
+	public void setCentredWidth(double newWidth) {
+		final WorldLocation originalCenter = getCentre();
+		
+		final WorldLocation newTopRight = getTopRight().add(new WorldVector(newWidth - getWidth(), 0, 0));
+		extend(newTopRight);
+		
+		setCentre(originalCenter);
+	}
+
+	/**
+	 * Increase the height of the area, keeping the centre in the same position.
+	 * @param newHeight
+	 */
+	public void setCentredHeight(double newHeight) {
+		final WorldLocation originalCenter = getCentre();
+		
+		final WorldLocation newTopRight = getTopRight().add(new WorldVector(0, newHeight - getHeight(), 0));
+		extend(newTopRight);
+		
+		setCentre(originalCenter);
+		normalise();
+	}
+
 }

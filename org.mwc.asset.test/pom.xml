@@ -24,7 +24,7 @@
   </parent>
   <groupId>org.mwc.asset</groupId>
   <artifactId>org.mwc.asset.test</artifactId>
-  <version>1.0.6</version>
+  <version>1.0.7</version>
   <packaging>eclipse-test-plugin</packaging>
 
   <build>
