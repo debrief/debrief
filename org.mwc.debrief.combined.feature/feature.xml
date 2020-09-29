@@ -16,7 +16,7 @@
 <feature
       id="org.mwc.debrief.combined.feature"
       label="%featureName"
-      version="1.1.19"
+      version="1.1.20"
       provider-name="MWC"
       plugin="org.mwc.debrief.core">
 
@@ -786,6 +786,13 @@ Library.
 
    <plugin
          id="org.mwc.debrief.pepys"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="javax.xml"
          download-size="0"
          install-size="0"
          version="0.0.0"

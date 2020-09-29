@@ -948,7 +948,7 @@ public abstract class Application implements ToolParent, ActionListener, FileDro
 					caller = null;
 
 				} else {
-					Trace.trace("This file type not handled:" + suff);
+					Trace.trace("This file type is not handled:" + suff);
 				}
 			}
 		} finally {

@@ -1,5 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
+	<classpathentry exported="true" kind="lib" path="libs/commons-collections4-4.4.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/xmlbeans-3.1.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/poi-4.1.2.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/poi-ooxml-4.1.2.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/poi-ooxml-schemas-4.1.2.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/poi-scratchpad-4.1.2.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/commons-compress-1.19.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/commons-csv-1.2.jar"/>
 	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>

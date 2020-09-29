@@ -1,3 +1,17 @@
+/*******************************************************************************
+ * Debrief - the Open Source Maritime Analysis Application
+ * http://debrief.info
+ *
+ * (C) 2000-2020, Deep Blue C Technology Ltd
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the Eclipse Public License v1.0
+ * (http://www.eclipse.org/legal/epl-v10.html)
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *******************************************************************************/
 package Debrief.ReaderWriter.Nisida;
 
 import java.io.BufferedReader;
@@ -244,6 +258,14 @@ public class ImportNisida {
 			}
 		} catch (final IOException e) {
 			// There were problems reading the file. It cannot be loaded.
+		} finally {
+			if (br != null) {
+				try {
+					br.close();
+				} catch (IOException e) {
+
+				}
+			}
 		}
 		return status;
 	}
@@ -356,7 +378,7 @@ public class ImportNisida {
 		// [DayTime/ATT/WPN/TGT Bearing/TGT RNGE in NM/TN / Own Lat/ Own Lon /Position
 		// Source /Remarks/]
 
-		// capture another “FixWrapper” for Own lat/lon
+		// capture another FixWrapper for Own lat/lon
 
 		// This is a comment, with "Attack" as Comment-Type
 
@@ -448,7 +470,7 @@ public class ImportNisida {
 			}
 
 			/**
-			 * Create a FixWrapper on the parent track for the “Own Lat/OwnLon” position.
+			 * Create a FixWrapper on the parent track for the “Own Lat/Long position.
 			 * Course/speed are zeroes
 			 */
 
@@ -529,7 +551,7 @@ public class ImportNisida {
 		// Lat/Buoy Lon/Remarks/]
 
 		// This is a comment (NarrativeEntry). As with other comments, we can use the
-		// current track name as “track”.
+		// current track name as tracks
 		final String operation = tokens[1];
 		final String operationUpper = operation.toUpperCase();
 		final String type;

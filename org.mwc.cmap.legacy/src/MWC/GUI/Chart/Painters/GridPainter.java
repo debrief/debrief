@@ -705,5 +705,24 @@ public class GridPainter implements Plottable, Serializable, ClassWithProperty {
 	public String toString() {
 		return getName();
 	}
+	
+	@Override
+	public int hashCode() {
+		return System.identityHashCode(this);
+	}
+	
+	@Override
+	public boolean equals(Object obj) {
+		if(obj==this) {
+			return true;
+		}
+		if(obj instanceof Plottable) {
+			Plottable p = (Plottable)obj;
+			if(compareTo(p)==0) {
+				return true;
+			}
+		}
+		return false;
+	}
 
 }

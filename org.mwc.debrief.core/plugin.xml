@@ -53,6 +53,7 @@
             <contentTypeBinding contentTypeId="org.mwc.debrief.contenttype.AISTrackFile"/>
             <contentTypeBinding contentTypeId="org.mwc.debrief.contenttype.NMEALogFile"/>
             <contentTypeBinding contentTypeId="org.mwc.debrief.contenttype.NisidaLogFile"/>
+            <contentTypeBinding contentTypeId="org.mwc.debrief.contenttype.AntaresFile"/>
             <contentTypeBinding contentTypeId="org.mwc.debrief.contenttype.CSV_GZ_LogFile"/>
             <contentTypeBinding contentTypeId="org.mwc.debrief.contenttype.SATCTrackFile"/>
             <contentTypeBinding contentTypeId="org.mwc.debrief.contenttype.SATCSampleTrackFile"/>
@@ -122,6 +123,11 @@
             name="Nisida Log file" priority="high">
             <describer class="org.mwc.debrief.core.contenttype.NisidaContentDescriber"/>
         </content-type>
+        <content-type id="org.mwc.debrief.contenttype.AntaresFile"
+            file-extensions="txt"
+            name="Antares file" priority="high">
+            <describer class="org.mwc.debrief.core.contenttype.AntaresContentDescriber"/>
+        </content-type>
         <content-type id="org.mwc.debrief.contenttype.CSV_GZ_LogFile"
             file-extensions="gz"
             name="Compressed CSV C-Log file" priority="high">
@@ -185,6 +191,14 @@
         <loader class="org.mwc.debrief.core.loaders.NisidaLoader" extensions="txt" first_line="" name="Nisida Log File"        
         />
     </extension>
+   <extension
+         point="org.mwc.debrief.core.DebriefPlotLoader">
+      <loader
+            class="org.mwc.debrief.core.loaders.AntaresLoader"
+            extensions="txt"
+            name="Antares File">
+      </loader>
+   </extension>
     <extension point="org.mwc.debrief.core.DebriefPlotLoader">
         <loader class="org.mwc.debrief.core.loaders.OTH_Gold_Loader" extensions="txt" name="OTH-Gold Log File"        
         />
@@ -868,6 +882,13 @@
                     </and>
                 </visibleWhen>
             </command>
+            <command commandId="org.mwc.debrief.core.exportAsGeoPDF"
+                icon="icons/16/save.png" style="push"
+                id="org.mwc.debrief.core.exportAsGeoPDF">
+                <visibleWhen checkEnabled="false">
+                    <reference definitionId="org.mwc.debrief.activePlotEditor"> </reference>
+                </visibleWhen>
+            </command>
 
             <command commandId="org.mwc.debrief.core.exportAsRTF" icon="icons/16/Ex_2word_256_1.png"
                 style="push" id="org.mwc.debrief.core.exportAsRTF">
@@ -905,6 +926,9 @@
     </extension>
 
     <extension point="org.eclipse.ui.commands">
+        <command defaultHandler="org.mwc.debrief.core.actions.ExportAsGeoPDFHandler"
+            id="org.mwc.debrief.core.exportAsGeoPDF" name="Export to GeoPDF"> </command>
+            
         <command defaultHandler="org.mwc.debrief.core.actions.ExportAsRTFHandler"
             id="org.mwc.debrief.core.exportAsRTF" name="Export image as WMF embedded in RTF"> </command>
 

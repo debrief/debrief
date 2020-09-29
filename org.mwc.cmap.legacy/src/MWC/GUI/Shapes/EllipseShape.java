@@ -148,18 +148,20 @@ import java.awt.Color;
 import java.awt.Point;
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
+import java.util.ArrayList;
 import java.util.Vector;
 
 import MWC.GUI.CanvasType;
 import MWC.GUI.Editable;
 import MWC.GUI.ExtendedCanvasType;
+import MWC.GUI.Layer;
 import MWC.GUI.PlainWrapper;
 import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldDistance;
 import MWC.GenericData.WorldLocation;
 import MWC.GenericData.WorldVector;
 
-public class EllipseShape extends PlainShape implements Editable {
+public class EllipseShape extends PlainShape implements Editable, HasDraggableComponents {
 
 	//////////////////////////////////////////////////
 	// member variables
@@ -222,6 +224,10 @@ public class EllipseShape extends PlainShape implements Editable {
 	 */
 	private WorldLocation _theCentre;
 
+	private final WorldLocation _topPoint;
+
+	private final WorldLocation _midLeft;
+
 	/**
 	 * the maxima of this Ellipse (in degs)
 	 */
@@ -235,7 +241,7 @@ public class EllipseShape extends PlainShape implements Editable {
 	/**
 	 * the series of world locations which represent this ellipse
 	 */
-	private Vector<WorldLocation> _theDataPoints;
+	private ArrayList<WorldLocation> _theDataPoints;
 
 	//////////////////////////////////////////////////
 	// constructor
@@ -268,6 +274,21 @@ public class EllipseShape extends PlainShape implements Editable {
 		_theOrientation = theOrient;
 		_theMinima = theMinima;
 		_theMaxima = theMaxima;
+		final double maxDist = Math.max(_theMaxima.getValueIn(WorldDistance.DEGS),
+				_theMinima.getValueIn(WorldDistance.DEGS));
+
+		// create & extend to top left
+		_topPoint = _theCentre.add(new WorldVector(0, maxDist, 0));
+		_topPoint.addToMe(new WorldVector(MWC.Algorithms.Conversions.Degs2Rads(270), maxDist, 0));
+
+		// create & extend to bottom right
+
+		final double minDist = Math.min(_theMaxima.getValueIn(WorldDistance.DEGS),
+				_theMinima.getValueIn(WorldDistance.DEGS));
+
+		// create & extend to top left
+		_midLeft = _theCentre.add(new WorldVector(0, minDist, 0));
+		_midLeft.addToMe(new WorldVector(MWC.Algorithms.Conversions.Degs2Rads(270), minDist, 0));
 
 		// now represented our Ellipse as an area
 		calcPoints();
@@ -280,14 +301,15 @@ public class EllipseShape extends PlainShape implements Editable {
 	 * calculate the shape as a series of WorldLocation points. Joined up, these
 	 * form a representation of the shape
 	 */
-	private Vector<WorldLocation> calcDataPoints() {
+	private ArrayList<WorldLocation> calcDataPoints() {
 		// get ready to store the list
-		final Vector<WorldLocation> res = new Vector<WorldLocation>(0, 1);
+		final ArrayList<WorldLocation> res = new ArrayList();
 
 		// produce the orientation in radians
 		final double orient = MWC.Algorithms.Conversions.Degs2Rads(_theOrientation);
 
 		for (int i = 0; i <= CircleShape.NUM_SEGMENTS; i++) {
+
 			// produce the current bearing
 			final double this_brg = (360.0 / CircleShape.NUM_SEGMENTS * i) / 180.0 * Math.PI;
 
@@ -345,6 +367,72 @@ public class EllipseShape extends PlainShape implements Editable {
 
 		// and produce the list of points
 		_theDataPoints = calcDataPoints();
+	}
+
+	@Override
+	public void findNearestHotSpotIn(final Point cursorPos, final WorldLocation cursorLoc,
+			final ComponentConstruct currentNearest, final Layer parentLayer) {
+		checkThisOne(_topPoint, cursorLoc, currentNearest, this, parentLayer);
+		checkThisOne(_midLeft, cursorLoc, currentNearest, this, parentLayer);
+
+		// now for the more difficult one. See if it is on the radius.
+		// - how far is it from the centre
+		final WorldVector vec = cursorLoc.subtract(_theCentre);
+		final WorldDistance sep = new WorldDistance(vec);
+
+		// ahh, now subtract the maxima from this separation
+		final WorldDistance newSep1 = new WorldDistance(
+				Math.abs(sep.getValueIn(WorldDistance.YARDS) - this._theMaxima.getValueIn(WorldDistance.YARDS)),
+				WorldDistance.YARDS);
+
+		final WorldDistance newSep2 = new WorldDistance(
+				Math.abs(sep.getValueIn(WorldDistance.YARDS) - this._theMinima.getValueIn(WorldDistance.YARDS)),
+				WorldDistance.YARDS);
+
+		// now we have to wrap this operation in a made-up location
+		final WorldLocation dragMaxima = new WorldLocation(cursorLoc) {
+			private static final long serialVersionUID = 100L;
+
+			@Override
+			public void addToMe(final WorldVector delta) {
+				// ok - process the drag
+				super.addToMe(delta);
+				// ok, what's this distance from the origin?
+				final WorldVector newSep1 = subtract(_theCentre);
+				final WorldDistance dist = new WorldDistance(newSep1);
+				setMaxima(dist);
+
+				// WorldDistance newDist = new
+				// WorldDistance(dist.getValueIn(WorldDistance.YARDS) + _theRadius,
+				// WorldDistance.YARDS);
+				// hmm, are we going in or out?
+				// now, change the radius to this
+			}
+		};
+		final WorldLocation dragMinima = new WorldLocation(cursorLoc) {
+			private static final long serialVersionUID = 100L;
+
+			@Override
+			public void addToMe(final WorldVector delta) {
+				// ok - process the drag
+				super.addToMe(delta);
+				// ok, what's this distance from the origin?
+				final WorldVector newSep1 = subtract(_theCentre);
+				final WorldDistance dist = new WorldDistance(newSep1);
+				setMinima(dist);
+
+				// WorldDistance newDist = new
+				// WorldDistance(dist.getValueIn(WorldDistance.YARDS) + _theRadius,
+				// WorldDistance.YARDS);
+				// hmm, are we going in or out?
+				// now, change the radius to this
+			}
+		};
+
+		// try range
+		currentNearest.checkMe(this, newSep1, null, parentLayer, dragMaxima);
+		currentNearest.checkMe(this, newSep2, null, parentLayer, dragMinima);
+
 	}
 
 	/**
@@ -434,7 +522,7 @@ public class EllipseShape extends PlainShape implements Editable {
 
 		// work through the list to create the list of screen coordinates
 		for (int i = 0; i < _theDataPoints.size(); i++) {
-			final WorldLocation location = _theDataPoints.elementAt(i);
+			final WorldLocation location = _theDataPoints.get(i);
 
 			final Point p2 = dest.toScreen(location);
 
@@ -594,9 +682,29 @@ public class EllipseShape extends PlainShape implements Editable {
 	}
 
 	@Override
+	public void shift(final WorldLocation feature, final WorldVector vector) {
+		// ok, just shift it...
+		feature.addToMe(vector);
+
+		// and calc the new summary data
+		calcPoints();
+
+		// and inform the parent (so it can move the label)
+		firePropertyChange(PlainWrapper.LOCATION_CHANGED, null, null);
+
+	}
+
+	@Override
 	public void shift(final WorldVector vector) {
 		final WorldLocation oldCentre = getCentre();
 		final WorldLocation newCentre = oldCentre.add(vector);
 		setCentre(newCentre);
+
+		// and calc the new summary data
+		calcPoints();
+
+		// and inform the parent (so it can move the label)
+		firePropertyChange(PlainWrapper.LOCATION_CHANGED, null, null);
 	}
+
 }

@@ -47,6 +47,7 @@ import org.eclipse.nebula.widgets.nattable.layer.CompositeLayer;
 import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ColumnLabelAccumulator;
 import org.eclipse.nebula.widgets.nattable.painter.NatTableBorderOverlayPainter;
+import org.eclipse.nebula.widgets.nattable.reorder.ColumnReorderLayer;
 import org.eclipse.nebula.widgets.nattable.selection.RowSelectionModel;
 import org.eclipse.nebula.widgets.nattable.selection.command.SelectRowsCommand;
 import org.eclipse.nebula.widgets.nattable.sort.SortHeaderLayer;
@@ -76,6 +77,7 @@ import org.mwc.cmap.NarrativeViewer.preferences.NarrativeViewerPrefsPage;
 import MWC.GenericData.HiResDate;
 import MWC.TacticalData.IRollingNarrativeProvider;
 import MWC.TacticalData.NarrativeEntry;
+import MWC.TacticalData.NarrativeWrapper;
 import ca.odell.glazedlists.TextFilterator;
 import ca.odell.glazedlists.matchers.TextMatcherEditor;
 
@@ -87,6 +89,7 @@ public class NatNarrativeViewer {
 
 		public SwitchColumnVisibilityAction(final String colLabel, final String name) {
 			this.colLabel = colLabel;
+			setChecked(visible);
 			setText(name);
 
 		}
@@ -102,6 +105,7 @@ public class NatNarrativeViewer {
 			natTable.doCommand(new ShowAllColumnsCommand());
 			final int columnPositionBylabel = getColumnPositionBylabel(colLabel);
 			visible = !visible;
+			setChecked(visible);
 			if (visible) {
 				hiddenCols.remove(Integer.valueOf(columnPositionBylabel));
 				bodyLayer.getBodyDataLayer().setColumnWidthByPosition(columnPositionBylabel, 100);
@@ -112,19 +116,21 @@ public class NatNarrativeViewer {
 
 			if (hiddenCols.size() > 0)
 				natTable.doCommand(new MultiColumnHideCommand(natTable, toIntArray(hiddenCols)));
-
-			natTable.layout(true);
+			if(!natTable.isDisposed()) {
+				natTable.layout(true);
+			}
 
 		}
 
-		private final int[] toIntArray(final List<Integer> list) {
-			final int[] ret = new int[list.size()];
-			int i = 0;
-			for (final Integer e : list)
-				ret[i++] = e.intValue();
-			return ret;
-		}
+		
 
+	}
+	private final int[] toIntArray(final List<Integer> list) {
+		final int[] ret = new int[list.size()];
+		int i = 0;
+		for (final Integer e : list)
+			ret[i++] = e.intValue();
+		return ret;
 	}
 
 	private static final String TYPE_LBL = "Type";
@@ -150,6 +156,8 @@ public class NatNarrativeViewer {
 	private DefaultColumnHeaderDataProvider columnHeaderDataProvider;
 
 	private final List<Integer> hiddenCols = new ArrayList<Integer>();
+	private SwitchColumnVisibilityAction showSource;
+	private SwitchColumnVisibilityAction showType;
 
 	public NatNarrativeViewer(final Composite parent, final IPreferenceStore preferenceStore) {
 		this.preferenceStore = preferenceStore;
@@ -291,12 +299,13 @@ public class NatNarrativeViewer {
 		bodyLayer = new BodyLayerStack<INatEntry>(input, columnPropertyAccessor);
 		bodyLayer.addConfigLabelAccumulator(
 				new NarrativeEntryConfigLabelAccumulator(bodyLayer.getBodyDataProvider(), configRegistry));
-
+		
 		columnHeaderDataProvider = new DefaultColumnHeaderDataProvider(propertyNames, propertyToLabelMap);
 		final DataLayer columnHeaderDataLayer = new DataLayer(columnHeaderDataProvider);
 		final ColumnHeaderLayer columnHeaderLayer = new ColumnHeaderLayer(columnHeaderDataLayer, bodyLayer,
 				bodyLayer.getSelectionLayer());
-
+		
+		bodyLayer.getColumnReorderLayer().clearConfiguration();
 		final SortHeaderLayer<INatEntry> sortHeaderLayer = new SortHeaderLayer<INatEntry>(columnHeaderLayer,
 				new GlazedListsSortModel<INatEntry>(bodyLayer.getSortedList(), columnPropertyAccessor, configRegistry,
 						columnHeaderDataLayer));
@@ -364,13 +373,16 @@ public class NatNarrativeViewer {
 
 		loadFont(preferenceStore);
 		natTable.refresh(false);
+		if(hiddenCols.size()>0) {
+			natTable.doCommand(new MultiColumnHideCommand(natTable, toIntArray(hiddenCols)));
+		}
 	}
 
 	public void fillActionBars(final IActionBars actionBars) {
 		final IMenuManager menu = actionBars.getMenuManager();
-		final SwitchColumnVisibilityAction showSource = new SwitchColumnVisibilityAction(SOURCE_LBL, "Show source");
+		showSource = new SwitchColumnVisibilityAction(SOURCE_LBL, "Show source");
 		menu.add(showSource);
-		final SwitchColumnVisibilityAction showType = new SwitchColumnVisibilityAction(TYPE_LBL, "Show type");
+		showType = new SwitchColumnVisibilityAction(TYPE_LBL, "Show type");
 		menu.add(showType);
 		menu.addMenuListener(new IMenuListener() {
 			@Override
@@ -551,19 +563,54 @@ public class NatNarrativeViewer {
 		filteredNatTable.setFilterMode(checked);
 
 	}
+	
+	public NarrativeWrapper getVisibleNarratives() {
+		NarrativeWrapper retVal = new NarrativeWrapper("Narratives");
+		if(input!=null) {
+			NarrativeEntry[] entries = input.getNarrativeHistory(new String[] {});
+			for(NarrativeEntry entry:entries) {
+				if(entry.getVisible()) {
+					retVal.add(entry);
+				}
+			}
+		}
+
+		return retVal;
+	}
 
 	public void setInput(final IRollingNarrativeProvider input) {
-		this.input = input;
-		dateFormatter.clearCache();
-		if (!container.isDisposed()) {
-			buildTable();
-			Display.getCurrent().asyncExec(new Runnable() {
-
-				@Override
-				public void run() {
-					natTable.refresh(true);
+		if(input!=null){
+			final boolean buildTable = this.input==null; 
+			this.input = input;
+			dateFormatter.clearCache();
+			if (!container.isDisposed()) {
+				if(buildTable) {
+					buildTable();
 				}
-			});
+				Display.getCurrent().asyncExec(new Runnable() {
+
+					@Override
+					public void run() {
+
+						natTable.refresh(true);
+						showSource.refresh();
+						showType.refresh();
+					}
+				});
+			}
+		}
+			else {
+				if(!isShowingSource()) {
+					showSource.run();
+				}
+				if(!isShowingType()) {
+					showType.run();
+				}
+				hiddenCols.clear();
+				
+				bodyLayer.getBodyDataProvider().getList().clear();
+				this.input = input;
+				
 		}
 	}
 
@@ -586,4 +633,11 @@ public class NatNarrativeViewer {
 
 	}
 
+	public boolean isShowingSource() {
+		return !hiddenCols.contains(1);
+	}
+	
+	public boolean isShowingType() {
+		return !hiddenCols.contains(2);
+	}
 }

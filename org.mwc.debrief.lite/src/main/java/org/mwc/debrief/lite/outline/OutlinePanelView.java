@@ -91,7 +91,6 @@ import Debrief.Wrappers.Track.TrackSegment;
 import MWC.GUI.BaseLayer;
 import MWC.GUI.CanEnumerate;
 import MWC.GUI.Editable;
-import MWC.GUI.HasEditables;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
 import MWC.GUI.Plottable;
@@ -100,6 +99,7 @@ import MWC.GUI.Plottables;
 import MWC.GUI.ToolParent;
 import MWC.GUI.LayerManager.Swing.SwingLayerManager;
 import MWC.GUI.Tools.PlainTool;
+import MWC.GUI.Tools.Operations.CloneUtil;
 import MWC.GUI.Tools.Swing.MyMetalToolBarUI.ToolbarOwner;
 import MWC.GUI.Undo.UndoBuffer;
 import MWC.GenericData.TimePeriod;
@@ -372,26 +372,32 @@ public class OutlinePanelView extends SwingLayerManager implements ClipboardOwne
 			/**
 			 *
 			 */
-			private ArrayList<Plottable> _lastPastedItems = new ArrayList<>();
+			private ArrayList<Plottable> itemsInUndoList = new ArrayList<>();
 			private final Layer _destination;
 			private final boolean _isCopy;
 
 			PasteAction(final Layer destination, final boolean iscopy, final ArrayList<Plottable> lastPastedItems) {
 				_destination = destination;
 				_isCopy = iscopy;
-				_lastPastedItems = lastPastedItems;
+				itemsInUndoList = lastPastedItems;
 
 			}
 
 			protected void doPaste() {
 				// see if there is currently a plottable on the clipboard
 				// see if it is a layer or not
-				if (!lastPastedItems.isEmpty()) {
-					for (final Plottable theData : _lastPastedItems) {
-						addBackData(theData, _destination);
-					}
-
-					_myData.fireExtended(_lastPastedItems.get(0), _destination);
+				final ArrayList<Plottable> clonedPlottables = new ArrayList<>();
+				
+				if (!itemsInUndoList.isEmpty()) {
+					itemsInUndoList.forEach(data->{
+						data = CloneUtil.cloneThis(data);
+						clonedPlottables.add(data);
+						addBackData(data, _destination);
+					});
+					itemsInUndoList.clear();
+					itemsInUndoList.addAll(clonedPlottables);
+			
+					_myData.fireExtended(itemsInUndoList.get(0), _destination);
 				}
 				if (!_isCopy) {
 					// clear the clipboard
@@ -441,10 +447,10 @@ public class OutlinePanelView extends SwingLayerManager implements ClipboardOwne
 
 			@Override
 			public void undo() {
-				for (final Plottable item : _lastPastedItems) {
+				for (final Plottable item : itemsInUndoList) {
 					_destination.removeElement(item);
 				}
-				_myData.fireExtended(_lastPastedItems.get(0), _destination);
+				_myData.fireExtended(itemsInUndoList.get(0), _destination);
 			}
 		}
 
@@ -804,51 +810,8 @@ public class OutlinePanelView extends SwingLayerManager implements ClipboardOwne
 		}
 	}
 
-	protected void doPaste() {
-		final DefaultMutableTreeNode node = (DefaultMutableTreeNode) _myTree.getSelectionPath().getLastPathComponent();
-		final Editable editable = (Editable) node.getUserObject();
-		final CanEnumerate destination;
-		if (editable instanceof BaseLayer) {
-			destination = (BaseLayer) editable;
-		} else if (editable instanceof TrackWrapper) {
-			destination = (TrackWrapper) editable;
-		} else {
-			destination = null;
-		}
-
-		final Transferable tr = _clipboard.getContents(this);
-		final OutlineViewSelection os = (OutlineViewSelection) tr;
-		final boolean _isCopy = os.isACopy();
-		final ArrayList<Plottable> plottables = getClipboardContents();
-		// see if there is currently a plottable on the clipboard
-		// see if it is a layer or not
-		if (!plottables.isEmpty()) {
-			for (final Plottable theData : plottables) {
-				addBackData(theData, destination);
-			}
-			_myData.fireExtended(plottables.get(0), (HasEditables) destination);
-		}
-		if (!_isCopy) {
-			// clear the clipboard
-			_clipboard.setContents(new Transferable() {
-				@Override
-				public Object getTransferData(final DataFlavor flavor) throws UnsupportedFlavorException {
-					throw new UnsupportedFlavorException(flavor);
-				}
-
-				@Override
-				public DataFlavor[] getTransferDataFlavors() {
-					return new DataFlavor[0];
-				}
-
-				@Override
-				public boolean isDataFlavorSupported(final DataFlavor flavor) {
-					return false;
-				}
-			}, this);
-		}
-	}
-
+	
+	
 	@Override
 	protected void editThis(final TreeNode node) {
 		if (node instanceof DefaultMutableTreeNode) {
@@ -1293,5 +1256,6 @@ public class OutlinePanelView extends SwingLayerManager implements ClipboardOwne
 			}
 		}
 	};
+
 
 }

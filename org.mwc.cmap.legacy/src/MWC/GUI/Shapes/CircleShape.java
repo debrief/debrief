@@ -135,6 +135,7 @@ import java.awt.Color;
 import java.awt.Point;
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Vector;
 
@@ -218,7 +219,7 @@ public class CircleShape extends PlainShape implements Editable, HasDraggableCom
 	 * the shape, broken down into a series of points
 	 *
 	 */
-	protected Vector<WorldLocation> _myPoints = new Vector<WorldLocation>();
+	protected ArrayList<WorldLocation> _myPoints = new ArrayList<WorldLocation>();
 
 	/**
 	 * the centre of this circle
@@ -294,7 +295,7 @@ public class CircleShape extends PlainShape implements Editable, HasDraggableCom
 		_theArea.extend(other);
 
 		// clear our local list of points
-		_myPoints.removeAllElements();
+		_myPoints.clear();
 
 		// and the circle as a series of points (so it turns properly in relative
 		// mode)
