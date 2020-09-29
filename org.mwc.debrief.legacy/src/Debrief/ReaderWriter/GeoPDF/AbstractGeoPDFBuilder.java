@@ -14,7 +14,6 @@
  *******************************************************************************/
 package Debrief.ReaderWriter.GeoPDF;
 
-import java.awt.Color;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -29,25 +28,14 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Enumeration;
 import java.util.List;
 import java.util.Scanner;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import Debrief.GUI.Frames.Application;
-import Debrief.ReaderWriter.GeoPDF.GenerateGeoJSON.GeoJSONConfiguration;
-import Debrief.ReaderWriter.GeoPDF.GeoPDF.GeoPDFLayerBackground;
 import Debrief.ReaderWriter.GeoPDF.GeoPDF.GeoPDFLayerTrack;
-import Debrief.ReaderWriter.GeoPDF.GeoPDF.GeoPDFLayerVector;
-import Debrief.ReaderWriter.GeoPDF.GeoPDF.GeoPDFLayerVector.LogicalStructure;
-import Debrief.ReaderWriter.GeoPDF.GeoPDF.GeoPDFLayerVectorLabel;
-import Debrief.ReaderWriter.GeoPDF.GeoPDF.GeoPDFPage;
 import Debrief.Wrappers.TrackWrapper;
-import MWC.GUI.Editable;
 import MWC.GUI.Layers;
 import MWC.GUI.ToolParent;
 import MWC.GenericData.HiResDate;
@@ -57,19 +45,6 @@ import junit.framework.TestCase;
 import net.n3.nanoxml.XMLWriter;
 
 public abstract class AbstractGeoPDFBuilder {
-
-	/**
-	 * Singleton implementation.
-	 */
-	public static AbstractGeoPDFBuilder implementation;
-
-	public static AbstractGeoPDFBuilder getImplementation() {
-		return implementation;
-	}
-
-	public static void setImplementation(final AbstractGeoPDFBuilder implementationA) {
-		implementation = implementationA;
-	}
 
 	public static String GDAL_NATIVE_PREFIX_FOLDER = "/native";
 	public static String JAVASCRIPT_TEMPLATE_PATH = "/geopdf_animation.js";
