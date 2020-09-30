@@ -798,17 +798,8 @@ public abstract class CorePlotEditor extends EditorPart implements IResourceProv
 			} else if (input instanceof FileStoreEditorInput) {
 				// if the file is dragged from outside workspace, get the location of the plot
 				// file
-				String tmpFilePath;
-				
-				try {
-					final File localFile = new File(((FileStoreEditorInput) input).getURI().toURL().getFile());
-					tmpFilePath = localFile.getParentFile().getAbsolutePath() + File.separator + getFileNameFromAbsoluteFile(tifFile.getAbsolutePath());
-				} catch (final MalformedURLException e) {
-					MWC.Utilities.Errors.Trace.trace(e, fileName + "File doesnt exist and couldnt be loaded");
-					tmpFilePath = null;
-				}
-				tiffFilePath = tmpFilePath;
-				
+					final File localFile = new File(((FileStoreEditorInput) input).getURI().getPath());
+					tiffFilePath = localFile.getParentFile().getAbsolutePath() + File.separator + getFileNameFromAbsoluteFile(tifFile.getAbsolutePath());
 			} else {
 				tiffFilePath = null;
 			}
