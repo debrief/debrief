@@ -787,7 +787,6 @@ public abstract class CorePlotEditor extends EditorPart implements IResourceProv
 			tiffFilePath = tifFile.getAbsolutePath();
 			
 		} else {
-			System.out.println("File does not exist");
 			// check the file open in editor and get its file system location.
 			final IEditorInput input = getEditorInput();
 			if (input instanceof IFileEditorInput) {
