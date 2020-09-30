@@ -162,8 +162,17 @@ public class WorldImageLayer extends GeoToolsLayer {
 	 */
 	private static final long serialVersionUID = 1L;
 
+	/**
+	 * flag for if file exists
+	 * 
+	 */
+	private final boolean _fileExists;
+
 	public WorldImageLayer(final String layerName, final String fileName) {
 		super(ChartBoundsWrapper.WORLDIMAGE_TYPE, layerName, fileName);
+
+		final File testIfExists = new File(fileName);
+		_fileExists = testIfExists.exists();
 	}
 
 	// public static MWC.GUI.Layer read(String fileName)
@@ -226,5 +235,10 @@ public class WorldImageLayer extends GeoToolsLayer {
 			System.out.println("proj on read:" + res.getBounds().getCoordinateReferenceSystem().getName());
 		}
 		return res;
+	}
+
+	@Override
+	public String getName() {
+		return _fileExists ? super.getName() : super.getName() + " (Not found)";
 	}
 }
