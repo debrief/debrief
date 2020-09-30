@@ -781,10 +781,13 @@ public abstract class CorePlotEditor extends EditorPart implements IResourceProv
 	protected String getFixedFilePath(final String fileName) {
 		final String tiffFilePath;
 		final File tifFile = new File(fileName);
+		PlotViewerPlugin.getDefault().getLog().log(new Status(IStatus.INFO,PlotViewerPlugin.PLUGIN_ID,"Trying to load file-"+tifFile.getAbsolutePath()));
 		if (tifFile.exists()) {
 			// this is a valid absolute path, so load this file
 			tiffFilePath = tifFile.getAbsolutePath();
+			
 		} else {
+			System.out.println("File does not exist");
 			// check the file open in editor and get its file system location.
 			final IEditorInput input = getEditorInput();
 			if (input instanceof IFileEditorInput) {
@@ -799,23 +802,25 @@ public abstract class CorePlotEditor extends EditorPart implements IResourceProv
 				
 				try {
 					final File localFile = new File(((FileStoreEditorInput) input).getURI().toURL().getFile());
-					
 					tmpFilePath = localFile.getParentFile().getAbsolutePath() + File.separator + getFileNameFromAbsoluteFile(tifFile.getAbsolutePath());
 				} catch (final MalformedURLException e) {
 					MWC.Utilities.Errors.Trace.trace(e, fileName + "File doesnt exist and couldnt be loaded");
 					tmpFilePath = null;
 				}
 				tiffFilePath = tmpFilePath;
+				
 			} else {
 				tiffFilePath = null;
 			}
 		}
+		PlotViewerPlugin.getDefault().getLog().log(new Status(IStatus.INFO,PlotViewerPlugin.PLUGIN_ID,"finally, trying to load file - "+tiffFilePath));
 		final File tiffFile = new File(tiffFilePath);
 		if (!tiffFile.exists()) {
 			CorePlugin.showMessage("Error loading file",
 					"Could not find the GeoTiff File:"+fileName+"\n Please fix the path in the file and load again");
 			return fileName;
 		}
+		PlotViewerPlugin.getDefault().getLog().log(new Status(IStatus.INFO,PlotViewerPlugin.PLUGIN_ID,"found file to load "+tiffFilePath));
 		return tiffFilePath;
 	}
 	
