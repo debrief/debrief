@@ -14,7 +14,6 @@
  *******************************************************************************/
 package Debrief.ReaderWriter.GeoPDF;
 
-import java.awt.Color;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -27,32 +26,32 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Enumeration;
 import java.util.List;
 import java.util.Scanner;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 import Debrief.GUI.Frames.Application;
-import Debrief.ReaderWriter.GeoPDF.GenerateGeoJSON.GeoJSONConfiguration;
-import Debrief.ReaderWriter.GeoPDF.GeoPDF.GeoPDFLayerBackground;
 import Debrief.ReaderWriter.GeoPDF.GeoPDF.GeoPDFLayerTrack;
-import Debrief.ReaderWriter.GeoPDF.GeoPDF.GeoPDFLayerVector;
-import Debrief.ReaderWriter.GeoPDF.GeoPDF.GeoPDFLayerVector.LogicalStructure;
-import Debrief.ReaderWriter.GeoPDF.GeoPDF.GeoPDFLayerVectorLabel;
-import Debrief.ReaderWriter.GeoPDF.GeoPDF.GeoPDFPage;
 import Debrief.Wrappers.TrackWrapper;
-import MWC.GUI.Editable;
 import MWC.GUI.Layers;
 import MWC.GUI.ToolParent;
+import MWC.GenericData.HiResDate;
+import MWC.GenericData.TimePeriod;
 import MWC.GenericData.WorldArea;
 import junit.framework.TestCase;
 import net.n3.nanoxml.XMLWriter;
 
-public class GeoPDFBuilder {
+public abstract class AbstractGeoPDFBuilder {
 
-	public static String GDAL_NATIVE_PREFIX_FOLDER = "/native";
+	public static final String GDAL_NATIVE_PREFIX_FOLDER = "/native";
+	public static final String JAVASCRIPT_TEMPLATE_PATH = "/geopdf_animation.js";
+	public static final String JAVASCRIPT_TIMESTAMP_TAG = "!!JS_TIMESTAMPS";
+	public static final String JAVASCRIPT_TIMESTAMP_TAG_NON_INTERATIVE = "!!NONINTERACTLAYERS";
+	public static final String NON_INTERACTIVE_SUFFIX = " (non-interactive)";
+	public static final String INTERACTIVE_LAYER_NAME = "Interactive Layers";
 
 	public static class GeoPDFConfiguration {
 		public static final String SUCCESS_GDAL_DONE = "done.";
@@ -74,6 +73,10 @@ public class GeoPDFBuilder {
 		private double marginPercent = 0.1;
 		private double pageWidth = 841.698;
 		private double pageHeight = 595.14;
+		private long stepDeltaMilliSeconds = 15 * 60 * 1000;
+		private String dateFormat;
+		private HiResDate startTime;
+		private HiResDate endTime;
 		private WorldArea viewportArea;
 		private int pageDpi = 72;
 		private String gdalWarpCommand = GDALWARP_RAW_COMMAND;
@@ -83,6 +86,38 @@ public class GeoPDFBuilder {
 		private String pdfOutputPath;
 		private boolean landscape = true;
 		private List<String> envVariables = new ArrayList<String>();
+
+		public String getDateFormat() {
+			return dateFormat;
+		}
+
+		public void setDateFormat(String dateFormat) {
+			this.dateFormat = dateFormat;
+		}
+
+		public HiResDate getStartTime() {
+			return startTime;
+		}
+
+		public void setStartTime(HiResDate startTime) {
+			this.startTime = startTime;
+		}
+
+		public HiResDate getEndTime() {
+			return endTime;
+		}
+
+		public void setEndTime(HiResDate endTime) {
+			this.endTime = endTime;
+		}
+
+		public long getStepDeltaMilliSeconds() {
+			return stepDeltaMilliSeconds;
+		}
+
+		public void setStepDeltaMilliSeconds(long stepDeltaMilliSeconds) {
+			this.stepDeltaMilliSeconds = stepDeltaMilliSeconds;
+		}
 
 		public boolean isLandscape() {
 			return landscape;
@@ -268,7 +303,7 @@ public class GeoPDFBuilder {
 			Application.logError3(ToolParent.INFO,
 					"GeoPDF-We are creating the Gdal binaries folder in " + destinationFolder, null, false);
 			final InputStream filesToCopyStream;
-			filesToCopyStream = GeoPDFBuilder.class
+			filesToCopyStream = AbstractGeoPDFBuilder.class
 					.getResourceAsStream(GDAL_NATIVE_PREFIX_FOLDER + resourceFileListPath);
 
 			final Scanner scanner = new Scanner(filesToCopyStream);
@@ -298,11 +333,11 @@ public class GeoPDFBuilder {
 		}
 	}
 
-	public static File generatePDF(final GeoPDF geoPDF, final GeoPDFConfiguration configuration)
+	public File generatePDF(final GeoPDF geoPDF, final GeoPDFConfiguration configuration)
 			throws IOException, InterruptedException {
 		final File tmpFile = File.createTempFile("compositionFileDebrief", ".xml");
-		Application.logError3(ToolParent.INFO, "GeoPDF-Creating temporary composition file in " + tmpFile.getAbsolutePath() , null,
-				false);
+		Application.logError3(ToolParent.INFO,
+				"GeoPDF-Creating temporary composition file in " + tmpFile.getAbsolutePath(), null, false);
 
 		final FileOutputStream fileOutputStream = new FileOutputStream(tmpFile);
 		final XMLWriter xmlWrite = new XMLWriter(fileOutputStream);
@@ -351,104 +386,35 @@ public class GeoPDFBuilder {
 		throw new IOException(allOutput.toString());
 	}
 
-	public static GeoPDF build(final Layers layers, final GeoPDFConfiguration configuration)
+	public abstract GeoPDF build(final Layers layers, final GeoPDFConfiguration configuration)
 			throws IOException, InterruptedException, NoSuchFieldException, SecurityException, IllegalArgumentException,
-			IllegalAccessException, ClassNotFoundException {
-		if (!configuration.isReady()) {
-			Application.logError3(ToolParent.INFO, "GeoPDF-GDAL Temporary environment is about to be prepared.", null,
-					false);
-			configuration.prepareGdalEnvironment();
-		}
-		final GeoPDF geoPDF = new GeoPDF();
+			IllegalAccessException, ClassNotFoundException;
 
-		geoPDF.setAuthor(configuration.getAuthor());
+	protected static String createJavascriptContent(final String javaScriptTS, final String javaScriptTSNONInteractive,
+			final String filePath) throws IOException {
+		final InputStream javascriptContentInputStream = AbstractGeoPDFBuilder.class.getResourceAsStream(filePath);
 
-		/**
-		 * For now let's work using only one page, but we will fix it eventually to have
-		 * several pages.
-		 */
-		final GeoPDFPage mainPage = geoPDF.createNewPage();
+		BufferedReader javascriptBufferReader = null;
+		try {
+			javascriptBufferReader = new BufferedReader(new InputStreamReader(javascriptContentInputStream));
 
-		mainPage.setDpi(configuration.getPageDpi());
-		mainPage.setWidth(configuration.getPageWidth());
-		mainPage.setHeight(configuration.getPageHeight());
-		mainPage.setMargin(configuration.getMarginPercent());
-		if (configuration.getViewportArea() == null) {
-			mainPage.setArea(layers.getBounds());
-		} else {
-			mainPage.setArea(configuration.getViewportArea());
-		}
+			final StringBuilder content = new StringBuilder();
 
-		/**
-		 * Let's create the BackGroundLayer;
-		 */
-		for (String background : configuration.getBackground()) {
-			final File backgroundFile = createBackgroundFile(configuration, background, geoPDF.getFilesToDelete());
-			final GeoPDFLayerBackground backgroundLayer = new GeoPDFLayerBackground();
-			backgroundLayer.setName("Background chart");
-			backgroundLayer.setId("background");
-			backgroundLayer.addRaster(backgroundFile.getAbsolutePath());
-			mainPage.addLayer(backgroundLayer);
-		}
-
-		/**
-		 * Let's iterate over all the layers to find the Tracks to export
-		 */
-		final Enumeration<Editable> enumeration = layers.elements();
-		while (enumeration.hasMoreElements()) {
-			final Editable currentEditable = enumeration.nextElement();
-			if (currentEditable instanceof TrackWrapper) {
-				/**
-				 * Ok, at this point we have a TrackWrapper. Now, let's create a Geometry of the
-				 * type Simple Features Geotools Library.
-				 */
-				final TrackWrapper currentTrack = (TrackWrapper) currentEditable;
-
-				/**
-				 * Let's draw only visible tracks.
-				 */
-				if (currentTrack.getVisible()) {
-
-					final GeoPDFLayerTrack newTrackLayer = new GeoPDFLayerTrack();
-					mainPage.addLayer(newTrackLayer);
-
-					newTrackLayer.setId(currentTrack.getName().toLowerCase());
-					newTrackLayer.setName(currentTrack.getName());
-
-					/**
-					 * Let's create the different parts of the layer
-					 */
-					/**
-					 * TrackLine
-					 */
-					createTrackLine(geoPDF.getFilesToDelete(), currentTrack, newTrackLayer);
-
-					// Let's create now the point-type vectors
-					/**
-					 * Minutes difference Layer
-					 */
-					createMinutesLayer(configuration, geoPDF.getFilesToDelete(), currentTrack, newTrackLayer);
-
-					/**
-					 * Label Layer
-					 */
-
-					createLabelsLayer(configuration, geoPDF.getFilesToDelete(), currentTrack, newTrackLayer);
-
-					/**
-					 * One point layer
-					 */
-					createOnePointLayer(configuration, geoPDF.getFilesToDelete(), currentTrack, newTrackLayer);
-				}
-
+			String line = null;
+			while ((line = javascriptBufferReader.readLine()) != null) {
+				content.append(line + "\n");
 			}
 
+			return content.toString().replaceAll(JAVASCRIPT_TIMESTAMP_TAG, javaScriptTS)
+					.replaceAll(JAVASCRIPT_TIMESTAMP_TAG_NON_INTERATIVE, javaScriptTSNONInteractive);
+		} finally {
+			if (javascriptBufferReader != null) {
+				javascriptBufferReader.close();
+			}
 		}
-
-		return geoPDF;
 	}
 
-	private static File createBackgroundFile(final GeoPDFConfiguration configuration, final String background,
+	protected static File createBackgroundFile(final GeoPDFConfiguration configuration, final String background,
 			final ArrayList<File> filesToDelete) throws IOException, InterruptedException {
 		final File tmpFile = File.createTempFile("debriefgdalbackground", ".tif");
 
@@ -503,106 +469,37 @@ public class GeoPDFBuilder {
 		throw new IOException(allOutput.toString());
 	}
 
-	protected static void createOnePointLayer(final GeoPDFConfiguration configuration,
-			final ArrayList<File> filesToDelete, final TrackWrapper currentTrack, final GeoPDFLayerTrack newTrackLayer)
-			throws FileNotFoundException, JsonProcessingException {
+	protected abstract void createTrackNameLayer(final GeoPDFConfiguration configuration,
+			final ArrayList<File> filesToDelete, final TrackWrapper currentTrack, final GeoPDFLayerTrack newTrackLayer,
+			final TimePeriod period, final String dateFormat) throws FileNotFoundException, JsonProcessingException ;
 
-		final String layerName = currentTrack.getName() + "_FirstPoint";
-		final GeoJSONConfiguration geoJSONConfiguration = new GeoJSONConfiguration(-1, true, true, layerName);
-		final GeoPDFLayerVectorLabel deltaMinutesVector = new GeoPDFLayerVectorLabel();
-		final String vectorData = GenerateGeoJSON.createGeoJSONTrackPoints(currentTrack, geoJSONConfiguration);
-
-		final File deltaMinutesFile = createTempFile(layerName + ".geojson", vectorData);
-		filesToDelete.add(deltaMinutesFile);
-
-		deltaMinutesVector.setData(deltaMinutesFile.getAbsolutePath());
-		deltaMinutesVector.setName(layerName);
-		final Color trackColor = currentTrack.getColor();
-		final String colorHex = String.format("#%02x%02x%02x", trackColor.getRed(), trackColor.getGreen(),
-				trackColor.getBlue());
-		deltaMinutesVector
-				.setStyle("LABEL(t:\"" + currentTrack.getName() + "\",c: " + colorHex + ",s:24pt,p:2,dy:10mm,bo:1)");
-
-		newTrackLayer.addVector(deltaMinutesVector);
+	protected abstract void createLabelsLayer(final GeoPDFConfiguration configuration,
+			final ArrayList<File> filesToDelete, final TrackWrapper currentTrack, final GeoPDFLayerTrack newTrackLayer,
+			final TimePeriod period, final String dateFormat) throws FileNotFoundException, JsonProcessingException ;
+	
+	/**
+	 * For now let's just remove the invalid characters, but we could improve this
+	 * if needed.
+	 * 
+	 * @param date Date to convert to filename
+	 * @return filename
+	 */
+	protected static String HiResDateToFileName(final HiResDate date, final String dateFormat) {
+		if (dateFormat == null) {
+			return date.toString().replaceAll("[\\\\/:*?\"<>|]", "");
+		} else {
+			return new SimpleDateFormat(dateFormat).format(date.getDate()).replaceAll("[\\\\/:*?\"<>|]", "");
+		}
 	}
 
-	protected static void createLabelsLayer(final GeoPDFConfiguration configuration,
-			final ArrayList<File> filesToDelete, final TrackWrapper currentTrack, final GeoPDFLayerTrack newTrackLayer)
-			throws FileNotFoundException, JsonProcessingException {
+	protected abstract void createTrackLine(final ArrayList<File> filesToDelete, final TrackWrapper currentTrack,
+			final GeoPDFLayerTrack newTrackLayer, final TimePeriod period, String dateFormat)
+			throws FileNotFoundException, JsonProcessingException ;
 
-		final String layerName = currentTrack.getName() + "_PointsLabels_" + configuration.getLabelDeltaMinutes()
-				+ "mins";
-		final GeoJSONConfiguration geoJSONConfiguration = new GeoJSONConfiguration(configuration.getLabelDeltaMinutes(),
-				true, false, layerName);
-		final GeoPDFLayerVectorLabel deltaMinutesVector = new GeoPDFLayerVectorLabel();
-		final String deltaMinutesVectorData = GenerateGeoJSON.createGeoJSONTrackPoints(currentTrack,
-				geoJSONConfiguration);
-
-		final File deltaMinutesFile = createTempFile(layerName + ".geojson", deltaMinutesVectorData);
-		filesToDelete.add(deltaMinutesFile);
-
-		deltaMinutesVector.setData(deltaMinutesFile.getAbsolutePath());
-		deltaMinutesVector.setName(layerName);
-		final Color trackColor = currentTrack.getColor();
-		final String colorHex = String.format("#%02x%02x%02x", trackColor.getRed(), trackColor.getGreen(),
-				trackColor.getBlue());
-		deltaMinutesVector.setStyle("LABEL(t:{time_str},c:" + colorHex + ",s:24pt,p:4,dx:7mm,bo:1)");
-
-		newTrackLayer.addVector(deltaMinutesVector);
-	}
-
-	protected static void createMinutesLayer(final GeoPDFConfiguration configuration,
-			final ArrayList<File> filesToDelete, final TrackWrapper currentTrack, final GeoPDFLayerTrack newTrackLayer)
-			throws FileNotFoundException, JsonProcessingException {
-
-		final String layerName = currentTrack.getName() + "_Points_" + configuration.getMarkDeltaMinutes() + "mins";
-		final GeoJSONConfiguration geoJSONConfiguration = new GeoJSONConfiguration(configuration.getMarkDeltaMinutes(),
-				false, false, layerName);
-		final GeoPDFLayerVector deltaMinutesVector = new GeoPDFLayerVector();
-		final String deltaMinutesVectorData = GenerateGeoJSON.createGeoJSONTrackPoints(currentTrack,
-				geoJSONConfiguration);
-
-		final File deltaMinutesFile = createTempFile(layerName + ".geojson", deltaMinutesVectorData);
-		filesToDelete.add(deltaMinutesFile);
-
-		deltaMinutesVector.setData(deltaMinutesFile.getAbsolutePath());
-		deltaMinutesVector.setName(layerName);
-
-		final Color trackColor = currentTrack.getColor();
-		final String colorHex = String.format("#%02x%02x%02x", trackColor.getRed(), trackColor.getGreen(),
-				trackColor.getBlue());
-		deltaMinutesVector.setStyle("SYMBOL(c:" + colorHex + ",s:2,id:\"ogr-sym-3\")");
-
-		deltaMinutesVector.setLogicalStructure(new LogicalStructure(currentTrack.getName(), "time"));
-
-		newTrackLayer.addVector(deltaMinutesVector);
-	}
-
-	protected static void createTrackLine(final ArrayList<File> filesToDelete, final TrackWrapper currentTrack,
-			final GeoPDFLayerTrack newTrackLayer) throws FileNotFoundException, JsonProcessingException {
-
-		final String layerName = currentTrack.getName() + "_Line";
-		final GeoPDFLayerVector trackLineVector = new GeoPDFLayerVector();
-		final GeoJSONConfiguration configuration = new GeoJSONConfiguration(0, false, false, layerName);
-		final String vectorTrackLineData = GenerateGeoJSON.createGeoJSONTrackLine(currentTrack, configuration);
-
-		final File trackLineFile = createTempFile(layerName + ".geojson", vectorTrackLineData);
-		filesToDelete.add(trackLineFile);
-
-		trackLineVector.setData(trackLineFile.getAbsolutePath());
-		trackLineVector.setName(layerName);
-		final Color trackColor = currentTrack.getColor();
-		final String colorHex = String.format("#%02x%02x%02x", trackColor.getRed(), trackColor.getGreen(),
-				trackColor.getBlue());
-		trackLineVector.setStyle("PEN(c:" + colorHex + ",w:5px)");
-
-		newTrackLayer.addVector(trackLineVector);
-	}
-
-	private static File createTempFile(final String fileName, final String data) throws FileNotFoundException {
+	protected static File createTempFile(final String fileName, final String data) throws FileNotFoundException {
 		final String tempFolder = System.getProperty("java.io.tmpdir");
 		final File newFile = new File(tempFolder + File.separatorChar + fileName);
-		Application.logError3(ToolParent.INFO, "GeoPDF-Creating temporary file in " + newFile.getAbsolutePath() , null,
+		Application.logError3(ToolParent.INFO, "GeoPDF-Creating temporary file in " + newFile.getAbsolutePath(), null,
 				false);
 
 		PrintWriter print = null;
