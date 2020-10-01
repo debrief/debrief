@@ -26,10 +26,12 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
+import java.util.UUID;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
@@ -84,8 +86,18 @@ public abstract class AbstractGeoPDFBuilder {
 		private String gdalCreateCommand = GDAL_CREATE_RAW_COMMAND;
 		private String[] gdalCreateParams = "-of PDF -co".split(" ");
 		private String pdfOutputPath;
+		private String tempFolder = new Timestamp(System.currentTimeMillis()).getTime() + "";
+		
 		private boolean landscape = true;
 		private List<String> envVariables = new ArrayList<String>();
+
+		public String getTempFolder() {
+			return tempFolder;
+		}
+
+		public void setTempFolder(String tempFolder) {
+			this.tempFolder = tempFolder;
+		}
 
 		public String getDateFormat() {
 			return dateFormat;
@@ -335,14 +347,7 @@ public abstract class AbstractGeoPDFBuilder {
 
 	public File generatePDF(final GeoPDF geoPDF, final GeoPDFConfiguration configuration)
 			throws IOException, InterruptedException {
-		final File tmpFile = File.createTempFile("compositionFileDebrief", ".xml");
-		Application.logError3(ToolParent.INFO,
-				"GeoPDF-Creating temporary composition file in " + tmpFile.getAbsolutePath(), null, false);
-
-		final FileOutputStream fileOutputStream = new FileOutputStream(tmpFile);
-		final XMLWriter xmlWrite = new XMLWriter(fileOutputStream);
-		xmlWrite.write(geoPDF.toXML(), true);
-		fileOutputStream.close();
+		final File tmpFile = createTempFile("compositionFileDebrief" + configuration.getTempFolder() + ".xml", geoPDF.toString(), configuration.getTempFolder());
 
 		final Runtime runtime = Runtime.getRuntime();
 		final ArrayList<String> params = new ArrayList<String>();
@@ -416,7 +421,7 @@ public abstract class AbstractGeoPDFBuilder {
 
 	protected static File createBackgroundFile(final GeoPDFConfiguration configuration, final String background,
 			final ArrayList<File> filesToDelete) throws IOException, InterruptedException {
-		final File tmpFile = File.createTempFile("debriefgdalbackground", ".tif");
+		final File tmpFile = createTempFile("debriefgdalbackground" + UUID.randomUUID().toString().replaceAll("-", ""), "", configuration.getTempFolder());
 
 		tmpFile.delete();
 
@@ -471,11 +476,11 @@ public abstract class AbstractGeoPDFBuilder {
 
 	protected abstract void createTrackNameLayer(final GeoPDFConfiguration configuration,
 			final ArrayList<File> filesToDelete, final TrackWrapper currentTrack, final GeoPDFLayerTrack newTrackLayer,
-			final TimePeriod period, final String dateFormat) throws FileNotFoundException, JsonProcessingException ;
+			final TimePeriod period) throws FileNotFoundException, JsonProcessingException ;
 
 	protected abstract void createLabelsLayer(final GeoPDFConfiguration configuration,
 			final ArrayList<File> filesToDelete, final TrackWrapper currentTrack, final GeoPDFLayerTrack newTrackLayer,
-			final TimePeriod period, final String dateFormat) throws FileNotFoundException, JsonProcessingException ;
+			final TimePeriod period) throws FileNotFoundException, JsonProcessingException ;
 	
 	/**
 	 * For now let's just remove the invalid characters, but we could improve this
@@ -496,13 +501,18 @@ public abstract class AbstractGeoPDFBuilder {
 		return fileName.replaceAll("[\\\\/:*?\"<>|]", "");
 	}
 	
-	protected abstract void createTrackLine(final ArrayList<File> filesToDelete, final TrackWrapper currentTrack,
-			final GeoPDFLayerTrack newTrackLayer, final TimePeriod period, String dateFormat)
+	protected abstract void createTrackLine(final GeoPDFConfiguration configuration, final ArrayList<File> filesToDelete, final TrackWrapper currentTrack,
+			final GeoPDFLayerTrack newTrackLayer, final TimePeriod period)
 			throws FileNotFoundException, JsonProcessingException ;
 
-	protected static File createTempFile(final String fileName, final String data) throws FileNotFoundException {
+	protected static File createTempFile(final String fileName, final String data, final String folderName) throws FileNotFoundException {
 		final String tempFolder = System.getProperty("java.io.tmpdir");
-		final File newFile = new File(tempFolder + File.separatorChar + fileName);
+		// Let's create everything inside a folder.
+		final File tempFolderTimestamp = new File(tempFolder + File.separatorChar + folderName);
+		
+		tempFolderTimestamp.mkdirs();
+		
+		final File newFile = new File(tempFolderTimestamp.getAbsolutePath() + File.separatorChar + fileName);
 		Application.logError3(ToolParent.INFO, "GeoPDF-Creating temporary file in " + newFile.getAbsolutePath(), null,
 				false);
 
@@ -526,7 +536,7 @@ public abstract class AbstractGeoPDFBuilder {
 //		private final static String boat2rep = "../org.mwc.cmap.combined.feature/root_installs/sample_data/boat2.rep";
 
 		public void testCreateTempFile() throws FileNotFoundException {
-			final File test = createTempFile("test.txt", "Test");
+			final File test = createTempFile("test.txt", "Test", "test");
 
 			final Scanner scanner = new Scanner(test);
 			assertEquals("Correct file writted with data", "Test", scanner.next());
