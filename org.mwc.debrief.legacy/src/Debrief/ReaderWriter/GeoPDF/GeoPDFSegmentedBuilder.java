@@ -256,8 +256,8 @@ public class GeoPDFSegmentedBuilder extends AbstractGeoPDFBuilder {
 		final FixWrapper[] fixes = currentTrack.getFixes();
 		for (int i = 0; i < fixes.length; i++) {
 			if ((period == null || period.contains(fixes[i].getDTG())) && fixes[i].getSymbolShowing()) {
-				final String vectorName = currentTrack.getName() + "_TICKS_"
-						+ HiResDateToFileName(fixes[i].getDTG(), dateFormat);
+				final String vectorName = sanitizeFilename(currentTrack.getName() + "_TICKS_"
+						+ HiResDateToFileName(fixes[i].getDTG(), dateFormat));
 				final SegmentedGeoJSONConfiguration segmentConfiguration = new SegmentedGeoJSONConfiguration(vectorName,
 						GeometryType.Point);
 				segmentConfiguration.addProperty("elevation", fixes[i].getLocation().getDepth() + "");
@@ -297,8 +297,8 @@ public class GeoPDFSegmentedBuilder extends AbstractGeoPDFBuilder {
 		final FixWrapper[] fixes = currentTrack.getFixes();
 		for (int i = 0; i < fixes.length; i++) {
 			if ((period == null || period.contains(fixes[i].getDTG())) && fixes[i].getLabelShowing()) {
-				final String vectorName = currentTrack.getName() + "_LABEL_"
-						+ HiResDateToFileName(fixes[i].getDTG(), dateFormat);
+				final String vectorName = sanitizeFilename(currentTrack.getName() + "_LABEL_"
+						+ HiResDateToFileName(fixes[i].getDTG(), dateFormat));
 				final SegmentedGeoJSONConfiguration segmentConfiguration = new SegmentedGeoJSONConfiguration(vectorName,
 						GeometryType.Point);
 				segmentConfiguration.addProperty("elevation", fixes[i].getLocation().getDepth() + "");
@@ -338,8 +338,8 @@ public class GeoPDFSegmentedBuilder extends AbstractGeoPDFBuilder {
 		final FixWrapper[] fixes = currentTrack.getFixes();
 		for (int i = 0; i < fixes.length - 1; i++) {
 			if (period == null || period.contains(fixes[i].getDTG())) {
-				final String vectorName = currentTrack.getName() + "_LINE_"
-						+ HiResDateToFileName(fixes[i].getDTG(), dateFormat);
+				final String vectorName = sanitizeFilename(currentTrack.getName() + "_LINE_"
+						+ HiResDateToFileName(fixes[i].getDTG(), dateFormat));
 				final SegmentedGeoJSONConfiguration configuration = new SegmentedGeoJSONConfiguration(vectorName,
 						GeometryType.MultiLineString);
 				configuration.addProperty("begin", HiResDateToFileName(fixes[i].getDTG(), dateFormat));
@@ -374,7 +374,7 @@ public class GeoPDFSegmentedBuilder extends AbstractGeoPDFBuilder {
 			throws FileNotFoundException, JsonProcessingException {
 		final FixWrapper fix = currentTrack.getFixes()[0];
 		if ((period == null || period.contains(fix.getDTG()))) {
-			final String vectorName = currentTrack.getName() + "_FIRST_POINT";
+			final String vectorName = sanitizeFilename(currentTrack.getName() + "_FIRST_POINT");
 			final SegmentedGeoJSONConfiguration segmentConfiguration = new SegmentedGeoJSONConfiguration(vectorName,
 					GeometryType.Point);
 			segmentConfiguration.addProperty("elevation", fix.getLocation().getDepth() + "");
