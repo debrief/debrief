@@ -485,11 +485,7 @@ public abstract class AbstractGeoPDFBuilder {
 	 * @return filename
 	 */
 	protected static String HiResDateToFileName(final HiResDate date, final String dateFormat) {
-		if (dateFormat == null) {
-			return date.toString().replaceAll("[\\\\/:*?\"<>|]", "");
-		} else {
-			return new SimpleDateFormat(dateFormat).format(date.getDate()).replaceAll("[\\\\/:*?\"<>|]", "");
-		}
+		return date.getMicros() / 1000 + "";
 	}
 
 	protected static String sanitizeFilename(final String fileName) {
