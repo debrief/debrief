@@ -19,9 +19,9 @@ import Debrief.ReaderWriter.GeoPDF.GenerateSegmentedGeoJSON.SegmentedGeoJSONConf
 import Debrief.ReaderWriter.GeoPDF.GeoPDF.GeoPDFLayerBackground;
 import Debrief.ReaderWriter.GeoPDF.GeoPDF.GeoPDFLayerTrack;
 import Debrief.ReaderWriter.GeoPDF.GeoPDF.GeoPDFLayerVector;
+import Debrief.ReaderWriter.GeoPDF.GeoPDF.GeoPDFLayerVector.LogicalStructure;
 import Debrief.ReaderWriter.GeoPDF.GeoPDF.GeoPDFLayerVectorLabel;
 import Debrief.ReaderWriter.GeoPDF.GeoPDF.GeoPDFPage;
-import Debrief.ReaderWriter.GeoPDF.GeoPDF.GeoPDFLayerVector.LogicalStructure;
 import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.TrackWrapper;
 import MWC.GUI.Editable;
@@ -34,7 +34,7 @@ import MWC.Utilities.TextFormatting.FormatRNDateTime;
 public class GeoPDFSegmentedBuilder extends AbstractGeoPDFBuilder {
 
 	@Override
-	public GeoPDF build(Layers layers, GeoPDFConfiguration configuration)
+	public GeoPDF build(final Layers layers, final GeoPDFConfiguration configuration)
 			throws IOException, InterruptedException, NoSuchFieldException, SecurityException, IllegalArgumentException,
 			IllegalAccessException, ClassNotFoundException {
 
@@ -66,7 +66,7 @@ public class GeoPDFSegmentedBuilder extends AbstractGeoPDFBuilder {
 		/**
 		 * Let's create the BackGroundLayer;
 		 */
-		for (String background : configuration.getBackground()) {
+		for (final String background : configuration.getBackground()) {
 			final File backgroundFile = createBackgroundFile(configuration, background, geoPDF.getFilesToDelete());
 			final GeoPDFLayerBackground backgroundLayer = new GeoPDFLayerBackground();
 			backgroundLayer.setName("Background chart");
@@ -144,7 +144,7 @@ public class GeoPDFSegmentedBuilder extends AbstractGeoPDFBuilder {
 		interactiveLayer.setId(INTERACTIVE_LAYER_NAME);
 		interactiveLayer.setName(INTERACTIVE_LAYER_NAME);
 		mainPage.addLayer(interactiveLayer);
-		
+
 		final StringBuilder javaScriptReplacementJsTimestamps = new StringBuilder();
 		javaScriptReplacementJsTimestamps.append("var timestamps = ");
 		final ArrayNode jsonTimestamps = mapper.createArrayNode();
@@ -204,22 +204,20 @@ public class GeoPDFSegmentedBuilder extends AbstractGeoPDFBuilder {
 						/**
 						 * TrackLine
 						 */
-						createTrackLine(configuration, geoPDF.getFilesToDelete(), currentTrack, newTrackLayer, period
-								);
+						createTrackLine(configuration, geoPDF.getFilesToDelete(), currentTrack, newTrackLayer, period);
 
 						// Let's create now the point-type vectors
 						/**
 						 * Minutes difference Layer
 						 */
-						createTicksLayer(configuration, geoPDF.getFilesToDelete(), currentTrack, newTrackLayer,
-								period);
+						createTicksLayer(configuration, geoPDF.getFilesToDelete(), currentTrack, newTrackLayer, period);
 
 						/**
 						 * Label Layer
 						 */
 
-						createLabelsLayer(configuration, geoPDF.getFilesToDelete(), currentTrack, newTrackLayer, period
-								);
+						createLabelsLayer(configuration, geoPDF.getFilesToDelete(), currentTrack, newTrackLayer,
+								period);
 
 						/**
 						 * One point layer
@@ -234,7 +232,7 @@ public class GeoPDFSegmentedBuilder extends AbstractGeoPDFBuilder {
 			}
 			currentTime = topCurrentPeriod;
 		}
-		
+
 		final String jsonTimestampsContent = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(jsonTimestamps);
 		javaScriptReplacementJsTimestamps.append(jsonTimestampsContent);
 		javaScriptReplacementJsTimestamps.append(";");
@@ -245,8 +243,52 @@ public class GeoPDFSegmentedBuilder extends AbstractGeoPDFBuilder {
 		return geoPDF;
 	}
 
-	public void createTicksLayer(GeoPDFConfiguration configuration, ArrayList<File> filesToDelete,
-			TrackWrapper currentTrack, GeoPDFLayerTrack newTrackLayer, TimePeriod period)
+	@Override
+	protected void createLabelsLayer(final GeoPDFConfiguration configuration, final ArrayList<File> filesToDelete,
+			final TrackWrapper currentTrack, final GeoPDFLayerTrack newTrackLayer, final TimePeriod period)
+			throws FileNotFoundException, JsonProcessingException {
+
+		final FixWrapper[] fixes = currentTrack.getFixes();
+		for (int i = 0; i < fixes.length; i++) {
+			if ((period == null || period.contains(fixes[i].getDTG())) && fixes[i].getLabelShowing()) {
+				final String vectorName = sanitizeFilename(currentTrack.getName() + "_LABEL_"
+						+ HiResDateToFileName(fixes[i].getDTG(), configuration.getDateFormat()));
+				final SegmentedGeoJSONConfiguration segmentConfiguration = new SegmentedGeoJSONConfiguration(vectorName,
+						GeometryType.Point);
+				segmentConfiguration.addProperty("elevation", fixes[i].getLocation().getDepth() + "");
+				segmentConfiguration.addProperty("longitude", fixes[i].getLocation().getLong() + "");
+				segmentConfiguration.addProperty("latitude", fixes[i].getLocation().getLat() + "");
+				segmentConfiguration.addProperty("time",
+						HiResDateToFileName(fixes[i].getDTG(), configuration.getDateFormat()));
+				segmentConfiguration.addProperty("course", fixes[i].getCourse() + "");
+				segmentConfiguration.addProperty("speed", fixes[i].getSpeed() + "");
+				segmentConfiguration.addProperty("time_str",
+						FormatRNDateTime.toShortString(fixes[i].getTime().getDate().getTime()));
+				segmentConfiguration.addCoordinate(
+						new double[] { fixes[i].getLocation().getLong(), fixes[i].getLocation().getLat() });
+
+				final String vectorLabelData = GenerateSegmentedGeoJSON.createGeoJsonFixSegment(segmentConfiguration);
+				final File labelFile = createTempFile(vectorName + ".geojson", vectorLabelData,
+						configuration.getTempFolder());
+				filesToDelete.add(labelFile);
+
+				final GeoPDFLayerVectorLabel segmentLabelVector = new GeoPDFLayerVectorLabel();
+				segmentLabelVector.setData(labelFile.getAbsolutePath());
+				segmentLabelVector.setName(vectorName);
+
+				final Color vectorColor = fixes[i].getColor();
+				final String colorHex = String.format("#%02x%02x%02x", vectorColor.getRed(), vectorColor.getGreen(),
+						vectorColor.getBlue());
+				segmentLabelVector.setStyle("SYMBOL(c:" + colorHex + ",s:2,id:\"ogr-sym-3\")");
+				segmentLabelVector.setStyle("LABEL(t:{time_str},c:" + colorHex + ",s:24pt,p:4,dx:7mm,bo:1)");
+
+				newTrackLayer.addVector(segmentLabelVector);
+			}
+		}
+	}
+
+	public void createTicksLayer(final GeoPDFConfiguration configuration, final ArrayList<File> filesToDelete,
+			final TrackWrapper currentTrack, final GeoPDFLayerTrack newTrackLayer, final TimePeriod period)
 			throws FileNotFoundException, JsonProcessingException {
 
 		final FixWrapper[] fixes = currentTrack.getFixes();
@@ -259,14 +301,16 @@ public class GeoPDFSegmentedBuilder extends AbstractGeoPDFBuilder {
 				segmentConfiguration.addProperty("elevation", fixes[i].getLocation().getDepth() + "");
 				segmentConfiguration.addProperty("longitude", fixes[i].getLocation().getLong() + "");
 				segmentConfiguration.addProperty("latitude", fixes[i].getLocation().getLat() + "");
-				segmentConfiguration.addProperty("time", HiResDateToFileName(fixes[i].getDTG(), configuration.getDateFormat()));
+				segmentConfiguration.addProperty("time",
+						HiResDateToFileName(fixes[i].getDTG(), configuration.getDateFormat()));
 				segmentConfiguration.addProperty("course", fixes[i].getCourse() + "");
 				segmentConfiguration.addProperty("speed", fixes[i].getSpeed() + "");
 				segmentConfiguration.addCoordinate(
 						new double[] { fixes[i].getLocation().getLong(), fixes[i].getLocation().getLat() });
 
 				final String vectorTickData = GenerateSegmentedGeoJSON.createGeoJsonFixSegment(segmentConfiguration);
-				final File tickFile = createTempFile(vectorName + ".geojson", vectorTickData, configuration.getTempFolder());
+				final File tickFile = createTempFile(vectorName + ".geojson", vectorTickData,
+						configuration.getTempFolder());
 				filesToDelete.add(tickFile);
 
 				final GeoPDFLayerVector segmentTickVector = new GeoPDFLayerVector();
@@ -286,50 +330,8 @@ public class GeoPDFSegmentedBuilder extends AbstractGeoPDFBuilder {
 	}
 
 	@Override
-	protected void createLabelsLayer(GeoPDFConfiguration configuration, ArrayList<File> filesToDelete,
-			TrackWrapper currentTrack, GeoPDFLayerTrack newTrackLayer, TimePeriod period)
-			throws FileNotFoundException, JsonProcessingException {
-
-		final FixWrapper[] fixes = currentTrack.getFixes();
-		for (int i = 0; i < fixes.length; i++) {
-			if ((period == null || period.contains(fixes[i].getDTG())) && fixes[i].getLabelShowing()) {
-				final String vectorName = sanitizeFilename(currentTrack.getName() + "_LABEL_"
-						+ HiResDateToFileName(fixes[i].getDTG(), configuration.getDateFormat()));
-				final SegmentedGeoJSONConfiguration segmentConfiguration = new SegmentedGeoJSONConfiguration(vectorName,
-						GeometryType.Point);
-				segmentConfiguration.addProperty("elevation", fixes[i].getLocation().getDepth() + "");
-				segmentConfiguration.addProperty("longitude", fixes[i].getLocation().getLong() + "");
-				segmentConfiguration.addProperty("latitude", fixes[i].getLocation().getLat() + "");
-				segmentConfiguration.addProperty("time", HiResDateToFileName(fixes[i].getDTG(), configuration.getDateFormat()));
-				segmentConfiguration.addProperty("course", fixes[i].getCourse() + "");
-				segmentConfiguration.addProperty("speed", fixes[i].getSpeed() + "");
-				segmentConfiguration.addProperty("time_str",
-						FormatRNDateTime.toShortString(fixes[i].getTime().getDate().getTime()));
-				segmentConfiguration.addCoordinate(
-						new double[] { fixes[i].getLocation().getLong(), fixes[i].getLocation().getLat() });
-
-				final String vectorLabelData = GenerateSegmentedGeoJSON.createGeoJsonFixSegment(segmentConfiguration);
-				final File labelFile = createTempFile(vectorName + ".geojson", vectorLabelData, configuration.getTempFolder());
-				filesToDelete.add(labelFile);
-
-				final GeoPDFLayerVectorLabel segmentLabelVector = new GeoPDFLayerVectorLabel();
-				segmentLabelVector.setData(labelFile.getAbsolutePath());
-				segmentLabelVector.setName(vectorName);
-
-				final Color vectorColor = fixes[i].getColor();
-				final String colorHex = String.format("#%02x%02x%02x", vectorColor.getRed(), vectorColor.getGreen(),
-						vectorColor.getBlue());
-				segmentLabelVector.setStyle("SYMBOL(c:" + colorHex + ",s:2,id:\"ogr-sym-3\")");
-				segmentLabelVector.setStyle("LABEL(t:{time_str},c:" + colorHex + ",s:24pt,p:4,dx:7mm,bo:1)");
-
-				newTrackLayer.addVector(segmentLabelVector);
-			}
-		}
-	}
-
-	@Override
-	protected void createTrackLine(GeoPDFConfiguration configuration, ArrayList<File> filesToDelete, TrackWrapper currentTrack,
-			GeoPDFLayerTrack newTrackLayer, TimePeriod period)
+	protected void createTrackLine(final GeoPDFConfiguration configuration, final ArrayList<File> filesToDelete,
+			final TrackWrapper currentTrack, final GeoPDFLayerTrack newTrackLayer, final TimePeriod period)
 			throws FileNotFoundException, JsonProcessingException {
 		final FixWrapper[] fixes = currentTrack.getFixes();
 		for (int i = 0; i < fixes.length - 1; i++) {
@@ -338,8 +340,10 @@ public class GeoPDFSegmentedBuilder extends AbstractGeoPDFBuilder {
 						+ HiResDateToFileName(fixes[i].getDTG(), configuration.getDateFormat()));
 				final SegmentedGeoJSONConfiguration configurationGeojson = new SegmentedGeoJSONConfiguration(vectorName,
 						GeometryType.MultiLineString);
-				configurationGeojson.addProperty("begin", HiResDateToFileName(fixes[i].getDTG(), configuration.getDateFormat()));
-				configurationGeojson.addProperty("end", HiResDateToFileName(fixes[i + 1].getDTG(), configuration.getDateFormat()));
+				configurationGeojson.addProperty("begin",
+						HiResDateToFileName(fixes[i].getDTG(), configuration.getDateFormat()));
+				configurationGeojson.addProperty("end",
+						HiResDateToFileName(fixes[i + 1].getDTG(), configuration.getDateFormat()));
 				configurationGeojson.addCoordinate(
 						new double[] { fixes[i].getLocation().getLong(), fixes[i].getLocation().getLat() });
 				configurationGeojson.addCoordinate(
@@ -347,7 +351,8 @@ public class GeoPDFSegmentedBuilder extends AbstractGeoPDFBuilder {
 
 				final String vectorSegmentTrackLineData = GenerateSegmentedGeoJSON
 						.createGeoJsonFixSegment(configurationGeojson);
-				final File trackLineFile = createTempFile(vectorName + ".geojson", vectorSegmentTrackLineData, configuration.getTempFolder());
+				final File trackLineFile = createTempFile(vectorName + ".geojson", vectorSegmentTrackLineData,
+						configuration.getTempFolder());
 				filesToDelete.add(trackLineFile);
 
 				final GeoPDFLayerVector segmentTrackLineVector = new GeoPDFLayerVector();
@@ -365,8 +370,8 @@ public class GeoPDFSegmentedBuilder extends AbstractGeoPDFBuilder {
 	}
 
 	@Override
-	protected void createTrackNameLayer(GeoPDFConfiguration configuration, ArrayList<File> filesToDelete,
-			TrackWrapper currentTrack, GeoPDFLayerTrack newTrackLayer, TimePeriod period)
+	protected void createTrackNameLayer(final GeoPDFConfiguration configuration, final ArrayList<File> filesToDelete,
+			final TrackWrapper currentTrack, final GeoPDFLayerTrack newTrackLayer, final TimePeriod period)
 			throws FileNotFoundException, JsonProcessingException {
 		final FixWrapper fix = currentTrack.getFixes()[0];
 		if ((period == null || period.contains(fix.getDTG()))) {
@@ -383,7 +388,8 @@ public class GeoPDFSegmentedBuilder extends AbstractGeoPDFBuilder {
 					.addCoordinate(new double[] { fix.getLocation().getLong(), fix.getLocation().getLat() });
 
 			final String vectorLabelData = GenerateSegmentedGeoJSON.createGeoJsonFixSegment(segmentConfiguration);
-			final File labelFile = createTempFile(vectorName + ".geojson", vectorLabelData, configuration.getTempFolder());
+			final File labelFile = createTempFile(vectorName + ".geojson", vectorLabelData,
+					configuration.getTempFolder());
 			filesToDelete.add(labelFile);
 
 			final GeoPDFLayerVectorLabel segmentLabelVector = new GeoPDFLayerVectorLabel();
