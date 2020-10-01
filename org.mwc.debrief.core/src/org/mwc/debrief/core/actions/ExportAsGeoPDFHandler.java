@@ -27,6 +27,7 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.FileDialog;
+import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IWorkbenchPage;
@@ -51,6 +52,8 @@ import MWC.TacticalData.temporal.TimeControlPreferences;
 
 public class ExportAsGeoPDFHandler extends CoreEditorAction {
 
+	final int MAX_AMOUNT_STEPS_ALLOWED = 100;
+
 	@Override
 	protected void execute() {
 		try {
@@ -62,7 +65,8 @@ public class ExportAsGeoPDFHandler extends CoreEditorAction {
 
 			if (editorBasedEditor instanceof PlotEditor) {
 				final PlotEditor actualEditor = (PlotEditor) editorBasedEditor;
-				final TimeControlPreferences pref = (TimeControlPreferences) actualEditor.getAdapter(TimeControlPreferences.class);
+				final TimeControlPreferences pref = (TimeControlPreferences) actualEditor
+						.getAdapter(TimeControlPreferences.class);
 				if (pref != null) {
 					configuration.setStepDeltaMilliSeconds(pref.getSmallStep().getMillis());
 					configuration.setDateFormat(pref.getDTGFormat());
@@ -73,6 +77,17 @@ public class ExportAsGeoPDFHandler extends CoreEditorAction {
 			configuration.setLandscape(theChart.getScreenSize().getWidth() > theChart.getScreenSize().getHeight());
 			configuration.setStartTime(period.getStartDTG());
 			configuration.setEndTime(period.getEndDTG());
+
+			if ((period.getEndDTG().getMicros() - period.getStartDTG().getMicros()) / 1000
+					/ configuration.getStepDeltaMilliSeconds() > MAX_AMOUNT_STEPS_ALLOWED) {
+				MessageBox dialog = new MessageBox(getShell(), SWT.ICON_QUESTION | SWT.OK);
+				dialog.setText("My info");
+				dialog.setMessage("GeoPDF contains more than " + MAX_AMOUNT_STEPS_ALLOWED
+						+ " time steps, which may affect performance.  If performance in the exported GeoPDF isn't satisfactory, please use a larger time step.");
+
+				// open dialog and await user selection
+				dialog.open();
+			}
 
 			final FileDialog dialog = new FileDialog(getShell(), SWT.SAVE);
 			dialog.setFilterNames(new String[] { "PDF Files", "All Files (*.*)" });
