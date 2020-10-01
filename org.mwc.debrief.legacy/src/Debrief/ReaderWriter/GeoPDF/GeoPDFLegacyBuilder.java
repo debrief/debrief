@@ -254,8 +254,8 @@ public class GeoPDFLegacyBuilder extends AbstractGeoPDFBuilder {
 		} else {
 			fileNameSuffix = "COMPLETE_PERIOD";
 		}
-		final String layerName = currentTrack.getName() + "_Points_" + configuration.getMarkDeltaMinutes() + "mins"
-				+ "_" + fileNameSuffix;
+		final String layerName = sanitizeFilename(currentTrack.getName() + "_Points_" + configuration.getMarkDeltaMinutes() + "mins"
+				+ "_" + fileNameSuffix);
 		final GeoJSONConfiguration geoJSONConfiguration = new GeoJSONConfiguration(configuration.getMarkDeltaMinutes(),
 				false, false, layerName, period, new HiResDate(configuration.getStepDeltaMilliSeconds()));
 		final GeoPDFLayerVector deltaMinutesVector = new GeoPDFLayerVector();
@@ -288,7 +288,7 @@ public class GeoPDFLegacyBuilder extends AbstractGeoPDFBuilder {
 		} else {
 			fileNameSuffix = "COMPLETE_PERIOD";
 		}
-		final String layerName = currentTrack.getName() + "_Line_" + fileNameSuffix;
+		final String layerName = sanitizeFilename(currentTrack.getName() + "_Line_" + fileNameSuffix);
 		final GeoPDFLayerVector trackLineVector = new GeoPDFLayerVector();
 		final GeoJSONConfiguration configuration = new GeoJSONConfiguration(0, false, false, layerName, period, null);
 		final String vectorTrackLineData = GenerateGeoJSON.createGeoJSONTrackLine(currentTrack, configuration);
@@ -317,8 +317,9 @@ public class GeoPDFLegacyBuilder extends AbstractGeoPDFBuilder {
 		} else {
 			fileNameSuffix = "COMPLETE_PERIOD";
 		}
-		final String layerName = currentTrack.getName() + "_PointsLabels_" + configuration.getLabelDeltaMinutes()
-				+ "mins" + "_" + fileNameSuffix;
+		final String layerName = sanitizeFilename(currentTrack.getName() + "_PointsLabels_" + configuration.getLabelDeltaMinutes()
+				+ "mins" + "_" + fileNameSuffix);
+		
 		final GeoJSONConfiguration geoJSONConfiguration = new GeoJSONConfiguration(configuration.getLabelDeltaMinutes(),
 				true, false, layerName, period, new HiResDate(configuration.getStepDeltaMilliSeconds()));
 		final GeoPDFLayerVectorLabel deltaMinutesVector = new GeoPDFLayerVectorLabel();
@@ -344,7 +345,7 @@ public class GeoPDFLegacyBuilder extends AbstractGeoPDFBuilder {
 			throws FileNotFoundException, JsonProcessingException {
 
 		if (period == null || period.contains(currentTrack.getStartDTG())) {
-			final String layerName = currentTrack.getName() + "_FirstPoint";
+			final String layerName = sanitizeFilename(currentTrack.getName() + "_FirstPoint");
 			final GeoJSONConfiguration geoJSONConfiguration = new GeoJSONConfiguration(-1, true, true, layerName, null,
 					null);
 			final GeoPDFLayerVectorLabel deltaMinutesVector = new GeoPDFLayerVectorLabel();

@@ -492,6 +492,10 @@ public abstract class AbstractGeoPDFBuilder {
 		}
 	}
 
+	protected static String sanitizeFilename(final String fileName) {
+		return fileName.replaceAll("[\\\\/:*?\"<>|]", "");
+	}
+	
 	protected abstract void createTrackLine(final ArrayList<File> filesToDelete, final TrackWrapper currentTrack,
 			final GeoPDFLayerTrack newTrackLayer, final TimePeriod period, String dateFormat)
 			throws FileNotFoundException, JsonProcessingException ;
