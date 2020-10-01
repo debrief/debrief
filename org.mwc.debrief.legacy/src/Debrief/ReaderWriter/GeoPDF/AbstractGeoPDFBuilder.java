@@ -50,6 +50,7 @@ public abstract class AbstractGeoPDFBuilder {
 	public static final String JAVASCRIPT_TEMPLATE_PATH = "/geopdf_animation.js";
 	public static final String JAVASCRIPT_TIMESTAMP_TAG = "!!JS_TIMESTAMPS";
 	public static final String JAVASCRIPT_TIMESTAMP_TAG_NON_INTERATIVE = "!!NONINTERACTLAYERS";
+	public static final String JAVASCRIPT_STEP_SPEED = "!!STEPSPEED";
 	public static final String NON_INTERACTIVE_SUFFIX = " (non-interactive)";
 	public static final String INTERACTIVE_LAYER_NAME = "Interactive Layers";
 
@@ -74,6 +75,7 @@ public abstract class AbstractGeoPDFBuilder {
 		private double pageWidth = 841.698;
 		private double pageHeight = 595.14;
 		private long stepDeltaMilliSeconds = 15 * 60 * 1000;
+		private long stepSpeedMilliSeconds = 1000; // Default 1 second.
 		private String dateFormat;
 		private HiResDate startTime;
 		private HiResDate endTime;
@@ -86,6 +88,14 @@ public abstract class AbstractGeoPDFBuilder {
 		private String pdfOutputPath;
 		private boolean landscape = true;
 		private List<String> envVariables = new ArrayList<String>();
+
+		public long getStepSpeedMilliSeconds() {
+			return stepSpeedMilliSeconds;
+		}
+
+		public void setStepSpeedMilliSeconds(long stepSpeedMilliSeconds) {
+			this.stepSpeedMilliSeconds = stepSpeedMilliSeconds;
+		}
 
 		public String getDateFormat() {
 			return dateFormat;
@@ -391,7 +401,7 @@ public abstract class AbstractGeoPDFBuilder {
 			IllegalAccessException, ClassNotFoundException;
 
 	protected static String createJavascriptContent(final String javaScriptTS, final String javaScriptTSNONInteractive,
-			final String filePath) throws IOException {
+			final String javaScriptStepSpeed, final String filePath) throws IOException {
 		final InputStream javascriptContentInputStream = AbstractGeoPDFBuilder.class.getResourceAsStream(filePath);
 
 		BufferedReader javascriptBufferReader = null;
@@ -406,7 +416,8 @@ public abstract class AbstractGeoPDFBuilder {
 			}
 
 			return content.toString().replaceAll(JAVASCRIPT_TIMESTAMP_TAG, javaScriptTS)
-					.replaceAll(JAVASCRIPT_TIMESTAMP_TAG_NON_INTERATIVE, javaScriptTSNONInteractive);
+					.replaceAll(JAVASCRIPT_TIMESTAMP_TAG_NON_INTERATIVE, javaScriptTSNONInteractive)
+					.replaceAll(JAVASCRIPT_STEP_SPEED, javaScriptStepSpeed);
 		} finally {
 			if (javascriptBufferReader != null) {
 				javascriptBufferReader.close();
@@ -471,12 +482,12 @@ public abstract class AbstractGeoPDFBuilder {
 
 	protected abstract void createTrackNameLayer(final GeoPDFConfiguration configuration,
 			final ArrayList<File> filesToDelete, final TrackWrapper currentTrack, final GeoPDFLayerTrack newTrackLayer,
-			final TimePeriod period, final String dateFormat) throws FileNotFoundException, JsonProcessingException ;
+			final TimePeriod period, final String dateFormat) throws FileNotFoundException, JsonProcessingException;
 
 	protected abstract void createLabelsLayer(final GeoPDFConfiguration configuration,
 			final ArrayList<File> filesToDelete, final TrackWrapper currentTrack, final GeoPDFLayerTrack newTrackLayer,
-			final TimePeriod period, final String dateFormat) throws FileNotFoundException, JsonProcessingException ;
-	
+			final TimePeriod period, final String dateFormat) throws FileNotFoundException, JsonProcessingException;
+
 	/**
 	 * For now let's just remove the invalid characters, but we could improve this
 	 * if needed.
@@ -495,10 +506,10 @@ public abstract class AbstractGeoPDFBuilder {
 	protected static String sanitizeFilename(final String fileName) {
 		return fileName.replaceAll("[\\\\/:*?\"<>|]", "");
 	}
-	
+
 	protected abstract void createTrackLine(final ArrayList<File> filesToDelete, final TrackWrapper currentTrack,
 			final GeoPDFLayerTrack newTrackLayer, final TimePeriod period, String dateFormat)
-			throws FileNotFoundException, JsonProcessingException ;
+			throws FileNotFoundException, JsonProcessingException;
 
 	protected static File createTempFile(final String fileName, final String data) throws FileNotFoundException {
 		final String tempFolder = System.getProperty("java.io.tmpdir");

@@ -148,7 +148,7 @@ public class GeoPDFSegmentedBuilder extends AbstractGeoPDFBuilder {
 		interactiveLayer.setId(INTERACTIVE_LAYER_NAME);
 		interactiveLayer.setName(INTERACTIVE_LAYER_NAME);
 		mainPage.addLayer(interactiveLayer);
-		
+
 		final StringBuilder javaScriptReplacementJsTimestamps = new StringBuilder();
 		javaScriptReplacementJsTimestamps.append("var timestamps = ");
 		final ArrayNode jsonTimestamps = mapper.createArrayNode();
@@ -215,8 +215,8 @@ public class GeoPDFSegmentedBuilder extends AbstractGeoPDFBuilder {
 						/**
 						 * Minutes difference Layer
 						 */
-						createTicksLayer(configuration, geoPDF.getFilesToDelete(), currentTrack, newTrackLayer,
-								period, configuration.getDateFormat());
+						createTicksLayer(configuration, geoPDF.getFilesToDelete(), currentTrack, newTrackLayer, period,
+								configuration.getDateFormat());
 
 						/**
 						 * Label Layer
@@ -238,13 +238,14 @@ public class GeoPDFSegmentedBuilder extends AbstractGeoPDFBuilder {
 			}
 			currentTime = topCurrentPeriod;
 		}
-		
+
 		final String jsonTimestampsContent = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(jsonTimestamps);
 		javaScriptReplacementJsTimestamps.append(jsonTimestampsContent);
 		javaScriptReplacementJsTimestamps.append(";");
 
 		geoPDF.setJavascript(createJavascriptContent(javaScriptReplacementJsTimestamps.toString(),
-				javascriptNonInteractiveLayerIndex.toString(), JAVASCRIPT_TEMPLATE_PATH));
+				javascriptNonInteractiveLayerIndex.toString(), configuration.getStepSpeedMilliSeconds() + "",
+				JAVASCRIPT_TEMPLATE_PATH));
 
 		return geoPDF;
 	}
@@ -256,8 +257,8 @@ public class GeoPDFSegmentedBuilder extends AbstractGeoPDFBuilder {
 		final FixWrapper[] fixes = currentTrack.getFixes();
 		for (int i = 0; i < fixes.length; i++) {
 			if ((period == null || period.contains(fixes[i].getDTG())) && fixes[i].getSymbolShowing()) {
-				final String vectorName = sanitizeFilename(currentTrack.getName() + "_TICKS_"
-						+ HiResDateToFileName(fixes[i].getDTG(), dateFormat));
+				final String vectorName = sanitizeFilename(
+						currentTrack.getName() + "_TICKS_" + HiResDateToFileName(fixes[i].getDTG(), dateFormat));
 				final SegmentedGeoJSONConfiguration segmentConfiguration = new SegmentedGeoJSONConfiguration(vectorName,
 						GeometryType.Point);
 				segmentConfiguration.addProperty("elevation", fixes[i].getLocation().getDepth() + "");
@@ -297,8 +298,8 @@ public class GeoPDFSegmentedBuilder extends AbstractGeoPDFBuilder {
 		final FixWrapper[] fixes = currentTrack.getFixes();
 		for (int i = 0; i < fixes.length; i++) {
 			if ((period == null || period.contains(fixes[i].getDTG())) && fixes[i].getLabelShowing()) {
-				final String vectorName = sanitizeFilename(currentTrack.getName() + "_LABEL_"
-						+ HiResDateToFileName(fixes[i].getDTG(), dateFormat));
+				final String vectorName = sanitizeFilename(
+						currentTrack.getName() + "_LABEL_" + HiResDateToFileName(fixes[i].getDTG(), dateFormat));
 				final SegmentedGeoJSONConfiguration segmentConfiguration = new SegmentedGeoJSONConfiguration(vectorName,
 						GeometryType.Point);
 				segmentConfiguration.addProperty("elevation", fixes[i].getLocation().getDepth() + "");
@@ -338,8 +339,8 @@ public class GeoPDFSegmentedBuilder extends AbstractGeoPDFBuilder {
 		final FixWrapper[] fixes = currentTrack.getFixes();
 		for (int i = 0; i < fixes.length - 1; i++) {
 			if (period == null || period.contains(fixes[i].getDTG())) {
-				final String vectorName = sanitizeFilename(currentTrack.getName() + "_LINE_"
-						+ HiResDateToFileName(fixes[i].getDTG(), dateFormat));
+				final String vectorName = sanitizeFilename(
+						currentTrack.getName() + "_LINE_" + HiResDateToFileName(fixes[i].getDTG(), dateFormat));
 				final SegmentedGeoJSONConfiguration configuration = new SegmentedGeoJSONConfiguration(vectorName,
 						GeometryType.MultiLineString);
 				configuration.addProperty("begin", HiResDateToFileName(fixes[i].getDTG(), dateFormat));

@@ -240,7 +240,8 @@ public class GeoPDFLegacyBuilder extends AbstractGeoPDFBuilder {
 		javaScriptReplacementJsTimestamps.append(";");
 
 		geoPDF.setJavascript(createJavascriptContent(javaScriptReplacementJsTimestamps.toString(),
-				javascriptNonInteractiveLayerIndex.toString(), JAVASCRIPT_TEMPLATE_PATH));
+				javascriptNonInteractiveLayerIndex.toString(), configuration.getStepSpeedMilliSeconds() + "",
+				JAVASCRIPT_TEMPLATE_PATH));
 
 		return geoPDF;
 	}
@@ -254,8 +255,8 @@ public class GeoPDFLegacyBuilder extends AbstractGeoPDFBuilder {
 		} else {
 			fileNameSuffix = "COMPLETE_PERIOD";
 		}
-		final String layerName = sanitizeFilename(currentTrack.getName() + "_Points_" + configuration.getMarkDeltaMinutes() + "mins"
-				+ "_" + fileNameSuffix);
+		final String layerName = sanitizeFilename(currentTrack.getName() + "_Points_"
+				+ configuration.getMarkDeltaMinutes() + "mins" + "_" + fileNameSuffix);
 		final GeoJSONConfiguration geoJSONConfiguration = new GeoJSONConfiguration(configuration.getMarkDeltaMinutes(),
 				false, false, layerName, period, new HiResDate(configuration.getStepDeltaMilliSeconds()));
 		final GeoPDFLayerVector deltaMinutesVector = new GeoPDFLayerVector();
@@ -317,9 +318,9 @@ public class GeoPDFLegacyBuilder extends AbstractGeoPDFBuilder {
 		} else {
 			fileNameSuffix = "COMPLETE_PERIOD";
 		}
-		final String layerName = sanitizeFilename(currentTrack.getName() + "_PointsLabels_" + configuration.getLabelDeltaMinutes()
-				+ "mins" + "_" + fileNameSuffix);
-		
+		final String layerName = sanitizeFilename(currentTrack.getName() + "_PointsLabels_"
+				+ configuration.getLabelDeltaMinutes() + "mins" + "_" + fileNameSuffix);
+
 		final GeoJSONConfiguration geoJSONConfiguration = new GeoJSONConfiguration(configuration.getLabelDeltaMinutes(),
 				true, false, layerName, period, new HiResDate(configuration.getStepDeltaMilliSeconds()));
 		final GeoPDFLayerVectorLabel deltaMinutesVector = new GeoPDFLayerVectorLabel();
