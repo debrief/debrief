@@ -158,23 +158,27 @@ public class SnailHighlighter implements TemporalLayerPainter {
 				final Enumeration<Editable> iter = legs.elements();
 				while (iter.hasMoreElements()) {
 					final TrackSegment seg = (TrackSegment) iter.nextElement();
-					final FixWrapper first = (FixWrapper) seg.first();
-					final FixWrapper last = (FixWrapper) seg.last();
+					if(!seg.isEmpty()) {
+						final FixWrapper first = (FixWrapper) seg.first();
+						final FixWrapper last = (FixWrapper) seg.last();
 
-					final TimePeriod period = new TimePeriod.BaseTimePeriod(first.getDateTimeGroup(),
-							last.getDateTimeGroup());
-					if (period.contains(dtg)) {
-						final TrackSegment match = seg;
+						final TimePeriod period = new TimePeriod.BaseTimePeriod(first.getDateTimeGroup(),
+								last.getDateTimeGroup());
+						if (period.contains(dtg)) {
+							final TrackSegment match = seg;
 
-						// ok, get the first item on/after the required time
-						final Enumeration<Editable> ele = match.elements();
-						while (ele.hasMoreElements()) {
-							final FixWrapper fix = (FixWrapper) ele.nextElement();
+							// ok, get the first item on/after the required time
+							final Enumeration<Editable> ele = match.elements();
+							while (ele.hasMoreElements()) {
+								final FixWrapper fix = (FixWrapper) ele.nextElement();
 
-							if (fix.getDateTimeGroup().greaterThanOrEqualTo(dtg)) {
-								return new Watchable[] { fix };
+								if (fix.getDateTimeGroup().greaterThanOrEqualTo(dtg)) {
+									return new Watchable[] { fix };
+								}
 							}
-						}
+						}						
+					} else {
+						return null;
 					}
 				}
 			}
