@@ -160,14 +160,6 @@ public abstract class AbstractGeoPDFBuilder {
 
 		private final List<String> envVariables = new ArrayList<String>();
 
-		public long getStepSpeedMilliSeconds() {
-			return stepSpeedMilliSeconds;
-		}
-
-		public void setStepSpeedMilliSeconds(long stepSpeedMilliSeconds) {
-			this.stepSpeedMilliSeconds = stepSpeedMilliSeconds;
-		}
-
 		public void addBackground(final String background) {
 			this.background.add(background);
 		}
@@ -242,6 +234,10 @@ public abstract class AbstractGeoPDFBuilder {
 
 		public long getStepDeltaMilliSeconds() {
 			return stepDeltaMilliSeconds;
+		}
+
+		public long getStepSpeedMilliSeconds() {
+			return stepSpeedMilliSeconds;
 		}
 
 		public String getTempFolder() {
@@ -378,6 +374,10 @@ public abstract class AbstractGeoPDFBuilder {
 			this.stepDeltaMilliSeconds = stepDeltaMilliSeconds;
 		}
 
+		public void setStepSpeedMilliSeconds(final long stepSpeedMilliSeconds) {
+			this.stepSpeedMilliSeconds = stepSpeedMilliSeconds;
+		}
+
 		public void setTempFolder(final String tempFolder) {
 			this.tempFolder = tempFolder;
 		}
@@ -467,7 +467,6 @@ public abstract class AbstractGeoPDFBuilder {
 			while ((line = javascriptBufferReader.readLine()) != null) {
 				content.append(line + "\n");
 			}
-
 
 			return content.toString().replaceAll(JAVASCRIPT_TIMESTAMP_TAG, javaScriptTS)
 					.replaceAll(JAVASCRIPT_TIMESTAMP_TAG_NON_INTERATIVE, javaScriptTSNONInteractive)
