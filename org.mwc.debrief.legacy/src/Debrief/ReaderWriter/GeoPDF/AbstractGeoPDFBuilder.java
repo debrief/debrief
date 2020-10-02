@@ -142,6 +142,7 @@ public abstract class AbstractGeoPDFBuilder {
 		private double pageWidth = 841.698;
 		private double pageHeight = 595.14;
 		private long stepDeltaMilliSeconds = 15 * 60 * 1000;
+		private long stepSpeedMilliSeconds = 1000; // Default 1 second.
 		private String dateFormat;
 		private HiResDate startTime;
 		private HiResDate endTime;
@@ -232,6 +233,10 @@ public abstract class AbstractGeoPDFBuilder {
 
 		public long getStepDeltaMilliSeconds() {
 			return stepDeltaMilliSeconds;
+		}
+
+		public long getStepSpeedMilliSeconds() {
+			return stepSpeedMilliSeconds;
 		}
 
 		public String getTempFolder() {
@@ -368,6 +373,10 @@ public abstract class AbstractGeoPDFBuilder {
 			this.stepDeltaMilliSeconds = stepDeltaMilliSeconds;
 		}
 
+		public void setStepSpeedMilliSeconds(final long stepSpeedMilliSeconds) {
+			this.stepSpeedMilliSeconds = stepSpeedMilliSeconds;
+		}
+
 		public void setTempFolder(final String tempFolder) {
 			this.tempFolder = tempFolder;
 		}
@@ -380,6 +389,7 @@ public abstract class AbstractGeoPDFBuilder {
 	public static final String GDAL_NATIVE_PREFIX_FOLDER = "/native";
 	public static final String JAVASCRIPT_TEMPLATE_PATH = "/geopdf_animation.js";
 	public static final String JAVASCRIPT_TIMESTAMP_TAG = "!!JS_TIMESTAMPS";
+	public static final String JAVASCRIPT_STEP_SPEED = "!!STEPSPEED";
 	public static final String JAVASCRIPT_TIMESTAMP_TAG_NON_INTERATIVE = "!!NONINTERACTLAYERS";
 
 	public static final String NON_INTERACTIVE_SUFFIX = " (non-interactive)";
@@ -443,7 +453,7 @@ public abstract class AbstractGeoPDFBuilder {
 	}
 
 	protected static String createJavascriptContent(final String javaScriptTS, final String javaScriptTSNONInteractive,
-			final String filePath) throws IOException {
+			final String javaScriptStepSpeed, final String filePath) throws IOException {
 		final InputStream javascriptContentInputStream = AbstractGeoPDFBuilder.class.getResourceAsStream(filePath);
 
 		BufferedReader javascriptBufferReader = null;
@@ -458,7 +468,8 @@ public abstract class AbstractGeoPDFBuilder {
 			}
 
 			return content.toString().replaceAll(JAVASCRIPT_TIMESTAMP_TAG, javaScriptTS)
-					.replaceAll(JAVASCRIPT_TIMESTAMP_TAG_NON_INTERATIVE, javaScriptTSNONInteractive);
+					.replaceAll(JAVASCRIPT_TIMESTAMP_TAG_NON_INTERATIVE, javaScriptTSNONInteractive)
+					.replaceAll(JAVASCRIPT_STEP_SPEED, javaScriptStepSpeed);
 		} finally {
 			if (javascriptBufferReader != null) {
 				javascriptBufferReader.close();
@@ -565,12 +576,12 @@ public abstract class AbstractGeoPDFBuilder {
 		while ((line = gdalWarpErrorStream.readLine()) != null) {
 			allOutput.append(line + "\n");
 		}
-		
+
 		Application.logError3(ToolParent.INFO, "GeoPDF-Error generating the PDF: " + allOutput.toString(), null, false);
 		if (!allOutput.toString().trim().isEmpty()) {
 			throw new IOException(allOutput.toString());
 		}
-		
+
 		return tmpFile;
 	}
 }

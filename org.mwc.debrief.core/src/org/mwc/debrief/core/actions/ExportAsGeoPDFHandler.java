@@ -71,6 +71,7 @@ public class ExportAsGeoPDFHandler extends CoreEditorAction {
 				if (pref != null) {
 					configuration.setStepDeltaMilliSeconds(pref.getSmallStep().getMillis());
 					configuration.setDateFormat(pref.getDTGFormat());
+					configuration.setStepSpeedMilliSeconds(pref.getAutoInterval().getMillis());
 				}
 			}
 			loadBackgroundLayers(theLayers, configuration);

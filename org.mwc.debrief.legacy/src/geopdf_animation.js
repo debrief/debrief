@@ -195,7 +195,7 @@
             animationRunning = false;
         }
         else {
-            animate = app.setInterval("nextTimestep()", 1000);
+            animate = app.setInterval("nextTimestep()", !!STEPSPEED);
             animationRunning = true;
         }
     }
