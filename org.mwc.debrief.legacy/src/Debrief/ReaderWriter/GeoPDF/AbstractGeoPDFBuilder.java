@@ -26,7 +26,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.sql.Timestamp;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -505,18 +504,14 @@ public abstract class AbstractGeoPDFBuilder {
 	}
 
 	/**
-	 * For now let's just remove the invalid characters, but we could improve this
-	 * if needed.
+	 * Use millis for filename, to overcome problem when sparse data lead to filenames
+	 * being re-used.
 	 *
 	 * @param date Date to convert to filename
 	 * @return filename
 	 */
-	protected static String HiResDateToFileName(final HiResDate date, final String dateFormat) {
-		if (dateFormat == null) {
-			return date.toString().replaceAll("[\\\\/:*?\"<>|]", "");
-		} else {
-			return new SimpleDateFormat(dateFormat).format(date.getDate()).replaceAll("[\\\\/:*?\"<>|]", "");
-		}
+	protected static String HiResDateToFileName(final HiResDate date) {
+		return date.getMicros() / 1000 + "";
 	}
 
 	protected static String sanitizeFilename(final String fileName) {

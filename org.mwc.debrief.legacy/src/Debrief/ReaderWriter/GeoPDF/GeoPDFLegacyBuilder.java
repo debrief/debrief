@@ -251,7 +251,7 @@ public class GeoPDFLegacyBuilder extends AbstractGeoPDFBuilder {
 
 		final String fileNameSuffix;
 		if (period != null) {
-			fileNameSuffix = HiResDateToFileName(period.getStartDTG(), configuration.getDateFormat());
+			fileNameSuffix = HiResDateToFileName(period.getStartDTG());
 		} else {
 			fileNameSuffix = "COMPLETE_PERIOD";
 		}
@@ -283,7 +283,7 @@ public class GeoPDFLegacyBuilder extends AbstractGeoPDFBuilder {
 			throws FileNotFoundException, JsonProcessingException {
 		final String fileNameSuffix;
 		if (period != null) {
-			fileNameSuffix = HiResDateToFileName(period.getStartDTG(), configuration.getDateFormat());
+			fileNameSuffix = HiResDateToFileName(period.getStartDTG());
 		} else {
 			fileNameSuffix = "COMPLETE_PERIOD";
 		}
@@ -318,7 +318,7 @@ public class GeoPDFLegacyBuilder extends AbstractGeoPDFBuilder {
 			throws FileNotFoundException, JsonProcessingException {
 		final String fileNameSuffix;
 		if (period != null) {
-			fileNameSuffix = HiResDateToFileName(period.getStartDTG(), configuration.getDateFormat());
+			fileNameSuffix = HiResDateToFileName(period.getStartDTG());
 		} else {
 			fileNameSuffix = "COMPLETE_PERIOD";
 		}
