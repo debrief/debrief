@@ -28,22 +28,195 @@ import net.n3.nanoxml.XMLWriter;
 
 public class GeoPDF {
 
-	private final ArrayList<File> filesToDelete = new ArrayList<File>();
+	public static abstract class GeoPDFLayer {
+		private String id;
+		private String name;
+		private final ArrayList<GeoPDFLayerTrack> children = new ArrayList<GeoPDF.GeoPDFLayerTrack>();
 
-	public ArrayList<File> getFilesToDelete() {
-		return filesToDelete;
+		public void addChild(final GeoPDFLayerTrack child) {
+			children.add(child);
+		}
+
+		public ArrayList<GeoPDFLayerTrack> getChildren() {
+			return children;
+		}
+
+		public String getId() {
+			return id;
+		}
+
+		public String getName() {
+			return name;
+		}
+
+		public void setId(final String id) {
+			this.id = id;
+		}
+
+		public void setName(final String name) {
+			this.name = name;
+		}
+
+		public abstract IXMLElement toXML(final String geoReferenceId);
+	}
+
+	public static class GeoPDFLayerBackground extends GeoPDFLayer {
+		private final ArrayList<String> rasters = new ArrayList<String>();
+
+		public void addRaster(final String rasterTif) {
+			rasters.add(rasterTif);
+		}
+
+		public ArrayList<String> getRasters() {
+			return rasters;
+		}
+
+		@Override
+		public IXMLElement toXML(final String geoReferenceId) {
+			final IXMLElement layer = new XMLElement("IfLayerOn");
+			layer.setAttribute("layerId", getId());
+
+			for (final String raster : getRasters()) {
+				final IXMLElement rasterXML = new XMLElement("Raster");
+				rasterXML.setAttribute("dataset", raster);
+				rasterXML.setAttribute("georeferencingId", geoReferenceId);
+				layer.addChild(rasterXML);
+			}
+
+			return layer;
+		}
+	}
+
+	public static class GeoPDFLayerTrack extends GeoPDFLayer {
+
+		private final ArrayList<GeoPDFLayerVector> vectors = new ArrayList<GeoPDFLayerVector>();
+
+		public void addVector(final GeoPDFLayerVector vector) {
+			vectors.add(vector);
+		}
+
+		public ArrayList<GeoPDFLayerVector> getVectors() {
+			return vectors;
+		}
+
+		@Override
+		public IXMLElement toXML(final String geoReferenceId) {
+			final IXMLElement layer = new XMLElement("IfLayerOn");
+			layer.setAttribute("layerId", getId());
+
+			for (final GeoPDFLayerVector vector : vectors) {
+				layer.addChild(vector.toXML(geoReferenceId));
+			}
+
+			for (final GeoPDFLayerTrack child : getChildren()) {
+				layer.addChild(child.toXML(geoReferenceId));
+			}
+
+			return layer;
+		}
+	}
+
+	public static class GeoPDFLayerVector {
+
+		public static class LogicalStructure {
+			private final String name;
+			private final String fieldToDisplay;
+
+			public LogicalStructure(final String name, final String fieldToDisplay) {
+				this.name = name;
+				this.fieldToDisplay = fieldToDisplay;
+			}
+
+			public String getFieldToDisplay() {
+				return fieldToDisplay;
+			}
+
+			public String getName() {
+				return name;
+			}
+
+			public IXMLElement toXML() {
+				final IXMLElement logicalStructureXML = new XMLElement("LogicalStructure");
+				logicalStructureXML.setAttribute("displayLayerName", getName());
+				logicalStructureXML.setAttribute("fieldToDisplay", getFieldToDisplay());
+				return logicalStructureXML;
+			}
+
+		}
+
+		private String style;
+		private String data;
+		private String name;
+		private LogicalStructure logicalStructure;
+
+		public String getData() {
+			return data;
+		}
+
+		public LogicalStructure getLogicalStructure() {
+			return logicalStructure;
+		}
+
+		public String getName() {
+			return name;
+		}
+
+		public String getStyle() {
+			return style;
+		}
+
+		public void setData(final String data) {
+			this.data = data;
+		}
+
+		public void setLogicalStructure(final LogicalStructure logicalStructure) {
+			this.logicalStructure = logicalStructure;
+		}
+
+		public void setName(final String name) {
+			this.name = name;
+		}
+
+		public void setStyle(final String style) {
+			this.style = style;
+		}
+
+		public IXMLElement toXML(final String geoReferenceId) {
+			final IXMLElement vectorXML = new XMLElement("Vector");
+			vectorXML.setAttribute("dataset", getData());
+			vectorXML.setAttribute("layer", getName());
+			vectorXML.setAttribute("georeferencingId", geoReferenceId);
+			vectorXML.setAttribute("ogrStyleString", getStyle());
+
+			if (getLogicalStructure() != null) {
+				vectorXML.addChild(getLogicalStructure().toXML());
+			}
+
+			return vectorXML;
+		}
+	}
+
+	public static class GeoPDFLayerVectorLabel extends GeoPDFLayerVector {
+
+		@Override
+		public IXMLElement toXML(final String geoReferenceId) {
+			final IXMLElement ans = super.toXML(geoReferenceId);
+			ans.setName("VectorLabel");
+			return ans;
+		}
+
 	}
 
 	public static class GeoPDFPage {
 
-		private int id;
+		private final int id;
 		private int dpi;
 		private double width;
 		private double height;
 		private double margin;
 
 		private WorldArea area;
-		private ArrayList<GeoPDFLayer> layers = new ArrayList<GeoPDF.GeoPDFLayer>();
+		private final ArrayList<GeoPDFLayer> layers = new ArrayList<GeoPDF.GeoPDFLayer>();
 
 		public GeoPDFPage(final int id) {
 			this.id = id;
@@ -53,52 +226,52 @@ public class GeoPDF {
 			layers.add(newLayer);
 		}
 
+		public WorldArea getArea() {
+			return area;
+		}
+
 		public int getDpi() {
 			return dpi;
-		}
-
-		public void setDpi(int dpi) {
-			this.dpi = dpi;
-		}
-
-		public double getWidth() {
-			return width;
-		}
-
-		public void setWidth(double width) {
-			this.width = width;
 		}
 
 		public double getHeight() {
 			return height;
 		}
 
-		public void setHeight(double height) {
-			this.height = height;
-		}
-
-		public WorldArea getArea() {
-			return area;
-		}
-
-		public void setArea(WorldArea area) {
-			this.area = area;
+		public int getId() {
+			return id;
 		}
 
 		public ArrayList<GeoPDFLayer> getLayers() {
 			return layers;
 		}
 
-		public int getId() {
-			return id;
-		}
-
 		public double getMargin() {
 			return margin;
 		}
 
-		public void setMargin(double margin) {
+		public double getWidth() {
+			return width;
+		}
+
+		public void setArea(final WorldArea area) {
+			this.area = area;
+		}
+
+		public void setDpi(final int dpi) {
+			this.dpi = dpi;
+		}
+
+		public void setHeight(final double height) {
+			this.height = height;
+		}
+
+		public void setMargin(final double margin) {
 			this.margin = margin;
+		}
+
+		public void setWidth(final double width) {
+			this.width = width;
 		}
 
 		public IXMLElement toXML() {
@@ -170,7 +343,7 @@ public class GeoPDF {
 			/**
 			 * Now Let's add all the layers of the page.
 			 */
-			for (GeoPDFLayer layer : layers) {
+			for (final GeoPDFLayer layer : layers) {
 				contentXml.addChild(layer.toXML(georeferencingId));
 			}
 
@@ -178,186 +351,10 @@ public class GeoPDF {
 		}
 	}
 
-	public static class GeoPDFLayerVector {
-
-		public static class LogicalStructure {
-			private String name;
-			private String fieldToDisplay;
-
-			public LogicalStructure(String name, String fieldToDisplay) {
-				this.name = name;
-				this.fieldToDisplay = fieldToDisplay;
-			}
-
-			public String getName() {
-				return name;
-			}
-
-			public String getFieldToDisplay() {
-				return fieldToDisplay;
-			}
-
-			public IXMLElement toXML() {
-				final IXMLElement logicalStructureXML = new XMLElement("LogicalStructure");
-				logicalStructureXML.setAttribute("displayLayerName", getName());
-				logicalStructureXML.setAttribute("fieldToDisplay", getFieldToDisplay());
-				return logicalStructureXML;
-			}
-
-		}
-
-		private String style;
-		private String data;
-		private String name;
-		private LogicalStructure logicalStructure;
-
-		public String getStyle() {
-			return style;
-		}
-
-		public void setStyle(String style) {
-			this.style = style;
-		}
-
-		public String getData() {
-			return data;
-		}
-
-		public void setData(String data) {
-			this.data = data;
-		}
-
-		public LogicalStructure getLogicalStructure() {
-			return logicalStructure;
-		}
-
-		public void setLogicalStructure(LogicalStructure logicalStructure) {
-			this.logicalStructure = logicalStructure;
-		}
-
-		public String getName() {
-			return name;
-		}
-
-		public void setName(String name) {
-			this.name = name;
-		}
-
-		public IXMLElement toXML(String geoReferenceId) {
-			final IXMLElement vectorXML = new XMLElement("Vector");
-			vectorXML.setAttribute("dataset", getData());
-			vectorXML.setAttribute("layer", getName());
-			vectorXML.setAttribute("georeferencingId", geoReferenceId);
-			vectorXML.setAttribute("ogrStyleString", getStyle());
-
-			if (getLogicalStructure() != null) {
-				vectorXML.addChild(getLogicalStructure().toXML());
-			}
-
-			return vectorXML;
-		}
-	}
-
-	public static class GeoPDFLayerVectorLabel extends GeoPDFLayerVector {
-
-		@Override
-		public IXMLElement toXML(String geoReferenceId) {
-			final IXMLElement ans = super.toXML(geoReferenceId);
-			ans.setName("VectorLabel");
-			return ans;
-		}
-		
-	}
-
-	public static abstract class GeoPDFLayer {
-		private String id;
-		private String name;
-		private ArrayList<GeoPDFLayerTrack> children = new ArrayList<GeoPDF.GeoPDFLayerTrack>();
-
-		public ArrayList<GeoPDFLayerTrack> getChildren() {
-			return children;
-		}
-
-		public void addChild(final GeoPDFLayerTrack child) {
-			children.add(child);
-		}
-		
-		public String getId() {
-			return id;
-		}
-
-		public void setId(String id) {
-			this.id = id;
-		}
-
-		public String getName() {
-			return name;
-		}
-
-		public void setName(String name) {
-			this.name = name;
-		}
-
-		public abstract IXMLElement toXML(final String geoReferenceId);
-	}
-
-	public static class GeoPDFLayerBackground extends GeoPDFLayer {
-		private ArrayList<String> rasters = new ArrayList<String>();
-
-		public ArrayList<String> getRasters() {
-			return rasters;
-		}
-
-		public void addRaster(final String rasterTif) {
-			rasters.add(rasterTif);
-		}
-
-		@Override
-		public IXMLElement toXML(final String geoReferenceId) {
-			final IXMLElement layer = new XMLElement("IfLayerOn");
-			layer.setAttribute("layerId", getId());
-
-			for (String raster : getRasters()) {
-				final IXMLElement rasterXML = new XMLElement("Raster");
-				rasterXML.setAttribute("dataset", raster);
-				rasterXML.setAttribute("georeferencingId", geoReferenceId);
-				layer.addChild(rasterXML);
-			}
-
-			return layer;
-		}
-	}
-
-	public static class GeoPDFLayerTrack extends GeoPDFLayer {
-
-		private ArrayList<GeoPDFLayerVector> vectors = new ArrayList<GeoPDFLayerVector>();
-
-		public void addVector(final GeoPDFLayerVector vector) {
-			vectors.add(vector);
-		}
-
-		public ArrayList<GeoPDFLayerVector> getVectors() {
-			return vectors;
-		}
-
-		@Override
-		public IXMLElement toXML(final String geoReferenceId) {
-			final IXMLElement layer = new XMLElement("IfLayerOn");
-			layer.setAttribute("layerId", getId());
-
-			for (GeoPDFLayerVector vector : vectors) {
-				layer.addChild(vector.toXML(geoReferenceId));
-			}
-
-			for (GeoPDFLayerTrack child : getChildren()) {
-				layer.addChild(child.toXML(geoReferenceId));
-			}
-			
-			return layer;
-		}
-	}
+	private final ArrayList<File> filesToDelete = new ArrayList<File>();
 
 	private String author;
+
 	private String producer;
 	private String creator;
 	private String creationDate;
@@ -367,92 +364,124 @@ public class GeoPDF {
 	private ArrayList<GeoPDFPage> pages = new ArrayList<GeoPDF.GeoPDFPage>();
 	private String javascript;
 
+	private IXMLElement createLayerIndex(final GeoPDFLayer layer) {
+		final IXMLElement newLayerXML = new XMLElement("Layer");
+		newLayerXML.setAttribute("id", layer.getId());
+		newLayerXML.setAttribute("name", layer.getName());
+		for (final GeoPDFLayer child : layer.getChildren()) {
+			newLayerXML.addChild(createLayerIndex(child));
+		}
+		return newLayerXML;
+	}
+
 	public GeoPDFPage createNewPage() {
 		final GeoPDFPage newPage = new GeoPDFPage(pages.size() + 1);
 		pages.add(newPage);
 		return newPage;
 	}
 
-	public void setJavascript(String javascript) {
-		this.javascript = javascript;
-	}
-
-	public String getJavascript() {
-		return javascript;
-	}
-
 	public String getAuthor() {
 		return author;
-	}
-
-	public void setAuthor(String author) {
-		this.author = author;
-	}
-
-	public String getProducer() {
-		return producer;
-	}
-
-	public void setProducer(String producer) {
-		this.producer = producer;
-	}
-
-	public String getCreator() {
-		return creator;
-	}
-
-	public void setCreator(String creator) {
-		this.creator = creator;
 	}
 
 	public String getCreationDate() {
 		return creationDate;
 	}
 
-	public void setCreationDate(String creationDate) {
-		this.creationDate = creationDate;
+	public String getCreator() {
+		return creator;
 	}
 
-	public String getSubject() {
-		return subject;
+	public ArrayList<File> getFilesToDelete() {
+		return filesToDelete;
 	}
 
-	public void setSubject(String subject) {
-		this.subject = subject;
-	}
-
-	public String getTitle() {
-		return title;
-	}
-
-	public void setTitle(String title) {
-		this.title = title;
+	public String getJavascript() {
+		return javascript;
 	}
 
 	public String getKeywords() {
 		return keywords;
 	}
 
-	public void setKeywords(String keywords) {
-		this.keywords = keywords;
-	}
-
 	public ArrayList<GeoPDFPage> getPages() {
 		return pages;
 	}
 
-	public void setPages(ArrayList<GeoPDFPage> pages) {
+	public String getProducer() {
+		return producer;
+	}
+
+	public String getSubject() {
+		return subject;
+	}
+
+	public String getTitle() {
+		return title;
+	}
+
+	public void setAuthor(final String author) {
+		this.author = author;
+	}
+
+	public void setCreationDate(final String creationDate) {
+		this.creationDate = creationDate;
+	}
+
+	public void setCreator(final String creator) {
+		this.creator = creator;
+	}
+
+	public void setJavascript(final String javascript) {
+		this.javascript = javascript;
+	}
+
+	public void setKeywords(final String keywords) {
+		this.keywords = keywords;
+	}
+
+	public void setPages(final ArrayList<GeoPDFPage> pages) {
 		this.pages = pages;
 	}
-	
-	private IXMLElement createLayerIndex(final GeoPDFLayer layer) {
-		final IXMLElement newLayerXML = new XMLElement("Layer");
-		newLayerXML.setAttribute("id", layer.getId());
-		newLayerXML.setAttribute("name", layer.getName());
-		for (GeoPDFLayer child : layer.getChildren()) {
-			newLayerXML.addChild(createLayerIndex(child));
+
+	public void setProducer(final String producer) {
+		this.producer = producer;
+	}
+
+	public void setSubject(final String subject) {
+		this.subject = subject;
+	}
+
+	public void setTitle(final String title) {
+		this.title = title;
+	}
+
+	@Override
+	public String toString() {
+		try {
+			final OutputStream outputStream = new OutputStream() {
+
+				private final StringBuilder builder = new StringBuilder();
+
+				@Override
+				public String toString() {
+					return builder.toString();
+				}
+
+				@Override
+				public void write(final int b) throws IOException {
+					builder.append((char) b);
+				}
+			};
+
+			final XMLWriter xmlWrite = new XMLWriter(outputStream);
+			xmlWrite.write(toXML(), true);
+
+			return outputStream.toString();
+		} catch (final IOException e) {
+			// This will never be called....
 		}
-		return newLayerXML;
+		return null;
 	}
 
 	public IXMLElement toXML() throws IOException {
@@ -462,9 +491,9 @@ public class GeoPDF {
 		final IXMLElement author = new XMLElement("Author");
 		metadata.addChild(author);
 		author.setContent(getAuthor());
-		
+
 		if (getJavascript() != null) {
-			IXMLElement javascript = new XMLElement("Javascript");
+			final IXMLElement javascript = new XMLElement("Javascript");
 			javascript.setContent(getJavascript());
 			pdfComposition.addChild(javascript);
 		}
@@ -473,8 +502,8 @@ public class GeoPDF {
 		pdfComposition.addChild(layerTree);
 		layerTree.setAttribute("displayOnlyOnVisiblePages", "true");
 
-		for (GeoPDFPage page : pages) {
-			for (GeoPDFLayer layer : page.getLayers()) {
+		for (final GeoPDFPage page : pages) {
+			for (final GeoPDFLayer layer : page.getLayers()) {
 				layerTree.addChild(createLayerIndex(layer));
 			}
 		}
@@ -485,33 +514,6 @@ public class GeoPDF {
 		}
 
 		return pdfComposition;
-	}
-
-	@Override
-	public String toString() {
-		try {
-			final OutputStream outputStream = new OutputStream() {
-
-				private StringBuilder builder = new StringBuilder();
-
-				@Override
-				public void write(int b) throws IOException {
-					builder.append((char) b);
-				}
-
-				public String toString() {
-					return builder.toString();
-				}
-			};
-
-			final XMLWriter xmlWrite = new XMLWriter(outputStream);
-			xmlWrite.write(toXML(), true);
-
-			return outputStream.toString();
-		} catch (IOException e) {
-			// This will never be called....
-		}
-		return null;
 	}
 
 }
