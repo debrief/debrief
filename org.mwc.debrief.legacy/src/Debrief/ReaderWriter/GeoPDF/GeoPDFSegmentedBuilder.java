@@ -240,7 +240,8 @@ public class GeoPDFSegmentedBuilder extends AbstractGeoPDFBuilder {
 		javaScriptReplacementJsTimestamps.append(";");
 
 		geoPDF.setJavascript(createJavascriptContent(javaScriptReplacementJsTimestamps.toString(),
-				javascriptNonInteractiveLayerIndex.toString(), JAVASCRIPT_TEMPLATE_PATH));
+				javascriptNonInteractiveLayerIndex.toString(), configuration.getStepSpeedMilliSeconds() + "",
+				JAVASCRIPT_TEMPLATE_PATH));
 
 		return geoPDF;
 	}
@@ -254,14 +255,14 @@ public class GeoPDFSegmentedBuilder extends AbstractGeoPDFBuilder {
 		for (int i = 0; i < fixes.length; i++) {
 			if ((period == null || period.contains(fixes[i].getDTG())) && fixes[i].getLabelShowing()) {
 				final String vectorName = sanitizeFilename(currentTrack.getName() + "_LABEL_"
-						+ HiResDateToFileName(fixes[i].getDTG(), configuration.getDateFormat()));
+						+ HiResDateToFileName(fixes[i].getDTG()));
 				final SegmentedGeoJSONConfiguration segmentConfiguration = new SegmentedGeoJSONConfiguration(vectorName,
 						GeometryType.Point);
 				segmentConfiguration.addProperty("elevation", fixes[i].getLocation().getDepth() + "");
 				segmentConfiguration.addProperty("longitude", fixes[i].getLocation().getLong() + "");
 				segmentConfiguration.addProperty("latitude", fixes[i].getLocation().getLat() + "");
 				segmentConfiguration.addProperty("time",
-						HiResDateToFileName(fixes[i].getDTG(), configuration.getDateFormat()));
+						HiResDateToFileName(fixes[i].getDTG()));
 				segmentConfiguration.addProperty("course", fixes[i].getCourse() + "");
 				segmentConfiguration.addProperty("speed", fixes[i].getSpeed() + "");
 				segmentConfiguration.addProperty("time_str",
@@ -297,14 +298,14 @@ public class GeoPDFSegmentedBuilder extends AbstractGeoPDFBuilder {
 		for (int i = 0; i < fixes.length; i++) {
 			if ((period == null || period.contains(fixes[i].getDTG())) && fixes[i].getSymbolShowing()) {
 				final String vectorName = sanitizeFilename(currentTrack.getName() + "_TICKS_"
-						+ HiResDateToFileName(fixes[i].getDTG(), configuration.getDateFormat()));
+						+ HiResDateToFileName(fixes[i].getDTG()));
 				final SegmentedGeoJSONConfiguration segmentConfiguration = new SegmentedGeoJSONConfiguration(vectorName,
 						GeometryType.Point);
 				segmentConfiguration.addProperty("elevation", fixes[i].getLocation().getDepth() + "");
 				segmentConfiguration.addProperty("longitude", fixes[i].getLocation().getLong() + "");
 				segmentConfiguration.addProperty("latitude", fixes[i].getLocation().getLat() + "");
 				segmentConfiguration.addProperty("time",
-						HiResDateToFileName(fixes[i].getDTG(), configuration.getDateFormat()));
+						HiResDateToFileName(fixes[i].getDTG()));
 				segmentConfiguration.addProperty("course", fixes[i].getCourse() + "");
 				segmentConfiguration.addProperty("speed", fixes[i].getSpeed() + "");
 				segmentConfiguration.addCoordinate(
@@ -339,13 +340,13 @@ public class GeoPDFSegmentedBuilder extends AbstractGeoPDFBuilder {
 		for (int i = 0; i < fixes.length - 1; i++) {
 			if (period == null || period.contains(fixes[i].getDTG())) {
 				final String vectorName = sanitizeFilename(currentTrack.getName() + "_LINE_"
-						+ HiResDateToFileName(fixes[i].getDTG(), configuration.getDateFormat()));
+						+ HiResDateToFileName(fixes[i].getDTG()));
 				final SegmentedGeoJSONConfiguration configurationGeojson = new SegmentedGeoJSONConfiguration(vectorName,
 						GeometryType.MultiLineString);
 				configurationGeojson.addProperty("begin",
-						HiResDateToFileName(fixes[i].getDTG(), configuration.getDateFormat()));
+						HiResDateToFileName(fixes[i].getDTG()));
 				configurationGeojson.addProperty("end",
-						HiResDateToFileName(fixes[i + 1].getDTG(), configuration.getDateFormat()));
+						HiResDateToFileName(fixes[i + 1].getDTG()));
 				configurationGeojson.addCoordinate(
 						new double[] { fixes[i].getLocation().getLong(), fixes[i].getLocation().getLat() });
 				configurationGeojson.addCoordinate(
@@ -383,7 +384,7 @@ public class GeoPDFSegmentedBuilder extends AbstractGeoPDFBuilder {
 			segmentConfiguration.addProperty("elevation", fix.getLocation().getDepth() + "");
 			segmentConfiguration.addProperty("longitude", fix.getLocation().getLong() + "");
 			segmentConfiguration.addProperty("latitude", fix.getLocation().getLat() + "");
-			segmentConfiguration.addProperty("time", HiResDateToFileName(fix.getDTG(), configuration.getDateFormat()));
+			segmentConfiguration.addProperty("time", HiResDateToFileName(fix.getDTG()));
 			segmentConfiguration.addProperty("course", fix.getCourse() + "");
 			segmentConfiguration.addProperty("speed", fix.getSpeed() + "");
 			segmentConfiguration
