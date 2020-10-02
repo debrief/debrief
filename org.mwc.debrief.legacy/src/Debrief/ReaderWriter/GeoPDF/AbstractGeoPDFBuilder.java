@@ -30,7 +30,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
-import java.util.UUID;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
@@ -382,7 +381,6 @@ public abstract class AbstractGeoPDFBuilder {
 	public static final String JAVASCRIPT_TEMPLATE_PATH = "/geopdf_animation.js";
 	public static final String JAVASCRIPT_TIMESTAMP_TAG = "!!JS_TIMESTAMPS";
 	public static final String JAVASCRIPT_TIMESTAMP_TAG_NON_INTERATIVE = "!!NONINTERACTLAYERS";
-	public static final String TIFF_SUFFIX = ".tiff";
 
 	public static final String NON_INTERACTIVE_SUFFIX = " (non-interactive)";
 
@@ -390,11 +388,22 @@ public abstract class AbstractGeoPDFBuilder {
 
 	protected static File createBackgroundFile(final GeoPDFConfiguration configuration, final String background,
 			final ArrayList<File> filesToDelete) throws IOException, InterruptedException {
-		final File tmpFile = createTempFile(
-				"debriefgdalbackground" + UUID.randomUUID().toString().replaceAll("-", "") + TIFF_SUFFIX, "",
-				configuration.getTempFolder());
+		final String originalFilefileName = Paths.get(background).getFileName().toString();
 
-		tmpFile.delete();
+		int suffixId = 1;
+
+		File tmpFile = getFile(originalFilefileName, configuration.getTempFolder());
+
+		while (tmpFile.exists()) {
+			final int lastDot = originalFilefileName.indexOf('.');
+			if (lastDot >= 0) {
+				// if we have an extension
+				tmpFile = getFile(originalFilefileName.substring(0, lastDot) + (suffixId++) + "."
+						+ originalFilefileName.substring(lastDot + 1), configuration.getTempFolder());
+			} else {
+				tmpFile = getFile(originalFilefileName + (suffixId++), configuration.getTempFolder());
+			}
+		}
 
 		filesToDelete.add(tmpFile);
 
@@ -471,13 +480,8 @@ public abstract class AbstractGeoPDFBuilder {
 
 	protected static File createTempFile(final String fileName, final String data, final String folderName)
 			throws FileNotFoundException {
-		final String tempFolder = System.getProperty("java.io.tmpdir");
-		// Let's create everything inside a folder.
-		final File tempFolderTimestamp = new File(tempFolder + File.separatorChar + folderName);
 
-		tempFolderTimestamp.mkdirs();
-
-		final File newFile = new File(tempFolderTimestamp.getAbsolutePath() + File.separatorChar + fileName);
+		final File newFile = getFile(fileName, folderName);
 		Application.logError3(ToolParent.INFO, "GeoPDF-Creating temporary file in " + newFile.getAbsolutePath(), null,
 				false);
 
@@ -492,6 +496,17 @@ public abstract class AbstractGeoPDFBuilder {
 			}
 		}
 
+		return newFile;
+	}
+
+	protected static File getFile(final String fileName, final String folderName) {
+		final String tempFolder = System.getProperty("java.io.tmpdir");
+		// Let's create everything inside a folder.
+		final File tempFolderTimestamp = new File(tempFolder + File.separatorChar + folderName);
+
+		tempFolderTimestamp.mkdirs();
+
+		final File newFile = new File(tempFolderTimestamp.getAbsolutePath() + File.separatorChar + fileName);
 		return newFile;
 	}
 
