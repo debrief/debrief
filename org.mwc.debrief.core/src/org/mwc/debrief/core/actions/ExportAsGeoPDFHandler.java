@@ -15,6 +15,7 @@
 package org.mwc.debrief.core.actions;
 
 import java.io.File;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
@@ -78,6 +79,7 @@ public class ExportAsGeoPDFHandler extends CoreEditorAction {
 			configuration.setLandscape(theChart.getScreenSize().getWidth() > theChart.getScreenSize().getHeight());
 			configuration.setStartTime(period.getStartDTG());
 			configuration.setEndTime(period.getEndDTG());
+			configuration.setTempFolder(new Timestamp(System.currentTimeMillis()).getTime() + "");
 
 			if ((period.getEndDTG().getMicros() - period.getStartDTG().getMicros()) / 1000
 					/ configuration.getStepDeltaMilliSeconds() > MAX_AMOUNT_STEPS_ALLOWED) {
