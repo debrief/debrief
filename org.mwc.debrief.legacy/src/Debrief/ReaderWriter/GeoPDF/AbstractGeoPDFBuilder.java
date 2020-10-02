@@ -382,6 +382,7 @@ public abstract class AbstractGeoPDFBuilder {
 	public static final String JAVASCRIPT_TEMPLATE_PATH = "/geopdf_animation.js";
 	public static final String JAVASCRIPT_TIMESTAMP_TAG = "!!JS_TIMESTAMPS";
 	public static final String JAVASCRIPT_TIMESTAMP_TAG_NON_INTERATIVE = "!!NONINTERACTLAYERS";
+	public static final String TIFF_SUFFIX = ".tiff";
 
 	public static final String NON_INTERACTIVE_SUFFIX = " (non-interactive)";
 
@@ -390,7 +391,7 @@ public abstract class AbstractGeoPDFBuilder {
 	protected static File createBackgroundFile(final GeoPDFConfiguration configuration, final String background,
 			final ArrayList<File> filesToDelete) throws IOException, InterruptedException {
 		final File tmpFile = createTempFile(
-				"debriefgdalbackground" + UUID.randomUUID().toString().replaceAll("-", "") + ".tiff", "",
+				"debriefgdalbackground" + UUID.randomUUID().toString().replaceAll("-", "") + TIFF_SUFFIX, "",
 				configuration.getTempFolder());
 
 		tmpFile.delete();
