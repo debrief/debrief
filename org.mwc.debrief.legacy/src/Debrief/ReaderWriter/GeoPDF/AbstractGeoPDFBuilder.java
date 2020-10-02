@@ -383,17 +383,21 @@ public abstract class AbstractGeoPDFBuilder {
 		}
 
 		Application.logError3(ToolParent.INFO, "GeoPDF-Output: " + allOutput.toString(), null, false);
-		if (allOutput.toString().trim().isEmpty()) {
-			// SUCCESS
-			return tmpFile;
+		if (!allOutput.toString().trim().isEmpty()) {
+			throw new IOException(allOutput.toString());
 		}
 
 		allOutput.setLength(0);
 		while ((line = gdalWarpErrorStream.readLine()) != null) {
 			allOutput.append(line + "\n");
 		}
+		
 		Application.logError3(ToolParent.INFO, "GeoPDF-Error generating the PDF: " + allOutput.toString(), null, false);
-		throw new IOException(allOutput.toString());
+		if (!allOutput.toString().trim().isEmpty()) {
+			throw new IOException(allOutput.toString());
+		}
+		
+		return tmpFile;
 	}
 
 	public abstract GeoPDF build(final Layers layers, final GeoPDFConfiguration configuration)
