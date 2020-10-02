@@ -493,13 +493,13 @@ public abstract class AbstractGeoPDFBuilder {
 	}
 
 	/**
-	 * For now let's just remove the invalid characters, but we could improve this
-	 * if needed.
+	 * Use millis for filename, to overcome problem when sparse data lead to filenames
+	 * being re-used.
 	 *
-	 * @param date Date to convert to filename (Deprecated)
+	 * @param date Date to convert to filename
 	 * @return filename
 	 */
-	protected static String HiResDateToFileName(final HiResDate date, final String dateFormat) {
+	protected static String HiResDateToFileName(final HiResDate date) {
 		return date.getMicros() / 1000 + "";
 	}
 
