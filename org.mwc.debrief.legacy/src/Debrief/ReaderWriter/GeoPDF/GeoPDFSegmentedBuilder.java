@@ -66,12 +66,14 @@ public class GeoPDFSegmentedBuilder extends AbstractGeoPDFBuilder {
 		/**
 		 * Let's create the BackGroundLayer;
 		 */
+		final GeoPDFLayerBackground backgroundLayer = new GeoPDFLayerBackground();
+		backgroundLayer.setName("Background chart");
+		backgroundLayer.setId("background");
 		for (String background : configuration.getBackground()) {
 			final File backgroundFile = createBackgroundFile(configuration, background, geoPDF.getFilesToDelete());
-			final GeoPDFLayerBackground backgroundLayer = new GeoPDFLayerBackground();
-			backgroundLayer.setName("Background chart");
-			backgroundLayer.setId("background");
 			backgroundLayer.addRaster(backgroundFile.getAbsolutePath());
+		}
+		if (!backgroundLayer.getRasters().isEmpty()) {
 			mainPage.addLayer(backgroundLayer);
 		}
 
