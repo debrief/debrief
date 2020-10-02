@@ -389,8 +389,9 @@ public abstract class AbstractGeoPDFBuilder {
 
 	protected static File createBackgroundFile(final GeoPDFConfiguration configuration, final String background,
 			final ArrayList<File> filesToDelete) throws IOException, InterruptedException {
-		final File tmpFile = createTempFile("debriefgdalbackground" + UUID.randomUUID().toString().replaceAll("-", ""),
-				"", configuration.getTempFolder());
+		final File tmpFile = createTempFile(
+				"debriefgdalbackground" + UUID.randomUUID().toString().replaceAll("-", "") + ".tiff", "",
+				configuration.getTempFolder());
 
 		tmpFile.delete();
 
@@ -570,12 +571,12 @@ public abstract class AbstractGeoPDFBuilder {
 		while ((line = gdalWarpErrorStream.readLine()) != null) {
 			allOutput.append(line + "\n");
 		}
-		
+
 		Application.logError3(ToolParent.INFO, "GeoPDF-Error generating the PDF: " + allOutput.toString(), null, false);
 		if (!allOutput.toString().trim().isEmpty()) {
 			throw new IOException(allOutput.toString());
 		}
-		
+
 		return tmpFile;
 	}
 }
