@@ -41,6 +41,7 @@ import org.mwc.debrief.core.editors.PlotEditor;
 
 import Debrief.GUI.Frames.Application;
 import Debrief.ReaderWriter.GeoPDF.AbstractGeoPDFBuilder.GeoPDFConfiguration;
+import Debrief.Wrappers.Track.LightweightTrackWrapper;
 import Debrief.ReaderWriter.GeoPDF.GeoPDF;
 import Debrief.ReaderWriter.GeoPDF.GeoPDFSegmentedBuilder;
 import MWC.GUI.Editable;
@@ -60,7 +61,7 @@ public class ExportAsGeoPDFHandler extends CoreEditorAction {
 		try {
 			final PlainChart theChart = getChart();
 			final Layers theLayers = theChart.getLayers();
-			final TimePeriod period = theLayers.getTimePeriod();
+			final TimePeriod period = calculatePeriod(theLayers);
 			final GeoPDFConfiguration configuration = new GeoPDFConfiguration();
 			final IChartBasedEditor editorBasedEditor = getEditor();
 
@@ -127,6 +128,38 @@ public class ExportAsGeoPDFHandler extends CoreEditorAction {
 		final MultiStatus ms = new MultiStatus("org.mwc.debrief.core", IStatus.ERROR,
 				childStatuses.toArray(new Status[] {}), t.toString(), t);
 		return ms;
+	}
+	
+	public TimePeriod calculatePeriod(final Layers theLayers) {
+		TimePeriod ans = null;
+		
+		/**
+		 * Let's iterate over all the layers to find the Tracks to export
+		 */
+		final Enumeration<Editable> enumerationNonInteractive = theLayers.elements();
+		while (enumerationNonInteractive.hasMoreElements()) {
+			final Editable currentEditable = enumerationNonInteractive.nextElement();
+			if (currentEditable instanceof LightweightTrackWrapper) {
+
+				final LightweightTrackWrapper currentTrack = (LightweightTrackWrapper) currentEditable;
+
+				/**
+				 * Let's draw only visible tracks.
+				 */
+				if (currentTrack.getVisible()) {
+					final TimePeriod currentPeriod = currentTrack.getVisiblePeriod();
+					if (ans == null) {
+						ans = currentPeriod;
+					}else {
+						ans.extend(currentPeriod.getStartDTG());
+						ans.extend(currentPeriod.getEndDTG());
+					}
+				}
+			}
+			
+		}
+		
+		return ans;
 	}
 
 	public void loadBackgroundLayers(final Layers theLayers, final GeoPDFConfiguration configuration) {
