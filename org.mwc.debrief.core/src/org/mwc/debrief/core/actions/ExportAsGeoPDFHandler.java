@@ -84,7 +84,7 @@ public class ExportAsGeoPDFHandler extends CoreEditorAction {
 			if ((period.getEndDTG().getMicros() - period.getStartDTG().getMicros()) / 1000
 					/ configuration.getStepDeltaMilliSeconds() > MAX_AMOUNT_STEPS_ALLOWED) {
 				MessageBox dialog = new MessageBox(getShell(), SWT.ICON_QUESTION | SWT.OK);
-				dialog.setText("My info");
+				dialog.setText("Too many Time steps");
 				dialog.setMessage("GeoPDF contains more than " + MAX_AMOUNT_STEPS_ALLOWED
 						+ " time steps, which may affect performance.  If performance in the exported GeoPDF isn't satisfactory, please use a larger time step.");
 
