@@ -52,6 +52,7 @@ before_script:
 # move back to top level
 - cd ../
 # Install gdal
+- chmod +x ./install-gdal.sh
 - ./install-gdal.sh
 script: mvn clean verify -U -B -fae
 after_failure:
