@@ -51,6 +51,8 @@ before_script:
 - mv jre ../org.mwc.debrief.combined.feature/win-64/jre
 # move back to top level
 - cd ../
+# Install gdal
+- ./install-gdal.sh
 script: mvn clean verify -U -B -fae
 after_failure:
 - ls org.mwc.debrief.ui_test
@@ -61,7 +63,6 @@ before_deploy:
 - ls /home/travis/build/debrief/debrief/org.mwc.debrief.product/target/products/
 - ./install-msitools.sh
 - ./contribs/msi/make_x64msi.sh
-- ./install-gdal.sh
 deploy:
   provider: releases
   skip_cleanup: true

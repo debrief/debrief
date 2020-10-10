@@ -92,19 +92,23 @@ DEBIAN_FRONTEND=noninteractive apt-get install -y  --no-install-recommends \
 
 DEBIAN_FRONTEND=noninteractive apt-get install -y python-is-python3
 
-cp -r /build_projgrids/usr/ /usr/
+cp -r /build_projgrids/usr/* /usr/
 
-cp -r /build${PROJ_INSTALL_PREFIX}/share/proj/ ${PROJ_INSTALL_PREFIX}/share/proj/
-cp -r /build${PROJ_INSTALL_PREFIX}/include/ ${PROJ_INSTALL_PREFIX}/include/
-cp -r /build${PROJ_INSTALL_PREFIX}/bin/ ${PROJ_INSTALL_PREFIX}/bin/
-cp -r /build${PROJ_INSTALL_PREFIX}/lib/ ${PROJ_INSTALL_PREFIX}/lib/
+cp -r /build${PROJ_INSTALL_PREFIX}/share/proj/* ${PROJ_INSTALL_PREFIX}/share/proj/
+cp -r /build${PROJ_INSTALL_PREFIX}/include/* ${PROJ_INSTALL_PREFIX}/include/
+cp -r /build${PROJ_INSTALL_PREFIX}/bin/* ${PROJ_INSTALL_PREFIX}/bin/
+cp -r /build${PROJ_INSTALL_PREFIX}/lib/* ${PROJ_INSTALL_PREFIX}/lib/
 
-cp -r /build/usr/share/gdal/ /usr/share/gdal/
-cp -r /build/usr/include/ /usr/include/
-cp -r /build_gdal_python/usr/ /usr/
-cp -r  /build_gdal_version_changing/usr/ /usr/
+cp -r /build/usr/share/gdal /usr/share/gdal
+cp -r /build/usr/include/* /usr/include/
+cp -r /build_gdal_python/usr/* /usr/
+cp -r /build_gdal_version_changing/usr/* /usr/
 
 ldconfig
+
+# Let's test our success :) 
+gdal_create --version
+
 
 
 
