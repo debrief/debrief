@@ -53,7 +53,7 @@ before_script:
 - cd ../
 # Install gdal
 - chmod +x ./install-gdal.sh
-- ./install-gdal.sh
+- sudo ./install-gdal.sh
 script: mvn clean verify -U -B -fae
 after_failure:
 - ls org.mwc.debrief.ui_test
