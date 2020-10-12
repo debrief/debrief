@@ -2,6 +2,7 @@ package Debrief.ReaderWriter.GeoPDF;
 
 import java.awt.Color;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -14,12 +15,14 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import Debrief.GUI.Frames.Application;
+import Debrief.ReaderWriter.GeoPDF.AbstractGeoPDFBuilder.GeoPDFConfiguration;
 import Debrief.ReaderWriter.GeoPDF.GenerateSegmentedGeoJSON.GeometryType;
 import Debrief.ReaderWriter.GeoPDF.GenerateSegmentedGeoJSON.SegmentedGeoJSONConfiguration;
 import Debrief.ReaderWriter.GeoPDF.GeoPDF.GeoPDFLayerBackground;
 import Debrief.ReaderWriter.GeoPDF.GeoPDF.GeoPDFLayerTrack;
 import Debrief.ReaderWriter.GeoPDF.GeoPDF.GeoPDFLayerVector;
 import Debrief.ReaderWriter.GeoPDF.GeoPDF.GeoPDFLayerVector.LogicalStructure;
+import Debrief.ReaderWriter.Replay.ImportReplay;
 import Debrief.ReaderWriter.GeoPDF.GeoPDF.GeoPDFLayerVectorLabel;
 import Debrief.ReaderWriter.GeoPDF.GeoPDF.GeoPDFPage;
 import Debrief.Wrappers.FixWrapper;
@@ -30,8 +33,38 @@ import MWC.GUI.ToolParent;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.TimePeriod;
 import MWC.Utilities.TextFormatting.FormatRNDateTime;
+import junit.framework.TestCase;
 
 public class GeoPDFSegmentedBuilder extends AbstractGeoPDFBuilder {
+
+	public static class GeoPDFSegmentedBuilderTest extends TestCase {
+		private final static String boat1rep = "../org.mwc.cmap.combined.feature/root_installs/sample_data/boat1.rep";
+		private final static String boat2rep = "../org.mwc.cmap.combined.feature/root_installs/sample_data/boat2.rep";
+
+		public void testBuild() throws IOException, InterruptedException, NoSuchFieldException, SecurityException,
+				IllegalArgumentException, IllegalAccessException, ClassNotFoundException {
+
+			final Layers layers = new Layers();
+			final ImportReplay replayImporter = new ImportReplay();
+			replayImporter.importThis("boat1.rep", new FileInputStream(boat1rep), layers);
+			replayImporter.importThis("boat2.rep", new FileInputStream(boat2rep), layers);
+
+			final GeoPDFConfiguration configuration = new GeoPDFConfiguration();
+			configuration.addBackground("../org.mwc.cmap.combined.feature/root_installs/sample_data/SP27GTIF.tif");
+
+			final AbstractGeoPDFBuilder builder = new GeoPDFSegmentedBuilder();
+			final GeoPDF geoPdf = builder.build(layers, configuration);
+
+			configuration.setPdfOutputPath(System.getProperty("java.io.tmpdir") + File.separatorChar + "test.pdf");
+			builder.generatePDF(geoPdf, configuration);
+
+			System.out.println("PDF successfully generated at " + configuration.getPdfOutputPath());
+			System.out.println(geoPdf);
+
+			// We will cover this in the ticket
+			// https://github.com/debrief/debrief/issues/4969
+		}
+	}
 
 	@Override
 	public GeoPDF build(final Layers layers, final GeoPDFConfiguration configuration)
@@ -254,15 +287,14 @@ public class GeoPDFSegmentedBuilder extends AbstractGeoPDFBuilder {
 		final FixWrapper[] fixes = currentTrack.getFixes();
 		for (int i = 0; i < fixes.length; i++) {
 			if ((period == null || period.contains(fixes[i].getDTG())) && fixes[i].getLabelShowing()) {
-				final String vectorName = sanitizeFilename(currentTrack.getName() + "_LABEL_"
-						+ HiResDateToFileName(fixes[i].getDTG()));
+				final String vectorName = sanitizeFilename(
+						currentTrack.getName() + "_LABEL_" + HiResDateToFileName(fixes[i].getDTG()));
 				final SegmentedGeoJSONConfiguration segmentConfiguration = new SegmentedGeoJSONConfiguration(vectorName,
 						GeometryType.Point);
 				segmentConfiguration.addProperty("elevation", fixes[i].getLocation().getDepth() + "");
 				segmentConfiguration.addProperty("longitude", fixes[i].getLocation().getLong() + "");
 				segmentConfiguration.addProperty("latitude", fixes[i].getLocation().getLat() + "");
-				segmentConfiguration.addProperty("time",
-						HiResDateToFileName(fixes[i].getDTG()));
+				segmentConfiguration.addProperty("time", HiResDateToFileName(fixes[i].getDTG()));
 				segmentConfiguration.addProperty("course", fixes[i].getCourse() + "");
 				segmentConfiguration.addProperty("speed", fixes[i].getSpeed() + "");
 				segmentConfiguration.addProperty("time_str",
@@ -297,15 +329,14 @@ public class GeoPDFSegmentedBuilder extends AbstractGeoPDFBuilder {
 		final FixWrapper[] fixes = currentTrack.getFixes();
 		for (int i = 0; i < fixes.length; i++) {
 			if ((period == null || period.contains(fixes[i].getDTG())) && fixes[i].getSymbolShowing()) {
-				final String vectorName = sanitizeFilename(currentTrack.getName() + "_TICKS_"
-						+ HiResDateToFileName(fixes[i].getDTG()));
+				final String vectorName = sanitizeFilename(
+						currentTrack.getName() + "_TICKS_" + HiResDateToFileName(fixes[i].getDTG()));
 				final SegmentedGeoJSONConfiguration segmentConfiguration = new SegmentedGeoJSONConfiguration(vectorName,
 						GeometryType.Point);
 				segmentConfiguration.addProperty("elevation", fixes[i].getLocation().getDepth() + "");
 				segmentConfiguration.addProperty("longitude", fixes[i].getLocation().getLong() + "");
 				segmentConfiguration.addProperty("latitude", fixes[i].getLocation().getLat() + "");
-				segmentConfiguration.addProperty("time",
-						HiResDateToFileName(fixes[i].getDTG()));
+				segmentConfiguration.addProperty("time", HiResDateToFileName(fixes[i].getDTG()));
 				segmentConfiguration.addProperty("course", fixes[i].getCourse() + "");
 				segmentConfiguration.addProperty("speed", fixes[i].getSpeed() + "");
 				segmentConfiguration.addCoordinate(
@@ -339,14 +370,12 @@ public class GeoPDFSegmentedBuilder extends AbstractGeoPDFBuilder {
 		final FixWrapper[] fixes = currentTrack.getFixes();
 		for (int i = 0; i < fixes.length - 1; i++) {
 			if (period == null || period.contains(fixes[i].getDTG())) {
-				final String vectorName = sanitizeFilename(currentTrack.getName() + "_LINE_"
-						+ HiResDateToFileName(fixes[i].getDTG()));
+				final String vectorName = sanitizeFilename(
+						currentTrack.getName() + "_LINE_" + HiResDateToFileName(fixes[i].getDTG()));
 				final SegmentedGeoJSONConfiguration configurationGeojson = new SegmentedGeoJSONConfiguration(vectorName,
 						GeometryType.MultiLineString);
-				configurationGeojson.addProperty("begin",
-						HiResDateToFileName(fixes[i].getDTG()));
-				configurationGeojson.addProperty("end",
-						HiResDateToFileName(fixes[i + 1].getDTG()));
+				configurationGeojson.addProperty("begin", HiResDateToFileName(fixes[i].getDTG()));
+				configurationGeojson.addProperty("end", HiResDateToFileName(fixes[i + 1].getDTG()));
 				configurationGeojson.addCoordinate(
 						new double[] { fixes[i].getLocation().getLong(), fixes[i].getLocation().getLat() });
 				configurationGeojson.addCoordinate(

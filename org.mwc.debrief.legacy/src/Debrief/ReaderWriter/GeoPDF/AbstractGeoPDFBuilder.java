@@ -16,6 +16,7 @@ package Debrief.ReaderWriter.GeoPDF;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -34,6 +35,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 
 import Debrief.GUI.Frames.Application;
 import Debrief.ReaderWriter.GeoPDF.GeoPDF.GeoPDFLayerTrack;
+import Debrief.ReaderWriter.Replay.ImportReplay;
 import Debrief.Wrappers.TrackWrapper;
 import MWC.GUI.Layers;
 import MWC.GUI.ToolParent;
@@ -44,36 +46,7 @@ import junit.framework.TestCase;
 
 public abstract class AbstractGeoPDFBuilder {
 
-	public static class GeoPDFBuilderTest extends TestCase {
-
-//		private final static String boat1rep = "../org.mwc.cmap.combined.feature/root_installs/sample_data/boat1.rep";
-//		private final static String boat2rep = "../org.mwc.cmap.combined.feature/root_installs/sample_data/boat2.rep";
-
-		public void testBuild() throws IOException, InterruptedException, NoSuchFieldException, SecurityException,
-				IllegalArgumentException, IllegalAccessException, ClassNotFoundException {
-
-			/*
-			 * final Layers layers = new Layers(); final ImportReplay replayImporter = new
-			 * ImportReplay(); replayImporter.importThis("boat1.rep", new
-			 * FileInputStream(boat1rep), layers); replayImporter.importThis("boat2.rep",
-			 * new FileInputStream(boat2rep), layers);
-			 *
-			 * final GeoPDFConfiguration configuration = new GeoPDFConfiguration();
-			 * configuration.addBackground(
-			 * "../org.mwc.cmap.combined.feature/root_installs/sample_data/SP27GTIF.tif");
-			 *
-			 * final GeoPDF geoPdf = GeoPDFBuilder.build(layers, configuration);
-			 *
-			 * configuration.setPdfOutputPath(System.getProperty("java.io.tmpdir") +
-			 * File.separatorChar + "test.pdf"); GeoPDFBuilder.generatePDF(geoPdf,
-			 * configuration);
-			 *
-			 * System.out.println("PDF successfully generated at " +
-			 * configuration.getPdfOutputPath()); System.out.println(geoPdf);
-			 */
-			// We will cover this in the ticket
-			// https://github.com/debrief/debrief/issues/4969
-		}
+	public static class AbstractGeoPDFBuilderTest extends TestCase {
 
 		public void testCreateTempFile() throws FileNotFoundException {
 			final File test = createTempFile("test.txt", "Test", "test");
@@ -289,6 +262,14 @@ public abstract class AbstractGeoPDFBuilder {
 			else {
 				Application.logError3(ToolParent.INFO,
 						"GeoPDF-We have detected an Unix-like system. We will assume gdal is installed.", null, false);
+
+				// We are on Linux.
+				this.setGdalCreateCommand(
+						"../org.mwc.debrief.legacy/src/native/linux/build_gdal_version_changing/usr/bin/gdal_create");
+				this.setGdalWarpCommand(
+						"../org.mwc.debrief.legacy/src/native/linux/build_gdal_version_changing/usr/bin/gdalwarp");
+				registerEnvironmentVar("LD_LIBRARY_PATH",
+						"../org.mwc.debrief.legacy/src/native/linux/build_gdal_version_changing/usr/lib/");
 			}
 
 			Application.logError3(ToolParent.INFO, "GeoPDF-Temporary environment is ready.", null, false);
@@ -521,8 +502,8 @@ public abstract class AbstractGeoPDFBuilder {
 	}
 
 	/**
-	 * Use millis for filename, to overcome problem when sparse data lead to filenames
-	 * being re-used.
+	 * Use millis for filename, to overcome problem when sparse data lead to
+	 * filenames being re-used.
 	 *
 	 * @param date Date to convert to filename
 	 * @return filename
