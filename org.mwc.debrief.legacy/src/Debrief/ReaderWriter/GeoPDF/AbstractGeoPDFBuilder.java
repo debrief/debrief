@@ -28,6 +28,7 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Scanner;
 
@@ -58,6 +59,54 @@ public abstract class AbstractGeoPDFBuilder {
 		}
 	}
 
+	public static class GeoPDFConfigurationTest extends TestCase {
+
+		public void testCreateTemporaryEnvironmentWindows() throws IOException {
+			// Let's copy and confirm that the files are there.
+			final GeoPDFConfiguration config = new GeoPDFConfiguration();
+			final String sourceList = "/windows-files.txt";
+			final String dest = System.getProperty("java.io.tmpdir") + File.separatorChar;
+			GeoPDFConfiguration.createTemporaryEnvironment(dest, sourceList, config);
+
+			final InputStream filesToCopyStream = AbstractGeoPDFBuilder.class
+					.getResourceAsStream(GDAL_NATIVE_PREFIX_FOLDER + sourceList);
+
+			Scanner scanner = null;
+			try {
+				scanner = new Scanner(filesToCopyStream);
+				while (scanner.hasNextLine()) {
+					final String line = scanner.nextLine();
+
+					final Path destinationPath = Paths.get(dest + line);
+					assertTrue("File " + destinationPath + " exists ", new File(destinationPath.toString()).exists());
+				}
+				
+				// Ok, let's delete everything after unit test
+				
+				final String windowsDest = dest + "windows";
+				Files.walk(Path.of(windowsDest))
+			    .sorted(Comparator.reverseOrder())
+			    .map(Path::toFile)
+			    .forEach(File::delete);
+			} finally {
+				if (scanner != null) {
+					scanner.close();
+				}
+			}
+		}
+		
+		public void testDetectInstalled() {
+			// Let's run this unit test only on Unix-like system
+			// assuming bash is installed.
+			
+			final String os = System.getProperty("os.name").toLowerCase();
+			if (os.indexOf("win") < 0) {
+				assertTrue("Bash is reporting that it is successfully installed", GeoPDFConfiguration.detectInstalled("sh", new ArrayList<String>()));
+				assertFalse("A weird command is reporting as not installed", GeoPDFConfiguration.detectInstalled("nowwelauncharandomcommand", new ArrayList<String>()));
+			}
+		}
+	}
+
 	public static class GeoPDFConfiguration {
 		public static final String SUCCESS_GDAL_DONE = "done.";
 		public static final String GDALWARP_RAW_COMMAND = "gdalwarp";
@@ -69,8 +118,58 @@ public abstract class AbstractGeoPDFBuilder {
 		public static final String GDAL_CREATE_COMPOSITION_KEYWORD = "COMPOSITION_FILE=";
 		public static final String PROJ_PATH_TO_REGISTER = "windows\\proj6\\share";
 		public static final String PROJ_ENV_VAR = "PROJ_LIB";
+		public static final String GDAL_LIB_PATH_TO_REGISTER = "linux/build_gdal_version_changing/usr/lib/";
+		public static final String GDAL_LIB_VAR = "LD_LIBRARY_PATH";
 
-		public static void createTemporaryEnvironmentWindows(final String destinationFolder,
+		public static boolean detectInstalled(final String command, final List<String> envVariables) {
+			try {
+				final Runtime runtime = Runtime.getRuntime();
+				final ArrayList<String> params = new ArrayList<String>();
+				params.add(command);
+				params.add("--version");
+	
+				final StringBuilder paramsLog = new StringBuilder();
+				for (final String p : params) {
+					paramsLog.append(p);
+					paramsLog.append(" ");
+				}
+				Application.logError3(ToolParent.INFO, "GeoPDF-" + paramsLog.toString(), null, false);
+				final Process process = runtime.exec(params.toArray(new String[] {}),
+						envVariables.toArray(new String[] {}));
+				process.waitFor();
+				final BufferedReader gdalWarpOutputStream = new BufferedReader(new InputStreamReader(process.getInputStream()));
+	
+				final BufferedReader gdalWarpErrorStream = new BufferedReader(new InputStreamReader(process.getErrorStream()));
+	
+				final StringBuilder allOutput = new StringBuilder();
+				String line = null;
+				while ((line = gdalWarpOutputStream.readLine()) != null) {
+					allOutput.append(line + "\n");
+				}
+	
+				Application.logError3(ToolParent.INFO, "GeoPDF-Output: " + allOutput.toString(), null, false);
+				if (allOutput.length() > 0) {
+					// SUCCESS
+					Application.logError3(ToolParent.INFO, "GeoPDF-Reported as a successful its version.", null,
+							false);
+					return true;
+				}
+				// SUCCESS
+				Application.logError3(ToolParent.INFO, "GeoPDF-Problem detected while converting the background file.", null,
+						false);
+	
+				allOutput.setLength(0);
+				while ((line = gdalWarpErrorStream.readLine()) != null) {
+					allOutput.append(line + "\n");
+				}
+				Application.logError3(ToolParent.INFO, "GeoPDF-" + allOutput.toString(), null, false);
+				return false;
+			}catch (Exception e) {
+				return false;
+			}
+		}
+		
+		public static void createTemporaryEnvironment(final String destinationFolder,
 				final String resourceFileListPath, final GeoPDFConfiguration configuration) throws IOException {
 
 			Application.logError3(ToolParent.INFO,
@@ -88,10 +187,10 @@ public abstract class AbstractGeoPDFBuilder {
 
 				Files.copy(GeoPDFConfiguration.class.getResourceAsStream(GDAL_NATIVE_PREFIX_FOLDER + line),
 						destinationPath, StandardCopyOption.REPLACE_EXISTING);
-				if (line.contains(GDALWARP_RAW_COMMAND)) {
+				if (line.contains(GDALWARP_RAW_COMMAND) && configuration != null) {
 					configuration.setGdalWarpCommand(destinationPath.toString());
 				}
-				if (line.contains(GDAL_CREATE_RAW_COMMAND)) {
+				if (line.contains(GDAL_CREATE_RAW_COMMAND) && configuration != null) {
 					configuration.setGdalCreateCommand(destinationPath.toString());
 				}
 			}
@@ -228,7 +327,7 @@ public abstract class AbstractGeoPDFBuilder {
 		}
 
 		public void prepareGdalEnvironment() throws IOException, NoSuchFieldException, SecurityException,
-				IllegalArgumentException, IllegalAccessException, ClassNotFoundException {
+				IllegalArgumentException, IllegalAccessException, ClassNotFoundException, InterruptedException {
 			final String os = System.getProperty("os.name").toLowerCase();
 			if (os.indexOf("win") != -1) {
 				Application.logError3(ToolParent.INFO, "GeoPDF-Windows has been detected as the OS.", null, false);
@@ -252,24 +351,56 @@ public abstract class AbstractGeoPDFBuilder {
 					// We are inside the .jar file, we need to copy all the files to a Temporary
 					// folder.
 
-					createTemporaryEnvironmentWindows(System.getProperty("java.io.tmpdir") + File.separatorChar,
+					createTemporaryEnvironment(System.getProperty("java.io.tmpdir") + File.separatorChar,
 							"/windows-files.txt", this);
 					registerEnvironmentVar(PROJ_ENV_VAR,
 							System.getProperty("java.io.tmpdir") + File.separatorChar + PROJ_PATH_TO_REGISTER);
 				}
 
-			} // we don't do the else, because by default it is Unit command.
+			}
 			else {
-				Application.logError3(ToolParent.INFO,
-						"GeoPDF-We have detected an Unix-like system. We will assume gdal is installed.", null, false);
-
 				// We are on Linux.
-				this.setGdalCreateCommand(
-						"../org.mwc.debrief.legacy/src/native/linux/build_gdal_version_changing/usr/bin/gdal_create");
-				this.setGdalWarpCommand(
-						"../org.mwc.debrief.legacy/src/native/linux/build_gdal_version_changing/usr/bin/gdalwarp");
-				registerEnvironmentVar("LD_LIBRARY_PATH",
-						"../org.mwc.debrief.legacy/src/native/linux/build_gdal_version_changing/usr/lib/");
+				Application.logError3(ToolParent.INFO,
+						"GeoPDF-We have detected an Unix-like system.", null, false);
+
+				Application.logError3(ToolParent.INFO,
+						"GeoPDF-Let's test if it is installed.", null, false);
+				
+				if (detectInstalled(getGdalWarpCommand(), getEnvVariables()) && detectInstalled(getGdalCreateCommand(), getEnvVariables())) {
+					// It is installed :) . Nothing to do.
+					Application.logError3(ToolParent.INFO,
+							"GeoPDF-It is installed", null, false);
+				}else {
+					// Let's try to copy the binaries included.
+					Application.logError3(ToolParent.INFO,
+							"GeoPDF-We didn't find the files. We need to create a temporary environment", null, false);
+					// We are inside the .jar file, we need to copy all the files to a Temporary
+					// folder.
+
+					createTemporaryEnvironment(System.getProperty("java.io.tmpdir") + File.separatorChar,
+							"/unix-files.txt", this);
+					registerEnvironmentVar(GDAL_LIB_VAR,
+							System.getProperty("java.io.tmpdir") + File.separatorChar + GDAL_LIB_PATH_TO_REGISTER);
+					
+					// Adding executing permissions
+					for (String file : new String[]{getGdalWarpCommand(), getGdalCreateCommand()}) {
+						final Runtime runtime = Runtime.getRuntime();
+						final ArrayList<String> params = new ArrayList<String>();
+						params.add("chmod");
+						params.add("+x");
+						params.add(file);
+
+						final StringBuilder paramsLog = new StringBuilder();
+						for (final String p : params) {
+							paramsLog.append(p);
+							paramsLog.append(" ");
+						}
+						Application.logError3(ToolParent.INFO, "GeoPDF-" + paramsLog.toString(), null, false);
+						final Process process = runtime.exec(params.toArray(new String[] {}),
+								envVariables.toArray(new String[] {}));
+						process.waitFor();
+					}
+				}
 			}
 
 			Application.logError3(ToolParent.INFO, "GeoPDF-Temporary environment is ready.", null, false);
