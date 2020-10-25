@@ -609,7 +609,7 @@ public abstract class AbstractGeoPDFBuilder {
 			final String os = System.getProperty("os.name").toLowerCase();
 			if (os.indexOf("win") < 0) {
 				assertTrue("Bash is reporting that it is successfully installed",
-						GeoPDFConfiguration.detectInstalled("sh", new ArrayList<String>()));
+						GeoPDFConfiguration.detectInstalled("/bin/bash", new ArrayList<String>()));
 				assertFalse("A weird command is reporting as not installed",
 						GeoPDFConfiguration.detectInstalled("nowwelauncharandomcommand", new ArrayList<String>()));
 			}
