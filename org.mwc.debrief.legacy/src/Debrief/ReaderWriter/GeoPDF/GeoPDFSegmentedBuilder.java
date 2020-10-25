@@ -122,14 +122,14 @@ public class GeoPDFSegmentedBuilder extends AbstractGeoPDFBuilder {
 			assertEquals("Correct amount of interactive layers", 27, interactiveLayers.getChildren().size());
 
 			final GeoPDFLayerTrack firstLayer = interactiveLayers.getChildren().get(0);
-			assertEquals("Correct id in interactive", "12121995060000", firstLayer.getId());
-			assertEquals("Correct name in interactive", "12121995060000", firstLayer.getName());
+			assertEquals("Correct id in interactive", "12121995050000", firstLayer.getId());
+			assertEquals("Correct name in interactive", "12121995050000", firstLayer.getName());
 			assertEquals("Correct amount of sublayers", 2, firstLayer.getChildren().size());
 			final GeoPDFLayerTrack firstLayerNelson = firstLayer.getChildren().get(0);
-			assertEquals("Nelson sublayer id", "NELSON 12121995060000", firstLayerNelson.getId());
+			assertEquals("Nelson sublayer id", "NELSON 12121995050000", firstLayerNelson.getId());
 			assertEquals("Nelson sublayer name", "NELSON", firstLayerNelson.getName());
 			final GeoPDFLayerTrack firstLayerCollinwood = firstLayer.getChildren().get(1);
-			assertEquals("COLLINGWOOD sublayer id", "COLLINGWOOD 12121995060000", firstLayerCollinwood.getId());
+			assertEquals("COLLINGWOOD sublayer id", "COLLINGWOOD 12121995050000", firstLayerCollinwood.getId());
 			assertEquals("COLLINGWOOD sublayer name", "COLLINGWOOD", firstLayerCollinwood.getName());
 
 		}
