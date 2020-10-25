@@ -16,16 +16,15 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import Debrief.GUI.Frames.Application;
-import Debrief.ReaderWriter.GeoPDF.AbstractGeoPDFBuilder.GeoPDFConfiguration;
 import Debrief.ReaderWriter.GeoPDF.GenerateSegmentedGeoJSON.GeometryType;
 import Debrief.ReaderWriter.GeoPDF.GenerateSegmentedGeoJSON.SegmentedGeoJSONConfiguration;
 import Debrief.ReaderWriter.GeoPDF.GeoPDF.GeoPDFLayerBackground;
 import Debrief.ReaderWriter.GeoPDF.GeoPDF.GeoPDFLayerTrack;
 import Debrief.ReaderWriter.GeoPDF.GeoPDF.GeoPDFLayerVector;
 import Debrief.ReaderWriter.GeoPDF.GeoPDF.GeoPDFLayerVector.LogicalStructure;
-import Debrief.ReaderWriter.Replay.ImportReplay;
 import Debrief.ReaderWriter.GeoPDF.GeoPDF.GeoPDFLayerVectorLabel;
 import Debrief.ReaderWriter.GeoPDF.GeoPDF.GeoPDFPage;
+import Debrief.ReaderWriter.Replay.ImportReplay;
 import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.TrackWrapper;
 import MWC.GUI.Editable;
@@ -62,7 +61,7 @@ public class GeoPDFSegmentedBuilder extends AbstractGeoPDFBuilder {
 
 			System.out.println("PDF successfully generated at " + configuration.getPdfOutputPath());
 			final GeoPDFPage page = geoPdf.getPages().get(0);
-			
+
 			assertEquals("Correct DPI in the GeoPDF", 72, page.getDpi());
 			assertEquals("Correct height in the GeoPDF", 595.14, page.getHeight(), 1e-8);
 			assertEquals("Correct Margin", .1, page.getMargin(), 1e-8);
@@ -72,26 +71,33 @@ public class GeoPDFSegmentedBuilder extends AbstractGeoPDFBuilder {
 			assertEquals("Correct ID for background", "background", backgroundLayer.getId());
 			assertTrue("Correct Background tif", backgroundLayer.getRasters().get(0).endsWith("SP27GTIF.tif"));
 			final GeoPDFLayerTrack nelsonNonInteractıve = (GeoPDFLayerTrack) page.getLayers().get(1);
-			assertEquals("Correct NELSON non interactive name", "NELSON (non-interactive)", nelsonNonInteractıve.getName());
+			assertEquals("Correct NELSON non interactive name", "NELSON (non-interactive)",
+					nelsonNonInteractıve.getName());
 			assertEquals("Correct NELSON non interactive id", "NELSON", nelsonNonInteractıve.getId());
-			assertEquals("Correct amount of layers in the vectors in nelson", 402, nelsonNonInteractıve.getVectors().size());
+			assertEquals("Correct amount of layers in the vectors in nelson", 402,
+					nelsonNonInteractıve.getVectors().size());
 			final GeoPDFLayerVector firstVectorNelsonNonInteractıve = nelsonNonInteractıve.getVectors().get(0);
-			assertTrue("Correct first data file", firstVectorNelsonNonInteractıve.getData().endsWith("NELSON_LINE_818744400000.geojson"));
-			assertEquals("Correct first data name", "NELSON_LINE_818744400000", firstVectorNelsonNonInteractıve.getName());
-			assertEquals("Correct first data style", "PEN(c:#e01c3e,w:5px)", firstVectorNelsonNonInteractıve.getStyle());
+			assertTrue("Correct first data file",
+					firstVectorNelsonNonInteractıve.getData().endsWith("NELSON_LINE_818744400000.geojson"));
+			assertEquals("Correct first data name", "NELSON_LINE_818744400000",
+					firstVectorNelsonNonInteractıve.getName());
+			assertEquals("Correct first data style", "PEN(c:#e01c3e,w:5px)",
+					firstVectorNelsonNonInteractıve.getStyle());
 			final ObjectMapper mapper = new ObjectMapper();
-			final JsonNode rootVectorAsJson = mapper.readTree(new FileInputStream(firstVectorNelsonNonInteractıve.getData()));
+			final JsonNode rootVectorAsJson = mapper
+					.readTree(new FileInputStream(firstVectorNelsonNonInteractıve.getData()));
 			assertEquals("Correct type in the geojson", "FeatureCollection", rootVectorAsJson.get("type").asText());
-			assertEquals("Correct name in the geojson", "NELSON_LINE_818744400000", rootVectorAsJson.get("name").asText());
-			
+			assertEquals("Correct name in the geojson", "NELSON_LINE_818744400000",
+					rootVectorAsJson.get("name").asText());
+
 			final ArrayNode features = (ArrayNode) rootVectorAsJson.get("features");
-			final JsonNode feature = (JsonNode) features.get(0);
-			
+			final JsonNode feature = features.get(0);
+
 			assertEquals("Correct type in the feature geojson", "Feature", feature.get("type").asText());
 			final JsonNode properties = feature.get("properties");
 			assertEquals("Correct end property", "818744460000", properties.get("end").asText());
 			assertEquals("Correct begin property", "818744400000", properties.get("begin").asText());
-			
+
 			final JsonNode geometry = feature.get("geometry");
 			assertEquals("Correct geometry type", "MultiLineString", geometry.get("type").asText());
 			final ArrayNode coordinates = (ArrayNode) ((ArrayNode) geometry.get("coordinates")).get(0);
@@ -99,20 +105,22 @@ public class GeoPDFSegmentedBuilder extends AbstractGeoPDFBuilder {
 			final ArrayNode coordinatesEnd = (ArrayNode) coordinates.get(1);
 			assertEquals("X coordinate of the Start", -21.697880555555557, coordinatesStart.get(0).doubleValue(), 1e-8);
 			assertEquals("Y coordinate of the Start", 22.186286111111112, coordinatesStart.get(1).doubleValue(), 1e-8);
-			
+
 			assertEquals("X coordinate of the End", -21.70082777777778, coordinatesEnd.get(0).doubleValue(), 1e-8);
 			assertEquals("Y coordinate of the End", 22.18627222222222, coordinatesEnd.get(1).doubleValue(), 1e-8);
-			
+
 			final GeoPDFLayerTrack collinwoodNonInteractıve = (GeoPDFLayerTrack) page.getLayers().get(2);
-			assertEquals("Correct NELSON non interactive name", "COLLINGWOOD (non-interactive)", collinwoodNonInteractıve.getName());
+			assertEquals("Correct NELSON non interactive name", "COLLINGWOOD (non-interactive)",
+					collinwoodNonInteractıve.getName());
 			assertEquals("Correct NELSON non interactive id", "COLLINGWOOD", collinwoodNonInteractıve.getId());
-			assertEquals("Correct amount of layers in the vectors in nelson", 403, collinwoodNonInteractıve.getVectors().size());
-			
+			assertEquals("Correct amount of layers in the vectors in nelson", 403,
+					collinwoodNonInteractıve.getVectors().size());
+
 			final GeoPDFLayerTrack interactiveLayers = (GeoPDFLayerTrack) page.getLayers().get(3);
 			assertEquals("Correct interactive name", "Interactive Layers", interactiveLayers.getName());
 			assertEquals("Correct interactive id", "Interactive Layers", interactiveLayers.getId());
 			assertEquals("Correct amount of interactive layers", 27, interactiveLayers.getChildren().size());
-			
+
 			final GeoPDFLayerTrack firstLayer = interactiveLayers.getChildren().get(0);
 			assertEquals("Correct id in interactive", "12121995060000", firstLayer.getId());
 			assertEquals("Correct name in interactive", "12121995060000", firstLayer.getName());
@@ -123,7 +131,6 @@ public class GeoPDFSegmentedBuilder extends AbstractGeoPDFBuilder {
 			final GeoPDFLayerTrack firstLayerCollinwood = firstLayer.getChildren().get(1);
 			assertEquals("COLLINGWOOD sublayer id", "COLLINGWOOD 12121995060000", firstLayerCollinwood.getId());
 			assertEquals("COLLINGWOOD sublayer name", "COLLINGWOOD", firstLayerCollinwood.getName());
-			
 
 		}
 	}
@@ -249,21 +256,20 @@ public class GeoPDFSegmentedBuilder extends AbstractGeoPDFBuilder {
 		final HiResDate startTime;
 		if (configuration.getStartTime() != null) {
 			startTime = configuration.getStartTime();
-		}else {
+		} else {
 			startTime = layers.getTimePeriod().getStartDTG();
 		}
 		final HiResDate endTime;
-		if (configuration.getEndTime() != null){
+		if (configuration.getEndTime() != null) {
 			endTime = configuration.getEndTime();
-		}else {
+		} else {
 			endTime = layers.getTimePeriod().getEndDTG();
 		}
 		HiResDate currentTime = startTime;
 
 		while (currentTime.lessThan(endTime)) {
 			final HiResDate topCurrentPeriod = HiResDate.min(
-					new HiResDate(currentTime.getMicros() / 1000 + configuration.getStepDeltaMilliSeconds()),
-					endTime);
+					new HiResDate(currentTime.getMicros() / 1000 + configuration.getStepDeltaMilliSeconds()), endTime);
 			final TimePeriod period = new TimePeriod.BaseTimePeriod(currentTime, topCurrentPeriod);
 
 			final GeoPDFLayerTrack periodTrack = new GeoPDFLayerTrack();
