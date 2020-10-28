@@ -211,7 +211,7 @@ public abstract class AbstractGeoPDFBuilder {
 					return true;
 				}
 				// SUCCESS
-				Application.logError3(ToolParent.INFO, "GeoPDF-Problem detected while converting the background file.",
+				Application.logError3(ToolParent.INFO, "GeoPDF-Problem detected while checking the version of the command given.",
 						null, false);
 
 				allOutput.setLength(0);
@@ -517,48 +517,6 @@ public abstract class AbstractGeoPDFBuilder {
 
 	public static class GeoPDFConfigurationTest extends TestCase {
 
-		public void testCreateTemporaryEnvironmentUnix() throws IOException {
-			// Let's copy and confirm that the files are there.
-			final GeoPDFConfiguration config = new GeoPDFConfiguration();
-			final String sourceList = "/unix-files.txt";
-			final String dest = System.getProperty("java.io.tmpdir") + File.separatorChar;
-			GeoPDFConfiguration.createTemporaryEnvironment(dest, sourceList, config,
-					GeoPDFConfiguration.GDALWARP_RAW_COMMAND_LINUX, GeoPDFConfiguration.GDAL_CREATE_RAW_COMMAND_LINUX);
-
-			final InputStream filesToCopyStream = AbstractGeoPDFBuilder.class
-					.getResourceAsStream(GDAL_NATIVE_PREFIX_FOLDER + sourceList);
-
-			Scanner scanner = null;
-			try {
-				scanner = new Scanner(filesToCopyStream);
-				while (scanner.hasNextLine()) {
-					final String line = scanner.nextLine();
-
-					final Path destinationPath = Paths.get(dest + line);
-					assertTrue("File " + destinationPath + " exists ", new File(destinationPath.toString()).exists());
-				}
-
-				final File gdalwrapFile = new File(config.getGdalWarpCommand());
-				final File gdalcreateFile = new File(config.getGdalCreateCommand());
-
-				assertTrue("Gdalwrap found", gdalwrapFile.exists());
-				assertTrue("gdalwrap has the correct name",
-						GeoPDFConfiguration.GDALWARP_RAW_COMMAND_LINUX.equals(gdalwrapFile.getName()));
-				assertTrue("Gdalcreate found", gdalcreateFile.exists());
-				assertTrue("gdalwrap has the correct name",
-						GeoPDFConfiguration.GDAL_CREATE_RAW_COMMAND_LINUX.equals(gdalcreateFile.getName()));
-
-				// Ok, let's delete everything after unit test
-				final String windowsDest = dest + "linux";
-				Files.walk(Path.of(windowsDest)).sorted(Comparator.reverseOrder()).map(Path::toFile)
-						.forEach(File::delete);
-			} finally {
-				if (scanner != null) {
-					scanner.close();
-				}
-			}
-		}
-
 		public void testCreateTemporaryEnvironmentWindows() throws IOException {
 			// Let's copy and confirm that the files are there.
 			final GeoPDFConfiguration config = new GeoPDFConfiguration();
@@ -608,8 +566,6 @@ public abstract class AbstractGeoPDFBuilder {
 
 			final String os = System.getProperty("os.name").toLowerCase();
 			if (os.indexOf("win") < 0) {
-				assertTrue("Bash is reporting that it is successfully installed",
-						GeoPDFConfiguration.detectInstalled("/bin/bash", new ArrayList<String>()));
 				assertFalse("A weird command is reporting as not installed",
 						GeoPDFConfiguration.detectInstalled("nowwelauncharandomcommand", new ArrayList<String>()));
 			}
