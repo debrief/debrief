@@ -12,8 +12,14 @@ public class Platform implements AbstractBean {
 	@Filterable
 	private String name;
 
+	private String identifier;
+
 	public Platform() {
 
+	}
+
+	public String getIdentifier() {
+		return identifier;
 	}
 
 	public String getName() {
@@ -24,12 +30,20 @@ public class Platform implements AbstractBean {
 		return platform_id;
 	}
 
+	public void setIdentifier(final String identifier) {
+		this.identifier = identifier;
+	}
+
 	public void setName(final String name) {
 		this.name = name;
 	}
 
 	public void setPlatform_id(final String platform_id) {
 		this.platform_id = platform_id;
+	}
+	
+	public String getTrackName() {
+		return name + " " + getIdentifier();
 	}
 
 }

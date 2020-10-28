@@ -93,7 +93,7 @@ public class State implements AbstractBean, TreeStructurable {
 	@Override
 	public void doImport(final Layers _layers) {
 		// see if the track is in already
-		final String trackName = getPlatform().getName();
+		final String trackName = getPlatform().getTrackName();
 		final Layer target = _layers.findLayer(trackName, true);
 		final TrackWrapper track;
 		if (target != null && target instanceof TrackWrapper) {
