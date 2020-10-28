@@ -132,7 +132,7 @@ final class SnailDrawSWTTrack {
 	public SnailDrawSWTTrack() {
 		setJoinPositions(true);
 		setFadePoints(true);
-		setTrailLength(new Long(15 * 1000 * 1000 * 60)); // 15 minutes
+		setTrailLength(15L * 1000 * 1000 * 60); // 15 minutes
 		setPointSize(6);
 
 		_fixLists = new java.util.Hashtable<FixWrapper, Collection<Editable>>();
@@ -370,7 +370,7 @@ final class SnailDrawSWTTrack {
 	 * length of trail to plot (micros)
 	 */
 	public final Long getTrailLength() {
-		return new Long(_trailLength);
+		return _trailLength;
 	}
 
 	/**
@@ -394,13 +394,15 @@ final class SnailDrawSWTTrack {
 			TrackSegment match = null;
 			while (iter.hasMoreElements()) {
 				final TrackSegment seg = (TrackSegment) iter.nextElement();
-				final FixWrapper first = (FixWrapper) seg.first();
-				final FixWrapper last = (FixWrapper) seg.last();
+				if(!seg.isEmpty()) {
+					final FixWrapper first = (FixWrapper) seg.first();
+					final FixWrapper last = (FixWrapper) seg.last();
 
-				final TimePeriod period = new TimePeriod.BaseTimePeriod(first.getDateTimeGroup(),
-						last.getDateTimeGroup());
-				if (period.contains(end)) {
-					match = seg;
+					final TimePeriod period = new TimePeriod.BaseTimePeriod(first.getDateTimeGroup(),
+							last.getDateTimeGroup());
+					if (period.contains(end)) {
+						match = seg;
+					}					
 				}
 			}
 			if (match != null) {

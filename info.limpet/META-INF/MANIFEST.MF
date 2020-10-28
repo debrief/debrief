@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Limpet
 Bundle-SymbolicName: info.limpet;singleton:=true
-Bundle-Version: 1.0.14
+Bundle-Version: 1.0.15
 Bundle-ActivationPolicy: lazy
 Export-Package: com.thoughtworks.xstream,
  com.thoughtworks.xstream.annotations,
@@ -47,8 +47,7 @@ Require-Bundle: info.limpet.libs;visibility:=reexport,
  org.mwc.cmap.geotools;visibility:=reexport,
  org.eclipse.core.resources,
  org.eclipse.core.runtime,
- org.eclipse.core.filesystem,
- javax.xml.bind
+ org.eclipse.core.filesystem
 Bundle-Vendor: MWC
 Bundle-RequiredExecutionEnvironment: JavaSE-11
 Bundle-ClassPath: .,
