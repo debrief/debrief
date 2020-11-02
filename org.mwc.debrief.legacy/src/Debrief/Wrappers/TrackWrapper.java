@@ -1111,9 +1111,21 @@ public class TrackWrapper extends LightweightTrackWrapper implements WatchableLi
 			}
 
 			final Enumeration<Editable> items = layer.elements();
+			int countNotAdded = 0;
 			while (items.hasMoreElements()) {
 				final Editable thisE = items.nextElement();
-				add(thisE);
+				if(thisE instanceof FixWrapper || thisE instanceof SensorWrapper || thisE instanceof DynamicTrackShapeSetWrapper ||
+						thisE instanceof DynamicTrackShapeWrapper || thisE instanceof TMAWrapper || thisE instanceof TrackSegment ||
+						thisE instanceof Layer) {
+					add(thisE);
+					Trace.trace("Can't paste " + point + " into track", true);
+				}
+				else {
+					countNotAdded++;
+				}
+				if(countNotAdded>0) {
+					MessageProvider.Base.show("Paste Error", "Failed to paste some elements into track.", MessageProvider.ERROR);
+				}
 			}
 		} else {
 			MessageProvider.Base.show("Paste Error", "Can't paste " + point + " into track", MessageProvider.ERROR);
