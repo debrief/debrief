@@ -34,6 +34,7 @@ import org.eclipse.core.commands.operations.IOperationHistory;
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
@@ -43,6 +44,7 @@ import org.eclipse.swt.dnd.Clipboard;
 import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.dnd.TransferData;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.actions.ActionFactory;
@@ -56,6 +58,7 @@ import Debrief.Wrappers.TMAContactWrapper;
 import Debrief.Wrappers.TMAWrapper;
 import Debrief.Wrappers.TrackWrapper;
 import Debrief.Wrappers.Track.DynamicInfillSegment;
+import Debrief.Wrappers.Track.SplittableLayer;
 import MWC.GUI.Editable;
 import MWC.GUI.HasEditables;
 import MWC.GUI.Layer;
@@ -195,6 +198,8 @@ public class RightClickCutCopyAdaptor {
 
 		protected Layer[] _updateLayer;
 
+		private AbstractOperation cutOperation;
+
 		public CutItem(final Editable[] data, final Clipboard clipboard, final HasEditables[] theParent,
 				final Layers theLayers, final Layer[] updateLayer) {
 			// remember parameters
@@ -241,7 +246,7 @@ public class RightClickCutCopyAdaptor {
 		 */
 		@Override
 		public void run() {
-			final AbstractOperation myOperation = new AbstractOperation(getText()) {
+			cutOperation = new AbstractOperation(getText()) {
 				private Plottable adjacentItemFor(final Object parentLayer, final Editable thisE) {
 					final Plottable res;
 					if (parentLayer instanceof PlottablesType) {
@@ -442,15 +447,28 @@ public class RightClickCutCopyAdaptor {
 
 			};
 			// put in the global context, for some reason
-			if (CorePlugin.getUndoContext() != null) {
-				myOperation.addContext(CorePlugin.getUndoContext());
+			if(Platform.isRunning()) {
+				if (CorePlugin.getUndoContext() != null) {
+					cutOperation.addContext(CorePlugin.getUndoContext());
+				}
+				CorePlugin.run(cutOperation);
 			}
-			CorePlugin.run(myOperation);
+			else {
+				try {
+					cutOperation.execute(null, null);
+				} catch (ExecutionException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+
 		}
 
 		protected void setImageIcon() {
-			super.setImageDescriptor(
-					PlatformUI.getWorkbench().getSharedImages().getImageDescriptor(ISharedImages.IMG_TOOL_CUT));
+			if(Platform.isRunning()) {
+				super.setImageDescriptor(
+						PlatformUI.getWorkbench().getSharedImages().getImageDescriptor(ISharedImages.IMG_TOOL_CUT));
+			}
 		}
 
 		@Override
@@ -697,25 +715,31 @@ public class RightClickCutCopyAdaptor {
 			return itemFound;
 		}
 
-		// TODO FIX-TEST
-		public void NtestCut() {
-			// create the data
-			final TrackWrapper tw = new TrackWrapper();
+		private Clipboard clipboard;
+		private Layers updateLayers;
+		private FixWrapper fw2,fw1,fw3,fw4,fw5;
+		private TrackWrapper tw;
+		private SensorWrapper swa,sw;
+		private SensorContactWrapper scwa1,scwa2,scwa3,scw1,scw2,scw3;
+		private TMAWrapper mwa,mw;
+		private TMAContactWrapper tcwa1,tcwa2,tcwa3,tcw1,tcw2,tcw3;
+		public void setUp() {
+			tw = new TrackWrapper();
 
 			final WorldLocation loc_1 = new WorldLocation(0, 0, 0);
-			final FixWrapper fw1 = new FixWrapper(new Fix(new HiResDate(100, 10000),
+			fw1 = new FixWrapper(new Fix(new HiResDate(100, 10000),
 					loc_1.add(new WorldVector(33, new WorldDistance(100, WorldDistance.METRES), null)), 10, 110));
 			fw1.setLabel("fw1");
-			final FixWrapper fw2 = new FixWrapper(new Fix(new HiResDate(200, 20000),
+			fw2 = new FixWrapper(new Fix(new HiResDate(200, 20000),
 					loc_1.add(new WorldVector(33, new WorldDistance(200, WorldDistance.METRES), null)), 20, 120));
 			fw2.setLabel("fw2");
-			final FixWrapper fw3 = new FixWrapper(new Fix(new HiResDate(300, 30000),
+			fw3 = new FixWrapper(new Fix(new HiResDate(300, 30000),
 					loc_1.add(new WorldVector(33, new WorldDistance(300, WorldDistance.METRES), null)), 30, 130));
 			fw3.setLabel("fw3");
-			final FixWrapper fw4 = new FixWrapper(new Fix(new HiResDate(400, 40000),
+			fw4 = new FixWrapper(new Fix(new HiResDate(400, 40000),
 					loc_1.add(new WorldVector(33, new WorldDistance(400, WorldDistance.METRES), null)), 40, 140));
 			fw4.setLabel("fw4");
-			final FixWrapper fw5 = new FixWrapper(new Fix(new HiResDate(500, 50000),
+			fw5 = new FixWrapper(new Fix(new HiResDate(500, 50000),
 					loc_1.add(new WorldVector(33, new WorldDistance(500, WorldDistance.METRES), null)), 50, 150));
 			fw5.setLabel("fw5");
 			tw.addFix(fw1);
@@ -724,46 +748,46 @@ public class RightClickCutCopyAdaptor {
 			tw.addFix(fw4);
 			tw.addFix(fw5);
 			// also give it some sensor data
-			final SensorWrapper swa = new SensorWrapper("title one");
-			final SensorContactWrapper scwa1 = new SensorContactWrapper("aaa", new HiResDate(150, 0), null, null, null,
+			swa = new SensorWrapper("title one");
+			scwa1 = new SensorContactWrapper("aaa", new HiResDate(150, 0), null, null, null,
 					null, null, 0, null);
-			final SensorContactWrapper scwa2 = new SensorContactWrapper("bbb", new HiResDate(180, 0), null, null, null,
+			scwa2 = new SensorContactWrapper("bbb", new HiResDate(180, 0), null, null, null,
 					null, null, 0, null);
-			final SensorContactWrapper scwa3 = new SensorContactWrapper("ccc", new HiResDate(250, 0), null, null, null,
+			scwa3 = new SensorContactWrapper("ccc", new HiResDate(250, 0), null, null, null,
 					null, null, 0, null);
 			swa.add(scwa1);
 			swa.add(scwa2);
 			swa.add(scwa3);
 			tw.add(swa);
-			final SensorWrapper sw = new SensorWrapper("title two");
-			final SensorContactWrapper scw1 = new SensorContactWrapper("ddd", new HiResDate(260, 0), null, null, null,
+			sw = new SensorWrapper("title two");
+			scw1 = new SensorContactWrapper("ddd", new HiResDate(260, 0), null, null, null,
 					null, null, 0, null);
-			final SensorContactWrapper scw2 = new SensorContactWrapper("eee", new HiResDate(280, 0), null, null, null,
+			scw2 = new SensorContactWrapper("eee", new HiResDate(280, 0), null, null, null,
 					null, null, 0, null);
-			final SensorContactWrapper scw3 = new SensorContactWrapper("fff", new HiResDate(350, 0), null, null, null,
+			scw3 = new SensorContactWrapper("fff", new HiResDate(350, 0), null, null, null,
 					null, null, 0, null);
 			sw.add(scw1);
 			sw.add(scw2);
 			sw.add(scw3);
 			tw.add(sw);
 
-			final TMAWrapper mwa = new TMAWrapper("bb");
-			final TMAContactWrapper tcwa1 = new TMAContactWrapper("aaa", "bbb", new HiResDate(130), null, 0, 0, 0, null,
+			mwa = new TMAWrapper("bb");
+			tcwa1 = new TMAContactWrapper("aaa", "bbb", new HiResDate(130), null, 0, 0, 0, null,
 					null, null, null);
-			final TMAContactWrapper tcwa2 = new TMAContactWrapper("bbb", "bbb", new HiResDate(190), null, 0, 0, 0, null,
+			tcwa2 = new TMAContactWrapper("bbb", "bbb", new HiResDate(190), null, 0, 0, 0, null,
 					null, null, null);
-			final TMAContactWrapper tcwa3 = new TMAContactWrapper("ccc", "bbb", new HiResDate(230), null, 0, 0, 0, null,
+			tcwa3 = new TMAContactWrapper("ccc", "bbb", new HiResDate(230), null, 0, 0, 0, null,
 					null, null, null);
 			mwa.add(tcwa1);
 			mwa.add(tcwa2);
 			mwa.add(tcwa3);
 			tw.add(mwa);
-			final TMAWrapper mw = new TMAWrapper("cc");
-			final TMAContactWrapper tcw1 = new TMAContactWrapper("ddd", "bbb", new HiResDate(230), null, 0, 0, 0, null,
+			mw = new TMAWrapper("cc");
+			tcw1 = new TMAContactWrapper("ddd", "bbb", new HiResDate(230), null, 0, 0, 0, null,
 					null, null, null);
-			final TMAContactWrapper tcw2 = new TMAContactWrapper("eee", "bbb", new HiResDate(330), null, 0, 0, 0, null,
+			tcw2 = new TMAContactWrapper("eee", "bbb", new HiResDate(330), null, 0, 0, 0, null,
 					null, null, null);
-			final TMAContactWrapper tcw3 = new TMAContactWrapper("fff", "bbb", new HiResDate(390), null, 0, 0, 0, null,
+			tcw3 = new TMAContactWrapper("fff", "bbb", new HiResDate(390), null, 0, 0, 0, null,
 					null, null, null);
 			mw.add(tcw1);
 			mw.add(tcw2);
@@ -771,9 +795,13 @@ public class RightClickCutCopyAdaptor {
 			tw.add(mw);
 
 			// now fiddle with it
-			final Layers updateLayers = new Layers();
+			updateLayers = new Layers();
 			updateLayers.addThisLayer(tw);
-			final Clipboard clipboard = new Clipboard(Display.getDefault());
+			clipboard = new Clipboard(Display.getDefault());
+
+		}
+
+		public void testCutOneItem() {
 			Layer[] parentLayer = new Layer[] { tw };
 			final CutItem ci = new MyCutItem(new Editable[] { fw2 }, clipboard, parentLayer, updateLayers, parentLayer);
 			// check our item's in there
@@ -784,12 +812,9 @@ public class RightClickCutCopyAdaptor {
 			ci.run();
 			assertFalse("item gone after op", isPositionThere(tw, fw2));
 			assertTrue("item there after op", isPositionThere(tw, fw3));
-
-			doUndo();
-			assertTrue("item back again after op", isPositionThere(tw, fw2));
-
-			// now let's try two items
-			parentLayer = new Layer[] { tw, tw };
+		}
+		public void testCutTwoItems() {
+			Layer[] parentLayer = new Layer[] { tw, tw };
 			final CutItem c2 = new MyCutItem(new Editable[] { fw2, fw4 }, clipboard, parentLayer, updateLayers,
 					parentLayer);
 			assertTrue("item there before op", isPositionThere(tw, fw2));
@@ -801,14 +826,10 @@ public class RightClickCutCopyAdaptor {
 			assertTrue("item there after op", isPositionThere(tw, fw3));
 			assertFalse("item gone after op", isPositionThere(tw, fw4));
 
-			doUndo();
-			assertTrue("item back again after op", isPositionThere(tw, fw2));
-			assertTrue("item still there after op", isPositionThere(tw, fw3));
-			assertTrue("item back again after op", isPositionThere(tw, fw4));
+		}
+		public void testCutSensorWrapper() {
 
-			// right, now let's try to delete a sensor item
-			parentLayer = new Layer[] { swa };
-			CutItem c3 = new MyCutItem(new Editable[] { scwa1 }, clipboard, parentLayer, updateLayers, parentLayer);
+			CutItem c3 = new CutItem(new Editable[] { scwa1 }, clipboard, new HasEditables[] {swa}, updateLayers, new TrackWrapper[] {tw});
 			assertTrue("item there before op", isSensorThere(tw, scwa1));
 			assertTrue("item there before op", isSensorThere(tw, scwa2));
 			assertTrue("item there before op", isSensorThere(tw, scwa3));
@@ -816,45 +837,12 @@ public class RightClickCutCopyAdaptor {
 			assertFalse("item not there after op", isSensorThere(tw, scwa1));
 			assertTrue("item there after op", isSensorThere(tw, scwa2));
 			assertTrue("item there after op", isSensorThere(tw, scwa3));
-			doUndo();
-			assertTrue("item back again after op", isSensorThere(tw, scwa1));
-			assertTrue("item back again after op", isSensorThere(tw, scwa2));
-			assertTrue("item back again after op", isSensorThere(tw, scwa3));
-			// now let's try two items
-			parentLayer = new Layer[] { swa, swa };
-			c3 = new MyCutItem(new Editable[] { scwa1, scwa2 }, clipboard, parentLayer, updateLayers, parentLayer);
-			assertTrue("item there before op", isSensorThere(tw, scwa1));
-			assertTrue("item there before op", isSensorThere(tw, scwa2));
-			assertTrue("item there before op", isSensorThere(tw, scwa3));
-			c3.run();
-			assertFalse("item not there after op", isSensorThere(tw, scwa1));
-			assertFalse("item not there after op", isSensorThere(tw, scwa2));
-			assertTrue("item there after op", isSensorThere(tw, scwa3));
-			doUndo();
-			assertTrue("item back again after op", isSensorThere(tw, scwa1));
-			assertTrue("item back again after op", isSensorThere(tw, scwa2));
-			assertTrue("item back again after op", isSensorThere(tw, scwa3));
-			// now let's try two items in different layers
-			parentLayer = new Layer[] { swa, sw };
-			c3 = new MyCutItem(new Editable[] { scwa1, scw2 }, clipboard, parentLayer, updateLayers, parentLayer);
-			assertTrue("item there before op", isSensorThere(tw, scwa1));
-			assertTrue("item there before op", isSensorThere(tw, scw2));
-			assertTrue("item there before op", isSensorThere(tw, scwa3));
-			c3.run();
-			assertFalse("item not there after op", isSensorThere(tw, scwa1));
-			assertFalse("item not there after op", isSensorThere(tw, scw2));
-			assertTrue("item there after op", isSensorThere(tw, scwa3));
-			doUndo();
-			assertTrue("item back again after op", isSensorThere(tw, scwa1));
-			assertTrue("item back again after op", isSensorThere(tw, scw2));
-			assertTrue("item back again after op", isSensorThere(tw, scwa3));
+		}
 
-			// //////////////////////////
-			// now for TMA!
 
-			// right, now let's try to delete a sensor item
-			parentLayer = new Layer[] { mwa };
-			c3 = new MyCutItem(new Editable[] { tcwa1 }, clipboard, parentLayer, updateLayers, parentLayer);
+
+		public void testCutOneContactWrapper() {
+			CutItem c3 = new CutItem(new Editable[] { tcwa1 }, clipboard, new HasEditables[] {mwa}, updateLayers, new TrackWrapper[] {tw});
 			assertTrue("item there before op", isContactThere(tw, tcwa1));
 			assertTrue("item there before op", isContactThere(tw, tcwa2));
 			assertTrue("item there before op", isContactThere(tw, tcwa3));
@@ -862,13 +850,9 @@ public class RightClickCutCopyAdaptor {
 			assertFalse("item not there after op", isContactThere(tw, tcwa1));
 			assertTrue("item there after op", isContactThere(tw, tcwa2));
 			assertTrue("item there after op", isContactThere(tw, tcwa3));
-			doUndo();
-			assertTrue("item back again after op", isContactThere(tw, tcwa1));
-			assertTrue("item back again after op", isContactThere(tw, tcwa2));
-			assertTrue("item back again after op", isContactThere(tw, tcwa3));
-			// now let's try two items
-			parentLayer = new Layer[] { mwa, mwa };
-			c3 = new MyCutItem(new Editable[] { tcwa1, tcwa2 }, clipboard, parentLayer, updateLayers, parentLayer);
+		}
+		public void testCutTwoContactWrappers() {
+			CutItem c3 = new CutItem(new Editable[] { tcwa1, tcwa2 }, clipboard, new HasEditables[] {mwa,mwa}, updateLayers, new TrackWrapper[] {tw});
 			assertTrue("item there before op", isContactThere(tw, tcwa1));
 			assertTrue("item there before op", isContactThere(tw, tcwa2));
 			assertTrue("item there before op", isContactThere(tw, tcwa3));
@@ -876,30 +860,29 @@ public class RightClickCutCopyAdaptor {
 			assertFalse("item not there after op", isContactThere(tw, tcwa1));
 			assertFalse("item not there after op", isContactThere(tw, tcwa2));
 			assertTrue("item there after op", isContactThere(tw, tcwa3));
-			doUndo();
-			assertTrue("item back again after op", isContactThere(tw, tcwa1));
-			assertTrue("item back again after op", isContactThere(tw, tcwa2));
-			assertTrue("item back again after op", isContactThere(tw, tcwa3));
-			// now let's try two items in different layers
-			parentLayer = new Layer[] { mwa, mw };
-			c3 = new MyCutItem(new Editable[] { tcwa1, tcw2 }, clipboard, parentLayer, updateLayers, parentLayer);
+		}
+		public void testCutDiffLayersContacts() {
+			CutItem c3 = new CutItem(new Editable[] { tcwa1, tcw2 }, clipboard, new HasEditables[] {mwa,mw}, updateLayers, new TrackWrapper[] {tw});
 			assertTrue("item there before op", isContactThere(tw, tcwa1));
-			assertTrue("item there before op", isContactThere(tw, tcw2));
+			assertTrue("item there before op", isContactThere(tw, tcwa2));
 			assertTrue("item there before op", isContactThere(tw, tcwa3));
 			c3.run();
 			assertFalse("item not there after op", isContactThere(tw, tcwa1));
 			assertFalse("item not there after op", isContactThere(tw, tcw2));
 			assertTrue("item there after op", isContactThere(tw, tcwa3));
-			doUndo();
-			assertTrue("item back again after op", isContactThere(tw, tcwa1));
-			assertTrue("item back again after op", isContactThere(tw, tcw2));
-			assertTrue("item back again after op", isContactThere(tw, tcwa3));
-
+		}
+		public void testCutDiffSensors() {
+			CutItem c3 = new CutItem(new Editable[] { scwa1, scw2 }, clipboard, new HasEditables[] {swa,sw}, updateLayers, new TrackWrapper[] {tw});
+			assertTrue("item there before op", isSensorThere(tw, scwa1));
+			assertTrue("item there before op", isSensorThere(tw, scw2));
+			assertTrue("item there before op", isSensorThere(tw, scwa3));
+			c3.run();
+			assertFalse("item not there after op", isSensorThere(tw, scwa1));
+			assertFalse("item not there after op", isSensorThere(tw, scw2));
+			assertTrue("item there after op", isSensorThere(tw, scwa3));
 		}
 
-		public void testDummy() {
 
-		}
 
 	}
 

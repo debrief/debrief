@@ -50,7 +50,7 @@ import MWC.GenericData.WorldLocation;
 import MWC.Utilities.TextFormatting.GMTDateFormat;
 
 abstract public class TacticalDataWrapper extends MWC.GUI.PlainWrapper
-		implements MWC.GUI.Layer, SnailDrawTacticalContact.HostedList, HasEditables {
+		implements SnailDrawTacticalContact.HostedList, HasEditables {
 
 	// //////////////////////////////////////////////////////////////////
 	// embedded class to allow us to pass the local iterator (Iterator) used
@@ -376,15 +376,6 @@ abstract public class TacticalDataWrapper extends MWC.GUI.PlainWrapper
 		setVisible(false);
 	}
 
-	/**
-	 * append
-	 *
-	 * @param layer parameter for append
-	 */
-	@Override
-	public void append(final MWC.GUI.Layer layer) {
-		// don't bother
-	}
 
 	// //////////////////////////////////////
 	// member methods to meet plain wrapper responsibilities
@@ -542,14 +533,7 @@ abstract public class TacticalDataWrapper extends MWC.GUI.PlainWrapper
 		return new IteratorWrapper(_myContacts.iterator());
 	}
 
-	/**
-	 * exportShape
-	 */
-	@Override
-	public final void exportShape() {
-		// don't bother
-	}
-
+	
 	/**
 	 * filter the list to the specified time period.
 	 */
@@ -657,7 +641,7 @@ abstract public class TacticalDataWrapper extends MWC.GUI.PlainWrapper
 	 *
 	 * @return
 	 */
-	@Override
+	
 	public final int getLineThickness() {
 		return _lineWidth;
 	}

@@ -974,7 +974,8 @@ public class TrackWrapper extends LightweightTrackWrapper implements WatchableLi
 					existing = oldS;
 
 					// and append the data points
-					existing.append(swr);
+					//TODO append was never implemented so nothing happend here.
+					//existing.append(swr);
 				}
 			}
 

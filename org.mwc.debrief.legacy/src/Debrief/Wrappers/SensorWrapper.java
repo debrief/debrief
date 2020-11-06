@@ -879,7 +879,8 @@ public class SensorWrapper extends TacticalDataWrapper
 			final SensorWrapper sensor = (SensorWrapper) subjects[i];
 			if (sensor != target) {
 				// ok, append the items in this layer to the target
-				target.append(sensor, defaultColor);
+				//TODO: This was unimplemented so nothing was happening here.
+				//target.append(sensor, defaultColor);
 				parent.removeElement(sensor);
 			}
 		}
