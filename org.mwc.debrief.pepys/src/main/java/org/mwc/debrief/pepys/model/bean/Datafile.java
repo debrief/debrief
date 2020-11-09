@@ -70,10 +70,6 @@ public class Datafile implements AbstractBean {
 					assertTrue("Datafiles - Reference Name", exist);
 				}
 
-				for (final Datafile datafile : list) {
-					assertTrue("Datafiles - Concatenated reference ", datafile.getDatafile().getName()
-							.equals(datafile.getReference().substring(datafile.getReference().indexOf('.'))));
-				}
 			} catch (NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException
 					| IllegalArgumentException | InvocationTargetException | PropertyVetoException | SQLException
 					| ClassNotFoundException | IOException | PepsysException e) {
