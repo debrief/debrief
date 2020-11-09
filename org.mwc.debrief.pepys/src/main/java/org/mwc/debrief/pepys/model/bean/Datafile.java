@@ -45,16 +45,20 @@ public class Datafile implements AbstractBean {
 		public void testDatafilesQuery() {
 			try {
 				final DatabaseConfiguration _config = new DatabaseConfiguration();
-				ConfigurationReader.loadDatabaseConfiguration(_config, new LoaderOption[] {
-						new LoaderOption(LoaderType.DEFAULT_FILE, DatabaseConnection.DEFAULT_SQLITE_TEST_DATABASE_FILE) });
+				ConfigurationReader.loadDatabaseConfiguration(_config,
+						new LoaderOption[] { new LoaderOption(LoaderType.DEFAULT_FILE,
+								DatabaseConnection.DEFAULT_SQLITE_TEST_DATABASE_FILE) });
 				final SqliteDatabaseConnection sqlite = new SqliteDatabaseConnection();
 				sqlite.initializeInstance(_config);
 				final List<Datafile> list = sqlite.listAll(Datafile.class, null);
 
 				assertTrue("Datafiles - database entries", list.size() == 25);
 
-				final String[][] datafilesSomeReferences = new String[][] { { "db8692a392924d27bfacdbddc4eb9a29", "NMEA_TRIAL.log" },
-						{ "ab39eec7c29f4cee871b98474b00bfdc", "sen_ssk_freq.dsf" }, { "f6384dd27282439aa164acf6be1bb393", "rep_test1.rep" }, { "265db426cf194e498ce38911e06d17e0", "uk_track.rep" } };
+				final String[][] datafilesSomeReferences = new String[][] {
+						{ "db8692a392924d27bfacdbddc4eb9a29", "NMEA_TRIAL.log" },
+						{ "ab39eec7c29f4cee871b98474b00bfdc", "sen_ssk_freq.dsf" },
+						{ "f6384dd27282439aa164acf6be1bb393", "rep_test1.rep" },
+						{ "265db426cf194e498ce38911e06d17e0", "uk_track.rep" } };
 
 				for (int i = 0; i < datafilesSomeReferences.length; i++) {
 					boolean exist = false;
