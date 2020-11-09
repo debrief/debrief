@@ -48,12 +48,17 @@ public class State implements AbstractBean, TreeStructurable {
 				sqlite.initializeInstance(_config);
 				final List<State> list = sqlite.listAll(State.class, null);
 
-				assertTrue("States - database entries", list.size() == 12209);
+				assertTrue("States - database entries", list.size() == 12239);
 
 				final List<State> list2 = sqlite.listAll(State.class,
-						Arrays.asList(new Condition[] { new Condition("source_id = 18") }));
+						Arrays.asList(new Condition[] { new Condition("source_id = \"638471a99e264761830b3f6575816e67\"") }));
 
-				assertTrue("States - database entries", list2.size() == 402);
+				assertTrue("States - database entries", list2.size() == 5);
+				
+				final List<State> list3 = sqlite.listAll(State.class,
+						Arrays.asList(new Condition[] { new Condition("source_id = \"db8692a392924d27bfacdbddc4eb9a29\"") }));
+
+				assertTrue("States - database entries", list3.size() == 11400);
 			} catch (NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException
 					| IllegalArgumentException | InvocationTargetException | PropertyVetoException | SQLException
 					| ClassNotFoundException | IOException | PepsysException e) {
