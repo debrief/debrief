@@ -11,7 +11,7 @@ public class Platform implements AbstractBean {
 	private String platform_id;
 	@Filterable
 	private String name;
-
+	@Filterable
 	private String identifier;
 
 	public Platform() {
