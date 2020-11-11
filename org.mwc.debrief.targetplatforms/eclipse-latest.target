@@ -19,17 +19,17 @@
 			<unit id="org.eclipse.wst.jsdt.feature.feature.group" version="2.1.1.v201903222101"/>
 		</location>
 		<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="false" type="InstallableUnit">
-			<repository location="http://download.eclipse.org/ease/update/release"/>
-			<unit id="org.eclipse.ease.feature.feature.group" version="0.6.0.I201802271533"/>
-			<unit id="org.eclipse.ease.lang.javascript.feature.feature.group" version="0.6.0.I201802201511"/>
-			<unit id="org.eclipse.ease.lang.jvm.feature.feature.group" version="0.6.0.I201711281359"/>
-			<unit id="org.eclipse.ease.lang.unittest.feature.feature.group" version="0.6.0.I201802211136"/>
-			<unit id="org.eclipse.ease.modules.charting.feature.feature.group" version="0.6.0.I201802191612"/>
-			<unit id="org.eclipse.ease.modules.feature.feature.group" version="0.6.0.I201802191612"/>
-			<unit id="org.eclipse.ease.modules.modeling.feature.feature.group" version="0.6.0.I201802191612"/>
-			<unit id="org.eclipse.ease.modules.unittest.feature.feature.group" version="0.4.0.I201611210751"/>
-			<unit id="org.eclipse.ease.ui.feature.feature.group" version="0.6.0.I201804241621"/>
-			<unit id="org.eclipse.ease.lang.scriptarchive.feature.feature.group" version="0.6.0.I201711281359"/>
+			<repository location="https://download.eclipse.org/ease/release/latest"/>
+			<unit id="org.eclipse.ease.feature.feature.group" version="0.7.0.I201907120558"/>
+			<unit id="org.eclipse.ease.lang.javascript.feature.feature.group" version="0.7.0.I201906281229"/>
+			<unit id="org.eclipse.ease.lang.jvm.feature.feature.group" version="0.7.0.I201906281229"/>
+			<unit id="org.eclipse.ease.lang.unittest.feature.feature.group" version="0.7.0.I201906281229"/>
+			<unit id="org.eclipse.ease.modules.charting.feature.feature.group" version="0.7.0.I201906281232"/>
+			<unit id="org.eclipse.ease.modules.feature.feature.group" version="0.7.0.I201907160756"/>
+			<unit id="org.eclipse.ease.modules.modeling.feature.feature.group" version="0.7.0.I201906281232"/>
+			<unit id="org.eclipse.ease.lang.scriptarchive.feature.feature.group" version="0.7.0.I201906281229"/>
+			<unit id="org.eclipse.ease.ui.feature.feature.group" version="0.7.0.I201907161104"/>
+			<unit id="org.eclipse.ease.lang.unittest.feature.source.feature.group" version="0.7.0.I201906281229"/>
 		</location>
 		<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="false" type="InstallableUnit">
 			<repository location="https://download.eclipse.org/releases/2019-06/"/>
