@@ -29,7 +29,6 @@
 			<unit id="org.eclipse.ease.modules.modeling.feature.feature.group" version="0.7.0.I201906281232"/>
 			<unit id="org.eclipse.ease.lang.scriptarchive.feature.feature.group" version="0.7.0.I201906281229"/>
 			<unit id="org.eclipse.ease.ui.feature.feature.group" version="0.7.0.I201907161104"/>
-			<unit id="org.eclipse.ease.lang.unittest.feature.source.feature.group" version="0.7.0.I201906281229"/>
 		</location>
 		<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="false" type="InstallableUnit">
 			<repository location="https://download.eclipse.org/releases/2019-06/"/>
