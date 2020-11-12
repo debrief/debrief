@@ -71,6 +71,7 @@ import MWC.GUI.MessageProvider;
 import MWC.GUI.PlainWrapper;
 import MWC.GUI.Plottable;
 import MWC.GUI.Plottables;
+import MWC.GUI.RestrictedBaseLayer;
 import MWC.GUI.Plottables.IteratorWrapper;
 import MWC.GUI.Canvas.CanvasTypeUtilities;
 import MWC.GUI.Properties.FractionPropertyEditor;
@@ -912,13 +913,13 @@ public class TrackWrapper extends LightweightTrackWrapper implements WatchableLi
 	 * the formatting details
 	 */
 	public TrackWrapper() {
-		_mySensors = new SplittableLayer(true);
+		_mySensors = new RestrictedBaseLayer<SensorWrapper>(true);
 		_mySensors.setName(SENSORS_LAYER_NAME);
 
 		_myDynamicShapes = new SplittableLayer(true);
 		_myDynamicShapes.setName(DYNAMIC_SHAPES_LAYER_NAME);
 
-		_mySolutions = new BaseLayer(true);
+		_mySolutions = new RestrictedBaseLayer<>(true);
 		_mySolutions.setName(SOLUTIONS_LAYER_NAME);
 
 		// create a property listener for when fixes are moved
@@ -983,7 +984,7 @@ public class TrackWrapper extends LightweightTrackWrapper implements WatchableLi
 			if (existing == null) {
 
 				// nope, so store it
-				_mySensors.add(swr);
+				((RestrictedBaseLayer<SensorWrapper>)_mySensors).addElement(swr);
 			}
 
 			// tell the sensor about us
@@ -1006,7 +1007,7 @@ public class TrackWrapper extends LightweightTrackWrapper implements WatchableLi
 			} else {
 
 				// add to our list
-				_myDynamicShapes.add(swr);
+				((RestrictedBaseLayer<DynamicTrackShapeSetWrapper>)_myDynamicShapes).addElement(swr);
 
 				// tell the sensor about us
 				swr.setHost(this);
@@ -1039,7 +1040,7 @@ public class TrackWrapper extends LightweightTrackWrapper implements WatchableLi
 		else if (point instanceof TMAWrapper) {
 			final TMAWrapper twr = (TMAWrapper) point;
 			// add to our list
-			_mySolutions.add(twr);
+			((RestrictedBaseLayer<TMAWrapper>)_mySolutions).addElement(twr);
 
 			// tell the sensor about us
 			twr.setHost(this);
