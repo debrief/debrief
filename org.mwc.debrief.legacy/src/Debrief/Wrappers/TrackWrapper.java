@@ -975,8 +975,6 @@ public class TrackWrapper extends LightweightTrackWrapper implements WatchableLi
 					existing = oldS;
 
 					// and append the data points
-					//TODO append was never implemented so nothing happend here.
-					//existing.append(swr);
 				}
 			}
 
@@ -984,7 +982,7 @@ public class TrackWrapper extends LightweightTrackWrapper implements WatchableLi
 			if (existing == null) {
 
 				// nope, so store it
-				((RestrictedBaseLayer<SensorWrapper>)_mySensors).addElement(swr);
+				_mySensors.add(swr);
 			}
 
 			// tell the sensor about us
@@ -1007,7 +1005,7 @@ public class TrackWrapper extends LightweightTrackWrapper implements WatchableLi
 			} else {
 
 				// add to our list
-				((RestrictedBaseLayer<DynamicTrackShapeSetWrapper>)_myDynamicShapes).addElement(swr);
+				_myDynamicShapes.add(swr);
 
 				// tell the sensor about us
 				swr.setHost(this);
@@ -1040,7 +1038,7 @@ public class TrackWrapper extends LightweightTrackWrapper implements WatchableLi
 		else if (point instanceof TMAWrapper) {
 			final TMAWrapper twr = (TMAWrapper) point;
 			// add to our list
-			((RestrictedBaseLayer<TMAWrapper>)_mySolutions).addElement(twr);
+			_mySolutions.add(twr);
 
 			// tell the sensor about us
 			twr.setHost(this);
