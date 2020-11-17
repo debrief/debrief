@@ -35,7 +35,7 @@ import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.operations.RightClickCutCopyAdaptor.EditableTransfer;
 
 import Debrief.Wrappers.LabelWrapper;
-import Debrief.Wrappers.SensorWrapper;
+import Debrief.Wrappers.TacticalDataWrapper;
 import Debrief.Wrappers.DynamicTrackShapes.DynamicTrackShapeSetWrapper;
 import MWC.GUI.BaseLayer;
 import MWC.GUI.CanEnumerate;
@@ -390,17 +390,22 @@ public class RightClickPasteAdaptor {
 		if(restrictedLayer && destination == null) {
 			paster = null;
 		// so, are we just dealing with layers?
-		}else if (allLayers) {
+		}
+		else  if (allLayers) {
 			// create the menu items
 			paster = new PasteLayer(theDataList, _clipboard, (Layer) destination, theLayers);
 		} else {
 			// just check that there isn't a null destination
 			if (destination != null) {
+				//we dont allow pasting a sensorwrapper or a contactwrapper onto a baselayer
+				if(theDataList[0] instanceof TacticalDataWrapper && destination instanceof BaseLayer) {
+					paster = null;
+				}
 				// just check that the layers are compliant (that we're not trying to paste a
 				// dynamic
 				// plottable
 				// into a non-compliant layer
-				if (!(destination instanceof DynamicLayer) || theDataList[0] instanceof DynamicPlottable) {
+				else if (!(destination instanceof DynamicLayer) || theDataList[0] instanceof DynamicPlottable) {
 					// create the menu items
 					paster = new PasteItem(theDataList, (Layer) destination, theLayers);
 
