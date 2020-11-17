@@ -105,7 +105,7 @@ public class TreeUtils {
 		root.addChild(subRoot);
 
 		for (final TreeStructurable currentItem : items) {
-			final String platformName = currentItem.getPlatform().getName();
+			final String platformName = currentItem.getPlatform().getTrackName();
 			final String datafileName = currentItem.getDatafile().getReference();
 			TreeNode datafileNode = subRoot.getChild(platformName);
 			if (datafileNode == null) {
