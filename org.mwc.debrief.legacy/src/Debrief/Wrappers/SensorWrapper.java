@@ -976,7 +976,7 @@ public class SensorWrapper extends TacticalDataWrapper
 
 	/**
 	 * append the sensor cuts from new sensor to this one
-	 * 
+	 *
 	 * @param theSensor
 	 * @param defaultColor
 	 */
