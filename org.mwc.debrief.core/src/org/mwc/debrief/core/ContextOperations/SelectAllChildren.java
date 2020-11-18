@@ -135,6 +135,17 @@ public class SelectAllChildren implements RightClickContextItemGenerator {
 			}
 			return res;
 		}
+		private final static List<EditableWrapper> storeThese(final TacticalDataWrapper wrap, final EditableWrapper thisList,
+				final Layers theLayers) {
+			final List<EditableWrapper> res = new ArrayList<EditableWrapper>();
+			final Enumeration<Editable> items = wrap.elements();
+			while (items.hasMoreElements()) {
+				final Editable item = items.nextElement();
+				res.add(new EditableWrapper(item, thisList, theLayers));
+			}
+			return res;
+		}
+		
 
 		final private HasEditables _hasEditables;
 
@@ -188,14 +199,14 @@ public class SelectAllChildren implements RightClickContextItemGenerator {
 
 		protected List<EditableWrapper> itemsFor(final HasEditables parent) {
 			final List<EditableWrapper> res;
-//			if (parent instanceof TacticalDataWrapper) {
-//				final TacticalDataWrapper wrap = (TacticalDataWrapper) parent;
-//				final EditableWrapper track = new EditableWrapper(wrap.getHost(), null, _theLayers);
-//				final EditableWrapper thisList = new EditableWrapper(wrap, track, _theLayers);
-//
-//				// and remember them
-//				res = storeThese(wrap, thisList, _theLayers);
-//			}else
+			if (parent instanceof TacticalDataWrapper) {
+				final TacticalDataWrapper wrap = (TacticalDataWrapper) parent;
+				final EditableWrapper track = new EditableWrapper(wrap.getHost(), null, _theLayers);
+				final EditableWrapper thisList = new EditableWrapper(wrap, track, _theLayers);
+
+				// and remember them
+				res = storeThese(wrap, thisList, _theLayers);
+			}else
 			if (parent instanceof BaseLayer) {
 				final BaseLayer wrap = (BaseLayer) parent;
 				final EditableWrapper track = new EditableWrapper(wrap, null, _theLayers);
