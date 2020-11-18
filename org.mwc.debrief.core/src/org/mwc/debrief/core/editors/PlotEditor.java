@@ -2016,7 +2016,7 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor {
 			final TMAContactWrapper cut = (TMAContactWrapper) tgt;
 			final TMAWrapper sensor = cut.getTMATrack();
 			final TrackWrapper track = sensor.getHost();
-			final BaseLayer sList = track.getSolutions();
+			final TMAWrapper sList = track.getSolutions();
 			final Layers layers = getChart().getLayers();
 			final ISelection selected = wrapObjects(parentLayer, cut, sensor, sList, layers);
 			fireSelectionChanged(selected);

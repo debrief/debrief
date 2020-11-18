@@ -27,6 +27,7 @@ import org.mwc.debrief.satc_interface.data.SATC_Solution;
 import org.mwc.debrief.satc_interface.data.wrappers.ContributionWrapper;
 
 import Debrief.Wrappers.FixWrapper;
+import Debrief.Wrappers.TMAWrapper;
 import Debrief.Wrappers.TacticalDataWrapper;
 import Debrief.Wrappers.TrackWrapper;
 import Debrief.Wrappers.Track.TrackSegment;
@@ -193,9 +194,9 @@ public class TimeBar implements IEventEntry {
 			_children.add(new TimeBar(theSensors, prefs.collapseSensors()));
 		}
 
-		final BaseLayer theSolutions = track.getSolutions();
+		final TMAWrapper theSolutions = track.getSolutions();
 		if (theSolutions != null && theSolutions.size() > 0) {
-			_children.add(new TimeBar(theSolutions, false));
+			_children.add(new TimeBar(theSolutions));
 		}
 	}
 

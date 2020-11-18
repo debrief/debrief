@@ -15,8 +15,7 @@
 
 package org.mwc.debrief.core.ContextOperations;
 
-import java.util.Collection;
-import java.util.Iterator;
+import java.util.Enumeration;
 
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.commands.operations.IUndoableOperation;
@@ -43,7 +42,6 @@ import org.mwc.debrief.core.wizards.core.NewSolutionWizard;
 import Debrief.Wrappers.TMAContactWrapper;
 import Debrief.Wrappers.TMAWrapper;
 import Debrief.Wrappers.TrackWrapper;
-import MWC.GUI.BaseLayer;
 import MWC.GUI.Editable;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
@@ -87,12 +85,12 @@ public class GenerateTUASolution implements RightClickContextItemGenerator {
 			// do we know the parent track?
 			if (_track != null) {
 				// right, just see if a solution with this name already exists
-				final BaseLayer solLayer = _track.getSolutions();
+				final TMAWrapper solLayer = _track.getSolutions();
 
 				if (solLayer != null) {
-					final Collection<Editable> theSols = solLayer.getData();
-					for (final Iterator<Editable> iterator = theSols.iterator(); iterator.hasNext();) {
-						final Editable editable = iterator.next();
+					final Enumeration<Editable> theSols = solLayer.elements();
+					while(theSols.hasMoreElements()) {
+						final Editable editable = theSols.nextElement();
 						final TMAWrapper sw = (TMAWrapper) editable;
 						if (sw.getName().equals(_solutionWrapper.getName())) {
 							// remember this solution

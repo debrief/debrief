@@ -814,6 +814,19 @@ abstract public class TacticalDataWrapper extends MWC.GUI.PlainWrapper
 		// we also need to update the start/end time
 		_timePeriod = null;
 	}
+	
+	/**
+	 * removeAllElements
+	 *
+	 */
+	public final void removeAllElements() {
+		_myContacts.clear();
+
+		// we also need to update the start/end time
+		_timePeriod = null;
+	}
+	
+	
 
 	/**
 	 * the setter function which passes through the track

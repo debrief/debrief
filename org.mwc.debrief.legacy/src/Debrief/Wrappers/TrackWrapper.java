@@ -855,7 +855,7 @@ public class TrackWrapper extends LightweightTrackWrapper implements WatchableLi
 	/**
 	 * the TMA solutions for this vessel
 	 */
-	final private BaseLayer _mySolutions;
+	final private TMAWrapper _mySolutions;
 
 	/**
 	 * keep track of how far we are through our array of points
@@ -919,7 +919,7 @@ public class TrackWrapper extends LightweightTrackWrapper implements WatchableLi
 		_myDynamicShapes = new SplittableLayer(true);
 		_myDynamicShapes.setName(DYNAMIC_SHAPES_LAYER_NAME);
 
-		_mySolutions = new RestrictedBaseLayer<>(true);
+		_mySolutions = new TMAWrapper(SOLUTIONS_LAYER_NAME);
 		_mySolutions.setName(SOLUTIONS_LAYER_NAME);
 
 		// create a property listener for when fixes are moved
@@ -2300,7 +2300,7 @@ public class TrackWrapper extends LightweightTrackWrapper implements WatchableLi
 	/**
 	 * get the list of sensors for this track
 	 */
-	public final BaseLayer getSolutions() {
+	public final TMAWrapper getSolutions() {
 		return _mySolutions;
 	}
 
