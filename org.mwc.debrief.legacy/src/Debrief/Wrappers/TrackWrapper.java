@@ -973,8 +973,9 @@ public class TrackWrapper extends LightweightTrackWrapper implements WatchableLi
 				if (oldS.getName().equals(swr.getName())) {
 					// yes - ok, remember it
 					existing = oldS;
-
-					// and append the data points
+					
+					// add the cuts from the new sensor
+					existing.append(swr, existing.getColor());
 				}
 			}
 
