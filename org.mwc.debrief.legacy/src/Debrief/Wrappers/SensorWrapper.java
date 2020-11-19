@@ -878,6 +878,7 @@ public class SensorWrapper extends TacticalDataWrapper
 		for (int i = 0; i < subjects.length; i++) {
 			final SensorWrapper sensor = (SensorWrapper) subjects[i];
 			if (sensor != target) {
+				target.append(sensor, defaultColor);
 				parent.removeElement(sensor);
 			}
 		}
@@ -973,32 +974,35 @@ public class SensorWrapper extends TacticalDataWrapper
 		}
 	}
 
-	public final void append(final Layer theLayer, final Color defaultColor) {
-		if (theLayer instanceof SensorWrapper) {
-			final SensorWrapper other = (SensorWrapper) theLayer;
-			final SortedSet<Editable> otherC = other._myContacts;
-			final Color hisColor = other.getColor();
-			final Color colorToUse;
-			if (!hisColor.equals(defaultColor)) {
-				colorToUse = hisColor;
-			} else {
-				colorToUse = null;
-			}
-			for (final Iterator<Editable> iterator = otherC.iterator(); iterator.hasNext();) {
-				final SensorContactWrapper thisC = (SensorContactWrapper) iterator.next();
-				if (thisC.getActualColor() == null && colorToUse != null) {
-					thisC.setColor(colorToUse);
-				}
-				this.add(thisC);
-			}
-
-			// and clear him out...
-			otherC.clear();
-
-			// and drop the links
-			other.setHost(null);
-			other.setTrackName(null);
+	/**
+	 * append the sensor cuts from new sensor to this one
+	 *
+	 * @param theSensor
+	 * @param defaultColor
+	 */
+	public final void append(final SensorWrapper theSensor, final Color defaultColor) {
+		final SortedSet<Editable> otherC = theSensor._myContacts;
+		final Color hisColor = theSensor.getColor();
+		final Color colorToUse;
+		if (!hisColor.equals(defaultColor)) {
+			colorToUse = hisColor;
+		} else {
+			colorToUse = null;
 		}
+		for (final Iterator<Editable> iterator = otherC.iterator(); iterator.hasNext();) {
+			final SensorContactWrapper thisC = (SensorContactWrapper) iterator.next();
+			if (thisC.getActualColor() == null && colorToUse != null) {
+				thisC.setColor(colorToUse);
+			}
+			this.add(thisC);
+		}
+
+		// and clear him out...
+		otherC.clear();
+
+		// and drop the links
+		theSensor.setHost(null);
+		theSensor.setTrackName(null);
 	}
 
 	@Override
