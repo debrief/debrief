@@ -387,10 +387,11 @@ public class RightClickPasteAdaptor {
 		}
 		//if we are trying to paste sensors or solutions then it is a restricted layer object,
 		// we dont allow it to be added to layers object
-		if(restrictedLayer && destination == null) {
+
+		if(restrictedLayer && (destination == null || destination instanceof BaseLayer)) {
 			paster = null;
-		// so, are we just dealing with layers?
 		}
+		// so, are we just dealing with layers?
 		else  if (allLayers) {
 			// create the menu items
 			paster = new PasteLayer(theDataList, _clipboard, (Layer) destination, theLayers);
