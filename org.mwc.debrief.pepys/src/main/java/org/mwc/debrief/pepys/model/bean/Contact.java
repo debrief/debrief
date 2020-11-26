@@ -87,7 +87,7 @@ public class Contact implements AbstractBean, TreeStructurable {
 
 		if (target != null && target instanceof BaseLayer) {
 			final BaseLayer folder = (BaseLayer) target;
-			final Editable found = folder.find(getPlatform().getName());
+			final Editable found = folder.find(getPlatform().getTrackName());
 			if (found != null && found instanceof TrackWrapper) {
 				final TrackWrapper track = (TrackWrapper) found;
 
