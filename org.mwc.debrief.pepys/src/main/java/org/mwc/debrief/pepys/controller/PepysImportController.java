@@ -449,6 +449,17 @@ public class PepysImportController {
 				}
 			}
 		});
+		
+		view.getClearAreaButton().addListener(SWT.Selection, new Listener() {
+			
+			@Override
+			public void handleEvent(Event event) {
+				if (event.type == SWT.Selection) {
+					model.setArea(null);
+					updateAreaModel2View(model, view);
+				}
+			}
+		});
 
 		view.getTree().addCheckStateListener(new ICheckStateListener() {
 
@@ -655,8 +666,13 @@ public class PepysImportController {
 	}
 
 	public void updateAreaModel2View(final AbstractConfiguration model, final AbstractViewSWT view) {
-		view.getTopLeftLocation().setValue(model.getCurrentArea().getTopLeft());
-		view.getBottomRightLocation().setValue(model.getCurrentArea().getBottomRight());
+		if (model.getCurrentArea() == null) {
+			view.getTopLeftLocation().clean();
+			view.getBottomRightLocation().clean();
+		}else {
+			view.getTopLeftLocation().setValue(model.getCurrentArea().getTopLeft());
+			view.getBottomRightLocation().setValue(model.getCurrentArea().getBottomRight());
+		}
 	}
 
 	public void updateAreaView2Model(final AbstractConfiguration model, final AbstractViewSWT view) {
