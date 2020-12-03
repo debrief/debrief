@@ -55,140 +55,46 @@ import org.mwc.debrief.pepys.view.tree.TreeNameLabelProvider;
 public class PepysImportView extends Dialog implements AbstractViewSWT {
 
 	final static RGB SWT_ORANGE = new RGB(255, 165, 0);
-	private Label startLabel;
-	private Label endLabel;
-	private Label topLeftLabel;
-	private Label bottomRightLabel;
-	private Label titleLabel;
-	private Label searchLabel;
-	private Label textSearchLabel;
+	private final Label startLabel;
+	private final Label endLabel;
+	private final Label topLeftLabel;
+	private final Label bottomRightLabel;
+	private final Label titleLabel;
+	private final Label searchLabel;
+	private final Label textSearchLabel;
 
-	private Label textSearchResults;
-	private Button applyButton;
-	private Button importButton;
-	private Button testConnectionButton;
-	private Button useCurrentViewportButton;
-	private Button searchNextButton;
+	private final Label textSearchResults;
+	private final Button applyButton;
+	private final Button importButton;
+	private final Button testConnectionButton;
+	private final Button useCurrentViewportButton;
+	private final Button searchNextButton;
 
-	private Button searchPreviousButton;
-	private CDateTime startDate;
-	private CDateTime startTime;
-	private CDateTime endDate;
+	private final Button searchPreviousButton;
+	private final CDateTime startDate;
+	private final CDateTime startTime;
+	private final CDateTime endDate;
 
-	private CDateTime endTime;
-	private PShelf shelf;
+	private final CDateTime endTime;
+	private final PShelf shelf;
 
-	private CheckboxTreeViewer tree;
+	private final CheckboxTreeViewer tree;
 
-	private Text searchText;
+	private final Text searchText;
 
-	private Text filterText;
+	private final Text filterText;
 
 	private final ArrayList<Button> dataTypesCheckBox = new ArrayList<Button>();
 
-	private CWorldLocation topLeftLocation;
+	private final CWorldLocation topLeftLocation;
 
-	private CWorldLocation bottomRightLocation;
+	private final CWorldLocation bottomRightLocation;
 
-	private Composite dataTypesComposite;
+	private final Composite dataTypesComposite;
 
 	public PepysImportView(final AbstractConfiguration model, final Shell parent) {
 		super(parent);
 
-		initGUI(model, parent);
-	}
-
-	@Override
-	public Button getApplyButton() {
-		return applyButton;
-	}
-
-	@Override
-	public CWorldLocation getBottomRightLocation() {
-		return bottomRightLocation;
-	}
-
-	@Override
-	public ArrayList<Button> getDataTypesCheckBox() {
-		return dataTypesCheckBox;
-	}
-
-	@Override
-	public Composite getDataTypesComposite() {
-		return dataTypesComposite;
-	}
-
-	@Override
-	public CDateTime getEndDate() {
-		return endDate;
-	}
-
-	@Override
-	public CDateTime getEndTime() {
-		return endTime;
-	}
-
-	@Override
-	public Text getFilterText() {
-		return filterText;
-	}
-
-	@Override
-	public Button getImportButton() {
-		return importButton;
-	}
-
-	@Override
-	public Button getSearchNextButton() {
-		return searchNextButton;
-	}
-
-	@Override
-	public Button getSearchPreviousButton() {
-		return searchPreviousButton;
-	}
-
-	@Override
-	public Text getSearchText() {
-		return searchText;
-	}
-
-	@Override
-	public CDateTime getStartDate() {
-		return startDate;
-	}
-
-	@Override
-	public CDateTime getStartTime() {
-		return startTime;
-	}
-
-	@Override
-	public Button getTestConnectionButton() {
-		return testConnectionButton;
-	}
-
-	@Override
-	public Label getTextSearchResults() {
-		return textSearchResults;
-	}
-
-	@Override
-	public CWorldLocation getTopLeftLocation() {
-		return topLeftLocation;
-	}
-
-	@Override
-	public CheckboxTreeViewer getTree() {
-		return tree;
-	}
-
-	@Override
-	public Button getUseCurrentViewportButton() {
-		return useCurrentViewportButton;
-	}
-
-	public void initGUI(final AbstractConfiguration model, final Shell parent) {
 		final GridLayout mainLayout = new GridLayout();
 		mainLayout.numColumns = 6;
 		mainLayout.marginWidth = 20;
@@ -458,7 +364,96 @@ public class PepysImportView extends Dialog implements AbstractViewSWT {
 
 		importGridDataButton.widthHint = 120;
 		importGridDataButton.heightHint = 40;
+	}
 
+	@Override
+	public Button getApplyButton() {
+		return applyButton;
+	}
+
+	@Override
+	public CWorldLocation getBottomRightLocation() {
+		return bottomRightLocation;
+	}
+
+	@Override
+	public ArrayList<Button> getDataTypesCheckBox() {
+		return dataTypesCheckBox;
+	}
+
+	@Override
+	public Composite getDataTypesComposite() {
+		return dataTypesComposite;
+	}
+
+	@Override
+	public CDateTime getEndDate() {
+		return endDate;
+	}
+
+	@Override
+	public CDateTime getEndTime() {
+		return endTime;
+	}
+
+	@Override
+	public Text getFilterText() {
+		return filterText;
+	}
+
+	@Override
+	public Button getImportButton() {
+		return importButton;
+	}
+
+	@Override
+	public Button getSearchNextButton() {
+		return searchNextButton;
+	}
+
+	@Override
+	public Button getSearchPreviousButton() {
+		return searchPreviousButton;
+	}
+
+	@Override
+	public Text getSearchText() {
+		return searchText;
+	}
+
+	@Override
+	public CDateTime getStartDate() {
+		return startDate;
+	}
+
+	@Override
+	public CDateTime getStartTime() {
+		return startTime;
+	}
+
+	@Override
+	public Button getTestConnectionButton() {
+		return testConnectionButton;
+	}
+
+	@Override
+	public Label getTextSearchResults() {
+		return textSearchResults;
+	}
+
+	@Override
+	public CWorldLocation getTopLeftLocation() {
+		return topLeftLocation;
+	}
+
+	@Override
+	public CheckboxTreeViewer getTree() {
+		return tree;
+	}
+
+	@Override
+	public Button getUseCurrentViewportButton() {
+		return useCurrentViewportButton;
 	}
 
 }
