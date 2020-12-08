@@ -40,12 +40,32 @@ import MWC.GenericData.WorldLocation;
 
 public class PostgresDatabaseConnection extends DatabaseConnection {
 
-	private static final String DB_NAME_TAG = "db_name";
 	private static final String DB_PORT_TAG = "db_port";
 	private static final String DB_HOST_TAG = "db_host";
 	private static final String DB_PASSWORD_TAG = "db_password";
 	private static final String DB_USERNAME_TAG = "db_username";
 	private static final String HOST_HEADER = "jdbc:postgresql://";
+
+	/**
+	 * Method that receives a DatabaseConfiguration and checks if it suits to this
+	 * type of connection.
+	 *
+	 * @param _config
+	 * @return
+	 */
+	public static boolean validateDatabaseConfiguration(final DatabaseConfiguration _config) {
+		try {
+			final HashMap<String, String> databaseTagConnection = _config
+					.getCategory(DatabaseConnection.CONFIGURATION_TAG);
+			return (databaseTagConnection.get(DatabaseConnection.CONFIGURATION_DATABASE_TYPE)
+					.equals(DatabaseConnection.POSTGRES) && databaseTagConnection.containsKey(DB_USERNAME_TAG)
+					&& databaseTagConnection.containsKey(DB_PASSWORD_TAG)
+					&& databaseTagConnection.containsKey(DB_HOST_TAG) && databaseTagConnection.containsKey(DB_PORT_TAG)
+					&& databaseTagConnection.containsKey(CONFIGURATION_DB_NAME));
+		} catch (final Exception e) {
+			return false;
+		}
+	}
 
 	public PostgresDatabaseConnection() {
 		super(); // Just formality :)
@@ -87,6 +107,32 @@ public class PostgresDatabaseConnection extends DatabaseConnection {
 	}
 
 	@Override
+	public String getBasicDescription() {
+		final StringBuilder answer = new StringBuilder();
+
+		final HashMap<String, String> category = getDatabaseConfiguration()
+				.getCategory(DatabaseConnection.CONFIGURATION_TAG);
+		if (category != null) {
+			answer.append("Database Type: ");
+			answer.append(category.get(DatabaseConnection.CONFIGURATION_DATABASE_TYPE));
+			answer.append("\n");
+			answer.append("Database Name: ");
+			answer.append(category.get(DatabaseConnection.CONFIGURATION_DB_NAME));
+			answer.append("\n");
+			answer.append("Database Host: ");
+			answer.append(category.get(DB_HOST_TAG));
+			return answer.toString();
+		} else {
+			return "No Database configuration found";
+		}
+	}
+
+	@Override
+	public String getSRID() {
+		return "SRID=4326;";
+	}
+
+	@Override
 	protected void initialize(final DatabaseConfiguration _config)
 			throws PropertyVetoException, IOException, PepsysException {
 		super.initialize(_config);
@@ -102,7 +148,7 @@ public class PostgresDatabaseConnection extends DatabaseConnection {
 		pool.setCheckoutTimeout(TIME_OUT);
 		pool.setDriverClass("org.postgresql.Driver");
 		final String completePath = HOST_HEADER + databaseTagConnection.get(DB_HOST_TAG) + ":"
-				+ databaseTagConnection.get(DB_PORT_TAG) + "/" + databaseTagConnection.get(DB_NAME_TAG);
+				+ databaseTagConnection.get(DB_PORT_TAG) + "/" + databaseTagConnection.get(CONFIGURATION_DB_NAME);
 		pool.setJdbcUrl(completePath);
 		pool.setProperties(props);
 	}
@@ -117,32 +163,6 @@ public class PostgresDatabaseConnection extends DatabaseConnection {
 				.unWrapperInnerConnection((NewProxyConnection) connection)).addDataType("geometry", PGgeometry.class);
 		((org.postgresql.PGConnection) NewProxyConnectionUnwrapper
 				.unWrapperInnerConnection((NewProxyConnection) connection)).addDataType("box3d", PGbox3d.class);
-	}
-
-	@Override
-	public String getSRID() {
-		return "SRID=4326;";
-	}
-
-	/**
-	 * Method that receives a DatabaseConfiguration and checks if it suits to this
-	 * type of connection.
-	 * 
-	 * @param _config
-	 * @return
-	 */
-	public static boolean validateDatabaseConfiguration(final DatabaseConfiguration _config) {
-		try {
-			final HashMap<String, String> databaseTagConnection = _config
-					.getCategory(DatabaseConnection.CONFIGURATION_TAG);
-			return (databaseTagConnection.get(DatabaseConnection.CONFIGURATION_DATABASE_TYPE)
-					.equals(DatabaseConnection.POSTGRES) && databaseTagConnection.containsKey(DB_USERNAME_TAG)
-					&& databaseTagConnection.containsKey(DB_PASSWORD_TAG)
-					&& databaseTagConnection.containsKey(DB_HOST_TAG) && databaseTagConnection.containsKey(DB_PORT_TAG)
-					&& databaseTagConnection.containsKey(DB_NAME_TAG));
-		} catch (Exception e) {
-			return false;
-		}
 	}
 
 }
