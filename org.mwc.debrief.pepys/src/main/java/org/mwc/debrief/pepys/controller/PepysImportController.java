@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 
 import org.eclipse.jface.viewers.CheckStateChangedEvent;
@@ -64,6 +65,8 @@ import org.mwc.debrief.pepys.model.tree.TreeNode;
 import org.mwc.debrief.pepys.view.AbstractViewSWT;
 import org.mwc.debrief.pepys.view.PepysImportView;
 
+import Debrief.GUI.Frames.Application;
+import MWC.GUI.ToolParent;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.TimePeriod;
 import MWC.GenericData.WorldArea;
@@ -321,6 +324,8 @@ public class PepysImportController {
 					Display.getCurrent().asyncExec(new Runnable() {
 						@Override
 						public void run() {
+							Application.logError2(ToolParent.INFO, "Starting run process - PepysImportController",
+									null);
 							try {
 								updateAreaView2Model(model, view);
 								model.apply();
@@ -403,6 +408,12 @@ public class PepysImportController {
 					messageToUser.append("\n");
 					messageToUser.append("Configuration in use: ");
 					messageToUser.append(configurationToUse);
+					final HashMap<String, String> databaseCategory = model.getDatabaseConnection().getDatabaseConfiguration()
+							.getCategory(DatabaseConnection.CONFIGURATION_TAG);
+					if (databaseCategory != null) {
+						messageToUser.append("\n\n");
+						messageToUser.append(model.getDatabaseConnection().getBasicDescription());
+					}
 
 					try {
 						showError = !model.doTestQuery();
@@ -657,6 +668,7 @@ public class PepysImportController {
 	}
 
 	public void updateAreaView2Model(final AbstractConfiguration model, final AbstractViewSWT view) {
+		Application.logError2(ToolParent.INFO, "Starting updade from Area View to Model", null);
 		final WorldLocation topLeft;
 
 		if (view.getTopLeftLocation().getValue() == null) {
@@ -674,5 +686,6 @@ public class PepysImportController {
 		}
 
 		model.setArea(new WorldArea(topLeft, bottomRight));
+		Application.logError2(ToolParent.INFO, "Finished update from Area View to Model", null);
 	}
 }

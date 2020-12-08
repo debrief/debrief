@@ -86,7 +86,7 @@ Import-Package: COM.ibm.netrexx.process;resolution:=optional,com.jcraf
  optional,org.junit.runner.notification;resolution:=optional,org.tukaa
  ni.xz;resolution:=optional,org.w3c.dom;resolution:=optional,org.xml.s
  ax;resolution:=optional,org.xml.sax.helpers;resolution:=optional
-Require-Capability: osgi.ee;filter:="(&(osgi.ee=JavaSE)(version=1.8))"
+Require-Capability: osgi.ee;filter:="(&(osgi.ee=JavaSE)(version=1.11))"
 Export-Package: org.apache.tools.ant;version="1.10.5";uses:="junit.fra
  mework,org.apache.tools.ant.input,org.apache.tools.ant.launch,org.apa
  che.tools.ant.property,org.apache.tools.ant.taskdefs.condition,org.ap

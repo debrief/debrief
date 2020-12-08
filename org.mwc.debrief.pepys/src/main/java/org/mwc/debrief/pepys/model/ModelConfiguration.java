@@ -43,6 +43,8 @@ import org.mwc.debrief.pepys.model.tree.TreeStructurable;
 import org.mwc.debrief.pepys.model.tree.TreeUtils;
 import org.mwc.debrief.pepys.model.tree.TreeUtils.SearchTreeResult;
 
+import Debrief.GUI.Frames.Application;
+import MWC.GUI.ToolParent;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.TimePeriod;
 import MWC.GenericData.TimePeriod.BaseTimePeriod;
@@ -132,13 +134,13 @@ public class ModelConfiguration implements AbstractConfiguration {
 
 	@Override
 	public void apply() throws Exception {
-
 		validate();
 		currentItems = TreeUtils.buildStructure(this);
 		updateTree();
 		setSearch("");
 
 		if (_pSupport != null) {
+			Application.logError2(ToolParent.INFO, "We are going to trigger the apply listeners for change of model", null);
 			final java.beans.PropertyChangeEvent pce = new PropertyChangeEvent(this, TREE_MODEL, null, treeModel);
 			_pSupport.firePropertyChange(pce);
 		}
@@ -492,6 +494,7 @@ public class ModelConfiguration implements AbstractConfiguration {
 
 	@Override
 	public void setSearch(final String _newSearch) {
+		Application.logError2(ToolParent.INFO, "Setting search to " + _newSearch, null);
 		final String oldSearch = searchText;
 		searchText = _newSearch;
 
@@ -537,6 +540,7 @@ public class ModelConfiguration implements AbstractConfiguration {
 
 	@Override
 	public void updateTree() {
+		Application.logError2(ToolParent.INFO, "Updating Tree from the model calculated", null);
 		if (currentItems != null) {
 			TreeUtils.buildStructure(currentItems.toArray(new TreeStructurable[] {}), getTreeModel());
 
@@ -549,6 +553,7 @@ public class ModelConfiguration implements AbstractConfiguration {
 
 	@Override
 	public void validate() throws Exception {
+		Application.logError2(ToolParent.INFO, "Starting validate process - Model Configuration", null);
 		if (!currentPeriod.isConsistent()) {
 			throw new PepsysException("Date validation", "The Start date-time must be before the End date-time");
 		}
