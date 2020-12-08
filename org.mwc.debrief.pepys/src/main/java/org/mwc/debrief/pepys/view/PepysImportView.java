@@ -325,12 +325,12 @@ public class PepysImportView extends Dialog implements AbstractViewSWT {
 		this.bottomRightLocation.setLayoutData(bottomRightLocationGridData);
 
 		final GridData useCurrentButtonGridData = new GridData();
-		this.clearAreaButton = new Button(areaItem.getBody(), SWT.PUSH);
-		this.clearAreaButton.setText("Clear");
-		this.clearAreaButton.setLayoutData(useCurrentButtonGridData);
 		this.useCurrentViewportButton = new Button(areaItem.getBody(), SWT.PUSH);
 		this.useCurrentViewportButton.setText("Use viewport");
 		this.useCurrentViewportButton.setLayoutData(useCurrentButtonGridData);
+		this.clearAreaButton = new Button(areaItem.getBody(), SWT.PUSH);
+		this.clearAreaButton.setText("Clear");
+		this.clearAreaButton.setLayoutData(useCurrentButtonGridData);
 		useCurrentButtonGridData.widthHint = 120;
 		useCurrentButtonGridData.heightHint = 40;
 		useCurrentButtonGridData.horizontalAlignment = SWT.END;
