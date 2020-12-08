@@ -17,6 +17,8 @@ public interface AbstractViewSWT {
 
 	CWorldLocation getBottomRightLocation();
 
+	Button getClearAreaButton();
+
 	ArrayList<Button> getDataTypesCheckBox();
 
 	Composite getDataTypesComposite();

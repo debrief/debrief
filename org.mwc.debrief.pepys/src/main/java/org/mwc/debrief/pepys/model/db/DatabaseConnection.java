@@ -75,6 +75,8 @@ public abstract class DatabaseConnection {
 
 	public static final String CONFIGURATION_DATABASE_TYPE = "db_type";
 
+	public static final String CONFIGURATION_DB_NAME = "db_name";
+
 	public static final String POSTGRES = "postgres";
 
 	public static final String SQLITE = "sqlite";
@@ -97,7 +99,7 @@ public abstract class DatabaseConnection {
 			throw new FileNotFoundException("DatabaseConnectionException we have received a null inputstream");
 		}
 	}
-	
+
 	public static void loadDatabaseConfiguration(final DatabaseConfiguration _config, final String _defaultConfigFile)
 			throws PropertyVetoException, IOException {
 
@@ -418,6 +420,8 @@ public abstract class DatabaseConnection {
 			}
 		}
 	}
+
+	public abstract String getBasicDescription();
 
 	protected abstract void loadExtention(final Connection connection, final Statement statement)
 			throws SQLException, ClassNotFoundException, IOException;

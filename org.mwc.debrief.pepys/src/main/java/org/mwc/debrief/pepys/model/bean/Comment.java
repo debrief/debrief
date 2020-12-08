@@ -71,7 +71,7 @@ public class Comment implements AbstractBean, TreeStructurable {
 			_layers.addThisLayer(dest);
 		}
 
-		final NarrativeEntry entry = new NarrativeEntry(getPlatform().getName(), new HiResDate(getTime()),
+		final NarrativeEntry entry = new NarrativeEntry(getPlatform().getTrackName(), new HiResDate(getTime()),
 				getContent());
 
 		// ok, can we provide a track color for it?

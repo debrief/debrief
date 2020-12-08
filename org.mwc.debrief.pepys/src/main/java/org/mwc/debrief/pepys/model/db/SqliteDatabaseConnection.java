@@ -39,11 +39,28 @@ public class SqliteDatabaseConnection extends DatabaseConnection {
 
 	public static final String LOCATION_COORDINATES = "XYZ";
 	public static final String SQLITE_DATE_FORMAT = "yyyy-MM-dd HH:mm:ss.000000";
-	public static final String CONFIGURATION_DB_NAME = "db_name";
 
 	public static File nativeFolderPath = null;
 
 	public static String modSpatialiteName = Activator.MOD_SPATIALITE_NAME;
+
+	/**
+	 * Method that receives a DatabaseConfiguration and checks if it suits to this
+	 * type of connection.
+	 *
+	 * @param _config
+	 * @return
+	 */
+	public static boolean validateDatabaseConfiguration(final DatabaseConfiguration _config) {
+		try {
+			final HashMap<String, String> databaseTagConnection = _config
+					.getCategory(DatabaseConnection.CONFIGURATION_TAG);
+			return (databaseTagConnection.get(DatabaseConnection.CONFIGURATION_DATABASE_TYPE)
+					.equals(DatabaseConnection.SQLITE) && databaseTagConnection.containsKey(CONFIGURATION_DB_NAME));
+		} catch (final Exception e) {
+			return false;
+		}
+	}
 
 	public SqliteDatabaseConnection() {
 		super(); // Just formality :)
@@ -86,6 +103,32 @@ public class SqliteDatabaseConnection extends DatabaseConnection {
 
 	@Override
 	public String databaseSuffix() {
+		return "";
+	}
+
+	@Override
+	public String getBasicDescription() {
+		final StringBuilder answer = new StringBuilder();
+
+		final HashMap<String, String> category = getDatabaseConfiguration()
+				.getCategory(DatabaseConnection.CONFIGURATION_TAG);
+		if (category != null) {
+			answer.append("Database Type: ");
+			answer.append(category.get(DatabaseConnection.CONFIGURATION_DATABASE_TYPE));
+			answer.append("\n");
+			answer.append("Database Name: ");
+			answer.append(category.get(DatabaseConnection.CONFIGURATION_DB_NAME));
+			return answer.toString();
+		} else {
+			return "No Database configuration found";
+		}
+	}
+
+	@Override
+	/**
+	 * We need to disable the SRID for Sqlite.
+	 */
+	public String getSRID() {
 		return "";
 	}
 
@@ -135,7 +178,7 @@ public class SqliteDatabaseConnection extends DatabaseConnection {
 					modSpatialiteName = path;
 				}
 			});
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			throw new PepsysException("Database Import",
 					"Error while loading the database libraries. Please, check that the \"native\" "
 							+ "folder is in \"org.mwc.debrief.pepys\", containing the SQL Spatial Lite Libraries");
@@ -166,31 +209,5 @@ public class SqliteDatabaseConnection extends DatabaseConnection {
 		// GEOMETRY_COLUMNS
 		final String sql = "SELECT InitSpatialMetadata()";
 		statement.execute(sql);
-	}
-
-	@Override
-	/**
-	 * We need to disable the SRID for Sqlite.
-	 */
-	public String getSRID() {
-		return "";
-	}
-
-	/**
-	 * Method that receives a DatabaseConfiguration and checks if it suits to this
-	 * type of connection.
-	 * 
-	 * @param _config
-	 * @return
-	 */
-	public static boolean validateDatabaseConfiguration(final DatabaseConfiguration _config) {
-		try {
-			final HashMap<String, String> databaseTagConnection = _config
-					.getCategory(DatabaseConnection.CONFIGURATION_TAG);
-			return (databaseTagConnection.get(DatabaseConnection.CONFIGURATION_DATABASE_TYPE)
-					.equals(DatabaseConnection.SQLITE) && databaseTagConnection.containsKey(CONFIGURATION_DB_NAME));
-		} catch (Exception e) {
-			return false;
-		}
 	}
 }

@@ -42,15 +42,19 @@ public class DatafileType implements AbstractBean {
 		public void testDatafileTypesQuery() {
 			try {
 				final DatabaseConfiguration _config = new DatabaseConfiguration();
-				ConfigurationReader.loadDatabaseConfiguration(_config, new LoaderOption[] {
-						new LoaderOption(LoaderType.DEFAULT_FILE, DatabaseConnection.DEFAULT_SQLITE_TEST_DATABASE_FILE) });
+				ConfigurationReader.loadDatabaseConfiguration(_config,
+						new LoaderOption[] { new LoaderOption(LoaderType.DEFAULT_FILE,
+								DatabaseConnection.DEFAULT_SQLITE_TEST_DATABASE_FILE) });
 				final SqliteDatabaseConnection sqlite = new SqliteDatabaseConnection();
 				sqlite.initializeInstance(_config);
 				final List<DatafileType> list = sqlite.listAll(DatafileType.class, null);
 
-				assertTrue("Datafiletypes - database entries", list.size() == 7);
+				assertTrue("Datafiletypes - database entries", list.size() == 8);
 
-				final String[][] datafilesSomeReferences = new String[][] { { "1", "DATAFILE-TYPE-1" } };
+				final String[][] datafilesSomeReferences = new String[][] {
+						{ "dc5daeb0ca6e424290cf432372cdfdc7", "NMEA" },
+						{ "4f6fc5aab7a449e2b4ee0f7d639773df", "E-Trac" },
+						{ "dffab2b752b14ce2830690743720ac53", "DATAFILE-TYPE-1" } };
 
 				for (int i = 0; i < datafilesSomeReferences.length; i++) {
 					boolean exist = false;
