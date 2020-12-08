@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 
 import org.eclipse.jface.viewers.CheckStateChangedEvent;
@@ -323,7 +324,8 @@ public class PepysImportController {
 					Display.getCurrent().asyncExec(new Runnable() {
 						@Override
 						public void run() {
-							Application.logError2(ToolParent.INFO, "Starting run process - PepysImportController", null);
+							Application.logError2(ToolParent.INFO, "Starting run process - PepysImportController",
+									null);
 							try {
 								updateAreaView2Model(model, view);
 								model.apply();
@@ -406,6 +408,12 @@ public class PepysImportController {
 					messageToUser.append("\n");
 					messageToUser.append("Configuration in use: ");
 					messageToUser.append(configurationToUse);
+					final HashMap<String, String> databaseCategory = model.getDatabaseConnection().getDatabaseConfiguration()
+							.getCategory(DatabaseConnection.CONFIGURATION_TAG);
+					if (databaseCategory != null) {
+						messageToUser.append("\n\n");
+						messageToUser.append(model.getDatabaseConnection().getBasicDescription());
+					}
 
 					try {
 						showError = !model.doTestQuery();
