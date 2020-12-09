@@ -68,6 +68,7 @@ public class PepysImportView extends Dialog implements AbstractViewSWT {
 	private final Button importButton;
 	private final Button testConnectionButton;
 	private final Button useCurrentViewportButton;
+	private final Button clearAreaButton;
 	private final Button searchNextButton;
 
 	private final Button searchPreviousButton;
@@ -94,7 +95,6 @@ public class PepysImportView extends Dialog implements AbstractViewSWT {
 
 	public PepysImportView(final AbstractConfiguration model, final Shell parent) {
 		super(parent);
-
 		final GridLayout mainLayout = new GridLayout();
 		mainLayout.numColumns = 6;
 		mainLayout.marginWidth = 20;
@@ -194,7 +194,7 @@ public class PepysImportView extends Dialog implements AbstractViewSWT {
 
 		// AREA
 		final GridLayout areaItemLayout = new GridLayout();
-		areaItemLayout.numColumns = 1;
+		areaItemLayout.numColumns = 2;
 		areaItemLayout.marginWidth = 10;
 		areaItemLayout.marginHeight = 10;
 		final PShelfItem areaItem = new PShelfItem(shelf, SWT.NONE);
@@ -202,21 +202,36 @@ public class PepysImportView extends Dialog implements AbstractViewSWT {
 		areaItem.setImage(DebriefPlugin.getImageDescriptor("/icons/16/map.png").createImage());
 		areaItem.getBody().setLayout(areaItemLayout);
 
+		final GridData topLeftGridData = new GridData();
+		topLeftGridData.horizontalSpan = 2;
 		this.topLeftLabel = new Label(areaItem.getBody(), SWT.NONE);
 		this.topLeftLabel.setText("Top Left:");
+		this.topLeftLabel.setLayoutData(topLeftGridData);
 
+		final GridData topLeftLocationGridData = new GridData();
+		topLeftLocationGridData.horizontalSpan = 2;
 		this.topLeftLocation = new CWorldLocation(areaItem.getBody(), SWT.NONE);
+		this.topLeftLocation.setLayoutData(topLeftLocationGridData);
 
+		final GridData bottomRightLabelGridData = new GridData();
+		bottomRightLabelGridData.horizontalSpan = 2;
 		this.bottomRightLabel = new Label(areaItem.getBody(), SWT.NONE);
 		this.bottomRightLabel.setText("Bottom Right");
+		this.bottomRightLabel.setLayoutData(bottomRightLabelGridData);
 
+		final GridData bottomRightLocationGridData = new GridData();
+		bottomRightLocationGridData.horizontalSpan = 2;
 		this.bottomRightLocation = new CWorldLocation(areaItem.getBody(), SWT.NONE);
+		this.bottomRightLocation.setLayoutData(bottomRightLocationGridData);
 
 		final GridData useCurrentButtonGridData = new GridData();
 		this.useCurrentViewportButton = new Button(areaItem.getBody(), SWT.PUSH);
-		this.useCurrentViewportButton.setText("Use current viewport");
+		this.useCurrentViewportButton.setText("Use viewport");
 		this.useCurrentViewportButton.setLayoutData(useCurrentButtonGridData);
-		useCurrentButtonGridData.widthHint = 150;
+		this.clearAreaButton = new Button(areaItem.getBody(), SWT.PUSH);
+		this.clearAreaButton.setText("Clear");
+		this.clearAreaButton.setLayoutData(useCurrentButtonGridData);
+		useCurrentButtonGridData.widthHint = 120;
 		useCurrentButtonGridData.heightHint = 40;
 		useCurrentButtonGridData.horizontalAlignment = SWT.END;
 
@@ -367,6 +382,11 @@ public class PepysImportView extends Dialog implements AbstractViewSWT {
     
  		parent.setText("Debrief Pepys Import");
 		parent.setImage(DebriefPlugin.getImageDescriptor("/icons/16/debrief_icon.png").createImage());
+	}
+
+	@Override
+	public Button getClearAreaButton() {
+		return clearAreaButton;
 	}
 
 	@Override
