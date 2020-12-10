@@ -30,6 +30,8 @@ import org.mwc.debrief.pepys.model.db.Condition;
 import org.mwc.debrief.pepys.model.db.annotation.AnnotationsUtils;
 import org.mwc.debrief.pepys.model.tree.TreeNode.NodeType;
 
+import Debrief.GUI.Frames.Application;
+import MWC.GUI.ToolParent;
 import junit.framework.TestCase;
 
 public class TreeUtils {
@@ -65,26 +67,31 @@ public class TreeUtils {
 			throws NoSuchMethodException, SecurityException, InstantiationException, IllegalAccessException,
 			IllegalArgumentException, InvocationTargetException, PropertyVetoException, SQLException,
 			ClassNotFoundException, IOException {
-
+		Application.logError2(ToolParent.INFO, "Starting to Build Structure from Model", null);
 		final ArrayList<TreeStructurable> allItems = new ArrayList<>();
 		for (final TypeDomain domain : configuration.getDatafileTypeFilters()) {
+			Application.logError2(ToolParent.INFO, "Starting to list for " + domain.getName(), null);
 			final Class<TreeStructurable> currentBeanType = domain.getDatatype();
 
 			if (AbstractBean.class.isAssignableFrom(currentBeanType) && domain.isChecked()) {
 				configuration.getDatabaseConnection().cleanRenamingBuffer();
 				final ArrayList<Condition> conditions = new ArrayList<Condition>();
 
+				Application.logError2(ToolParent.INFO, "Starting to create conditions for time period", null);
 				conditions.addAll(configuration.getDatabaseConnection()
 						.createPeriodFilter(configuration.getTimePeriod(), currentBeanType));
 
+				Application.logError2(ToolParent.INFO, "Starting to create conditions for area filtering", null);
 				conditions.addAll(configuration.getDatabaseConnection().createAreaFilter(configuration.getCurrentArea(),
 						currentBeanType));
 
+				Application.logError2(ToolParent.INFO, "Starting to create text filter", null);
 				conditions.addAll(configuration.getDatabaseConnection().createTextFilter(configuration.getFilter(),
 						currentBeanType));
 
 				final List<? extends TreeStructurable> currentItems = configuration.getDatabaseConnection()
 						.listAll(currentBeanType, conditions);
+				Application.logError2(ToolParent.INFO, "Adding results to the item lists", null);
 				allItems.addAll(currentItems);
 			}
 		}
@@ -100,10 +107,13 @@ public class TreeUtils {
 	 * @return
 	 */
 	public static TreeNode buildStructure(final TreeStructurable[] items, final TreeNode root) {
+		Application.logError2(ToolParent.INFO, "Starting to Build Tree Structure.", null);
 		root.removeAllChildren();
 		final TreeNode subRoot = new TreeNode(TreeNode.NodeType.ROOT, "Database");
 		root.addChild(subRoot);
-
+		
+		Application.logError2(ToolParent.INFO, "Updating Tree from the model calculated", null);
+		Application.logError2(ToolParent.INFO, "Total amount of items to add " + items.length, null);
 		for (final TreeStructurable currentItem : items) {
 			final String platformName = currentItem.getPlatform().getTrackName();
 			final String datafileName = currentItem.getDatafile().getReference();
@@ -152,6 +162,7 @@ public class TreeUtils {
 			leaf.addItem(currentItem);
 		}
 
+		Application.logError2(ToolParent.INFO, "Finishing building tree structure", null);
 		return root;
 	}
 
