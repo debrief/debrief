@@ -257,7 +257,7 @@ public class PepysImportView extends Dialog implements AbstractViewSWT {
 		textFilterItem.getBody().setLayout(textFilterLayout);
 
 		this.textSearchLabel = new Label(textFilterItem.getBody(), SWT.NONE);
-		this.textSearchLabel.setText("Enemy Contact:");
+		this.textSearchLabel.setText("Search Text:");
 
 		final GridData filterTextGridData = new GridData();
 		filterTextGridData.widthHint = 150;
