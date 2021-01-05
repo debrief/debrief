@@ -3,7 +3,7 @@
 /windows/expat.dll
 /windows/freexl.dll
 /windows/fribidi.dll
-/windows/gdal301.dll
+/windows/gdal302.dll
 /windows/gdal_create.exe
 /windows/gdalwarp.exe
 /windows/geos.dll
