@@ -42,6 +42,7 @@ import org.mwc.debrief.core.wizards.core.NewSolutionWizard;
 import Debrief.Wrappers.TMAContactWrapper;
 import Debrief.Wrappers.TMAWrapper;
 import Debrief.Wrappers.TrackWrapper;
+import MWC.GUI.BaseLayer;
 import MWC.GUI.Editable;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
@@ -85,7 +86,7 @@ public class GenerateTUASolution implements RightClickContextItemGenerator {
 			// do we know the parent track?
 			if (_track != null) {
 				// right, just see if a solution with this name already exists
-				final TMAWrapper solLayer = _track.getSolutions();
+				final BaseLayer solLayer = _track.getSolutions();
 
 				if (solLayer != null) {
 					final Enumeration<Editable> theSols = solLayer.elements();

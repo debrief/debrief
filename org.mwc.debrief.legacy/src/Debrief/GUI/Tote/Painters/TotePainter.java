@@ -337,7 +337,7 @@ public class TotePainter implements StepperListener, CanvasType.PaintListener, E
 				}
 
 				// now the TMA solutons
-				final TMAWrapper tuaLayer = trw.getSolutions();
+				final BaseLayer tuaLayer = trw.getSolutions();
 				if (tuaLayer.getVisible()) {
 					final Enumeration<Editable> solutions = tuaLayer.elements();
 					if (solutions != null) {
