@@ -795,11 +795,24 @@ public class RightClickCutCopyAdaptor {
 			// now fiddle with it
 			updateLayers = new Layers();
 			updateLayers.addThisLayer(tw);
-			clipboard = new Clipboard(Display.getDefault());
+//			if(!Platform.isRunning()) {
+//				clipboard = new Clipboard(Display.getDefault());
+//			}
+//			else {
+//				Display.getDefault().asyncExec(new Runnable() {
+//					
+//					@Override
+//					public void run() {
+//						clipboard = new Clipboard(Display.getDefault());
+//						
+//					}
+//				});
+//			}
 
 		}
 
 		public void testCutOneItem() {
+			clipboard = new Clipboard(Display.getDefault());
 			Layer[] parentLayer = new Layer[] { tw };
 			final CutItem ci = new MyCutItem(new Editable[] { fw2 }, clipboard, parentLayer, updateLayers, parentLayer);
 			// check our item's in there
@@ -812,6 +825,7 @@ public class RightClickCutCopyAdaptor {
 			assertTrue("item there after op", isPositionThere(tw, fw3));
 		}
 		public void testCutTwoItems() {
+			clipboard = new Clipboard(Display.getDefault());
 			Layer[] parentLayer = new Layer[] { tw, tw };
 			final CutItem c2 = new MyCutItem(new Editable[] { fw2, fw4 }, clipboard, parentLayer, updateLayers,
 					parentLayer);
@@ -826,7 +840,7 @@ public class RightClickCutCopyAdaptor {
 
 		}
 		public void testCutSensorWrapper() {
-
+			clipboard = new Clipboard(Display.getDefault());
 			CutItem c3 = new CutItem(new Editable[] { scwa1 }, clipboard, new HasEditables[] {swa}, updateLayers, new TrackWrapper[] {tw});
 			assertTrue("item there before op", isSensorThere(tw, scwa1));
 			assertTrue("item there before op", isSensorThere(tw, scwa2));
@@ -840,6 +854,7 @@ public class RightClickCutCopyAdaptor {
 
 
 		public void testCutOneContactWrapper() {
+			clipboard = new Clipboard(Display.getDefault());
 			CutItem c3 = new CutItem(new Editable[] { tcwa1 }, clipboard, new HasEditables[] {mwa}, updateLayers, new TrackWrapper[] {tw});
 			assertTrue("item there before op", isContactThere(tw, tcwa1));
 			assertTrue("item there before op", isContactThere(tw, tcwa2));
@@ -850,6 +865,7 @@ public class RightClickCutCopyAdaptor {
 			assertTrue("item there after op", isContactThere(tw, tcwa3));
 		}
 		public void testCutTwoContactWrappers() {
+			clipboard = new Clipboard(Display.getDefault());
 			CutItem c3 = new CutItem(new Editable[] { tcwa1, tcwa2 }, clipboard, new HasEditables[] {mwa,mwa}, updateLayers, new TrackWrapper[] {tw});
 			assertTrue("item there before op", isContactThere(tw, tcwa1));
 			assertTrue("item there before op", isContactThere(tw, tcwa2));
@@ -860,6 +876,7 @@ public class RightClickCutCopyAdaptor {
 			assertTrue("item there after op", isContactThere(tw, tcwa3));
 		}
 		public void testCutDiffLayersContacts() {
+			clipboard = new Clipboard(Display.getDefault());
 			CutItem c3 = new CutItem(new Editable[] { tcwa1, tcw2 }, clipboard, new HasEditables[] {mwa,mw}, updateLayers, new TrackWrapper[] {tw});
 			assertTrue("item there before op", isContactThere(tw, tcwa1));
 			assertTrue("item there before op", isContactThere(tw, tcwa2));
@@ -870,6 +887,7 @@ public class RightClickCutCopyAdaptor {
 			assertTrue("item there after op", isContactThere(tw, tcwa3));
 		}
 		public void testCutDiffSensors() {
+			clipboard = new Clipboard(Display.getDefault());
 			CutItem c3 = new CutItem(new Editable[] { scwa1, scw2 }, clipboard, new HasEditables[] {swa,sw}, updateLayers, new TrackWrapper[] {tw});
 			assertTrue("item there before op", isSensorThere(tw, scwa1));
 			assertTrue("item there before op", isSensorThere(tw, scw2));
