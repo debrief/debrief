@@ -41,7 +41,7 @@ jobs:
                     sudo apt-get install gcab,
                     sudo apt-get install libgcab-1.0-0,
                     sudo apt-get install libgcab-dev
-         services:
+  services:
            - name: Start service
              run: | 
                      sh -e /etc/init.d/xvfb start,
