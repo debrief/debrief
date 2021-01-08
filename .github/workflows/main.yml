@@ -43,7 +43,9 @@ jobs:
                     sudo apt-get install libgcab-dev
   services:
            name: Start service
-           run: | 
+           steps:
+             - name: start the service
+               run: | 
                      sh -e /etc/init.d/xvfb start,
                        # This workflow contains a single job called "build"
   build-and-deploy:
