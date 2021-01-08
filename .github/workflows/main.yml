@@ -45,10 +45,11 @@ jobs:
                     sudo apt-get install libgcab-1.0-0,
                     sudo apt-get install libgcab-dev
   services:
-           name: Start service
-           steps:
-             - name: start the service
-               run: | 
+    name: Start service
+    runs-on: ubuntu-latest
+    steps:
+       - name: start the service
+         run: | 
                      sh -e /etc/init.d/xvfb start,
                        # This workflow contains a single job called "build"
   build-and-deploy:
@@ -77,8 +78,9 @@ jobs:
                mv jre ../org.mwc.debrief.combined.feature/win-64/jre,
                # move back to top level
                cd ../
-        -name: build
-        run: mvn clean verify -U -B -fae
+        
+        - name: build
+          run: mvn clean verify -U -B -fae
 
         # Runs a single command using the runners shell
       - name: Run a one-line script
