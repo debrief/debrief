@@ -30,8 +30,8 @@ jobs:
     name: The actual installation
     runs-on: ubuntu-latest
     steps:
-     - name: Install maven packages
-     run: | 
+      - name: Install maven packages
+        run: | 
                     mvn --version,
                     sudo apt-get install intltool
                     sudo apt-get install libgsf-1-dev,
