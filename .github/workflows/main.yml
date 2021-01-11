@@ -25,9 +25,10 @@ jobs:
                 sudo apt-get install libpq-dev python-dev
                 sudo add-apt-repository -y ppa:ubuntugis/ubuntugis-unstable
                 sudo apt-get update
-                sudo apt-get install postgis 
-        - name: The actual installation
-          run: | 
+                sudo apt-get install postgis
+
+      - name: The actual installation
+        run: | 
                     mvn --version,
                     sudo apt-get install intltool
                     sudo apt-get install libgsf-1-dev
@@ -40,11 +41,10 @@ jobs:
                     sudo apt-get install gcab
                     sudo apt-get install libgcab-1.0-0
                     sudo apt-get install libgcab-dev
-        - name: Start service
-          run: | 
+      - name: Start service
+        run: | 
                      sh -e /etc/init.d/xvfb start
                        # This workflow contains a single job called "build"
-          - name: Build and Deploy
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
       - name: Do the build
