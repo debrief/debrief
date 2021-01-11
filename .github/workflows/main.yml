@@ -25,6 +25,7 @@ jobs:
                 sudo apt-get install libpq-dev python-dev
                 sudo add-apt-repository -y ppa:ubuntugis/ubuntugis-unstable
                 sudo apt-get update
+                sudo apt install libgdal20 
                 # sudo apt-get install postgis
                 sudo apt install postgis postgresql-12-postgis-3
       - name: The actual installation
