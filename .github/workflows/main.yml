@@ -100,6 +100,3 @@ jobs:
           echo test, and deploy your project.
       - name: Cleanup xvfb pidx
         uses: bcomnes/cleanup-xvfb@v1
-  on:
-          tags: true
-          all_branches: true
