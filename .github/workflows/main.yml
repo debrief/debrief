@@ -72,7 +72,7 @@ jobs:
                 status: always()
         run: mvn clean verify -U -B -fae
            
-        -name: On failure runs this
+        - name: On failure runs this
         with:
                 status: failure()
         run: |
