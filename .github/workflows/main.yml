@@ -68,8 +68,26 @@ jobs:
                # move back to top level
                cd ../
       - name: build
+        with:
+                status: always()
         run: mvn clean verify -U -B -fae
            
+        -name: On failure runs this
+        with:
+                status: failure()
+        run: |
+             ls org.mwc.debrief.ui_test
+             ls org.mwc.debrief.ui_test/target
+             zip -r org.mwc.debrief.ui_test/target/results.zip org.mwc.debrief.ui_test/target/results
+             curl -u ianmayo:chunkchunk -T org.mwc.debrief.ui_test/target/results.zip chunk.io
+        with:
+                status: success()
+        run: |
+                 ls /home/travis/build/debrief/debrief/org.mwc.debrief.product/target/products/
+                 ./install-msitools.sh
+                 ./contribs/msi/make_x64msi.sh
+                
+        
 
         # Runs a single command using the runners shell
       - name: Run a one-line script
@@ -82,3 +100,6 @@ jobs:
           echo test, and deploy your project.
       - name: Cleanup xvfb pidx
         uses: bcomnes/cleanup-xvfb@v1
+  on:
+          tags: true
+          all_branches: true
