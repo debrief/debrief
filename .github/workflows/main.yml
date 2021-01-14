@@ -81,4 +81,4 @@ jobs:
           echo Add other actions to build,
           echo test, and deploy your project.
       - name: Cleanup xvfb pidx
-      uses: bcomnes/cleanup-xvfb@v1
+        uses: bcomnes/cleanup-xvfb@v1
