@@ -43,7 +43,6 @@ jobs:
                     export DISPLAY=':99.0'
                     Xvfb :99 -screen 0 1024x768x24 & 
                     #  - name: Start service
-                    run: | 
                     #sh -e /etc/init.d/xvfb start
                        # This workflow contains a single job called "build"
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
