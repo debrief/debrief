@@ -72,8 +72,6 @@ jobs:
                # move back to top level
                cd ../
       - name: do maven build
-        with:
-                status: always()
         run: mvn clean verify -U -B -fae
       - name: copy test results 
         run: |
