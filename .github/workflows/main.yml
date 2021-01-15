@@ -49,6 +49,7 @@ jobs:
   build:
     name: Checkout and build
     needs: install
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
       - name: Checkout from repository 
