@@ -46,10 +46,10 @@ jobs:
                     #sh -e /etc/init.d/xvfb start
                        # This workflow contains a single job called "build"
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-   build:
-      name: Checkout and build
-      needs: install
-      steps:
+  build:
+    name: Checkout and build
+    needs: install
+    steps:
       - uses: actions/checkout@v2
       - name: Checkout from repository 
         uses: actions/setup-java@v1
@@ -94,7 +94,7 @@ jobs:
 
   deploy:
     runs-on: ubuntu-latest
-    needs: build
+    needs: before-deploy 
     name: Download maven build artifact
     uses: actions/download-artifact@v1
     with :
@@ -107,5 +107,8 @@ jobs:
         run: |
           echo Add other actions to build,
           echo test, and deploy your project.
+  clean:
+    runs-on: ubuntu-latest
+    needs: build
       - name: Cleanup xvfb pidx
         uses: bcomnes/cleanup-xvfb@v1
