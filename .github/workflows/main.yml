@@ -82,12 +82,9 @@ jobs:
         with:
                 status: success()
         run: |
-                 ls /home/travis/build/debrief/debrief/org.mwc.debrief.product/target/products/
-                 ./install-msitools.sh
-                 ./contribs/msi/make_x64msi.sh
-                
-        
-
+             ls /home/travis/build/debrief/debrief/org.mwc.debrief.product/target/products/
+             ./install-msitools.sh
+             ./contribs/msi/make_x64msi.sh
         # Runs a single command using the runners shell
       - name: Run a one-line script
         run: echo Hello, world!
