@@ -99,6 +99,7 @@ jobs:
     uses: actions/download-artifact@v1
     with :
       name: artifact
+      steps: 
       - name: Run a one-line script
         run: echo Hello, world!
 
