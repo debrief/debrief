@@ -75,6 +75,7 @@ jobs:
       - name: do maven build
         run: mvn clean verify -U -B -fae
       - name: copy test results 
+        if: always()
         run: |
              ls org.mwc.debrief.ui_test
              ls org.mwc.debrief.ui_test/target
