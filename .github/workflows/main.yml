@@ -76,15 +76,11 @@ jobs:
         run: mvn clean verify -U -B -fae
       - name: publish test results 
         if: always()
-        steps: 
-          - name: publish results
-            run: |
+        run: |
                     ls org.mwc.debrief.test2
                     ls org.mwc.debrief.test2/target
                     zip -r org.mwc.debrief.test2/target/results.zip org.mwc.debrief.test2/target/results
                     curl -u ianmayo:chunkchunk -T org.mwc.debrief.test2/target/results.zip chunk.io
-
-
   before-deploy:
     runs-on: ubuntu-latest
     needs: build
