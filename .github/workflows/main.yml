@@ -86,8 +86,8 @@ jobs:
     needs: build
     name: before deploy
     steps:
-     -name: build installer
-      run: |
+     - name: build installer
+       run: |
            ls /home/travis/build/debrief/debrief/org.mwc.debrief.product/target/products/
            ./install-msitools.sh
            ./contribs/msi/make_x64msi.sh
