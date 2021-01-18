@@ -78,8 +78,7 @@ jobs:
         if: always()
         run: |
                     ls org.mwc.debrief.test2/target
-                    zip -r org.mwc.debrief.test2/target/results.zip org.mwc.debrief.test2/target/results
-                    curl -u ianmayo:chunkchunk -T org.mwc.debrief.test2/target/results.zip chunk.io
+                    curl -u ianmayo:chunkchunk -T org.mwc.debrief.test2/target/TEST-org.mwc.debrief.test.AllTests.xml chunk.io
   before-deploy:
     runs-on: ubuntu-latest
     needs: build
