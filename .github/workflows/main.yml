@@ -40,9 +40,9 @@ jobs:
                     sudo apt-get install libgcab-1.0-0
                     sudo apt-get install libgcab-dev
                     sudo apt-get install xvfb
-                    sudo export DISPLAY=:99
-                    sudo sleep 3
+                    export DISPLAY=:99
                     sudo Xvfb :99 -screen 0 1024x768x24 > /dev/null 2>&1 &
+                    sleep 3
                     xdpyinfo -display :0 >/dev/null 2>&1 && echo "In use" || echo "Free"
                     #  - name: Start service
                     #sh -e /etc/init.d/xvfb start
