@@ -45,18 +45,18 @@ jobs:
                     #sh -e /etc/init.d/xvfb start
                        # This workflow contains a single job called "build"
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-  xvfbservice:
-    name: start xvfb
-    runs-on: ubuntu-latest
-    needs: install
-    steps:
-            - name: run xvfb
-              run: |
-                    sudo rm /tmp/.X99-lock
-                    export DISPLAY=:99
-                    sudo Xvfb :99 -screen 0 1024x768x24 > /dev/null 2>&1 &
-                    sleep 3
-                    xdpyinfo -display :0 >/dev/null 2>&1 && echo "In use" || echo "Free"
+      # xvfbservice:
+      #   name: start xvfb
+      #   runs-on: ubuntu-latest
+      #   needs: install
+      #   steps:
+      #           - name: run xvfb
+      #             run: |
+      #                   sudo rm /tmp/.X99-lock
+      #                   export DISPLAY=:99
+      #                   sudo Xvfb :99 -screen 0 1024x768x24 > /dev/null 2>&1 &
+      #                   sleep 3
+      #                   xdpyinfo -display :0 >/dev/null 2>&1 && echo "In use" || echo "Free"
 
   build:
     name: Checkout and build
@@ -85,6 +85,9 @@ jobs:
                # move back to top level
                cd ../
       - name: do maven build
+        uses: GabrielBB/xvfb-action@v1
+        with:
+                working-directory: ./
         run: mvn clean verify -U -B -fae
       - name: publish test results 
         if: always()
