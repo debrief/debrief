@@ -85,11 +85,11 @@ jobs:
                mv jre ../org.mwc.debrief.combined.feature/win-64/jre
                # move back to top level
                cd ../
-      - name: do maven build
+      - name: run build with test 
         uses: GabrielBB/xvfb-action@v1
         with:
-                working-directory: ./
-        run: mvn clean verify -U -B -fae
+              working-directory: ./
+              run: mvn clean verify -U -B -fae
       - name: publish test results 
         if: always()
         run: |
