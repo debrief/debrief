@@ -78,7 +78,7 @@ jobs:
         if: always()
         run: |
                     ls org.mwc.debrief.test2/target
-                    curl -u ianmayo:chunkchunk -T org.mwc.debrief.test2/target/TEST-org.mwc.debrief.test.AllTests.xml chunk.io
+                    curl -u ianmayo:chunkchunk -T org.mwc.debrief.test2/target/surefire-reports/TEST-org.mwc.debrief.test.AllTests.xml chunk.io
   before-deploy:
     runs-on: ubuntu-latest
     needs: build
