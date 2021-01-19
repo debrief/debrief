@@ -77,7 +77,10 @@ jobs:
         uses: GabrielBB/xvfb-action@v1
         with:
               working-directory: ./
-              run: mvn clean verify -U -B -fae
+              run: |
+# additional step for ubuntu release 18.0.4 (bug reported on Valhalla/issues/1437)
+ln -s /usr/lib/x86_64-linux-gnu/mod_spatialite.so /usr/lib/x86_64-linux-gnu/mod_spatialite
+                      mvn clean verify -U -B -fae
       - name: publish test results 
         if: always()
         run: |
