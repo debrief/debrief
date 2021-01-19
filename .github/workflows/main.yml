@@ -84,9 +84,9 @@ ln -s /usr/lib/x86_64-linux-gnu/mod_spatialite.so /usr/lib/x86_64-linux-gnu/mod_
       - name: publish test results 
         if: always()
         run: |
-                    ls org.mwc.debrief.test2/target
-                    cat org.mwc.debrief.test2/target/surefire-reports/TEST-org.mwc.debrief.test.AllTests.xml
-                    #curl -u ianmayo:chunkchunk -T org.mwc.debrief.test2/target/surefire-reports/TEST-org.mwc.debrief.test.AllTests.xml chunk.io
+             ls org.mwc.debrief.test2/target
+             cat org.mwc.debrief.test2/target/surefire-reports/TEST-org.mwc.debrief.test.AllTests.xml
+             #curl -u ianmayo:chunkchunk -T org.mwc.debrief.test2/target/surefire-reports/TEST-org.mwc.debrief.test.AllTests.xml chunk.io
   before-deploy:
     runs-on: ubuntu-latest
     needs: build
