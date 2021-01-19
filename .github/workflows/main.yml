@@ -77,7 +77,8 @@ jobs:
                # additional step for ubuntu release 18.0.4 (bug reported on Valhalla/issues/1437)
       - name: run build with test 
         uses: GabrielBB/xvfb-action@v1
-        env: SPATIALITE_LIBRARY_PATH = 'mod_spatialite' 
+        env: 
+          SPATIALITE_LIBRARY_PATH: mod_spatialite 
         with:
               working-directory: ./
               run: mvn clean verify -U -B -fae
