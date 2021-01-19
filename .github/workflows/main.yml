@@ -42,7 +42,7 @@ jobs:
                     sudo apt-get install libgcab-dev
                     sudo apt-get install libgconf-2-4
                     sudo apt-get install xvfb
-                    ln -s /usr/lib/x86_64-linux-gnu/mod_spatialite.so /usr/lib/x86_64-linux-gnu/mod_spatialite
+                    sudo ln -s /usr/lib/x86_64-linux-gnu/mod_spatialite.so /usr/lib/x86_64-linux-gnu/mod_spatialite
                     #  - name: Start service
                     #sh -e /etc/init.d/xvfb start
                        # This workflow contains a single job called "build"
