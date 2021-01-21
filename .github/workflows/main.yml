@@ -17,7 +17,7 @@ on:
 jobs:
   install:
     name: Before installation
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-16.04
     steps:
       - name: Update ubuntu
         run: |
@@ -48,7 +48,7 @@ jobs:
   build:
     name: Checkout and build
     needs: install
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-16.04
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -87,7 +87,7 @@ jobs:
              cat org.mwc.debrief.test2/target/surefire-reports/TEST-org.mwc.debrief.test.AllTests.xml
              #curl -u ianmayo:chunkchunk -T org.mwc.debrief.test2/target/surefire-reports/TEST-org.mwc.debrief.test.AllTests.xml chunk.io
   before-deploy:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-16.04
     needs: build
     name: before deploy
     steps:
@@ -99,7 +99,7 @@ jobs:
      - name: Cleanup xvfb pidx
        uses: bcomnes/cleanup-xvfb@v1
        #deploy:
-       #  runs-on: ubuntu-20.04
+       #  runs-on: ubuntu-16.04
        #  needs: before-deploy 
        #  name: Download maven build artifact
        #  with :
