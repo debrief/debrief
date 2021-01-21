@@ -17,7 +17,7 @@ on:
 jobs:
   install:
     name: Before installation
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     steps:
       - name: Update ubuntu
         run: |
@@ -48,7 +48,7 @@ jobs:
   build:
     name: Checkout and build
     needs: install
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -87,30 +87,30 @@ jobs:
              cat org.mwc.debrief.test2/target/surefire-reports/TEST-org.mwc.debrief.test.AllTests.xml
              #curl -u ianmayo:chunkchunk -T org.mwc.debrief.test2/target/surefire-reports/TEST-org.mwc.debrief.test.AllTests.xml chunk.io
   before-deploy:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     needs: build
     name: before deploy
     steps:
      - name: build installer
        run: |
-           ls ../org.mwc.debrief.product/target/products/
+           ls org.mwc.debrief.product/target/products/
            ./install-msitools.sh
            ./contribs/msi/make_x64msi.sh
      - name: Cleanup xvfb pidx
        uses: bcomnes/cleanup-xvfb@v1
-           # deploy:
-           #   runs-on: ubuntu-latest
-           #   needs: before-deploy 
-           #   name: Download maven build artifact
-           #   with :
-           #     name: artifact
-           #     steps: 
-           #     - name: Run a one-line script
-           #       run: echo Hello, world!
-           #
-           #     # Runs a set of commands using the runners shell
-           #     - name: Run a multi-line script
-           #       run: |
-           #         echo Add other actions to build,
-           #         echo test, and deploy your project.
+       #deploy:
+       #  runs-on: ubuntu-20.04
+       #  needs: before-deploy 
+       #  name: Download maven build artifact
+       #  with :
+       #    name: artifact
+       #    steps: 
+       #    - name: Run a one-line script
+       #      run: echo Hello, world!
+       #
+       #    # Runs a set of commands using the runners shell
+       #    - name: Run a multi-line script
+       #      run: |
+       #        echo Add other actions to build,
+       #        echo test, and deploy your project.
       
