@@ -44,9 +44,6 @@ jobs:
                     sudo apt-get install libgcab-dev
                     sudo apt-get install libgconf-2-4
                     sudo apt-get install xvfb
-                    #  - name: Start service
-                    #sh -e /etc/init.d/xvfb start
-                       # This workflow contains a single job called "build"
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
   build:
     name: Checkout and build
@@ -96,7 +93,7 @@ jobs:
     steps:
      - name: build installer
        run: |
-           ls /home/travis/build/debrief/debrief/org.mwc.debrief.product/target/products/
+           ls ../org.mwc.debrief.product/target/products/
            ./install-msitools.sh
            ./contribs/msi/make_x64msi.sh
      - name: Cleanup xvfb pidx
