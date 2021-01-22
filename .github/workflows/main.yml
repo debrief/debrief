@@ -93,7 +93,7 @@ jobs:
     steps:
      - name: build installer
        run: |
-           ls /home/runner/work/debrief/debrief/org.mwc.debrief.product/target/products/
+           sudo ls /home/runner/work/debrief/debrief/org.mwc.debrief.product/target/products/
            ./install-msitools.sh
            ./contribs/msi/make_x64msi.sh
      - name: Cleanup xvfb pidx
