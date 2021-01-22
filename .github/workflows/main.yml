@@ -104,7 +104,7 @@ jobs:
     name: Download maven build artifact
     with :
       name: artifact
-      steps: 
+    steps: 
       - name: Create Release
         id: create_release
         uses: actions/create-release@v1
