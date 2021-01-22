@@ -93,7 +93,7 @@ jobs:
     steps:
      - name: build installer
        run: |
-           ls org.mwc.debrief.product/target/products/
+           ls /home/runner/work/debrief/debrief/org.mwc.debrief.product/target/products/
            ./install-msitools.sh
            ./contribs/msi/make_x64msi.sh
      - name: Cleanup xvfb pidx
@@ -120,7 +120,7 @@ jobs:
           GITHUB_TOKEN: Oqy+moovC3HQ0dbvWHHNOVCsqzq7vpTjlvtFVqqTiMJaCa4OUiCXOuUKr8PXtANCx6yZxrtgYKUxIDX5gpAtTWq3ylPaoedmkx2jSlkf5e4AgT4wLJcstWrwKYyK3NQjc45g3WqRCmsqsrnVQCREwD/Vq09vCt4+nZYGB5FPBmU=
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: org.mwc.debrief.product/target/products/DebriefNG-Linux64Bit.zip
+          asset_path: /home/runner/work/debrief/debrief/org.mwc.debrief.product/target/products/DebriefNG-Linux64Bit.zip
           assert_name: linux_release
           asset_content_type: application/zip
       
