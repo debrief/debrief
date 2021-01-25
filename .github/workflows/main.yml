@@ -93,11 +93,9 @@ jobs:
     steps:
      - name: build installer
        run: |
-           sudo ls /home/runner/work/debrief/debrief/org.mwc.debrief.product/target/products/
+           ls /home/runner/work/debrief/debrief/org.mwc.debrief.product/target/products/
            ./install-msitools.sh
            ./contribs/msi/make_x64msi.sh
-     - name: Cleanup xvfb pidx
-       uses: bcomnes/cleanup-xvfb@v1
   deploy:
     runs-on: ubuntu-latest
     needs: before-deploy 
@@ -123,4 +121,10 @@ jobs:
           asset_path: /home/runner/work/debrief/debrief/org.mwc.debrief.product/target/products/DebriefNG-Linux64Bit.zip
           assert_name: linux_release
           asset_content_type: application/zip
-      
+  cleanup:    
+    runs-on: ubuntu-latest
+    needs: deploy 
+    name: clean up
+    steps: 
+     - name: Cleanup xvfb pidx
+       uses: bcomnes/cleanup-xvfb@v1
