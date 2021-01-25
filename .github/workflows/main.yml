@@ -121,7 +121,7 @@ jobs:
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: /home/runner/work/debrief/debrief/org.mwc.debrief.product/target/products/DebriefNG-Linux64Bit.zip
-          assert_name: linux_release
+          asset_name: linux_release
           asset_content_type: application/zip
           # cleanup:    
           #   runs-on: ubuntu-latest
