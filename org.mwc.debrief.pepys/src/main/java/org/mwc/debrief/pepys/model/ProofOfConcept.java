@@ -19,11 +19,13 @@ import java.beans.PropertyVetoException;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLException;
+import java.util.Collection;
 import java.util.List;
 
 import org.mwc.debrief.pepys.model.bean.Datafile;
 import org.mwc.debrief.pepys.model.bean.DatafileType;
 import org.mwc.debrief.pepys.model.bean.State;
+import org.mwc.debrief.pepys.model.db.Condition;
 import org.mwc.debrief.pepys.model.db.DatabaseConnection;
 import org.mwc.debrief.pepys.model.db.SqliteDatabaseConnection;
 import org.mwc.debrief.pepys.model.db.config.ConfigurationReader;
@@ -39,10 +41,10 @@ public class ProofOfConcept {
 					new LoaderOption(LoaderType.DEFAULT_FILE, DatabaseConnection.DEFAULT_SQLITE_TEST_DATABASE_FILE) });
 			final SqliteDatabaseConnection sqlite = new SqliteDatabaseConnection();
 			sqlite.initializeInstance(_config);
-			final List list2 = sqlite.listAll(DatafileType.class, null);
-			final List list = sqlite.listAll(Datafile.class, null);
+			final List list2 = sqlite.listAll(DatafileType.class, (Collection<Condition>)null);
+			final List list = sqlite.listAll(Datafile.class, (Collection<Condition>)null);
 
-			final List list3 = sqlite.listAll(State.class, null);
+			final List list3 = sqlite.listAll(State.class, (Collection<Condition>)null);
 
 			// final List list4 = DatabaseConnection.getInstance().listAll(State.class,
 			// "source_id = 16");

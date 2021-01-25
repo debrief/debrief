@@ -6,6 +6,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
@@ -46,7 +47,7 @@ public class State implements AbstractBean, TreeStructurable {
 						new LoaderOption(LoaderType.DEFAULT_FILE, DatabaseConnection.DEFAULT_SQLITE_TEST_DATABASE_FILE) });
 				final SqliteDatabaseConnection sqlite = new SqliteDatabaseConnection();
 				sqlite.initializeInstance(_config);
-				final List<State> list = sqlite.listAll(State.class, null);
+				final List<State> list = sqlite.listAll(State.class, (Collection<Condition>)null);
 
 				assertTrue("States - database entries", list.size() == 12239);
 

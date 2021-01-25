@@ -19,10 +19,12 @@ import java.beans.PropertyVetoException;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLException;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
 import org.mwc.debrief.pepys.model.PepsysException;
+import org.mwc.debrief.pepys.model.db.Condition;
 import org.mwc.debrief.pepys.model.db.DatabaseConnection;
 import org.mwc.debrief.pepys.model.db.SqliteDatabaseConnection;
 import org.mwc.debrief.pepys.model.db.annotation.Id;
@@ -47,7 +49,7 @@ public class DatafileType implements AbstractBean {
 								DatabaseConnection.DEFAULT_SQLITE_TEST_DATABASE_FILE) });
 				final SqliteDatabaseConnection sqlite = new SqliteDatabaseConnection();
 				sqlite.initializeInstance(_config);
-				final List<DatafileType> list = sqlite.listAll(DatafileType.class, null);
+				final List<DatafileType> list = sqlite.listAll(DatafileType.class, (Collection<Condition>)null);
 
 				assertTrue("Datafiletypes - database entries", list.size() == 8);
 

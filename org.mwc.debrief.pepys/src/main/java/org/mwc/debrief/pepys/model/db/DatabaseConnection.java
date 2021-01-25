@@ -111,7 +111,6 @@ public abstract class DatabaseConnection {
 				if (new File(configurationFile).isFile()) {
 					// Here we are simply load the file as given
 					configurationFileStream = new FileInputStream(new File(configurationFile));
-					;
 				} else {
 					// show error:
 					// "Config file specified in "+ CONFIG_FILE_ENV_NAME + " environment variable
@@ -340,6 +339,87 @@ public abstract class DatabaseConnection {
 		return ans.reverse().toString();
 	}
 
+	/**
+	 * Method similar to listAll(final Class<T> type, final Collection<Condition>
+	 * conditions)
+	 * 
+	 * but it receives a custom query hand-made, creating a list of objects from
+	 * it.
+	 * 
+	 * @param <T>
+	 * @param type
+	 * @param customQuery Query to run
+	 * @param parameters Parameters to replace inside the query.
+	 * @return
+	 * @throws SQLException 
+	 * @throws IOException 
+	 * @throws ClassNotFoundException 
+	 * @throws NoSuchMethodException 
+	 * @throws InvocationTargetException 
+	 * @throws IllegalAccessException 
+	 * @throws InstantiationException 
+	 */
+	public <T> List<T> listAll(final Class<T> type, final String customQuery, final List<Object> parameters) throws SQLException, ClassNotFoundException, IOException, InstantiationException, IllegalAccessException, InvocationTargetException, NoSuchMethodException {
+		if (SHOW_SQL) {
+			System.out.println(customQuery);
+		}
+		
+
+		final Connection connection = pool.getConnection();
+		final List<T> ans = new ArrayList<>();
+		ResultSet resultSet = null;
+		PreparedStatement statement = null;
+		
+		try {
+			statement = connection.prepareStatement(customQuery);
+			
+			for (int i = 0 ; i < parameters.size(); i++) {
+				final Object valueToAssign = parameters.get(i);
+				statement.setObject(i + 1, valueToAssign); // TODO improve this.
+			}
+			
+			loadExtention(connection, statement);
+
+			resultSet = statement.executeQuery();
+
+			while (resultSet.next()) {
+				final T instance = storeFieldValue(type, resultSet, "");
+				ans.add(instance);
+			}
+
+			return ans;
+		}finally {
+			if (connection != null) {
+				connection.close();
+			}
+			if (statement != null) {
+				statement.close();
+			}
+			if (resultSet != null) {
+				resultSet.close();
+			}
+		}
+	}
+
+	/**
+	 * Method that automatically query a list of objects that satisfy a collection
+	 * of conditions. This method generates the SQL Query, connects to database,
+	 * and run the query, building the list of objects by reflection. 
+	 * @param <T>
+	 * @param type
+	 * @param conditions
+	 * @return
+	 * @throws PropertyVetoException
+	 * @throws SQLException
+	 * @throws NoSuchMethodException
+	 * @throws SecurityException
+	 * @throws InstantiationException
+	 * @throws IllegalAccessException
+	 * @throws IllegalArgumentException
+	 * @throws InvocationTargetException
+	 * @throws ClassNotFoundException
+	 * @throws IOException
+	 */
 	public <T> List<T> listAll(final Class<T> type, final Collection<Condition> conditions)
 			throws PropertyVetoException, SQLException, NoSuchMethodException, SecurityException,
 			InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException,

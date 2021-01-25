@@ -4,10 +4,12 @@ import java.beans.PropertyVetoException;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLException;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
 import org.mwc.debrief.pepys.model.PepsysException;
+import org.mwc.debrief.pepys.model.db.Condition;
 import org.mwc.debrief.pepys.model.db.DatabaseConnection;
 import org.mwc.debrief.pepys.model.db.SqliteDatabaseConnection;
 import org.mwc.debrief.pepys.model.db.annotation.FieldName;
@@ -32,7 +34,7 @@ public class Sensor implements AbstractBean, Comparable<Sensor> {
 						new LoaderOption(LoaderType.DEFAULT_FILE, DatabaseConnection.DEFAULT_SQLITE_TEST_DATABASE_FILE) });
 				final SqliteDatabaseConnection sqlite = new SqliteDatabaseConnection();
 				sqlite.initializeInstance(_config);
-				final List<Sensor> list = sqlite.listAll(Sensor.class, null);
+				final List<Sensor> list = sqlite.listAll(Sensor.class, (Collection<Condition>)null);
 
 				assertTrue("States - database entries", list.size() == 43);
 

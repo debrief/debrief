@@ -20,10 +20,12 @@ import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.io.PrintStream;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.TreeMap;
 
 import org.mwc.debrief.pepys.model.bean.State;
+import org.mwc.debrief.pepys.model.db.Condition;
 import org.mwc.debrief.pepys.model.db.DatabaseConnection;
 import org.mwc.debrief.pepys.model.db.SqliteDatabaseConnection;
 import org.mwc.debrief.pepys.model.db.config.ConfigurationReader;
@@ -52,7 +54,7 @@ public class TreeNode {
 						new LoaderOption(LoaderType.DEFAULT_FILE, DatabaseConnection.DEFAULT_SQLITE_DATABASE_FILE) });
 				final SqliteDatabaseConnection sqlite = new SqliteDatabaseConnection();
 				sqlite.initializeInstance(_config);
-				list = sqlite.listAll(State.class, null);
+				list = sqlite.listAll(State.class, (Collection<Condition>)null);
 			} catch (final Exception e) {
 				fail("Failed retrieving data from Database");
 			}
