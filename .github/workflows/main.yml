@@ -87,48 +87,95 @@ jobs:
         run: |
              ls org.mwc.debrief.test2/target
              cat org.mwc.debrief.test2/target/surefire-reports/TEST-org.mwc.debrief.test.AllTests.xml
-             #curl -u ianmayo:chunkchunk -T org.mwc.debrief.test2/target/surefire-reports/TEST-org.mwc.debrief.test.AllTests.xml chunk.io
-             #before-deploy:
-             #runs-on: ubuntu-latest
-             #needs: build
-             #name: before deploy
-             #steps:
       - name: build installer
         run: |
            ls /home/runner/work/debrief/debrief/org.mwc.debrief.product/target/products/
            ./install-msitools.sh
            ./contribs/msi/make_x64msi.sh
-           # deploy:
-           #   runs-on: ubuntu-latest
-           #   needs: before-deploy 
-           #   name: Download maven build artifact
-           #   steps: 
       - name: Create Release
         id: create_release
         uses: actions/create-release@v1
         env: 
-        # GITHUB_TOKEN: Oqy+moovC3HQ0dbvWHHNOVCsqzq7vpTjlvtFVqqTiMJaCa4OUiCXOuUKr8PXtANCx6yZxrtgYKUxIDX5gpAtTWq3ylPaoedmkx2jSlkf5e4AgT4wLJcstWrwKYyK3NQjc45g3WqRCmsqsrnVQCREwD/Vq09vCt4+nZYGB5FPBmU=
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           tag_name: ${{ github.ref }}
           release_name: ${{ github.ref }}
           draft: false
           prerelease: false
-      - name: Upload Release Asset
-        id: upload-release-asset
+      - name: Upload Linux64bit  release 
+        id: upload-linux-release-64bit
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-                # GITHUB_TOKEN: Oqy+moovC3HQ0dbvWHHNOVCsqzq7vpTjlvtFVqqTiMJaCa4OUiCXOuUKr8PXtANCx6yZxrtgYKUxIDX5gpAtTWq3ylPaoedmkx2jSlkf5e4AgT4wLJcstWrwKYyK3NQjc45g3WqRCmsqsrnVQCREwD/Vq09vCt4+nZYGB5FPBmU=
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: /home/runner/work/debrief/debrief/org.mwc.debrief.product/target/products/DebriefNG-Linux64Bit.zip
           asset_name: linux_release
           asset_content_type: application/zip
-          # cleanup:    
-          #   runs-on: ubuntu-latest
-          #   needs: deploy 
-          #   name: clean up
-          #   steps: 
+      - name: Upload MACOSX 64bit Release Asset
+        id: upload-release-macosx-asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: /home/runner/work/debrief/debrief/org.mwc.debrief.product/target/products/DebriefNG-MacOSX64Bit.zip
+          asset_name: Debrief Mac OS 64Bit
+          asset_content_type: application/zip
+      - name: Upload Windows 32Bit Release Asset
+        id: upload-release-windows32bit-asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: /home/runner/work/debrief/debrief/org.mwc.debrief.product/target/products/DebriefNG-Windows32Bit.zip
+          asset_name: Debrief Windows 32Bit
+          asset_content_type: application/zip
+      - name: Upload Windows 64Bit Release Asset
+        id: upload-release-windows64bit-asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: /home/runner/work/debrief/debrief/org.mwc.debrief.product/target/products/DebriefNG-Windows64Bit.zip
+          asset_name: Debrief Windows 64Bit
+          asset_content_type: application/zip
+      - name: Upload P2Repository Release Asset
+        id: upload-release-p2repo-asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: /home/runner/work/debrief/debrief/org.mwc.debrief.product/target/products/P2_Repository.zip
+          asset_name: P2 Update Repository
+          asset_content_type: application/zip
+      - name: Upload Debrief Legacy Release Asset
+        id: upload-release-debrieflegacy-asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: /home/runner/work/debrief/debrief/org.mwc.debrief.legacy/dist/DebriefLegacy*.jar
+          asset_name: Debrief Legacy
+          asset_content_type: application/zip
+      - name: Upload Debrief Lite Release Asset
+        id: upload-release-debrieflite-asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: /home/runner/work/debrief/debrief/org.mwc.debrief.lite/dist/debrief-lite*.zip
+          asset_name: Debrief Lite 
+          asset_content_type: application/zip
+ cleanup:    
+   runs-on: ubuntu-latest
+   needs: deploy 
+   name: clean up
+   steps: 
       - name: Cleanup xvfb pidx
         uses: bcomnes/cleanup-xvfb@v1
