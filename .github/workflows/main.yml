@@ -172,10 +172,5 @@ jobs:
           asset_path: /home/runner/work/debrief/debrief/org.mwc.debrief.lite/dist/debrief-lite*.zip
           asset_name: Debrief Lite 
           asset_content_type: application/zip
- cleanup:    
-   runs-on: ubuntu-latest
-   needs: deploy 
-   name: clean up
-   steps: 
       - name: Cleanup xvfb pidx
         uses: bcomnes/cleanup-xvfb@v1
