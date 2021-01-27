@@ -102,75 +102,18 @@ jobs:
           release_name: ${{ github.ref }}
           draft: false
           prerelease: false
-      - name: Upload Linux64bit  release 
-        id: upload-linux-release-64bit
-        uses: actions/upload-release-asset@v1
+      - name: Upload  release 
+        uses: softprops/action-gh-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: /home/runner/work/debrief/debrief/org.mwc.debrief.product/target/products/DebriefNG-Linux64Bit.zip
-          asset_name: linux_release
-          asset_content_type: application/zip
-      - name: Upload MACOSX 64bit Release Asset
-        id: upload-release-macosx-asset
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: /home/runner/work/debrief/debrief/org.mwc.debrief.product/target/products/DebriefNG-MacOSX64Bit.zip
-          asset_name: Debrief Mac OS 64Bit
-          asset_content_type: application/zip
-      - name: Upload Windows 32Bit Release Asset
-        id: upload-release-windows32bit-asset
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: /home/runner/work/debrief/debrief/org.mwc.debrief.product/target/products/DebriefNG-Windows32Bit.zip
-          asset_name: Debrief Windows 32Bit
-          asset_content_type: application/zip
-      - name: Upload Windows 64Bit Release Asset
-        id: upload-release-windows64bit-asset
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: /home/runner/work/debrief/debrief/org.mwc.debrief.product/target/products/DebriefNG-Windows64Bit.zip
-          asset_name: Debrief Windows 64Bit
-          asset_content_type: application/zip
-      - name: Upload P2Repository Release Asset
-        id: upload-release-p2repo-asset
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: /home/runner/work/debrief/debrief/org.mwc.debrief.product/target/products/P2_Repository.zip
-          asset_name: P2 Update Repository
-          asset_content_type: application/zip
-      - name: Upload Debrief Legacy Release Asset
-        id: upload-release-debrieflegacy-asset
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: /home/runner/work/debrief/debrief/org.mwc.debrief.legacy/dist/DebriefLegacy*.jar
-          asset_name: Debrief Legacy
-          asset_content_type: application/zip
-      - name: Upload Debrief Lite Release Asset
-        id: upload-release-debrieflite-asset
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: /home/runner/work/debrief/debrief/org.mwc.debrief.lite/dist/debrief-lite*.zip
-          asset_name: Debrief Lite 
-          asset_content_type: application/zip
+          files: |
+                 /home/runner/work/debrief/debrief/org.mwc.debrief.product/target/products/DebriefNG-Linux64Bit.zip
+                 /home/runner/work/debrief/debrief/org.mwc.debrief.product/target/products/DebriefNG-MacOSX64Bit.zip
+                 /home/runner/work/debrief/debrief/org.mwc.debrief.product/target/products/DebriefNG-Windows32Bit.zip
+                 /home/runner/work/debrief/debrief/org.mwc.debrief.product/target/products/DebriefNG-Windows64Bit.zip
+                 /home/runner/work/debrief/debrief/org.mwc.debrief.product/target/products/P2_Repository.zip
+                 /home/runner/work/debrief/debrief/org.mwc.debrief.legacy/dist/DebriefLegacy*.jar
+                 /home/runner/work/debrief/debrief/org.mwc.debrief.lite/dist/debrief-lite*.zip
       - name: Cleanup xvfb pidx
         uses: bcomnes/cleanup-xvfb@v1
