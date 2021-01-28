@@ -19,7 +19,7 @@ env:
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  install:
+  buildandrelease:
     name: Before installation
     runs-on: ubuntu-latest
     steps:
@@ -51,11 +51,6 @@ jobs:
                     sudo dpkg -L libgsf-1-dev
                     #sudo /usr/lib/postgresql/9.6/bin/pg_ctl -D /var/lib/postgresql/9.6/main -l logfile start
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-  build:
-    name: Checkout and build
-    needs: install
-    runs-on: ubuntu-latest
-    steps:
       - name: Checkout
         uses: actions/checkout@v2
       - name: Checkout from repository 
@@ -91,7 +86,7 @@ jobs:
              cat org.mwc.debrief.test2/target/surefire-reports/TEST-org.mwc.debrief.test.AllTests.xml
       - name: build installer
         run: |
-           ls /home/runner/work/debrief/debrief/org.mwc.debrief.product/target/products/
+          ls /home/runner/work/debrief/debrief/org.mwc.debrief.product/target/products/
            ./install-msitools.sh
            ./contribs/msi/make_x64msi.sh
       - name: Create Release
