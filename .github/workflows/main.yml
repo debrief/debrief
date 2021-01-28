@@ -71,17 +71,11 @@ jobs:
                mv jre ../org.mwc.debrief.combined.feature/win-64/jre
                # move back to top level
                cd ../
-               # additional step for ubuntu release 18.0.4 (bug reported on Valhalla/issues/1437)
       - name: run build with test 
         uses: GabrielBB/xvfb-action@v1
         with:
               working-directory: ./
               run: mvn clean verify -U -B -fae
-      - name: publish test results 
-        if: always()
-        run: |
-             ls org.mwc.debrief.test2/target
-             cat org.mwc.debrief.test2/target/surefire-reports/TEST-org.mwc.debrief.test.AllTests.xml
       - name: build installer
         run: |
           ls /home/runner/work/debrief/debrief/org.mwc.debrief.product/target/products/
@@ -110,5 +104,6 @@ jobs:
                  /home/runner/work/debrief/debrief/org.mwc.debrief.product/target/products/P2_Repository.zip
                  /home/runner/work/debrief/debrief/org.mwc.debrief.legacy/dist/DebriefLegacy*.jar
                  /home/runner/work/debrief/debrief/org.mwc.debrief.lite/dist/debrief-lite*.zip
+                 /home/runner/work/debrief/debrief/org.mwc.debrief.product/target/products/DebriefNG-Windows64Bit.msi
       - name: Cleanup xvfb pidx
         uses: bcomnes/cleanup-xvfb@v1
