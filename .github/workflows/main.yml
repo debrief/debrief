@@ -47,6 +47,7 @@ jobs:
                     sudo apt-get install libgcab-dev
                     sudo apt-get install libgconf-2-4
                     sudo apt-get install xvfb
+                    uuid --version
                     #sudo /usr/lib/postgresql/9.6/bin/pg_ctl -D /var/lib/postgresql/9.6/main -l logfile start
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - name: Checkout
@@ -88,7 +89,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           tag_name: ${{ github.ref }}
-          release_name: ${{ github.ref }}
+          release_name: ${{ github.ref }}_${{ GITHUB_RUN_ID}}
           draft: false
           prerelease: false
       - name: Upload  release 
