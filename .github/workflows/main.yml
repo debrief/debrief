@@ -3,11 +3,8 @@
 name: CI
 
 # Controls when the action will run. 
-  # Triggers the workflow on push or pull request events 
-on: [push, pull_request]
-
-  # Allows you to run this workflow manually from the Actions tab
-  workflow_dispatch:
+on: 
+  [push, pull_request]
 env: 
   SPATIALITE_LIBRARY_PATH: mod_spatialite 
 
@@ -32,7 +29,6 @@ jobs:
                     sudo apt-get install intltool
                     sudo apt-get install -y libgsf-1-dev
                     sudo apt-get install -y uuid-runtime
-                    #check what uuids are installed
                     sudo apt-cache search libuuid 
                     sudo apt-get install libglib2.0-dev
                     sudo apt-get install libxml2-dev
