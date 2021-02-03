@@ -29,7 +29,6 @@ jobs:
                     sudo apt-get install intltool
                     sudo apt-get install -y libgsf-1-dev
                     sudo apt-get install -y uuid-runtime
-                    sudo apt-cache search libuuid 
                     sudo apt-get install libglib2.0-dev
                     sudo apt-get install libxml2-dev
                     sudo apt-get install unzip
@@ -72,8 +71,9 @@ jobs:
       - name: build installer
         run: |
           ls /home/runner/work/debrief/debrief/org.mwc.debrief.product/target/products/
-           ./install-msitools.sh
-           ./contribs/msi/make_x64msi.sh
+          sudo apt-cache search libuuid 
+          ./install-msitools.sh
+          ./contribs/msi/make_x64msi.sh
       - name: Create Release
         id: create_release
         uses: actions/create-release@v1
