@@ -74,16 +74,16 @@ jobs:
           sudo apt-cache search libuuid 
           ./install-msitools.sh
           ./contribs/msi/make_x64msi.sh
-      - name: Create Release
-        id: create_release
-        uses: actions/create-release@v1
-        env: 
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          tag_name: ${{ github.ref }}
-          release_name: ${{ github.ref }}_${{ github.runner.id}}
-          draft: false
-          prerelease: false
+          #     - name: Create Release
+          #       id: create_release
+          #       uses: actions/create-release@v1
+          #       env: 
+          #         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          #       with:
+          #         tag_name: ${{ github.ref }}
+          #         release_name: ${{ github.ref }}_
+          #         draft: false
+          #         prerelease: false
       - name: Upload  release 
         uses: softprops/action-gh-release@v1
         env:
