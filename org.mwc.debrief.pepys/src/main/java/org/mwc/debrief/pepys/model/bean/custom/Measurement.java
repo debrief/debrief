@@ -14,9 +14,61 @@
  */
 package org.mwc.debrief.pepys.model.bean.custom;
 
+import java.beans.PropertyVetoException;
+import java.io.File;
+import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+import java.sql.SQLException;
+import java.util.List;
+import java.util.Scanner;
+
+import org.mwc.debrief.model.utils.OSUtils;
+import org.mwc.debrief.pepys.Activator;
+import org.mwc.debrief.pepys.model.PepsysException;
+import org.mwc.debrief.pepys.model.db.DatabaseConnection;
+import org.mwc.debrief.pepys.model.db.PostgresDatabaseConnection;
 import org.mwc.debrief.pepys.model.db.annotation.FieldName;
+import org.mwc.debrief.pepys.model.db.config.ConfigurationReader;
+import org.mwc.debrief.pepys.model.db.config.DatabaseConfiguration;
+import org.mwc.debrief.pepys.model.db.config.LoaderOption;
+import org.mwc.debrief.pepys.model.db.config.LoaderOption.LoaderType;
+
+import junit.framework.TestCase;
 
 public class Measurement {
+	
+	public static class MeasurementTest extends TestCase{
+		
+		public void testCustomQuery() {
+
+			final DatabaseConfiguration _config = new DatabaseConfiguration();
+			try {
+				ConfigurationReader.loadDatabaseConfiguration(_config,
+						new LoaderOption[] { new LoaderOption(LoaderType.DEFAULT_FILE,
+								DatabaseConnection.DEFAULT_POSTGRES_DATABASE_FILE) });
+				
+				final PostgresDatabaseConnection postgresDatabaseConnection = new PostgresDatabaseConnection();
+				postgresDatabaseConnection.initializeInstance(_config);
+				final Scanner scanner = new Scanner(OSUtils.getInputStreamResource(Measurement.class, "/measurements.sql", Activator.PLUGIN_ID));
+				final StringBuilder builder = new StringBuilder();
+				while (scanner.hasNextLine()) {
+					builder.append(scanner.nextLine());
+					builder.append("\n");
+				}
+				final List<Measurement> list = postgresDatabaseConnection.listAll(Measurement.class, builder.toString(), null);
+				
+				for (Measurement measurement : list) {
+					System.out.println(measurement.getDatafileId());
+				}
+				scanner.close();
+				
+			} catch (Exception e) {
+				fail("Error running custom query on Measurements " + e.getMessage());
+			}
+			
+		}
+		
+	}
 	
 	@FieldName(name = "PLATFORM_NAME")
 	private String platformName;

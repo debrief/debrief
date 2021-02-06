@@ -373,7 +373,7 @@ public abstract class DatabaseConnection {
 		try {
 			statement = connection.prepareStatement(customQuery);
 			
-			for (int i = 0 ; i < parameters.size(); i++) {
+			for (int i = 0 ; parameters != null && i < parameters.size(); i++) {
 				final Object valueToAssign = parameters.get(i);
 				statement.setObject(i + 1, valueToAssign); // TODO improve this.
 			}
@@ -383,7 +383,7 @@ public abstract class DatabaseConnection {
 			resultSet = statement.executeQuery();
 
 			while (resultSet.next()) {
-				final T instance = storeFieldValue(type, resultSet, "");
+				final T instance = storeFieldValue(type, resultSet, "", false);
 				ans.add(instance);
 			}
 
@@ -452,7 +452,7 @@ public abstract class DatabaseConnection {
 			resultSet = statement.executeQuery(query);
 
 			while (resultSet.next()) {
-				final T instance = storeFieldValue(type, resultSet, "");
+				final T instance = storeFieldValue(type, resultSet, "", true);
 				ans.add(instance);
 			}
 
@@ -486,7 +486,7 @@ public abstract class DatabaseConnection {
 			statement.setString(1, id.toString());
 			resultSet = statement.executeQuery();
 
-			final T instance = storeFieldValue(type, resultSet, "");
+			final T instance = storeFieldValue(type, resultSet, "", true);
 
 			connection.close();
 
@@ -556,7 +556,7 @@ public abstract class DatabaseConnection {
 		return query.toString();
 	}
 
-	public <T> T storeFieldValue(final Class<T> type, final ResultSet resultSet, final String prefix)
+	public <T> T storeFieldValue(final Class<T> type, final ResultSet resultSet, final String prefix, final boolean useAlias)
 			throws InstantiationException, IllegalAccessException, InvocationTargetException, NoSuchMethodException,
 			SQLException {
 		final Constructor<T> constructor = type.getConstructor();
@@ -566,11 +566,17 @@ public abstract class DatabaseConnection {
 			final Class<?> fieldType = field.getType();
 			final Method method = type.getDeclaredMethod("set" + capitalizeFirstLetter(field.getName()), fieldType);
 
-			final String thisColumnName = getAlias(
-					prefix + AnnotationsUtils.getTableName(type) + AnnotationsUtils.getColumnName(field));
+			final String thisColumnName;
+			if (useAlias) {
+				thisColumnName = getAlias(
+						prefix + AnnotationsUtils.getTableName(type) + AnnotationsUtils.getColumnName(field));
+			}else {
+				thisColumnName = AnnotationsUtils.getColumnName(field);
+			}
+			
 			if (field.isAnnotationPresent(ManyToOne.class) || field.isAnnotationPresent(OneToOne.class)) {
 				method.invoke(instance, storeFieldValue(fieldType, resultSet,
-						prefix + AnnotationsUtils.getTableName(type) + AnnotationsUtils.getColumnName(field)));
+						prefix + AnnotationsUtils.getTableName(type) + AnnotationsUtils.getColumnName(field), useAlias));
 			} else if (int.class == fieldType) {
 				try {
 					method.invoke(instance, resultSet.getInt(thisColumnName));
