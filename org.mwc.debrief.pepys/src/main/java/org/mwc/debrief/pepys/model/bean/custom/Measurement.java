@@ -14,17 +14,18 @@
  */
 package org.mwc.debrief.pepys.model.bean.custom;
 
-import java.beans.PropertyVetoException;
-import java.io.File;
-import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
-import java.sql.SQLException;
 import java.util.List;
 import java.util.Scanner;
 
 import org.mwc.debrief.model.utils.OSUtils;
 import org.mwc.debrief.pepys.Activator;
-import org.mwc.debrief.pepys.model.PepsysException;
+import org.mwc.debrief.pepys.model.bean.Comment;
+import org.mwc.debrief.pepys.model.bean.Contact;
+import org.mwc.debrief.pepys.model.bean.Datafile;
+import org.mwc.debrief.pepys.model.bean.Platform;
+import org.mwc.debrief.pepys.model.bean.Sensor;
+import org.mwc.debrief.pepys.model.bean.SensorType;
+import org.mwc.debrief.pepys.model.bean.State;
 import org.mwc.debrief.pepys.model.db.DatabaseConnection;
 import org.mwc.debrief.pepys.model.db.PostgresDatabaseConnection;
 import org.mwc.debrief.pepys.model.db.annotation.FieldName;
@@ -32,10 +33,15 @@ import org.mwc.debrief.pepys.model.db.config.ConfigurationReader;
 import org.mwc.debrief.pepys.model.db.config.DatabaseConfiguration;
 import org.mwc.debrief.pepys.model.db.config.LoaderOption;
 import org.mwc.debrief.pepys.model.db.config.LoaderOption.LoaderType;
+import org.mwc.debrief.pepys.model.tree.TreeStructurable;
 
 import junit.framework.TestCase;
 
 public class Measurement {
+	
+	public static final String STATE_TYPE = "STATES";
+	public static final String COMMENT_TYPE = "COMMENTS";
+	public static final String CONTACTS_TYPE = "CONTACTS";
 	
 	public static class MeasurementTest extends TestCase{
 		
@@ -159,6 +165,49 @@ public class Measurement {
 
 	public void setStateAggCount(int stateAggCount) {
 		this.stateAggCount = stateAggCount;
+	}
+	
+	public TreeStructurable export() {
+		if (STATE_TYPE.equals(getDataType())) {
+			return exportToState();
+		}else if (COMMENT_TYPE.equals(getDataType())) {
+			return exportToComment();
+		}else if (CONTACTS_TYPE.equals(getDataType())) {
+			return exportToContact();
+		}
+		// This should not happen
+		return null;
+	}
+	
+	public Comment exportToComment() {
+		return null;
+	}
+	
+	public Contact exportToContact() {
+		return null;
+	}
+	
+	public State exportToState() {
+		final State answer = new State();
+		final Sensor sensor = new Sensor();
+		final Platform platform = new Platform();
+		final SensorType sensorType = new SensorType();
+		final Datafile datafile = new Datafile();
+		
+		answer.setSensor(sensor);
+		sensor.setSensor_id(getSensorId());
+		sensorType.setName(getSensorName());
+		
+		sensor.setSensorType(sensorType);
+		sensor.setPlatform(platform);
+		platform.setName(getPlatformName());
+		platform.setPlatform_id(getPlatformId());
+		
+		datafile.setDatafile_id(getDatafileId());
+		datafile.setReference(getReference());
+		answer.setDatafile(datafile);
+		
+		return answer;
 	}
 	
 }

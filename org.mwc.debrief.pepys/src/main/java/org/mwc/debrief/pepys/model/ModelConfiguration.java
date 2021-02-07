@@ -558,4 +558,23 @@ public class ModelConfiguration implements AbstractConfiguration {
 			throw new PepsysException("Date validation", "The Start date-time must be before the End date-time");
 		}
 	}
+
+	@Override
+	/**
+	 * Method that returns the algorithm to build the tree
+	 * We are going to use (only for now) the fast mode for 
+	 * Postgres, and Legacy Mode for SQLite.
+	 * It is open to future improvements.
+	 */
+	public ALGORITHM_TYPE getAlgorithmType() {
+		if (databaseConnection != null) {
+			if (databaseConnection instanceof SqliteDatabaseConnection) {
+				return ALGORITHM_TYPE.LEGACY;
+			}else if (databaseConnection instanceof PostgresDatabaseConnection) {
+				return ALGORITHM_TYPE.FAST_MODE;
+			}
+		}
+		// LEGACY AS DEFAULT.
+		return ALGORITHM_TYPE.LEGACY;
+	}
 }

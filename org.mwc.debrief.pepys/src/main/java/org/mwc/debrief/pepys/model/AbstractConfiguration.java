@@ -45,7 +45,14 @@ public interface AbstractConfiguration extends hasPropertyListeners {
 	static String HIGHLIGHT_PROPERTY = "HIGHTLIGHT";
 
 	static String SEARCH_RESULT_PROPERTY = "SEARCH_RESULT";
+	
+	public static enum ALGORITHM_TYPE{
+		LEGACY, // Legacy Tree Structure, it is based doing the query to database, 
+		FAST_MODE // New mode using Custom Database Query to build the tree quicker.
+	}
 
+	ALGORITHM_TYPE getAlgorithmType();
+	
 	void addDatafileTypeFilter(final TypeDomain newType);
 
 	void apply() throws Exception;
