@@ -1,11 +1,11 @@
 with
 ui_filter_input as
 	(select
-			'2010-09-01 10:00:30.000000' as start_time,
-			'2020-12-15 10:00:30.000000' as end_time,
-			'SRID=4326;POLYGON((-125.0 65.0,-125.0 -45.0,80.0 -45.0,80.0 65.0,-125.0 65.0))' as location,
+			? as start_time,
+			? as end_time,
+			? as location,
 			'STATES,CONTACTS,COMMENTS' as data_types,
-			'search text' as comment_search_string
+			? as comment_search_string
 	),
 	processed_ui_filter_values as
 	(select

@@ -17,8 +17,10 @@ package org.mwc.debrief.pepys.model.tree;
 
 import java.beans.PropertyVetoException;
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -31,11 +33,16 @@ import org.mwc.debrief.pepys.model.TypeDomain;
 import org.mwc.debrief.pepys.model.bean.AbstractBean;
 import org.mwc.debrief.pepys.model.bean.custom.Measurement;
 import org.mwc.debrief.pepys.model.db.Condition;
+import org.mwc.debrief.pepys.model.db.SqliteDatabaseConnection;
 import org.mwc.debrief.pepys.model.db.annotation.AnnotationsUtils;
+import org.mwc.debrief.pepys.model.db.annotation.Location;
 import org.mwc.debrief.pepys.model.tree.TreeNode.NodeType;
 
 import Debrief.GUI.Frames.Application;
 import MWC.GUI.ToolParent;
+import MWC.GenericData.TimePeriod;
+import MWC.GenericData.WorldArea;
+import MWC.GenericData.WorldLocation;
 import junit.framework.TestCase;
 
 public class TreeUtils {
@@ -78,25 +85,72 @@ public class TreeUtils {
 		// Now we are forcing to run a custom query (measurements)
 		Scanner scanner = null;
 		try {
-			scanner = new Scanner(
-					OSUtils.getInputStreamResource(Measurement.class, Measurement.MEASUREMENTS_FILE, Activator.PLUGIN_ID));
+			scanner = new Scanner(OSUtils.getInputStreamResource(Measurement.class, Measurement.MEASUREMENTS_FILE,
+					Activator.PLUGIN_ID));
 			final StringBuilder builder = new StringBuilder();
 			while (scanner.hasNextLine()) {
 				builder.append(scanner.nextLine());
 				builder.append("\n");
 			}
-			final List<Measurement> list = configuration.getDatabaseConnection().listAll(Measurement.class,
-					builder.toString(), null);
-			
-			for (Measurement measurement : list) {
-				allItems.add(measurement.export());
+			final List<Object> parameters = new ArrayList<>();
+			final SimpleDateFormat sqlDateFormat = new SimpleDateFormat(SqliteDatabaseConnection.SQLITE_DATE_FORMAT);
+			// Let's add the time period filter
+			final TimePeriod timePeriod = configuration.getTimePeriod();
+			if (timePeriod != null) {
+				if (timePeriod.getStartDTG() != null && timePeriod.getStartDTG().getDate() != null) {
+					parameters.add(sqlDateFormat.format(timePeriod.getStartDTG().getDate()));
+				}else {
+					parameters.add(null);
+				}
+				if (timePeriod.getEndDTG() != null && timePeriod.getEndDTG().getDate() != null) {
+					parameters.add(sqlDateFormat.format(timePeriod.getEndDTG().getDate()));
+				}else {
+					parameters.add(null);
+				}
+			}else {
+				parameters.add(null);
+				parameters.add(null);
 			}
-		}finally {
+			// Let's add the area filter
+			final WorldArea currentArea = configuration.getCurrentArea();
+			if (currentArea != null) {
+
+				final WorldLocation topLeft = currentArea.getTopLeft();
+				final WorldLocation bottomRight = currentArea.getBottomRight();
+				final WorldLocation topRight = currentArea.getTopRight();
+				final WorldLocation bottomLeft = currentArea.getBottomLeft();
+
+				final String polygonArea = configuration.getDatabaseConnection().getSRID() + "POLYGON((" + topLeft.getLong() + " " + topLeft.getLat() + ","
+						+ bottomLeft.getLong() + " " + bottomLeft.getLat() + "," + bottomRight.getLong() + " "
+						+ bottomRight.getLat() + "," + topRight.getLong() + " " + topRight.getLat() + ","
+						+ topLeft.getLong() + " " + topLeft.getLat() + "))";
+				parameters.add(polygonArea);
+			}else {
+				parameters.add(null);
+			}
+			
+			// Let's add the text filter
+			if (configuration.getFilter() != null) {
+				parameters.add(configuration.getFilter());
+			}else {
+				parameters.add(null);
+			}
+			
+			final List<Measurement> list = configuration.getDatabaseConnection().listAll(Measurement.class,
+					builder.toString(), parameters);
+
+			for (Measurement measurement : list) {
+				final TreeStructurable treeStructurable = measurement.export();
+				if (treeStructurable != null) {
+					allItems.add(treeStructurable);
+				}
+			}
+		} finally {
 			if (scanner != null) {
 				scanner.close();
 			}
 		}
-		
+
 		return allItems;
 	}
 
