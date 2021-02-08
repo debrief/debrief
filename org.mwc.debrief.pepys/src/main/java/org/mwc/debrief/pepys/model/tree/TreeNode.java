@@ -124,7 +124,9 @@ public class TreeNode {
 			if (ADD_VALUE.equals(evt.getPropertyName()) && evt.getNewValue() != null
 					&& evt.getNewValue() instanceof TreeStructurable) {
 				final TreeStructurable newItem = (TreeStructurable) evt.getNewValue();
-				currentPeriod.extend(new HiResDate(newItem.getTime()));
+				if (newItem.getTime() != null) {
+					currentPeriod.extend(new HiResDate(newItem.getTime()));
+				}
 			}
 		}
 	};

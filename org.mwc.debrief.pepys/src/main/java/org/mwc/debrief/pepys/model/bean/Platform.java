@@ -43,6 +43,9 @@ public class Platform implements AbstractBean {
 	}
 	
 	public String getTrackName() {
+		if (getIdentifier() == null) {
+			return name;
+		}
 		return name + " " + getIdentifier();
 	}
 

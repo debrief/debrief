@@ -22,10 +22,14 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Scanner;
 
+import org.mwc.debrief.model.utils.OSUtils;
+import org.mwc.debrief.pepys.Activator;
 import org.mwc.debrief.pepys.model.AbstractConfiguration;
 import org.mwc.debrief.pepys.model.TypeDomain;
 import org.mwc.debrief.pepys.model.bean.AbstractBean;
+import org.mwc.debrief.pepys.model.bean.custom.Measurement;
 import org.mwc.debrief.pepys.model.db.Condition;
 import org.mwc.debrief.pepys.model.db.annotation.AnnotationsUtils;
 import org.mwc.debrief.pepys.model.tree.TreeNode.NodeType;
@@ -61,6 +65,39 @@ public class TreeUtils {
 		public void testTreeBuilder() {
 
 		}
+	}
+
+	public static Collection<TreeStructurable> buildStructureFastMode(final AbstractConfiguration configuration)
+			throws NoSuchMethodException, SecurityException, InstantiationException, IllegalAccessException,
+			IllegalArgumentException, InvocationTargetException, PropertyVetoException, SQLException,
+			ClassNotFoundException, IOException {
+
+		Application.logError2(ToolParent.INFO, "Starting to Build Structure from Model - FAST MODE", null);
+		final ArrayList<TreeStructurable> allItems = new ArrayList<>();
+
+		// Now we are forcing to run a custom query (measurements)
+		Scanner scanner = null;
+		try {
+			scanner = new Scanner(
+					OSUtils.getInputStreamResource(Measurement.class, Measurement.MEASUREMENTS_FILE, Activator.PLUGIN_ID));
+			final StringBuilder builder = new StringBuilder();
+			while (scanner.hasNextLine()) {
+				builder.append(scanner.nextLine());
+				builder.append("\n");
+			}
+			final List<Measurement> list = configuration.getDatabaseConnection().listAll(Measurement.class,
+					builder.toString(), null);
+			
+			for (Measurement measurement : list) {
+				allItems.add(measurement.export());
+			}
+		}finally {
+			if (scanner != null) {
+				scanner.close();
+			}
+		}
+		
+		return allItems;
 	}
 
 	public static Collection<TreeStructurable> buildStructure(final AbstractConfiguration configuration)
@@ -111,7 +148,7 @@ public class TreeUtils {
 		root.removeAllChildren();
 		final TreeNode subRoot = new TreeNode(TreeNode.NodeType.ROOT, "Database");
 		root.addChild(subRoot);
-		
+
 		Application.logError2(ToolParent.INFO, "Updating Tree from the model calculated", null);
 		Application.logError2(ToolParent.INFO, "Total amount of items to add " + items.length, null);
 		for (final TreeStructurable currentItem : items) {

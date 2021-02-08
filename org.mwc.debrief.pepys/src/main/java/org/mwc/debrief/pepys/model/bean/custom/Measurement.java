@@ -43,6 +43,8 @@ public class Measurement {
 	public static final String COMMENT_TYPE = "COMMENTS";
 	public static final String CONTACTS_TYPE = "CONTACTS";
 	
+	public static final String MEASUREMENTS_FILE = "/measurements.sql";
+	
 	public static class MeasurementTest extends TestCase{
 		
 		public void testCustomQuery() {
@@ -55,7 +57,7 @@ public class Measurement {
 				
 				final PostgresDatabaseConnection postgresDatabaseConnection = new PostgresDatabaseConnection();
 				postgresDatabaseConnection.initializeInstance(_config);
-				final Scanner scanner = new Scanner(OSUtils.getInputStreamResource(Measurement.class, "/measurements.sql", Activator.PLUGIN_ID));
+				final Scanner scanner = new Scanner(OSUtils.getInputStreamResource(Measurement.class, MEASUREMENTS_FILE, Activator.PLUGIN_ID));
 				final StringBuilder builder = new StringBuilder();
 				while (scanner.hasNextLine()) {
 					builder.append(scanner.nextLine());
