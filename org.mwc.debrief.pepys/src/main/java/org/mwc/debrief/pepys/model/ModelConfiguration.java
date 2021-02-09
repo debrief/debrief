@@ -137,7 +137,8 @@ public class ModelConfiguration implements AbstractConfiguration {
 		validate();
 		switch (getAlgorithmType()) {
 		case FAST_MODE:
-			currentItems = TreeUtils.buildStructureFastMode(this);
+			currentItems = TreeUtils.buildStructure(this);
+			//currentItems = TreeUtils.buildStructureFastMode(this);
 			break;
 
 		case LEGACY:

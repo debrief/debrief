@@ -182,11 +182,41 @@ public class Measurement {
 	}
 	
 	public Comment exportToComment() {
-		return null;
+		final Comment answer = new Comment();
+		final Platform platform = new Platform();
+		final Datafile datafile = new Datafile();
+		
+		platform.setPlatform_id(getPlatformId());
+		platform.setName(getPlatformName());
+		answer.setPlatform(platform);
+		datafile.setReference(getReference());
+		datafile.setDatafile_id(getDatafileId());
+		answer.setDatafile(datafile);
+		
+		return answer;
 	}
 	
 	public Contact exportToContact() {
-		return null;
+		final Contact answer = new Contact();
+		final Sensor sensor = new Sensor();
+		final Platform platform = new Platform();
+		final SensorType sensorType = new SensorType();
+		final Datafile datafile = new Datafile();
+		
+		answer.setSensor(sensor);
+		sensor.setSensor_id(getSensorId());
+		sensorType.setName(getSensorName());
+		
+		sensor.setSensorType(sensorType);
+		sensor.setPlatform(platform);
+		platform.setName(getPlatformName());
+		platform.setPlatform_id(getPlatformId());
+		
+		datafile.setDatafile_id(getDatafileId());
+		datafile.setReference(getReference());
+		answer.setDatafile(datafile);
+		
+		return answer;
 	}
 	
 	public State exportToState() {
