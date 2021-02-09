@@ -28,7 +28,7 @@ jobs:
                     mvn --version
                     sudo apt-get install intltool
                     sudo apt-get install -y libgsf-1-dev
-                    sudo apt-get install -y uuid-runtime
+                    # sudo apt-get install -y uuid-runtime
                     sudo apt-get install libglib2.0-dev
                     sudo apt-get install libxml2-dev
                     sudo apt-get install unzip
@@ -38,10 +38,10 @@ jobs:
                     sudo apt-get install libgcab-dev
                     sudo apt-get install libgconf-2-4
                     sudo apt-get install xvfb
-                    echo printing uuid libs
-                    pkg-config --libs uuid
                     echo printing uuid cflags
                     pkg-config --cflags uuid
+                    echo printing uuid libs
+                    pkg-config --libs uuid
       # Checks-out repository
       - name: Checkout
         uses: actions/checkout@v2
