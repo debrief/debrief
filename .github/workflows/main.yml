@@ -38,7 +38,10 @@ jobs:
                     sudo apt-get install libgcab-dev
                     sudo apt-get install libgconf-2-4
                     sudo apt-get install xvfb
-                    uuidd --version
+                    echo printing uuid libs
+                    pkg-config --libs uuid
+                    echo printing uuid cflags
+                    pkg-config --cflags uuid
       # Checks-out repository
       - name: Checkout
         uses: actions/checkout@v2
