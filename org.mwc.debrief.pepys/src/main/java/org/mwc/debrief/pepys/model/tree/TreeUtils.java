@@ -82,6 +82,20 @@ public class TreeUtils {
 		Application.logError2(ToolParent.INFO, "Starting to Build Structure from Model - FAST MODE", null);
 		final ArrayList<TreeStructurable> allItems = new ArrayList<>();
 
+		// Let's collect the types of objects to collect
+		final StringBuilder dataTypes = new StringBuilder();
+		for (final TypeDomain domain : configuration.getDatafileTypeFilters()) {
+			final Class<TreeStructurable> currentBeanType = domain.getDatatype();
+
+			if (AbstractBean.class.isAssignableFrom(currentBeanType) && domain.isChecked()) {
+				dataTypes.append(domain.getName().toUpperCase());
+				dataTypes.append(",");
+			}
+		}
+		if (dataTypes.length() > 0) {
+			dataTypes.setLength(dataTypes.length() - 1);
+		}
+		
 		// Now we are forcing to run a custom query (measurements)
 		Scanner scanner = null;
 		try {
@@ -128,6 +142,9 @@ public class TreeUtils {
 			}else {
 				parameters.add(null);
 			}
+			
+			// Let's add the data types
+			parameters.add(dataTypes.toString());
 			
 			// Let's add the text filter
 			if (configuration.getFilter() != null) {

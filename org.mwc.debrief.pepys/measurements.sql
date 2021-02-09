@@ -4,7 +4,7 @@ ui_filter_input as
 			? as start_time,
 			? as end_time,
 			? as location,
-			'STATES,CONTACTS,COMMENTS' as data_types,
+			? as data_types,
 			? as comment_search_string
 	),
 	processed_ui_filter_values as
