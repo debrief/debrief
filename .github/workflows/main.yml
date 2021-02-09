@@ -30,6 +30,7 @@ jobs:
                     sudo apt-get install -y libgsf-1-dev
                     sudo apt-get install uuid-runtime
                     sudo apt-get install uuid
+                    sudo apt-get install uuid-dev
                     sudo apt-get install libglib2.0-dev
                     sudo apt-get install libxml2-dev
                     sudo apt-get install unzip
