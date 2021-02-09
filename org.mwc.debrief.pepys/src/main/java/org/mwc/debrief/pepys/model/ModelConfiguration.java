@@ -135,10 +135,18 @@ public class ModelConfiguration implements AbstractConfiguration {
 	@Override
 	public void apply() throws Exception {
 		validate();
-		if (ALGORITHM_TYPE.FAST_MODE.equals(getAlgorithmType())) {
+		switch (getAlgorithmType()) {
+		case FAST_MODE:
 			currentItems = TreeUtils.buildStructureFastMode(this);
-		}else if (ALGORITHM_TYPE.LEGACY.equals(getAlgorithmType())) {
+			break;
+
+		case LEGACY:
 			currentItems = TreeUtils.buildStructure(this);
+			break;
+			
+		default:
+			currentItems = TreeUtils.buildStructure(this);
+			break;
 		}
 		updateTree();
 		setSearch("");
