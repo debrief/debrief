@@ -173,6 +173,10 @@ public class State implements AbstractBean, TreeStructurable {
 		return time;
 	}
 
+	public Sensor getSensor() {
+		return sensor;
+	}
+
 	public void setCourse(final double course) {
 		this.course = course;
 	}

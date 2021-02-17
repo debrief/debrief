@@ -57,7 +57,7 @@ public interface AbstractConfiguration extends hasPropertyListeners {
 
 	void apply() throws Exception;
 
-	int doImport();
+	int doImport() throws Exception;
 
 	boolean doTestQuery() throws SQLException;
 
@@ -120,4 +120,6 @@ public interface AbstractConfiguration extends hasPropertyListeners {
 	void updateTree();
 
 	public void validate() throws Exception;
+
+	String getCurrentAreaAsParameter();
 }

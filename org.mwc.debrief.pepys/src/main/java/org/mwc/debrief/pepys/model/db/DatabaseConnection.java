@@ -50,6 +50,7 @@ import org.mwc.debrief.pepys.model.db.annotation.Location;
 import org.mwc.debrief.pepys.model.db.annotation.ManyToOne;
 import org.mwc.debrief.pepys.model.db.annotation.OneToOne;
 import org.mwc.debrief.pepys.model.db.annotation.Time;
+import org.mwc.debrief.pepys.model.db.annotation.Transient;
 import org.mwc.debrief.pepys.model.db.config.ConfigurationReader;
 import org.mwc.debrief.pepys.model.db.config.DatabaseConfiguration;
 
@@ -512,44 +513,49 @@ public abstract class DatabaseConnection {
 		final StringBuilder query = new StringBuilder();
 		final Field[] fields = type.getDeclaredFields();
 		for (final Field field : fields) {
-			final String columnName = AnnotationsUtils.getColumnName(field);
+			if (field.isAnnotationPresent(Transient.class)) {
+				// let's just skip it, because it is probably being used
+				// by another process or it doesn't come from database.
+			}else {
+				final String columnName = AnnotationsUtils.getColumnName(field);
 
-			if (field.getType().equals(WorldLocation.class)) {
-				query.append(createLocationQuery(tableName, columnName));
-			} else if (field.isAnnotationPresent(ManyToOne.class) || field.isAnnotationPresent(OneToOne.class)) {
-				final StringBuilder newJoin = new StringBuilder();
-				if (field.isAnnotationPresent(ManyToOne.class)) {
-					newJoin.append(" INNER ");
-				} else if (field.isAnnotationPresent(OneToOne.class)) {
-					newJoin.append(" LEFT ");
+				if (field.getType().equals(WorldLocation.class)) {
+					query.append(createLocationQuery(tableName, columnName));
+				} else if (field.isAnnotationPresent(ManyToOne.class) || field.isAnnotationPresent(OneToOne.class)) {
+					final StringBuilder newJoin = new StringBuilder();
+					if (field.isAnnotationPresent(ManyToOne.class)) {
+						newJoin.append(" INNER ");
+					} else if (field.isAnnotationPresent(OneToOne.class)) {
+						newJoin.append(" LEFT ");
+					}
+					newJoin.append(" JOIN ");
+					newJoin.append(databasePrefix());
+					newJoin.append(AnnotationsUtils.getTableName(field.getType()));
+					newJoin.append(databaseSuffix());
+					newJoin.append(" AS ");
+					newJoin.append(getAlias(prefix + baseTableName + AnnotationsUtils.getColumnName(field)
+							+ AnnotationsUtils.getTableName(field.getType())));
+					newJoin.append(" ON ");
+					newJoin.append(getAlias(prefix + baseTableName + AnnotationsUtils.getColumnName(field)
+							+ AnnotationsUtils.getTableName(field.getType())));
+					newJoin.append(".");
+					newJoin.append(AnnotationsUtils.getField(field.getType(), Id.class).getName());
+					newJoin.append(" = ");
+					newJoin.append(getAlias(prefix + baseTableName));
+					newJoin.append(".");
+					newJoin.append(AnnotationsUtils.getColumnName(field));
+					join.add(newJoin.toString());
+					query.append(prepareSelect(field.getType(), join,
+							prefix + baseTableName + AnnotationsUtils.getColumnName(field)));
+					query.append(", ");
+				} else {
+					query.append(getAlias(prefix + baseTableName));
+					query.append(".");
+					query.append(field.getName());
+					query.append(" AS ");
+					query.append(getAlias(prefix + baseTableName + field.getName()));
+					query.append(", ");
 				}
-				newJoin.append(" JOIN ");
-				newJoin.append(databasePrefix());
-				newJoin.append(AnnotationsUtils.getTableName(field.getType()));
-				newJoin.append(databaseSuffix());
-				newJoin.append(" AS ");
-				newJoin.append(getAlias(prefix + baseTableName + AnnotationsUtils.getColumnName(field)
-						+ AnnotationsUtils.getTableName(field.getType())));
-				newJoin.append(" ON ");
-				newJoin.append(getAlias(prefix + baseTableName + AnnotationsUtils.getColumnName(field)
-						+ AnnotationsUtils.getTableName(field.getType())));
-				newJoin.append(".");
-				newJoin.append(AnnotationsUtils.getField(field.getType(), Id.class).getName());
-				newJoin.append(" = ");
-				newJoin.append(getAlias(prefix + baseTableName));
-				newJoin.append(".");
-				newJoin.append(AnnotationsUtils.getColumnName(field));
-				join.add(newJoin.toString());
-				query.append(prepareSelect(field.getType(), join,
-						prefix + baseTableName + AnnotationsUtils.getColumnName(field)));
-				query.append(", ");
-			} else {
-				query.append(getAlias(prefix + baseTableName));
-				query.append(".");
-				query.append(field.getName());
-				query.append(" AS ");
-				query.append(getAlias(prefix + baseTableName + field.getName()));
-				query.append(", ");
 			}
 		}
 		query.setLength(query.length() - 2);

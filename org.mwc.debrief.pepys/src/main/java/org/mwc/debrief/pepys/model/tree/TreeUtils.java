@@ -81,6 +81,7 @@ public class TreeUtils {
 			ClassNotFoundException, IOException {
 
 		Application.logError2(ToolParent.INFO, "Starting to Build Structure from Model - FAST MODE", null);
+
 		final ArrayList<TreeStructurable> allItems = new ArrayList<>();
 
 		// Let's collect the types of objects to collect
@@ -127,22 +128,7 @@ public class TreeUtils {
 				parameters.add(null);
 			}
 			// Let's add the area filter
-			final WorldArea currentArea = configuration.getCurrentArea();
-			if (currentArea != null) {
-
-				final WorldLocation topLeft = currentArea.getTopLeft();
-				final WorldLocation bottomRight = currentArea.getBottomRight();
-				final WorldLocation topRight = currentArea.getTopRight();
-				final WorldLocation bottomLeft = currentArea.getBottomLeft();
-
-				final String polygonArea = configuration.getDatabaseConnection().getSRID() + "POLYGON((" + topLeft.getLong() + " " + topLeft.getLat() + ","
-						+ bottomLeft.getLong() + " " + bottomLeft.getLat() + "," + bottomRight.getLong() + " "
-						+ bottomRight.getLat() + "," + topRight.getLong() + " " + topRight.getLat() + ","
-						+ topLeft.getLong() + " " + topLeft.getLat() + "))";
-				parameters.add(polygonArea);
-			}else {
-				parameters.add(null);
-			}
+			parameters.add(configuration.getCurrentAreaAsParameter());
 			
 			// Let's add the data types
 			parameters.add(dataTypes.toString());

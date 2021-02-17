@@ -22,15 +22,25 @@ import java.beans.PropertyVetoException;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Scanner;
 
+import org.mwc.debrief.model.utils.OSUtils;
+import org.mwc.debrief.pepys.Activator;
 import org.mwc.debrief.pepys.model.bean.Comment;
 import org.mwc.debrief.pepys.model.bean.Contact;
 import org.mwc.debrief.pepys.model.bean.State;
+import org.mwc.debrief.pepys.model.bean.custom.CommentFastMode;
+import org.mwc.debrief.pepys.model.bean.custom.ContactFastMode;
+import org.mwc.debrief.pepys.model.bean.custom.Measurement;
+import org.mwc.debrief.pepys.model.bean.custom.StateFastMode;
 import org.mwc.debrief.pepys.model.db.DatabaseConnection;
 import org.mwc.debrief.pepys.model.db.PostgresDatabaseConnection;
 import org.mwc.debrief.pepys.model.db.SqliteDatabaseConnection;
@@ -137,14 +147,14 @@ public class ModelConfiguration implements AbstractConfiguration {
 		validate();
 		switch (getAlgorithmType()) {
 		case FAST_MODE:
-			currentItems = TreeUtils.buildStructure(this);
-			//currentItems = TreeUtils.buildStructureFastMode(this);
+			// currentItems = TreeUtils.buildStructure(this);
+			currentItems = TreeUtils.buildStructureFastMode(this);
 			break;
 
 		case LEGACY:
 			currentItems = TreeUtils.buildStructure(this);
 			break;
-			
+
 		default:
 			currentItems = TreeUtils.buildStructure(this);
 			break;
@@ -153,7 +163,8 @@ public class ModelConfiguration implements AbstractConfiguration {
 		setSearch("");
 
 		if (_pSupport != null) {
-			Application.logError2(ToolParent.INFO, "We are going to trigger the apply listeners for change of model", null);
+			Application.logError2(ToolParent.INFO, "We are going to trigger the apply listeners for change of model",
+					null);
 			final java.beans.PropertyChangeEvent pce = new PropertyChangeEvent(this, TREE_MODEL, null, treeModel);
 			_pSupport.firePropertyChange(pce);
 		}
@@ -202,7 +213,7 @@ public class ModelConfiguration implements AbstractConfiguration {
 	}
 
 	@Override
-	public int doImport() {
+	public int doImport() throws Exception {
 		if (_bridge == null) {
 			/**
 			 * In case we don't have a bridge to Full Debrief, it means we are probably
@@ -211,6 +222,16 @@ public class ModelConfiguration implements AbstractConfiguration {
 			 */
 			return doImportProcessMockup(treeModel);
 		} else {
+			/*
+			 * ok, we are now sure that we can import to Debrief, but if we are in fast
+			 * model we need to populate the missing values
+			 */
+
+			if (ALGORITHM_TYPE.FAST_MODE == getAlgorithmType()) {
+				// Let's populate it
+				populateFastMode(treeModel);
+			}
+
 			int total = 0;
 			/**
 			 * Import process receives a filter method which is used to confirm if the node
@@ -238,9 +259,172 @@ public class ModelConfiguration implements AbstractConfiguration {
 		}
 	}
 
+	/**
+	 * 
+	 * @param treeModel
+	 * @throws IOException
+	 * @throws SQLException
+	 * @throws NoSuchMethodException
+	 * @throws InvocationTargetException
+	 * @throws IllegalAccessException
+	 * @throws InstantiationException
+	 * @throws ClassNotFoundException
+	 */
+	private void populateFastMode(final TreeNode treeModel)
+			throws IOException, ClassNotFoundException, InstantiationException, IllegalAccessException,
+			InvocationTargetException, NoSuchMethodException, SQLException {
+		final HashMap<String, State> selectedStates = new HashMap<String, State>();
+		final HashMap<String, Comment> selectedComments = new HashMap<String, Comment>();
+		final HashMap<String, Contact> selectedContacts = new HashMap<String, Contact>();
+
+		populateSelectedFastMode(treeModel, selectedStates, selectedComments, selectedContacts);
+
+		populateFastModeStates(selectedStates);
+		populateFastModeComments(selectedComments);
+		populateFastModeContacts(selectedContacts);
+	}
+
+	private void populateSelectedFastMode(final TreeNode treeModel, final HashMap<String, State> selectedStates,
+			final HashMap<String, Comment> selectedComments, final HashMap<String, Contact> selectedContacts) {
+		if (treeModel.isChecked()) {
+			for (final TreeStructurable item : treeModel.getItems()) {
+				if (item instanceof State) {
+					selectedStates.put(((State) item).getState_id(), (State) item);
+				} else if (item instanceof Comment) {
+					selectedComments.put(((Comment) item).getComment_id(), (Comment) item);
+				} else if (item instanceof Contact) {
+					selectedContacts.put(((Contact) item).getContact_id(), (Contact) item);
+				}
+			}
+		}
+
+		for (final TreeNode child : treeModel.getChildren()) {
+			populateSelectedFastMode(child, selectedStates, selectedComments, selectedContacts);
+		}
+	}
+
+	private void populateFastModeStates(final HashMap<String, State> selectedStates)
+			throws IOException, ClassNotFoundException, InstantiationException, IllegalAccessException,
+			InvocationTargetException, NoSuchMethodException, SQLException {
+
+		final String query = OSUtils.readFile(ContactFastMode.class, StateFastMode.STATES_FILE);
+		final List<Object> parameters = new ArrayList<>();
+
+		// Let's add the time period filter
+		parameters.add(getCurrentTimePeriodAsParameter());
+
+		// Let's add the area filter
+		parameters.add(getCurrentAreaAsParameter());
+
+		// Let's create ids.
+		final StringBuilder builderSensorId = new StringBuilder();
+		final StringBuilder builderSourceId = new StringBuilder();
+		final StringBuilder builderPlatformId = new StringBuilder();
+
+		for (State state : selectedStates.values()) {
+			builderSensorId.append(state.getSensor().getSensor_id());
+			builderSensorId.append(",");
+
+			builderSourceId.append(state.getDatafile().getDatafile_id());
+			builderSourceId.append(",");
+
+			builderPlatformId.append(state.getPlatform().getPlatform_id());
+			builderPlatformId.append(",");
+		}
+		if (builderSensorId.length() > 0) {
+			builderSensorId.setLength(builderSensorId.length() - 1);
+		}
+		if (builderSourceId.length() > 0) {
+			builderSourceId.setLength(builderSourceId.length() - 1);
+		}
+		if (builderPlatformId.length() > 0) {
+			builderPlatformId.setLength(builderPlatformId.length() - 1);
+		}
+
+		parameters.add(builderSensorId.toString());
+		parameters.add(builderSourceId.toString());
+		parameters.add(builderPlatformId.toString());
+
+		// Let's create only one page.
+		parameters.add(selectedStates.size());
+
+		final List<StateFastMode> list = getDatabaseConnection().listAll(StateFastMode.class, query, parameters);
+
+		for (StateFastMode stateFastMode : list) {
+			final State currentState = selectedStates.get(stateFastMode.getStateId());
+			currentState.setTime(stateFastMode.getTime());
+			currentState.getSensor().setName(stateFastMode.getSensorName());
+			currentState.getPlatform().setName(stateFastMode.getPlatformName());
+			currentState.setLocation(stateFastMode.getLocation());
+			currentState.setCourse(stateFastMode.getCourse());
+			currentState.setSpeed(stateFastMode.getSpeed());
+			currentState.setHeading(stateFastMode.getHeading());
+		}
+	}
+
+	/**
+	 * Returns the current time period in an array of 2 elements Start, End
+	 * 
+	 * @return
+	 */
+	public String[] getCurrentTimePeriodAsParameter() {
+		final String[] answer = { null, null };
+		final SimpleDateFormat sqlDateFormat = new SimpleDateFormat(SqliteDatabaseConnection.SQLITE_DATE_FORMAT);
+		final TimePeriod timePeriod = getTimePeriod();
+		if (timePeriod != null) {
+			if (timePeriod.getStartDTG() != null && timePeriod.getStartDTG().getDate() != null) {
+				answer[0] = (sqlDateFormat.format(timePeriod.getStartDTG().getDate()));
+			} else {
+				answer[0] = (null);
+			}
+			if (timePeriod.getEndDTG() != null && timePeriod.getEndDTG().getDate() != null) {
+				answer[1] = (sqlDateFormat.format(timePeriod.getEndDTG().getDate()));
+			} else {
+				answer[1] = (null);
+			}
+		} else {
+			answer[0] = (null);
+			answer[1] = (null);
+		}
+		return answer;
+	}
+
+	@Override
+	public String getCurrentAreaAsParameter() {
+		final WorldArea currentArea = getCurrentArea();
+		if (currentArea != null) {
+
+			final WorldLocation topLeft = currentArea.getTopLeft();
+			final WorldLocation bottomRight = currentArea.getBottomRight();
+			final WorldLocation topRight = currentArea.getTopRight();
+			final WorldLocation bottomLeft = currentArea.getBottomLeft();
+
+			final String polygonArea = getDatabaseConnection().getSRID() + "POLYGON((" + topLeft.getLong() + " "
+					+ topLeft.getLat() + "," + bottomLeft.getLong() + " " + bottomLeft.getLat() + ","
+					+ bottomRight.getLong() + " " + bottomRight.getLat() + "," + topRight.getLong() + " "
+					+ topRight.getLat() + "," + topLeft.getLong() + " " + topLeft.getLat() + "))";
+			return polygonArea;
+		} else {
+			return null;
+		}
+	}
+
+	private void populateFastModeContacts(HashMap<String, Contact> selectedContacts)
+			throws IOException {
+		final String query = OSUtils.readFile(ContactFastMode.class, ContactFastMode.CONTACTS_FILE);
+
+	}
+
+	private void populateFastModeComments(HashMap<String, Comment> selectedComments)
+			throws IOException {
+		final String query = OSUtils.readFile(CommentFastMode.class, CommentFastMode.COMMENTS_FILE);
+
+	}
+
 	private int doImport(final TreeNode treeModel, final InternTreeItemFiltering filter) {
 		int total = 0;
-		// I have created this boolean because we have can several items imported in the same
+		// I have created this boolean because we have can several items imported in the
+		// same
 		// data file
 		boolean imported = false;
 		if (treeModel.isChecked()) {
@@ -574,16 +758,15 @@ public class ModelConfiguration implements AbstractConfiguration {
 
 	@Override
 	/**
-	 * Method that returns the algorithm to build the tree
-	 * We are going to use (only for now) the fast mode for 
-	 * Postgres, and Legacy Mode for SQLite.
-	 * It is open to future improvements.
+	 * Method that returns the algorithm to build the tree We are going to use (only
+	 * for now) the fast mode for Postgres, and Legacy Mode for SQLite. It is open
+	 * to future improvements.
 	 */
 	public ALGORITHM_TYPE getAlgorithmType() {
 		if (databaseConnection != null) {
 			if (databaseConnection instanceof SqliteDatabaseConnection) {
 				return ALGORITHM_TYPE.LEGACY;
-			}else if (databaseConnection instanceof PostgresDatabaseConnection) {
+			} else if (databaseConnection instanceof PostgresDatabaseConnection) {
 				return ALGORITHM_TYPE.FAST_MODE;
 			}
 		}

@@ -356,13 +356,21 @@ public class PepysImportController {
 			@Override
 			public void handleEvent(final Event event) {
 				if (event.type == SWT.Selection) {
-					final int importedItems = model.doImport();
-					final MessageBox messageBox = new MessageBox(_parent, SWT.OK);
-					messageBox.setMessage(importedItems + " data files have been successfully imported");
-					messageBox.setText("Database Import");
-					messageBox.open();
-
-					return;
+					try {
+						final int importedItems = model.doImport();
+						final MessageBox messageBox = new MessageBox(_parent, SWT.OK);
+						messageBox.setMessage(importedItems + " data files have been successfully imported");
+						messageBox.setText("Database Import");
+						messageBox.open();
+	
+						return;
+					}catch (Exception e) {
+						e.printStackTrace();
+						final MessageBox messageBox = new MessageBox(_parent, SWT.ERROR | SWT.OK);
+						messageBox.setMessage(DatabaseConnection.GENERIC_CONNECTION_ERROR);
+						messageBox.setText("DebriefNG");
+						messageBox.open();
+					}
 				}
 			}
 		});
