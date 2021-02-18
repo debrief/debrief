@@ -311,7 +311,9 @@ public class ModelConfiguration implements AbstractConfiguration {
 		final List<Object> parameters = new ArrayList<>();
 
 		// Let's add the time period filter
-		parameters.add(getCurrentTimePeriodAsParameter());
+		final String [] periodFilter = getCurrentTimePeriodAsParameter();
+		parameters.add(periodFilter[0]);
+		parameters.add(periodFilter[1]);
 
 		// Let's add the area filter
 		parameters.add(getCurrentAreaAsParameter());
@@ -349,7 +351,7 @@ public class ModelConfiguration implements AbstractConfiguration {
 		parameters.add(selectedStates.size());
 
 		final List<StateFastMode> list = getDatabaseConnection().listAll(StateFastMode.class, query, parameters);
-
+		// Now we complete 
 		for (StateFastMode stateFastMode : list) {
 			final State currentState = selectedStates.get(stateFastMode.getStateId());
 			currentState.setTime(stateFastMode.getTime());

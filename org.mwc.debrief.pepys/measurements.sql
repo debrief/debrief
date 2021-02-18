@@ -19,7 +19,7 @@ ui_filter_input as
 		),
 state_aggregation_data as
 	(select
-			States.sensor_id, States.source_id, count(1) as state_agg_count
+			States.state_id, States.sensor_id, States.source_id, count(1) as state_agg_count
 		from pepys."States" as States
 		WHERE
 			--Data Type criteria from the UI
@@ -28,11 +28,11 @@ state_aggregation_data as
 			tsrange((select start_time::timestamp from processed_ui_filter_values), (select end_time::timestamp from processed_ui_filter_values), '[]') @> States.time AND
 			--Spatial criteria from the UI
 			((select location from processed_ui_filter_values) is null OR ST_Contains((select location from processed_ui_filter_values),States.location))
-			group by States.sensor_id, States.source_id
+			group by States.state_id, States.sensor_id, States.source_id
 	),
 state_measurement_data AS
 	(SELECT
-			Platforms.name as "PLATFORM_NAME", Platforms.platform_id, 'STATES' AS datatype, Sensors.name as "SENSOR_NAME", Sensors.sensor_id, Datafiles.reference, Datafiles.datafile_id, sad.state_agg_count
+			sad.state_id as "id", Platforms.name as "PLATFORM_NAME", Platforms.platform_id, 'STATES' AS datatype, Sensors.name as "SENSOR_NAME", Sensors.sensor_id, Datafiles.reference, Datafiles.datafile_id, sad.state_agg_count
 		from
 			state_aggregation_data as sad inner join
 			pepys."Sensors" as Sensors on Sensors.sensor_id = sad.sensor_id inner join
@@ -41,7 +41,7 @@ state_measurement_data AS
 	),
 contact_aggregation_data as
 	(select
-			Contacts.sensor_id, Contacts.source_id, count(1) as contact_agg_count
+			Contacts.sensor_id as "state_id", Contacts.sensor_id, Contacts.source_id, count(1) as contact_agg_count
 		from pepys."Contacts" as Contacts
 		WHERE
 			--Data Type criteria from the UI
@@ -54,7 +54,7 @@ contact_aggregation_data as
 	),
 contact_measurement_data AS
 	(SELECT
-			Platforms.name as "PLATFORM_NAME", Platforms.platform_id, 'CONTACTS' AS datatype, Sensors.name as "SENSOR_NAME", Sensors.sensor_id, Datafiles.reference, Datafiles.datafile_id, cad.contact_agg_count
+			Platforms.platform_id as "id", Platforms.name as "PLATFORM_NAME", Platforms.platform_id, 'CONTACTS' AS datatype, Sensors.name as "SENSOR_NAME", Sensors.sensor_id, Datafiles.reference, Datafiles.datafile_id, cad.contact_agg_count
 		from
 			contact_aggregation_data as cad inner join
 			pepys."Sensors" as Sensors on Sensors.sensor_id = cad.sensor_id inner join
@@ -63,7 +63,7 @@ contact_measurement_data AS
 	),
 comment_aggregation_data as
 	(select
-			Comments.platform_id, Comments.source_id, count(1) as comment_agg_count
+			Comments.platform_id as "id", Comments.platform_id, Comments.source_id, count(1) as comment_agg_count
 		from pepys."Comments" as Comments
 		WHERE
 			--Data Type criteria from the UI
@@ -76,7 +76,7 @@ comment_aggregation_data as
 	),
 comment_measurement_data AS
 	(SELECT
-			Platforms.name as "PLATFORM_NAME", Platforms.platform_id, 'COMMENTS' AS datatype, null as "SENSOR_NAME", null::uuid, Datafiles.reference, Datafiles.datafile_id, cad.comment_agg_count
+			Platforms.platform_id as "id", Platforms.name as "PLATFORM_NAME", Platforms.platform_id, 'COMMENTS' AS datatype, null as "SENSOR_NAME", null::uuid, Datafiles.reference, Datafiles.datafile_id, cad.comment_agg_count
 		from
 			comment_aggregation_data as cad inner join
 			pepys."Platforms" as Platforms on Platforms.platform_id=cad.platform_id INNER JOIN
