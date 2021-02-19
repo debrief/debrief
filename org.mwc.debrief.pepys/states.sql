@@ -9,7 +9,7 @@ ui_filter_input as
 			? as platform_id,  --Input from Phase 2 of import, can be set as null: null as platform_id
 			--null as platform_id,  --Example on how to provide null
 			1 as page_no, --Pagination input. Page No For ex. if there are 1000 records paginated into pages of 100 records each, 1 here will return the first page or first 100 records
-			? as page_size --Pagination input - No. of records per page
+			1000000 as page_size --Pagination input - No. of records per page
 	),
 	processed_ui_filter_values as
 	(select

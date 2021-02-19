@@ -36,6 +36,10 @@ import org.mwc.debrief.model.utils.OSUtils;
 import org.mwc.debrief.pepys.Activator;
 import org.mwc.debrief.pepys.model.bean.Comment;
 import org.mwc.debrief.pepys.model.bean.Contact;
+import org.mwc.debrief.pepys.model.bean.Datafile;
+import org.mwc.debrief.pepys.model.bean.Platform;
+import org.mwc.debrief.pepys.model.bean.Sensor;
+import org.mwc.debrief.pepys.model.bean.SensorType;
 import org.mwc.debrief.pepys.model.bean.State;
 import org.mwc.debrief.pepys.model.bean.custom.CommentFastMode;
 import org.mwc.debrief.pepys.model.bean.custom.ContactFastMode;
@@ -229,33 +233,34 @@ public class ModelConfiguration implements AbstractConfiguration {
 
 			if (ALGORITHM_TYPE.FAST_MODE == getAlgorithmType()) {
 				// Let's populate it
-				populateFastMode(treeModel);
+				return importFastMode(treeModel);
+			}else {
+
+				int total = 0;
+				/**
+				 * Import process receives a filter method which is used to confirm if the node
+				 * is going to be imported to Debrief.
+				 *
+				 * I am using it to import first all the NON Contacts nodes, and after that I
+				 * import only the Contact nodes. It will ensure that we will have already all
+				 * the related tracks.
+				 */
+				total += doImport(treeModel, new InternTreeItemFiltering() {
+	
+					@Override
+					public boolean isAcceptable(final TreeStructurable _item) {
+						return !(_item instanceof Contact);
+					}
+				});
+				total += doImport(treeModel, new InternTreeItemFiltering() {
+	
+					@Override
+					public boolean isAcceptable(final TreeStructurable _item) {
+						return _item instanceof Contact;
+					}
+				});
+				return total;
 			}
-
-			int total = 0;
-			/**
-			 * Import process receives a filter method which is used to confirm if the node
-			 * is going to be imported to Debrief.
-			 *
-			 * I am using it to import first all the NON Contacts nodes, and after that I
-			 * import only the Contact nodes. It will ensure that we will have already all
-			 * the related tracks.
-			 */
-			total += doImport(treeModel, new InternTreeItemFiltering() {
-
-				@Override
-				public boolean isAcceptable(final TreeStructurable _item) {
-					return !(_item instanceof Contact);
-				}
-			});
-			total += doImport(treeModel, new InternTreeItemFiltering() {
-
-				@Override
-				public boolean isAcceptable(final TreeStructurable _item) {
-					return _item instanceof Contact;
-				}
-			});
-			return total;
 		}
 	}
 
@@ -270,40 +275,42 @@ public class ModelConfiguration implements AbstractConfiguration {
 	 * @throws InstantiationException
 	 * @throws ClassNotFoundException
 	 */
-	private void populateFastMode(final TreeNode treeModel)
+	private int importFastMode(final TreeNode treeModel)
 			throws IOException, ClassNotFoundException, InstantiationException, IllegalAccessException,
 			InvocationTargetException, NoSuchMethodException, SQLException {
-		final HashMap<String, State> selectedStates = new HashMap<String, State>();
-		final HashMap<String, Comment> selectedComments = new HashMap<String, Comment>();
-		final HashMap<String, Contact> selectedContacts = new HashMap<String, Contact>();
+		final ArrayList<State> selectedStates = new ArrayList<State>();
+		final ArrayList<Comment> selectedComments = new ArrayList<Comment>();
+		final ArrayList<Contact> selectedContacts = new ArrayList<Contact>();
 
-		populateSelectedFastMode(treeModel, selectedStates, selectedComments, selectedContacts);
+		int total = 0;
+		populateSelectedDatafiles(treeModel, selectedStates, selectedComments, selectedContacts);
 
-		populateFastModeStates(selectedStates);
-		populateFastModeComments(selectedComments);
-		populateFastModeContacts(selectedContacts);
+		total += populateFastModeStates(selectedStates);
+		total += populateFastModeComments(selectedComments);
+		total += populateFastModeContacts(selectedContacts);
+		return total;
 	}
 
-	private void populateSelectedFastMode(final TreeNode treeModel, final HashMap<String, State> selectedStates,
-			final HashMap<String, Comment> selectedComments, final HashMap<String, Contact> selectedContacts) {
+	private void populateSelectedDatafiles(final TreeNode treeModel, final ArrayList<State> selectedStates,
+			final ArrayList<Comment> selectedComments, final ArrayList<Contact> selectedContacts) {
 		if (treeModel.isChecked()) {
 			for (final TreeStructurable item : treeModel.getItems()) {
 				if (item instanceof State) {
-					selectedStates.put(((State) item).getState_id(), (State) item);
+					selectedStates.add((State) item);
 				} else if (item instanceof Comment) {
-					selectedComments.put(((Comment) item).getComment_id(), (Comment) item);
+					selectedComments.add((Comment) item);
 				} else if (item instanceof Contact) {
-					selectedContacts.put(((Contact) item).getContact_id(), (Contact) item);
+					selectedContacts.add((Contact) item);
 				}
 			}
 		}
 
 		for (final TreeNode child : treeModel.getChildren()) {
-			populateSelectedFastMode(child, selectedStates, selectedComments, selectedContacts);
+			populateSelectedDatafiles(child, selectedStates, selectedComments, selectedContacts);
 		}
 	}
 
-	private void populateFastModeStates(final HashMap<String, State> selectedStates)
+	private int populateFastModeStates(final ArrayList<State> selectedStates)
 			throws IOException, ClassNotFoundException, InstantiationException, IllegalAccessException,
 			InvocationTargetException, NoSuchMethodException, SQLException {
 
@@ -323,7 +330,7 @@ public class ModelConfiguration implements AbstractConfiguration {
 		final StringBuilder builderSourceId = new StringBuilder();
 		final StringBuilder builderPlatformId = new StringBuilder();
 
-		for (State state : selectedStates.values()) {
+		for (State state : selectedStates) {
 			builderSensorId.append(state.getSensor().getSensor_id());
 			builderSensorId.append(",");
 
@@ -347,21 +354,35 @@ public class ModelConfiguration implements AbstractConfiguration {
 		parameters.add(builderSourceId.toString());
 		parameters.add(builderPlatformId.toString());
 
-		// Let's create only one page.
-		parameters.add(selectedStates.size());
-
 		final List<StateFastMode> list = getDatabaseConnection().listAll(StateFastMode.class, query, parameters);
+		
+		int total = 0;
 		// Now we complete 
 		for (StateFastMode stateFastMode : list) {
-			final State currentState = selectedStates.get(stateFastMode.getStateId());
+			final State currentState = new State();
+			final Sensor sensor = new Sensor();
+			final Platform platform = new Platform();
+			final SensorType sensorType = new SensorType();
+			final Datafile datafile = new Datafile();
+
+			currentState.setSensor(sensor);
+			sensor.setSensorType(sensorType);
+			sensor.setPlatform(platform);
+			currentState.setDatafile(datafile);
+			
+			currentState.setState_id(stateFastMode.getStateId());
 			currentState.setTime(stateFastMode.getTime());
+			
 			currentState.getSensor().setName(stateFastMode.getSensorName());
 			currentState.getPlatform().setName(stateFastMode.getPlatformName());
 			currentState.setLocation(stateFastMode.getLocation());
 			currentState.setCourse(stateFastMode.getCourse());
 			currentState.setSpeed(stateFastMode.getSpeed());
 			currentState.setHeading(stateFastMode.getHeading());
+			currentState.doImport(_bridge.getLayers());
+			++total;
 		}
+		return total;
 	}
 
 	/**
@@ -411,16 +432,18 @@ public class ModelConfiguration implements AbstractConfiguration {
 		}
 	}
 
-	private void populateFastModeContacts(HashMap<String, Contact> selectedContacts)
+	private int populateFastModeContacts(ArrayList<Contact> selectedContacts)
 			throws IOException {
 		final String query = OSUtils.readFile(ContactFastMode.class, ContactFastMode.CONTACTS_FILE);
 
+		return 0;
 	}
 
-	private void populateFastModeComments(HashMap<String, Comment> selectedComments)
+	private int populateFastModeComments(ArrayList<Comment> selectedComments)
 			throws IOException {
 		final String query = OSUtils.readFile(CommentFastMode.class, CommentFastMode.COMMENTS_FILE);
 
+		return 0;
 	}
 
 	private int doImport(final TreeNode treeModel, final InternTreeItemFiltering filter) {

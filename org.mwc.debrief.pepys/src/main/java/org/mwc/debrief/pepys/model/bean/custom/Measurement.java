@@ -78,8 +78,6 @@ public class Measurement {
 		
 	}
 	
-	private String id;
-	
 	@FieldName(name = "PLATFORM_NAME")
 	private String platformName;
 
@@ -170,14 +168,6 @@ public class Measurement {
 	public void setStateAggCount(int stateAggCount) {
 		this.stateAggCount = stateAggCount;
 	}
-	
-	public String getId() {
-		return id;
-	}
-
-	public void setId(String id) {
-		this.id = id;
-	}
 
 	public TreeStructurable export() {
 		if (STATE_TYPE.equals(getDataType())) {
@@ -248,7 +238,6 @@ public class Measurement {
 		datafile.setDatafile_id(getDatafileId());
 		datafile.setReference(getReference());
 		answer.setDatafile(datafile);
-		answer.setState_id(id);
 		
 		return answer;
 	}
