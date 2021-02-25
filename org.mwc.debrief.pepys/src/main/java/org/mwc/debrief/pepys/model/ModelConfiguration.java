@@ -151,7 +151,7 @@ public class ModelConfiguration implements AbstractConfiguration {
 		validate();
 		switch (getAlgorithmType()) {
 		case FAST_MODE:
-			// currentItems = TreeUtils.buildStructure(this);
+			//currentItems = TreeUtils.buildStructure(this);
 			currentItems = TreeUtils.buildStructureFastMode(this);
 			break;
 
@@ -234,7 +234,7 @@ public class ModelConfiguration implements AbstractConfiguration {
 			if (ALGORITHM_TYPE.FAST_MODE == getAlgorithmType()) {
 				// Let's populate it
 				return importFastMode(treeModel);
-			}else {
+			} else {
 
 				int total = 0;
 				/**
@@ -246,14 +246,14 @@ public class ModelConfiguration implements AbstractConfiguration {
 				 * the related tracks.
 				 */
 				total += doImport(treeModel, new InternTreeItemFiltering() {
-	
+
 					@Override
 					public boolean isAcceptable(final TreeStructurable _item) {
 						return !(_item instanceof Contact);
 					}
 				});
 				total += doImport(treeModel, new InternTreeItemFiltering() {
-	
+
 					@Override
 					public boolean isAcceptable(final TreeStructurable _item) {
 						return _item instanceof Contact;
@@ -314,75 +314,80 @@ public class ModelConfiguration implements AbstractConfiguration {
 			throws IOException, ClassNotFoundException, InstantiationException, IllegalAccessException,
 			InvocationTargetException, NoSuchMethodException, SQLException {
 
-		final String query = OSUtils.readFile(ContactFastMode.class, StateFastMode.STATES_FILE);
-		final List<Object> parameters = new ArrayList<>();
+		// we have't selected anything
+		if (selectedStates.isEmpty()) {
+			return 0;
+		} else {
+			final String query = OSUtils.readFile(ContactFastMode.class, StateFastMode.STATES_FILE);
+			final List<Object> parameters = new ArrayList<>();
 
-		// Let's add the time period filter
-		final String [] periodFilter = getCurrentTimePeriodAsParameter();
-		parameters.add(periodFilter[0]);
-		parameters.add(periodFilter[1]);
+			// Let's add the time period filter
+			final String[] periodFilter = getCurrentTimePeriodAsParameter();
+			parameters.add(periodFilter[0]);
+			parameters.add(periodFilter[1]);
 
-		// Let's add the area filter
-		parameters.add(getCurrentAreaAsParameter());
+			// Let's add the area filter
+			parameters.add(getCurrentAreaAsParameter());
 
-		// Let's create ids.
-		final StringBuilder builderSensorId = new StringBuilder();
-		final StringBuilder builderSourceId = new StringBuilder();
-		final StringBuilder builderPlatformId = new StringBuilder();
+			// Let's create ids.
+			final StringBuilder builderSensorId = new StringBuilder();
+			final StringBuilder builderSourceId = new StringBuilder();
+			final StringBuilder builderPlatformId = new StringBuilder();
 
-		for (State state : selectedStates) {
-			builderSensorId.append(state.getSensor().getSensor_id());
-			builderSensorId.append(",");
+			for (State state : selectedStates) {
+				builderSensorId.append(state.getSensor().getSensor_id());
+				builderSensorId.append(",");
 
-			builderSourceId.append(state.getDatafile().getDatafile_id());
-			builderSourceId.append(",");
+				builderSourceId.append(state.getDatafile().getDatafile_id());
+				builderSourceId.append(",");
 
-			builderPlatformId.append(state.getPlatform().getPlatform_id());
-			builderPlatformId.append(",");
+				builderPlatformId.append(state.getPlatform().getPlatform_id());
+				builderPlatformId.append(",");
+			}
+			if (builderSensorId.length() > 0) {
+				builderSensorId.setLength(builderSensorId.length() - 1);
+			}
+			if (builderSourceId.length() > 0) {
+				builderSourceId.setLength(builderSourceId.length() - 1);
+			}
+			if (builderPlatformId.length() > 0) {
+				builderPlatformId.setLength(builderPlatformId.length() - 1);
+			}
+
+			parameters.add(builderSensorId.toString());
+			parameters.add(builderSourceId.toString());
+			parameters.add(builderPlatformId.toString());
+
+			final List<StateFastMode> list = getDatabaseConnection().listAll(StateFastMode.class, query, parameters);
+
+			int total = 0;
+			// Now we complete
+			for (StateFastMode stateFastMode : list) {
+				final State currentState = new State();
+				final Sensor sensor = new Sensor();
+				final Platform platform = new Platform();
+				final SensorType sensorType = new SensorType();
+				final Datafile datafile = new Datafile();
+
+				currentState.setSensor(sensor);
+				sensor.setSensorType(sensorType);
+				sensor.setPlatform(platform);
+				currentState.setDatafile(datafile);
+
+				currentState.setState_id(stateFastMode.getStateId());
+				currentState.setTime(stateFastMode.getTime());
+
+				currentState.getSensor().setName(stateFastMode.getSensorName());
+				currentState.getPlatform().setName(stateFastMode.getPlatformName());
+				currentState.setLocation(stateFastMode.getLocation());
+				currentState.setCourse(stateFastMode.getCourse());
+				currentState.setSpeed(stateFastMode.getSpeed());
+				currentState.setHeading(stateFastMode.getHeading());
+				currentState.doImport(_bridge.getLayers());
+				++total;
+			}
+			return total;
 		}
-		if (builderSensorId.length() > 0) {
-			builderSensorId.setLength(builderSensorId.length() - 1);
-		}
-		if (builderSourceId.length() > 0) {
-			builderSourceId.setLength(builderSourceId.length() - 1);
-		}
-		if (builderPlatformId.length() > 0) {
-			builderPlatformId.setLength(builderPlatformId.length() - 1);
-		}
-
-		parameters.add(builderSensorId.toString());
-		parameters.add(builderSourceId.toString());
-		parameters.add(builderPlatformId.toString());
-
-		final List<StateFastMode> list = getDatabaseConnection().listAll(StateFastMode.class, query, parameters);
-		
-		int total = 0;
-		// Now we complete 
-		for (StateFastMode stateFastMode : list) {
-			final State currentState = new State();
-			final Sensor sensor = new Sensor();
-			final Platform platform = new Platform();
-			final SensorType sensorType = new SensorType();
-			final Datafile datafile = new Datafile();
-
-			currentState.setSensor(sensor);
-			sensor.setSensorType(sensorType);
-			sensor.setPlatform(platform);
-			currentState.setDatafile(datafile);
-			
-			currentState.setState_id(stateFastMode.getStateId());
-			currentState.setTime(stateFastMode.getTime());
-			
-			currentState.getSensor().setName(stateFastMode.getSensorName());
-			currentState.getPlatform().setName(stateFastMode.getPlatformName());
-			currentState.setLocation(stateFastMode.getLocation());
-			currentState.setCourse(stateFastMode.getCourse());
-			currentState.setSpeed(stateFastMode.getSpeed());
-			currentState.setHeading(stateFastMode.getHeading());
-			currentState.doImport(_bridge.getLayers());
-			++total;
-		}
-		return total;
 	}
 
 	/**
@@ -433,17 +438,143 @@ public class ModelConfiguration implements AbstractConfiguration {
 	}
 
 	private int populateFastModeContacts(ArrayList<Contact> selectedContacts)
-			throws IOException {
-		final String query = OSUtils.readFile(ContactFastMode.class, ContactFastMode.CONTACTS_FILE);
+			throws IOException, ClassNotFoundException, InstantiationException, IllegalAccessException,
+			InvocationTargetException, NoSuchMethodException, SQLException {
+		if (selectedContacts.isEmpty()) {
+			return 0;
+		} else {
+			final String query = OSUtils.readFile(ContactFastMode.class, ContactFastMode.CONTACTS_FILE);
 
-		return 0;
+			final List<Object> parameters = new ArrayList<>();
+
+			// Let's add the time period filter
+			final String[] periodFilter = getCurrentTimePeriodAsParameter();
+			parameters.add(periodFilter[0]);
+			parameters.add(periodFilter[1]);
+
+			// Let's add the area filter
+			parameters.add(getCurrentAreaAsParameter());
+
+			// Let's create ids.
+			final StringBuilder builderSensorId = new StringBuilder();
+			final StringBuilder builderSourceId = new StringBuilder();
+			final StringBuilder builderPlatformId = new StringBuilder();
+
+			for (Contact contact : selectedContacts) {
+				builderSensorId.append(contact.getSensor().getSensor_id());
+				builderSensorId.append(",");
+
+				builderSourceId.append(contact.getDatafile().getDatafile_id());
+				builderSourceId.append(",");
+
+				builderPlatformId.append(contact.getPlatform().getPlatform_id());
+				builderPlatformId.append(",");
+			}
+			if (builderSensorId.length() > 0) {
+				builderSensorId.setLength(builderSensorId.length() - 1);
+			}
+			if (builderSourceId.length() > 0) {
+				builderSourceId.setLength(builderSourceId.length() - 1);
+			}
+			if (builderPlatformId.length() > 0) {
+				builderPlatformId.setLength(builderPlatformId.length() - 1);
+			}
+
+			parameters.add(builderSensorId.toString());
+			parameters.add(builderSourceId.toString());
+			parameters.add(builderPlatformId.toString());
+
+			final List<ContactFastMode> list = getDatabaseConnection().listAll(ContactFastMode.class, query,
+					parameters);
+
+			int total = 0;
+			// Now we complete
+			for (ContactFastMode contact : list) {
+				final Contact currentContact = new Contact();
+				final Sensor sensor = new Sensor();
+				final Platform platform = new Platform();
+				final Datafile datafile = new Datafile();
+
+				currentContact.setContact_id(contact.getContact_id());
+				currentContact.setTime(contact.getTime());
+				currentContact.setName(contact.getName());
+				currentContact.setSensor(sensor);
+				currentContact.setDatafile(datafile);
+				
+				sensor.setName(contact.getSensor_name());
+				sensor.setPlatform(platform);
+				
+				// TODO FIX LATER.
+				datafile.setReference(selectedContacts.get(0).getReference());
+				
+				platform.setName(contact.getName());
+				currentContact.setBearing(contact.getBearing());
+				currentContact.setLocation(contact.getLocation());
+
+				currentContact.doImport(_bridge.getLayers());
+				++total;
+			}
+			return total;
+		}
 	}
 
 	private int populateFastModeComments(ArrayList<Comment> selectedComments)
-			throws IOException {
-		final String query = OSUtils.readFile(CommentFastMode.class, CommentFastMode.COMMENTS_FILE);
+			throws IOException, ClassNotFoundException, InstantiationException, IllegalAccessException,
+			InvocationTargetException, NoSuchMethodException, SQLException {
+		if (selectedComments.isEmpty()) {
+			return 0;
+		}else {
+			final String query = OSUtils.readFile(CommentFastMode.class, CommentFastMode.COMMENTS_FILE);
 
-		return 0;
+			final List<Object> parameters = new ArrayList<>();
+
+			// Let's add the time period filter
+			final String[] periodFilter = getCurrentTimePeriodAsParameter();
+			parameters.add(periodFilter[0]);
+			parameters.add(periodFilter[1]);
+
+			parameters.add(getFilter());
+
+			// Let's create ids.
+			final StringBuilder builderPlatformId = new StringBuilder();
+
+			for (Comment comment : selectedComments) {
+				builderPlatformId.append(comment.getPlatform().getPlatform_id());
+				builderPlatformId.append(",");
+			}
+			if (builderPlatformId.length() > 0) {
+				builderPlatformId.setLength(builderPlatformId.length() - 1);
+			}
+
+			// sensor id
+			parameters.add(null);
+			// source id
+			parameters.add(null);
+
+			parameters.add(builderPlatformId.toString());
+
+			final List<CommentFastMode> list = getDatabaseConnection().listAll(CommentFastMode.class, query, parameters);
+
+			int total = 0;
+			// Now we complete
+			for (CommentFastMode comment : list) {
+				final Comment currentComment = new Comment();
+				final Platform platform = new Platform();
+
+				currentComment.setComment_id(comment.getComment_id());
+				currentComment.setComment_type_id(comment.getComment_type_name());
+				currentComment.setContent(comment.getContent());
+				currentComment.setTime(comment.getTime());
+				currentComment.setPlatform(platform);
+				platform.setName(comment.getPlatform_name());
+
+				currentComment.doImport(_bridge.getLayers());
+				++total;
+			}
+			return total;
+		}
+		
+		
 	}
 
 	private int doImport(final TreeNode treeModel, final InternTreeItemFiltering filter) {

@@ -25,6 +25,7 @@ import org.mwc.debrief.pepys.model.db.annotation.ManyToOne;
 import org.mwc.debrief.pepys.model.db.annotation.OneToOne;
 import org.mwc.debrief.pepys.model.db.annotation.TableName;
 import org.mwc.debrief.pepys.model.db.annotation.Time;
+import org.mwc.debrief.pepys.model.db.annotation.Transient;
 import org.mwc.debrief.pepys.model.tree.TreeStructurable;
 
 import Debrief.Wrappers.SensorContactWrapper;
@@ -76,6 +77,9 @@ public class Contact implements AbstractBean, TreeStructurable {
 	@Location
 	private WorldLocation location;
 
+	@Transient
+	private String reference;
+	
 	public Contact() {
 
 	}
@@ -196,6 +200,14 @@ public class Contact implements AbstractBean, TreeStructurable {
 	@Override
 	public Date getTime() {
 		return time;
+	}
+
+	public String getReference() {
+		return reference;
+	}
+
+	public void setReference(String reference) {
+		this.reference = reference;
 	}
 
 	public void setBearing(final double bearing) {

@@ -17,7 +17,6 @@ package org.mwc.debrief.pepys.model.tree;
 
 import java.beans.PropertyVetoException;
 import java.io.IOException;
-import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
@@ -31,19 +30,15 @@ import org.mwc.debrief.pepys.Activator;
 import org.mwc.debrief.pepys.model.AbstractConfiguration;
 import org.mwc.debrief.pepys.model.TypeDomain;
 import org.mwc.debrief.pepys.model.bean.AbstractBean;
-import org.mwc.debrief.pepys.model.bean.Comment;
 import org.mwc.debrief.pepys.model.bean.custom.Measurement;
 import org.mwc.debrief.pepys.model.db.Condition;
 import org.mwc.debrief.pepys.model.db.SqliteDatabaseConnection;
 import org.mwc.debrief.pepys.model.db.annotation.AnnotationsUtils;
-import org.mwc.debrief.pepys.model.db.annotation.Location;
 import org.mwc.debrief.pepys.model.tree.TreeNode.NodeType;
 
 import Debrief.GUI.Frames.Application;
 import MWC.GUI.ToolParent;
 import MWC.GenericData.TimePeriod;
-import MWC.GenericData.WorldArea;
-import MWC.GenericData.WorldLocation;
 import junit.framework.TestCase;
 
 public class TreeUtils {

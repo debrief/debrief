@@ -9,7 +9,7 @@ ui_filter_input as
 			? as platform_id,  --Input from Phase 2 of import, can be set as null: null as platform_id
 			--null as platform_id,  --Example on how to provide null
 			1 as page_no, --Pagination input. Page No For ex. if there are 1000 records paginated into pages of 100 records each, 1 here will return the first page or first 100 records
-			? as page_size --Pagination input - No. of records per page
+			1000000 as page_size --Pagination input - No. of records per page
 	),
 	processed_ui_filter_values as
 	(select
@@ -24,9 +24,9 @@ ui_filter_input as
 		from
 				ui_filter_input as ui_input
 		)
-select filtered_comments.comment_id, filtered_comments.time, Platforms.name,
-		PlatformTypes.name, Nationalities.name,
-		filtered_comments.content, CommentTypes.name from
+select filtered_comments.comment_id, filtered_comments.time, Platforms.name as platform_name,
+		PlatformTypes.name as platform_type_name, Nationalities.name as nationalities_name,
+		filtered_comments.content, CommentTypes.name as comment_type_name from
 		pepys."Comments" as filtered_comments inner join
 		pepys."Platforms" as Platforms on filtered_comments.platform_id=Platforms.platform_id inner join
 		pepys."PlatformTypes" as PlatformTypes on Platforms.platform_type_id = PlatformTypes.platform_type_id inner join

@@ -212,6 +212,8 @@ public class Measurement {
 		platform.setName(getPlatformName());
 		platform.setPlatform_id(getPlatformId());
 		
+		answer.setReference(getReference());
+		
 		datafile.setDatafile_id(getDatafileId());
 		datafile.setReference(getReference());
 		answer.setDatafile(datafile);
