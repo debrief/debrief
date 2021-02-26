@@ -448,7 +448,7 @@ public abstract class DatabaseConnection {
 
 			for (int i = 0; parameters != null && i < parameters.size(); i++) {
 				final Object valueToAssign = parameters.get(i);
-				statement.setObject(i + 1, valueToAssign); // TODO improve this.
+				statement.setObject(i + 1, valueToAssign);
 			}
 
 			loadExtention(connection, statement);
