@@ -504,8 +504,7 @@ public class ModelConfiguration implements AbstractConfiguration {
 				sensor.setName(contact.getSensor_name());
 				sensor.setPlatform(platform);
 				
-				// TODO FIX LATER.
-				datafile.setReference(selectedContacts.get(0).getReference());
+				datafile.setReference(contact.getReference());
 				
 				platform.setName(contact.getName());
 				currentContact.setBearing(contact.getBearing());

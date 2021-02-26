@@ -26,12 +26,13 @@ ui_filter_input as
 		)
 select filtered_contacts.contact_id, filtered_contacts.time, Sensors.name as sensor_name, Platforms.name as platform_name,
 		PlatformTypes.name as platform_type_name, Nationalities.name as nationality_name,
-		filtered_contacts.bearing, filtered_contacts.range, filtered_contacts.location from
+		filtered_contacts.bearing, filtered_contacts.range, filtered_contacts.location, Datafiles.reference from
 	pepys."Contacts" as filtered_contacts inner join
 	pepys."Sensors" as Sensors on filtered_contacts.sensor_id = Sensors.sensor_id inner join
 	pepys."Platforms" as Platforms on Sensors.host=Platforms.platform_id inner join
 	pepys."PlatformTypes" as PlatformTypes on Platforms.platform_type_id = PlatformTypes.platform_type_id inner join
-	pepys."Nationalities" as Nationalities on Platforms.nationality_id = Nationalities.nationality_id
+	pepys."Nationalities" as Nationalities on Platforms.nationality_id = Nationalities.nationality_id inner join
+	pepys."Datafiles" as Datafiles on filtered_contacts.source_id = Datafiles.datafile_id
 		WHERE
 			--Start and End Time criteria from the UI
 			tsrange((select start_time::timestamp from processed_ui_filter_values), (select end_time::timestamp from processed_ui_filter_values), '[]') @> filtered_contacts.time AND

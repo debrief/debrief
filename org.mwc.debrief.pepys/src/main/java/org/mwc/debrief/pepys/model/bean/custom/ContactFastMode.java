@@ -28,6 +28,8 @@ public class ContactFastMode {
 	
 	private WorldLocation location;
 	
+	private String reference;
+	
 	public ContactFastMode() {
 		
 	}
@@ -111,6 +113,12 @@ public class ContactFastMode {
 	public void setLocation(WorldLocation location) {
 		this.location = location;
 	}
-	
-	
+
+	public String getReference() {
+		return reference;
+	}
+
+	public void setReference(String reference) {
+		this.reference = reference;
+	}
 }
