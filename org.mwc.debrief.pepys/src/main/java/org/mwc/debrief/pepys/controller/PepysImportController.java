@@ -359,7 +359,7 @@ public class PepysImportController {
 					try {
 						final int importedItems = model.doImport();
 						final MessageBox messageBox = new MessageBox(_parent, SWT.OK);
-						messageBox.setMessage(importedItems + " data files have been successfully imported");
+						messageBox.setMessage(importedItems + " data items have been successfully imported");
 						messageBox.setText("Database Import");
 						messageBox.open();
 
