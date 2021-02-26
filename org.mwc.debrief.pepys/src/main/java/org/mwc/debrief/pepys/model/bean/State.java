@@ -43,21 +43,22 @@ public class State implements AbstractBean, TreeStructurable {
 		public void testStatesQuery() {
 			try {
 				final DatabaseConfiguration _config = new DatabaseConfiguration();
-				ConfigurationReader.loadDatabaseConfiguration(_config, new LoaderOption[] {
-						new LoaderOption(LoaderType.DEFAULT_FILE, DatabaseConnection.DEFAULT_SQLITE_TEST_DATABASE_FILE) });
+				ConfigurationReader.loadDatabaseConfiguration(_config,
+						new LoaderOption[] { new LoaderOption(LoaderType.DEFAULT_FILE,
+								DatabaseConnection.DEFAULT_SQLITE_TEST_DATABASE_FILE) });
 				final SqliteDatabaseConnection sqlite = new SqliteDatabaseConnection();
 				sqlite.initializeInstance(_config);
-				final List<State> list = sqlite.listAll(State.class, (Collection<Condition>)null);
+				final List<State> list = sqlite.listAll(State.class, (Collection<Condition>) null);
 
 				assertTrue("States - database entries", list.size() == 12239);
 
-				final List<State> list2 = sqlite.listAll(State.class,
-						Arrays.asList(new Condition[] { new Condition("source_id = \"638471a99e264761830b3f6575816e67\"") }));
+				final List<State> list2 = sqlite.listAll(State.class, Arrays
+						.asList(new Condition[] { new Condition("source_id = \"638471a99e264761830b3f6575816e67\"") }));
 
 				assertTrue("States - database entries", list2.size() == 5);
-				
-				final List<State> list3 = sqlite.listAll(State.class,
-						Arrays.asList(new Condition[] { new Condition("source_id = \"db8692a392924d27bfacdbddc4eb9a29\"") }));
+
+				final List<State> list3 = sqlite.listAll(State.class, Arrays
+						.asList(new Condition[] { new Condition("source_id = \"db8692a392924d27bfacdbddc4eb9a29\"") }));
 
 				assertTrue("States - database entries", list3.size() == 11400);
 			} catch (NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException
@@ -152,6 +153,10 @@ public class State implements AbstractBean, TreeStructurable {
 		return privacy_id;
 	}
 
+	public Sensor getSensor() {
+		return sensor;
+	}
+
 	@Override
 	public SensorType getSensorType() {
 		if (sensor != null) {
@@ -171,10 +176,6 @@ public class State implements AbstractBean, TreeStructurable {
 	@Override
 	public Date getTime() {
 		return time;
-	}
-
-	public Sensor getSensor() {
-		return sensor;
 	}
 
 	public void setCourse(final double course) {

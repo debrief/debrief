@@ -30,11 +30,12 @@ public class Sensor implements AbstractBean, Comparable<Sensor> {
 		public void testSensorQuery() {
 			try {
 				final DatabaseConfiguration _config = new DatabaseConfiguration();
-				ConfigurationReader.loadDatabaseConfiguration(_config, new LoaderOption[] {
-						new LoaderOption(LoaderType.DEFAULT_FILE, DatabaseConnection.DEFAULT_SQLITE_TEST_DATABASE_FILE) });
+				ConfigurationReader.loadDatabaseConfiguration(_config,
+						new LoaderOption[] { new LoaderOption(LoaderType.DEFAULT_FILE,
+								DatabaseConnection.DEFAULT_SQLITE_TEST_DATABASE_FILE) });
 				final SqliteDatabaseConnection sqlite = new SqliteDatabaseConnection();
 				sqlite.initializeInstance(_config);
-				final List<Sensor> list = sqlite.listAll(Sensor.class, (Collection<Condition>)null);
+				final List<Sensor> list = sqlite.listAll(Sensor.class, (Collection<Condition>) null);
 
 				assertTrue("States - database entries", list.size() == 43);
 

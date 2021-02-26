@@ -30,10 +30,8 @@ import java.util.Calendar;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Scanner;
 
 import org.mwc.debrief.model.utils.OSUtils;
-import org.mwc.debrief.pepys.Activator;
 import org.mwc.debrief.pepys.model.bean.Comment;
 import org.mwc.debrief.pepys.model.bean.Contact;
 import org.mwc.debrief.pepys.model.bean.Datafile;
@@ -43,7 +41,6 @@ import org.mwc.debrief.pepys.model.bean.SensorType;
 import org.mwc.debrief.pepys.model.bean.State;
 import org.mwc.debrief.pepys.model.bean.custom.CommentFastMode;
 import org.mwc.debrief.pepys.model.bean.custom.ContactFastMode;
-import org.mwc.debrief.pepys.model.bean.custom.Measurement;
 import org.mwc.debrief.pepys.model.bean.custom.StateFastMode;
 import org.mwc.debrief.pepys.model.db.DatabaseConnection;
 import org.mwc.debrief.pepys.model.db.PostgresDatabaseConnection;
@@ -151,7 +148,7 @@ public class ModelConfiguration implements AbstractConfiguration {
 		validate();
 		switch (getAlgorithmType()) {
 		case FAST_MODE:
-			//currentItems = TreeUtils.buildStructure(this);
+			// currentItems = TreeUtils.buildStructure(this);
 			currentItems = TreeUtils.buildStructureFastMode(this);
 			break;
 
@@ -264,318 +261,6 @@ public class ModelConfiguration implements AbstractConfiguration {
 		}
 	}
 
-	/**
-	 * 
-	 * @param treeModel
-	 * @throws IOException
-	 * @throws SQLException
-	 * @throws NoSuchMethodException
-	 * @throws InvocationTargetException
-	 * @throws IllegalAccessException
-	 * @throws InstantiationException
-	 * @throws ClassNotFoundException
-	 */
-	private int importFastMode(final TreeNode treeModel)
-			throws IOException, ClassNotFoundException, InstantiationException, IllegalAccessException,
-			InvocationTargetException, NoSuchMethodException, SQLException {
-		final ArrayList<State> selectedStates = new ArrayList<State>();
-		final ArrayList<Comment> selectedComments = new ArrayList<Comment>();
-		final ArrayList<Contact> selectedContacts = new ArrayList<Contact>();
-
-		int total = 0;
-		populateSelectedDatafiles(treeModel, selectedStates, selectedComments, selectedContacts);
-
-		total += populateFastModeStates(selectedStates);
-		total += populateFastModeComments(selectedComments);
-		total += populateFastModeContacts(selectedContacts);
-		return total;
-	}
-
-	private void populateSelectedDatafiles(final TreeNode treeModel, final ArrayList<State> selectedStates,
-			final ArrayList<Comment> selectedComments, final ArrayList<Contact> selectedContacts) {
-		if (treeModel.isChecked()) {
-			for (final TreeStructurable item : treeModel.getItems()) {
-				if (item instanceof State) {
-					selectedStates.add((State) item);
-				} else if (item instanceof Comment) {
-					selectedComments.add((Comment) item);
-				} else if (item instanceof Contact) {
-					selectedContacts.add((Contact) item);
-				}
-			}
-		}
-
-		for (final TreeNode child : treeModel.getChildren()) {
-			populateSelectedDatafiles(child, selectedStates, selectedComments, selectedContacts);
-		}
-	}
-
-	private int populateFastModeStates(final ArrayList<State> selectedStates)
-			throws IOException, ClassNotFoundException, InstantiationException, IllegalAccessException,
-			InvocationTargetException, NoSuchMethodException, SQLException {
-
-		// we have't selected anything
-		if (selectedStates.isEmpty()) {
-			return 0;
-		} else {
-			final String query = OSUtils.readFile(ContactFastMode.class, StateFastMode.STATES_FILE);
-			final List<Object> parameters = new ArrayList<>();
-
-			// Let's add the time period filter
-			final String[] periodFilter = getCurrentTimePeriodAsParameter();
-			parameters.add(periodFilter[0]);
-			parameters.add(periodFilter[1]);
-
-			// Let's add the area filter
-			parameters.add(getCurrentAreaAsParameter());
-
-			// Let's create ids.
-			final StringBuilder builderSensorId = new StringBuilder();
-			final StringBuilder builderSourceId = new StringBuilder();
-			final StringBuilder builderPlatformId = new StringBuilder();
-
-			for (State state : selectedStates) {
-				builderSensorId.append(state.getSensor().getSensor_id());
-				builderSensorId.append(",");
-
-				builderSourceId.append(state.getDatafile().getDatafile_id());
-				builderSourceId.append(",");
-
-				builderPlatformId.append(state.getPlatform().getPlatform_id());
-				builderPlatformId.append(",");
-			}
-			if (builderSensorId.length() > 0) {
-				builderSensorId.setLength(builderSensorId.length() - 1);
-			}
-			if (builderSourceId.length() > 0) {
-				builderSourceId.setLength(builderSourceId.length() - 1);
-			}
-			if (builderPlatformId.length() > 0) {
-				builderPlatformId.setLength(builderPlatformId.length() - 1);
-			}
-
-			parameters.add(builderSensorId.toString());
-			parameters.add(builderSourceId.toString());
-			parameters.add(builderPlatformId.toString());
-
-			final List<StateFastMode> list = getDatabaseConnection().listAll(StateFastMode.class, query, parameters);
-
-			int total = 0;
-			// Now we complete
-			for (StateFastMode stateFastMode : list) {
-				final State currentState = new State();
-				final Sensor sensor = new Sensor();
-				final Platform platform = new Platform();
-				final SensorType sensorType = new SensorType();
-				final Datafile datafile = new Datafile();
-
-				currentState.setSensor(sensor);
-				sensor.setSensorType(sensorType);
-				sensor.setPlatform(platform);
-				currentState.setDatafile(datafile);
-
-				currentState.setState_id(stateFastMode.getStateId());
-				currentState.setTime(stateFastMode.getTime());
-
-				currentState.getSensor().setName(stateFastMode.getSensorName());
-				currentState.getPlatform().setName(stateFastMode.getPlatformName());
-				currentState.setLocation(stateFastMode.getLocation());
-				currentState.setCourse(stateFastMode.getCourse());
-				currentState.setSpeed(stateFastMode.getSpeed());
-				currentState.setHeading(stateFastMode.getHeading());
-				currentState.doImport(_bridge.getLayers());
-				++total;
-			}
-			return total;
-		}
-	}
-
-	/**
-	 * Returns the current time period in an array of 2 elements Start, End
-	 * 
-	 * @return
-	 */
-	public String[] getCurrentTimePeriodAsParameter() {
-		final String[] answer = { null, null };
-		final SimpleDateFormat sqlDateFormat = new SimpleDateFormat(SqliteDatabaseConnection.SQLITE_DATE_FORMAT);
-		final TimePeriod timePeriod = getTimePeriod();
-		if (timePeriod != null) {
-			if (timePeriod.getStartDTG() != null && timePeriod.getStartDTG().getDate() != null) {
-				answer[0] = (sqlDateFormat.format(timePeriod.getStartDTG().getDate()));
-			} else {
-				answer[0] = (null);
-			}
-			if (timePeriod.getEndDTG() != null && timePeriod.getEndDTG().getDate() != null) {
-				answer[1] = (sqlDateFormat.format(timePeriod.getEndDTG().getDate()));
-			} else {
-				answer[1] = (null);
-			}
-		} else {
-			answer[0] = (null);
-			answer[1] = (null);
-		}
-		return answer;
-	}
-
-	@Override
-	public String getCurrentAreaAsParameter() {
-		final WorldArea currentArea = getCurrentArea();
-		if (currentArea != null) {
-
-			final WorldLocation topLeft = currentArea.getTopLeft();
-			final WorldLocation bottomRight = currentArea.getBottomRight();
-			final WorldLocation topRight = currentArea.getTopRight();
-			final WorldLocation bottomLeft = currentArea.getBottomLeft();
-
-			final String polygonArea = getDatabaseConnection().getSRID() + "POLYGON((" + topLeft.getLong() + " "
-					+ topLeft.getLat() + "," + bottomLeft.getLong() + " " + bottomLeft.getLat() + ","
-					+ bottomRight.getLong() + " " + bottomRight.getLat() + "," + topRight.getLong() + " "
-					+ topRight.getLat() + "," + topLeft.getLong() + " " + topLeft.getLat() + "))";
-			return polygonArea;
-		} else {
-			return null;
-		}
-	}
-
-	private int populateFastModeContacts(ArrayList<Contact> selectedContacts)
-			throws IOException, ClassNotFoundException, InstantiationException, IllegalAccessException,
-			InvocationTargetException, NoSuchMethodException, SQLException {
-		if (selectedContacts.isEmpty()) {
-			return 0;
-		} else {
-			final String query = OSUtils.readFile(ContactFastMode.class, ContactFastMode.CONTACTS_FILE);
-
-			final List<Object> parameters = new ArrayList<>();
-
-			// Let's add the time period filter
-			final String[] periodFilter = getCurrentTimePeriodAsParameter();
-			parameters.add(periodFilter[0]);
-			parameters.add(periodFilter[1]);
-
-			// Let's add the area filter
-			parameters.add(getCurrentAreaAsParameter());
-
-			// Let's create ids.
-			final StringBuilder builderSensorId = new StringBuilder();
-			final StringBuilder builderSourceId = new StringBuilder();
-			final StringBuilder builderPlatformId = new StringBuilder();
-
-			for (Contact contact : selectedContacts) {
-				builderSensorId.append(contact.getSensor().getSensor_id());
-				builderSensorId.append(",");
-
-				builderSourceId.append(contact.getDatafile().getDatafile_id());
-				builderSourceId.append(",");
-
-				builderPlatformId.append(contact.getPlatform().getPlatform_id());
-				builderPlatformId.append(",");
-			}
-			if (builderSensorId.length() > 0) {
-				builderSensorId.setLength(builderSensorId.length() - 1);
-			}
-			if (builderSourceId.length() > 0) {
-				builderSourceId.setLength(builderSourceId.length() - 1);
-			}
-			if (builderPlatformId.length() > 0) {
-				builderPlatformId.setLength(builderPlatformId.length() - 1);
-			}
-
-			parameters.add(builderSensorId.toString());
-			parameters.add(builderSourceId.toString());
-			parameters.add(builderPlatformId.toString());
-
-			final List<ContactFastMode> list = getDatabaseConnection().listAll(ContactFastMode.class, query,
-					parameters);
-
-			int total = 0;
-			// Now we complete
-			for (ContactFastMode contact : list) {
-				final Contact currentContact = new Contact();
-				final Sensor sensor = new Sensor();
-				final Platform platform = new Platform();
-				final Datafile datafile = new Datafile();
-
-				currentContact.setContact_id(contact.getContact_id());
-				currentContact.setTime(contact.getTime());
-				currentContact.setName(contact.getName());
-				currentContact.setSensor(sensor);
-				currentContact.setDatafile(datafile);
-				
-				sensor.setName(contact.getSensor_name());
-				sensor.setPlatform(platform);
-				
-				datafile.setReference(contact.getReference());
-				
-				platform.setName(contact.getName());
-				currentContact.setBearing(contact.getBearing());
-				currentContact.setLocation(contact.getLocation());
-
-				currentContact.doImport(_bridge.getLayers());
-				++total;
-			}
-			return total;
-		}
-	}
-
-	private int populateFastModeComments(ArrayList<Comment> selectedComments)
-			throws IOException, ClassNotFoundException, InstantiationException, IllegalAccessException,
-			InvocationTargetException, NoSuchMethodException, SQLException {
-		if (selectedComments.isEmpty()) {
-			return 0;
-		}else {
-			final String query = OSUtils.readFile(CommentFastMode.class, CommentFastMode.COMMENTS_FILE);
-
-			final List<Object> parameters = new ArrayList<>();
-
-			// Let's add the time period filter
-			final String[] periodFilter = getCurrentTimePeriodAsParameter();
-			parameters.add(periodFilter[0]);
-			parameters.add(periodFilter[1]);
-
-			parameters.add(getFilter());
-
-			// Let's create ids.
-			final StringBuilder builderPlatformId = new StringBuilder();
-
-			for (Comment comment : selectedComments) {
-				builderPlatformId.append(comment.getPlatform().getPlatform_id());
-				builderPlatformId.append(",");
-			}
-			if (builderPlatformId.length() > 0) {
-				builderPlatformId.setLength(builderPlatformId.length() - 1);
-			}
-
-			// sensor id
-			parameters.add(null);
-			// source id
-			parameters.add(null);
-
-			parameters.add(builderPlatformId.toString());
-
-			final List<CommentFastMode> list = getDatabaseConnection().listAll(CommentFastMode.class, query, parameters);
-
-			int total = 0;
-			// Now we complete
-			for (CommentFastMode comment : list) {
-				final Comment currentComment = new Comment();
-				final Platform platform = new Platform();
-
-				currentComment.setComment_id(comment.getComment_id());
-				currentComment.setComment_type_id(comment.getComment_type_name());
-				currentComment.setContent(comment.getContent());
-				currentComment.setTime(comment.getTime());
-				currentComment.setPlatform(platform);
-				platform.setName(comment.getPlatform_name());
-
-				currentComment.doImport(_bridge.getLayers());
-				++total;
-			}
-			return total;
-		}
-		
-		
-	}
-
 	private int doImport(final TreeNode treeModel, final InternTreeItemFiltering filter) {
 		int total = 0;
 		// I have created this boolean because we have can several items imported in the
@@ -619,13 +304,78 @@ public class ModelConfiguration implements AbstractConfiguration {
 	}
 
 	@Override
+	/**
+	 * Method that returns the algorithm to build the tree We are going to use (only
+	 * for now) the fast mode for Postgres, and Legacy Mode for SQLite. It is open
+	 * to future improvements.
+	 */
+	public ALGORITHM_TYPE getAlgorithmType() {
+		if (databaseConnection != null) {
+			if (databaseConnection instanceof SqliteDatabaseConnection) {
+				return ALGORITHM_TYPE.LEGACY;
+			} else if (databaseConnection instanceof PostgresDatabaseConnection) {
+				return ALGORITHM_TYPE.FAST_MODE;
+			}
+		}
+		// LEGACY AS DEFAULT.
+		return ALGORITHM_TYPE.LEGACY;
+	}
+
+	@Override
 	public WorldArea getCurrentArea() {
 		return currentArea;
 	}
 
 	@Override
+	public String getCurrentAreaAsParameter() {
+		final WorldArea currentArea = getCurrentArea();
+		if (currentArea != null) {
+
+			final WorldLocation topLeft = currentArea.getTopLeft();
+			final WorldLocation bottomRight = currentArea.getBottomRight();
+			final WorldLocation topRight = currentArea.getTopRight();
+			final WorldLocation bottomLeft = currentArea.getBottomLeft();
+
+			final String polygonArea = getDatabaseConnection().getSRID() + "POLYGON((" + topLeft.getLong() + " "
+					+ topLeft.getLat() + "," + bottomLeft.getLong() + " " + bottomLeft.getLat() + ","
+					+ bottomRight.getLong() + " " + bottomRight.getLat() + "," + topRight.getLong() + " "
+					+ topRight.getLat() + "," + topLeft.getLong() + " " + topLeft.getLat() + "))";
+			return polygonArea;
+		} else {
+			return null;
+		}
+	}
+
+	@Override
 	public SearchTreeResult getCurrentSearchTreeResultModel() {
 		return currentSearchTreeResult;
+	}
+
+	/**
+	 * Returns the current time period in an array of 2 elements Start, End
+	 *
+	 * @return
+	 */
+	public String[] getCurrentTimePeriodAsParameter() {
+		final String[] answer = { null, null };
+		final SimpleDateFormat sqlDateFormat = new SimpleDateFormat(SqliteDatabaseConnection.SQLITE_DATE_FORMAT);
+		final TimePeriod timePeriod = getTimePeriod();
+		if (timePeriod != null) {
+			if (timePeriod.getStartDTG() != null && timePeriod.getStartDTG().getDate() != null) {
+				answer[0] = (sqlDateFormat.format(timePeriod.getStartDTG().getDate()));
+			} else {
+				answer[0] = (null);
+			}
+			if (timePeriod.getEndDTG() != null && timePeriod.getEndDTG().getDate() != null) {
+				answer[1] = (sqlDateFormat.format(timePeriod.getEndDTG().getDate()));
+			} else {
+				answer[1] = (null);
+			}
+		} else {
+			answer[0] = (null);
+			answer[1] = (null);
+		}
+		return answer;
 	}
 
 	@Override
@@ -722,6 +472,33 @@ public class ModelConfiguration implements AbstractConfiguration {
 		return treeModel;
 	}
 
+	/**
+	 *
+	 * @param treeModel
+	 * @throws IOException
+	 * @throws SQLException
+	 * @throws NoSuchMethodException
+	 * @throws InvocationTargetException
+	 * @throws IllegalAccessException
+	 * @throws InstantiationException
+	 * @throws ClassNotFoundException
+	 */
+	private int importFastMode(final TreeNode treeModel)
+			throws IOException, ClassNotFoundException, InstantiationException, IllegalAccessException,
+			InvocationTargetException, NoSuchMethodException, SQLException {
+		final ArrayList<State> selectedStates = new ArrayList<State>();
+		final ArrayList<Comment> selectedComments = new ArrayList<Comment>();
+		final ArrayList<Contact> selectedContacts = new ArrayList<Contact>();
+
+		int total = 0;
+		populateSelectedDatafiles(treeModel, selectedStates, selectedComments, selectedContacts);
+
+		total += populateFastModeStates(selectedStates);
+		total += populateFastModeComments(selectedComments);
+		total += populateFastModeContacts(selectedContacts);
+		return total;
+	}
+
 	@Override
 	public void loadDatabaseConfiguration(final DatabaseConfiguration _configuration)
 			throws FileNotFoundException, PropertyVetoException, IOException, PepsysException {
@@ -779,6 +556,244 @@ public class ModelConfiguration implements AbstractConfiguration {
 				new LoaderOption[] { option });
 
 		loadDatabaseConfiguration(databaseConfiguration);
+	}
+
+	private int populateFastModeComments(final ArrayList<Comment> selectedComments)
+			throws IOException, ClassNotFoundException, InstantiationException, IllegalAccessException,
+			InvocationTargetException, NoSuchMethodException, SQLException {
+		if (selectedComments.isEmpty()) {
+			return 0;
+		} else {
+			final String query = OSUtils.readFile(CommentFastMode.class, CommentFastMode.COMMENTS_FILE);
+
+			final List<Object> parameters = new ArrayList<>();
+
+			// Let's add the time period filter
+			final String[] periodFilter = getCurrentTimePeriodAsParameter();
+			parameters.add(periodFilter[0]);
+			parameters.add(periodFilter[1]);
+
+			parameters.add(getFilter());
+
+			// Let's create ids.
+			final StringBuilder builderPlatformId = new StringBuilder();
+
+			for (final Comment comment : selectedComments) {
+				builderPlatformId.append(comment.getPlatform().getPlatform_id());
+				builderPlatformId.append(",");
+			}
+			if (builderPlatformId.length() > 0) {
+				builderPlatformId.setLength(builderPlatformId.length() - 1);
+			}
+
+			// sensor id
+			parameters.add(null);
+			// source id
+			parameters.add(null);
+
+			parameters.add(builderPlatformId.toString());
+
+			final List<CommentFastMode> list = getDatabaseConnection().listAll(CommentFastMode.class, query,
+					parameters);
+
+			int total = 0;
+			// Now we complete
+			for (final CommentFastMode comment : list) {
+				final Comment currentComment = new Comment();
+				final Platform platform = new Platform();
+
+				currentComment.setComment_id(comment.getComment_id());
+				currentComment.setComment_type_id(comment.getComment_type_name());
+				currentComment.setContent(comment.getContent());
+				currentComment.setTime(comment.getTime());
+				currentComment.setPlatform(platform);
+				platform.setName(comment.getPlatform_name());
+
+				currentComment.doImport(_bridge.getLayers());
+				++total;
+			}
+			return total;
+		}
+
+	}
+
+	private int populateFastModeContacts(final ArrayList<Contact> selectedContacts)
+			throws IOException, ClassNotFoundException, InstantiationException, IllegalAccessException,
+			InvocationTargetException, NoSuchMethodException, SQLException {
+		if (selectedContacts.isEmpty()) {
+			return 0;
+		} else {
+			final String query = OSUtils.readFile(ContactFastMode.class, ContactFastMode.CONTACTS_FILE);
+
+			final List<Object> parameters = new ArrayList<>();
+
+			// Let's add the time period filter
+			final String[] periodFilter = getCurrentTimePeriodAsParameter();
+			parameters.add(periodFilter[0]);
+			parameters.add(periodFilter[1]);
+
+			// Let's add the area filter
+			parameters.add(getCurrentAreaAsParameter());
+
+			// Let's create ids.
+			final StringBuilder builderSensorId = new StringBuilder();
+			final StringBuilder builderSourceId = new StringBuilder();
+			final StringBuilder builderPlatformId = new StringBuilder();
+
+			for (final Contact contact : selectedContacts) {
+				builderSensorId.append(contact.getSensor().getSensor_id());
+				builderSensorId.append(",");
+
+				builderSourceId.append(contact.getDatafile().getDatafile_id());
+				builderSourceId.append(",");
+
+				builderPlatformId.append(contact.getPlatform().getPlatform_id());
+				builderPlatformId.append(",");
+			}
+			if (builderSensorId.length() > 0) {
+				builderSensorId.setLength(builderSensorId.length() - 1);
+			}
+			if (builderSourceId.length() > 0) {
+				builderSourceId.setLength(builderSourceId.length() - 1);
+			}
+			if (builderPlatformId.length() > 0) {
+				builderPlatformId.setLength(builderPlatformId.length() - 1);
+			}
+
+			parameters.add(builderSensorId.toString());
+			parameters.add(builderSourceId.toString());
+			parameters.add(builderPlatformId.toString());
+
+			final List<ContactFastMode> list = getDatabaseConnection().listAll(ContactFastMode.class, query,
+					parameters);
+
+			int total = 0;
+			// Now we complete
+			for (final ContactFastMode contact : list) {
+				final Contact currentContact = new Contact();
+				final Sensor sensor = new Sensor();
+				final Platform platform = new Platform();
+				final Datafile datafile = new Datafile();
+
+				currentContact.setContact_id(contact.getContact_id());
+				currentContact.setTime(contact.getTime());
+				currentContact.setName(contact.getName());
+				currentContact.setSensor(sensor);
+				currentContact.setDatafile(datafile);
+
+				sensor.setName(contact.getSensor_name());
+				sensor.setPlatform(platform);
+
+				datafile.setReference(contact.getReference());
+
+				platform.setName(contact.getName());
+				currentContact.setBearing(contact.getBearing());
+				currentContact.setLocation(contact.getLocation());
+
+				currentContact.doImport(_bridge.getLayers());
+				++total;
+			}
+			return total;
+		}
+	}
+
+	private int populateFastModeStates(final ArrayList<State> selectedStates)
+			throws IOException, ClassNotFoundException, InstantiationException, IllegalAccessException,
+			InvocationTargetException, NoSuchMethodException, SQLException {
+
+		// we have't selected anything
+		if (selectedStates.isEmpty()) {
+			return 0;
+		} else {
+			final String query = OSUtils.readFile(ContactFastMode.class, StateFastMode.STATES_FILE);
+			final List<Object> parameters = new ArrayList<>();
+
+			// Let's add the time period filter
+			final String[] periodFilter = getCurrentTimePeriodAsParameter();
+			parameters.add(periodFilter[0]);
+			parameters.add(periodFilter[1]);
+
+			// Let's add the area filter
+			parameters.add(getCurrentAreaAsParameter());
+
+			// Let's create ids.
+			final StringBuilder builderSensorId = new StringBuilder();
+			final StringBuilder builderSourceId = new StringBuilder();
+			final StringBuilder builderPlatformId = new StringBuilder();
+
+			for (final State state : selectedStates) {
+				builderSensorId.append(state.getSensor().getSensor_id());
+				builderSensorId.append(",");
+
+				builderSourceId.append(state.getDatafile().getDatafile_id());
+				builderSourceId.append(",");
+
+				builderPlatformId.append(state.getPlatform().getPlatform_id());
+				builderPlatformId.append(",");
+			}
+			if (builderSensorId.length() > 0) {
+				builderSensorId.setLength(builderSensorId.length() - 1);
+			}
+			if (builderSourceId.length() > 0) {
+				builderSourceId.setLength(builderSourceId.length() - 1);
+			}
+			if (builderPlatformId.length() > 0) {
+				builderPlatformId.setLength(builderPlatformId.length() - 1);
+			}
+
+			parameters.add(builderSensorId.toString());
+			parameters.add(builderSourceId.toString());
+			parameters.add(builderPlatformId.toString());
+
+			final List<StateFastMode> list = getDatabaseConnection().listAll(StateFastMode.class, query, parameters);
+
+			int total = 0;
+			// Now we complete
+			for (final StateFastMode stateFastMode : list) {
+				final State currentState = new State();
+				final Sensor sensor = new Sensor();
+				final Platform platform = new Platform();
+				final SensorType sensorType = new SensorType();
+				final Datafile datafile = new Datafile();
+
+				currentState.setSensor(sensor);
+				sensor.setSensorType(sensorType);
+				sensor.setPlatform(platform);
+				currentState.setDatafile(datafile);
+
+				currentState.setState_id(stateFastMode.getStateId());
+				currentState.setTime(stateFastMode.getTime());
+
+				currentState.getSensor().setName(stateFastMode.getSensorName());
+				currentState.getPlatform().setName(stateFastMode.getPlatformName());
+				currentState.setLocation(stateFastMode.getLocation());
+				currentState.setCourse(stateFastMode.getCourse());
+				currentState.setSpeed(stateFastMode.getSpeed());
+				currentState.setHeading(stateFastMode.getHeading());
+				currentState.doImport(_bridge.getLayers());
+				++total;
+			}
+			return total;
+		}
+	}
+
+	private void populateSelectedDatafiles(final TreeNode treeModel, final ArrayList<State> selectedStates,
+			final ArrayList<Comment> selectedComments, final ArrayList<Contact> selectedContacts) {
+		if (treeModel.isChecked()) {
+			for (final TreeStructurable item : treeModel.getItems()) {
+				if (item instanceof State) {
+					selectedStates.add((State) item);
+				} else if (item instanceof Comment) {
+					selectedComments.add((Comment) item);
+				} else if (item instanceof Contact) {
+					selectedContacts.add((Contact) item);
+				}
+			}
+		}
+
+		for (final TreeNode child : treeModel.getChildren()) {
+			populateSelectedDatafiles(child, selectedStates, selectedComments, selectedContacts);
+		}
 	}
 
 	@Override
@@ -909,23 +924,5 @@ public class ModelConfiguration implements AbstractConfiguration {
 		if (!currentPeriod.isConsistent()) {
 			throw new PepsysException("Date validation", "The Start date-time must be before the End date-time");
 		}
-	}
-
-	@Override
-	/**
-	 * Method that returns the algorithm to build the tree We are going to use (only
-	 * for now) the fast mode for Postgres, and Legacy Mode for SQLite. It is open
-	 * to future improvements.
-	 */
-	public ALGORITHM_TYPE getAlgorithmType() {
-		if (databaseConnection != null) {
-			if (databaseConnection instanceof SqliteDatabaseConnection) {
-				return ALGORITHM_TYPE.LEGACY;
-			} else if (databaseConnection instanceof PostgresDatabaseConnection) {
-				return ALGORITHM_TYPE.FAST_MODE;
-			}
-		}
-		// LEGACY AS DEFAULT.
-		return ALGORITHM_TYPE.LEGACY;
 	}
 }

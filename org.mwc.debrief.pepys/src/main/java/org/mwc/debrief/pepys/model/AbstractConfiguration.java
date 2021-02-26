@@ -34,6 +34,11 @@ import MWC.GenericData.WorldLocation;
 
 public interface AbstractConfiguration extends hasPropertyListeners {
 
+	public static enum ALGORITHM_TYPE {
+		LEGACY, // Legacy Tree Structure, it is based doing the query to database,
+		FAST_MODE // New mode using Custom Database Query to build the tree quicker.
+	}
+
 	static String AREA_PROPERTY = "AREA";
 
 	static String PERIOD_PROPERTY = "PERIOD";
@@ -45,14 +50,7 @@ public interface AbstractConfiguration extends hasPropertyListeners {
 	static String HIGHLIGHT_PROPERTY = "HIGHTLIGHT";
 
 	static String SEARCH_RESULT_PROPERTY = "SEARCH_RESULT";
-	
-	public static enum ALGORITHM_TYPE{
-		LEGACY, // Legacy Tree Structure, it is based doing the query to database, 
-		FAST_MODE // New mode using Custom Database Query to build the tree quicker.
-	}
 
-	ALGORITHM_TYPE getAlgorithmType();
-	
 	void addDatafileTypeFilter(final TypeDomain newType);
 
 	void apply() throws Exception;
@@ -61,7 +59,11 @@ public interface AbstractConfiguration extends hasPropertyListeners {
 
 	boolean doTestQuery() throws SQLException;
 
+	ALGORITHM_TYPE getAlgorithmType();
+
 	WorldArea getCurrentArea();
+
+	String getCurrentAreaAsParameter();
 
 	SearchTreeResult getCurrentSearchTreeResultModel();
 
@@ -120,6 +122,4 @@ public interface AbstractConfiguration extends hasPropertyListeners {
 	void updateTree();
 
 	public void validate() throws Exception;
-
-	String getCurrentAreaAsParameter();
 }

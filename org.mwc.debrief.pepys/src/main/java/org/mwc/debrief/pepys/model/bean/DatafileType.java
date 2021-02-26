@@ -49,7 +49,7 @@ public class DatafileType implements AbstractBean {
 								DatabaseConnection.DEFAULT_SQLITE_TEST_DATABASE_FILE) });
 				final SqliteDatabaseConnection sqlite = new SqliteDatabaseConnection();
 				sqlite.initializeInstance(_config);
-				final List<DatafileType> list = sqlite.listAll(DatafileType.class, (Collection<Condition>)null);
+				final List<DatafileType> list = sqlite.listAll(DatafileType.class, (Collection<Condition>) null);
 
 				assertTrue("Datafiletypes - database entries", list.size() == 8);
 

@@ -13,12 +13,35 @@ public class DatabaseConfiguration {
 		public static DatabaseConfiguration createSqliteConfiguration(final String path) {
 			final DatabaseConfiguration _config = new DatabaseConfiguration();
 			final HashMap<String, String> databaseTag = new HashMap<String, String>();
-			databaseTag.put(SqliteDatabaseConnection.CONFIGURATION_DB_NAME, path);
+			databaseTag.put(DatabaseConnection.CONFIGURATION_DB_NAME, path);
 			databaseTag.put(DatabaseConnection.CONFIGURATION_DATABASE_TYPE, DatabaseConnection.SQLITE);
 			_config.categories.put(DatabaseConnection.CONFIGURATION_TAG, databaseTag);
 			_config.setLoaderOption(new LoaderOption(LoaderType.DRAG_AND_DROP_SQLITE, path));
 			return _config;
 		}
+	}
+
+	public static boolean isValid(final DatabaseConfiguration _config) {
+		if (!_config.categories.containsKey(DatabaseConnection.CONFIGURATION_TAG)) {
+			return false;
+		}
+		final HashMap<String, String> category = _config.categories.get(DatabaseConnection.CONFIGURATION_TAG);
+		if (!category.containsKey(DatabaseConnection.CONFIGURATION_DATABASE_TYPE)) {
+			return false;
+		}
+
+		final String databaseType = category.get(DatabaseConnection.CONFIGURATION_DATABASE_TYPE);
+		if (databaseType != null) {
+			switch (databaseType) {
+			case DatabaseConnection.POSTGRES:
+				return PostgresDatabaseConnection.validateDatabaseConfiguration(_config);
+			case DatabaseConnection.SQLITE:
+				return SqliteDatabaseConnection.validateDatabaseConfiguration(_config);
+			default:
+				return false;
+			}
+		}
+		return false;
 	}
 
 	private final HashMap<String, HashMap<String, String>> categories = new HashMap<>();
@@ -51,31 +74,8 @@ public class DatabaseConfiguration {
 		return _loaderOption;
 	}
 
-	public void setLoaderOption(LoaderOption _loaderOption) {
+	public void setLoaderOption(final LoaderOption _loaderOption) {
 		this._loaderOption = _loaderOption;
-	}
-
-	public static boolean isValid(final DatabaseConfiguration _config) {
-		if (!_config.categories.containsKey(DatabaseConnection.CONFIGURATION_TAG)) {
-			return false;
-		}
-		final HashMap<String, String> category = _config.categories.get(DatabaseConnection.CONFIGURATION_TAG);
-		if (!category.containsKey(DatabaseConnection.CONFIGURATION_DATABASE_TYPE)) {
-			return false;
-		}
-		
-		final String databaseType = category.get(DatabaseConnection.CONFIGURATION_DATABASE_TYPE);
-		if (databaseType != null) {
-			switch (databaseType) {
-			case DatabaseConnection.POSTGRES:
-				return PostgresDatabaseConnection.validateDatabaseConfiguration(_config);
-			case DatabaseConnection.SQLITE:
-				return SqliteDatabaseConnection.validateDatabaseConfiguration(_config);
-			default:
-				return false;
-			}
-		}
-		return false;
 	}
 
 }

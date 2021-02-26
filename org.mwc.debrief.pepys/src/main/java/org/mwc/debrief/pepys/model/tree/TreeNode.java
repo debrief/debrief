@@ -54,7 +54,7 @@ public class TreeNode {
 						new LoaderOption(LoaderType.DEFAULT_FILE, DatabaseConnection.DEFAULT_SQLITE_DATABASE_FILE) });
 				final SqliteDatabaseConnection sqlite = new SqliteDatabaseConnection();
 				sqlite.initializeInstance(_config);
-				list = sqlite.listAll(State.class, (Collection<Condition>)null);
+				list = sqlite.listAll(State.class, (Collection<Condition>) null);
 			} catch (final Exception e) {
 				fail("Failed retrieving data from Database");
 			}

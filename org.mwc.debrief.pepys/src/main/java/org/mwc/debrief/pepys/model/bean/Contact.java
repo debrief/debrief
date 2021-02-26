@@ -79,7 +79,7 @@ public class Contact implements AbstractBean, TreeStructurable {
 
 	@Transient
 	private String reference;
-	
+
 	public Contact() {
 
 	}
@@ -177,6 +177,10 @@ public class Contact implements AbstractBean, TreeStructurable {
 		return privacy;
 	}
 
+	public String getReference() {
+		return reference;
+	}
+
 	public double getRel_bearing() {
 		return rel_bearing;
 	}
@@ -200,14 +204,6 @@ public class Contact implements AbstractBean, TreeStructurable {
 	@Override
 	public Date getTime() {
 		return time;
-	}
-
-	public String getReference() {
-		return reference;
-	}
-
-	public void setReference(String reference) {
-		this.reference = reference;
 	}
 
 	public void setBearing(final double bearing) {
@@ -272,6 +268,10 @@ public class Contact implements AbstractBean, TreeStructurable {
 
 	public void setPrivacy(final Privacy privacy) {
 		this.privacy = privacy;
+	}
+
+	public void setReference(final String reference) {
+		this.reference = reference;
 	}
 
 	public void setRel_bearing(final double rel_bearing) {

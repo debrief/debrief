@@ -41,10 +41,10 @@ public class ProofOfConcept {
 					new LoaderOption(LoaderType.DEFAULT_FILE, DatabaseConnection.DEFAULT_SQLITE_TEST_DATABASE_FILE) });
 			final SqliteDatabaseConnection sqlite = new SqliteDatabaseConnection();
 			sqlite.initializeInstance(_config);
-			final List list2 = sqlite.listAll(DatafileType.class, (Collection<Condition>)null);
-			final List list = sqlite.listAll(Datafile.class, (Collection<Condition>)null);
+			final List list2 = sqlite.listAll(DatafileType.class, (Collection<Condition>) null);
+			final List list = sqlite.listAll(Datafile.class, (Collection<Condition>) null);
 
-			final List list3 = sqlite.listAll(State.class, (Collection<Condition>)null);
+			final List list3 = sqlite.listAll(State.class, (Collection<Condition>) null);
 
 			// final List list4 = DatabaseConnection.getInstance().listAll(State.class,
 			// "source_id = 16");

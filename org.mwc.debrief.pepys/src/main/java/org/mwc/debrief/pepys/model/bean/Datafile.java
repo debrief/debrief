@@ -52,7 +52,7 @@ public class Datafile implements AbstractBean {
 								DatabaseConnection.DEFAULT_SQLITE_TEST_DATABASE_FILE) });
 				final SqliteDatabaseConnection sqlite = new SqliteDatabaseConnection();
 				sqlite.initializeInstance(_config);
-				final List<Datafile> list = sqlite.listAll(Datafile.class, (Collection<Condition>)null);
+				final List<Datafile> list = sqlite.listAll(Datafile.class, (Collection<Condition>) null);
 
 				assertTrue("Datafiles - database entries", list.size() == 25);
 

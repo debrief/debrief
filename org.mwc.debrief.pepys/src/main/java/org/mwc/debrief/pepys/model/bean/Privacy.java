@@ -49,7 +49,7 @@ public class Privacy implements AbstractBean {
 								DatabaseConnection.DEFAULT_SQLITE_TEST_DATABASE_FILE) });
 				final SqliteDatabaseConnection sqlite = new SqliteDatabaseConnection();
 				sqlite.initializeInstance(_config);
-				final List<Privacy> list = sqlite.listAll(Privacy.class, (Collection<Condition>)null);
+				final List<Privacy> list = sqlite.listAll(Privacy.class, (Collection<Condition>) null);
 
 				assertTrue("Privacies - database entries", list.size() == 8);
 

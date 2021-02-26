@@ -70,89 +70,6 @@ public class TreeUtils {
 		}
 	}
 
-	public static Collection<TreeStructurable> buildStructureFastMode(final AbstractConfiguration configuration)
-			throws NoSuchMethodException, SecurityException, InstantiationException, IllegalAccessException,
-			IllegalArgumentException, InvocationTargetException, PropertyVetoException, SQLException,
-			ClassNotFoundException, IOException {
-
-		Application.logError2(ToolParent.INFO, "Starting to Build Structure from Model - FAST MODE", null);
-
-		final ArrayList<TreeStructurable> allItems = new ArrayList<>();
-
-		// Let's collect the types of objects to collect
-		final StringBuilder dataTypes = new StringBuilder();
-		for (final TypeDomain domain : configuration.getDatafileTypeFilters()) {
-			final Class<TreeStructurable> currentBeanType = domain.getDatatype();
-
-			if (AbstractBean.class.isAssignableFrom(currentBeanType) && domain.isChecked()) {
-				dataTypes.append(domain.getName().toUpperCase());
-				dataTypes.append(",");
-			}
-		}
-		if (dataTypes.length() > 0) {
-			dataTypes.setLength(dataTypes.length() - 1);
-		}
-		
-		// Now we are forcing to run a custom query (measurements)
-		Scanner scanner = null;
-		try {
-			scanner = new Scanner(OSUtils.getInputStreamResource(Measurement.class, Measurement.MEASUREMENTS_FILE,
-					Activator.PLUGIN_ID));
-			final StringBuilder builder = new StringBuilder();
-			while (scanner.hasNextLine()) {
-				builder.append(scanner.nextLine());
-				builder.append("\n");
-			}
-			final List<Object> parameters = new ArrayList<>();
-			final SimpleDateFormat sqlDateFormat = new SimpleDateFormat(SqliteDatabaseConnection.SQLITE_DATE_FORMAT);
-			// Let's add the time period filter
-			final TimePeriod timePeriod = configuration.getTimePeriod();
-			if (timePeriod != null) {
-				if (timePeriod.getStartDTG() != null && timePeriod.getStartDTG().getDate() != null) {
-					parameters.add(sqlDateFormat.format(timePeriod.getStartDTG().getDate()));
-				}else {
-					parameters.add(null);
-				}
-				if (timePeriod.getEndDTG() != null && timePeriod.getEndDTG().getDate() != null) {
-					parameters.add(sqlDateFormat.format(timePeriod.getEndDTG().getDate()));
-				}else {
-					parameters.add(null);
-				}
-			}else {
-				parameters.add(null);
-				parameters.add(null);
-			}
-			// Let's add the area filter
-			parameters.add(configuration.getCurrentAreaAsParameter());
-			
-			// Let's add the data types
-			parameters.add(dataTypes.toString());
-			
-			// Let's add the text filter
-			if (configuration.getFilter() != null) {
-				parameters.add(configuration.getFilter());
-			}else {
-				parameters.add(null);
-			}
-			
-			final List<Measurement> list = configuration.getDatabaseConnection().listAll(Measurement.class,
-					builder.toString(), parameters);
-
-			for (Measurement measurement : list) {
-				final TreeStructurable treeStructurable = measurement.export();
-				if (treeStructurable != null) {
-					allItems.add(treeStructurable);
-				}
-			}
-		} finally {
-			if (scanner != null) {
-				scanner.close();
-			}
-		}
-
-		return allItems;
-	}
-
 	public static Collection<TreeStructurable> buildStructure(final AbstractConfiguration configuration)
 			throws NoSuchMethodException, SecurityException, InstantiationException, IllegalAccessException,
 			IllegalArgumentException, InvocationTargetException, PropertyVetoException, SQLException,
@@ -254,6 +171,89 @@ public class TreeUtils {
 
 		Application.logError2(ToolParent.INFO, "Finishing building tree structure", null);
 		return root;
+	}
+
+	public static Collection<TreeStructurable> buildStructureFastMode(final AbstractConfiguration configuration)
+			throws NoSuchMethodException, SecurityException, InstantiationException, IllegalAccessException,
+			IllegalArgumentException, InvocationTargetException, PropertyVetoException, SQLException,
+			ClassNotFoundException, IOException {
+
+		Application.logError2(ToolParent.INFO, "Starting to Build Structure from Model - FAST MODE", null);
+
+		final ArrayList<TreeStructurable> allItems = new ArrayList<>();
+
+		// Let's collect the types of objects to collect
+		final StringBuilder dataTypes = new StringBuilder();
+		for (final TypeDomain domain : configuration.getDatafileTypeFilters()) {
+			final Class<TreeStructurable> currentBeanType = domain.getDatatype();
+
+			if (AbstractBean.class.isAssignableFrom(currentBeanType) && domain.isChecked()) {
+				dataTypes.append(domain.getName().toUpperCase());
+				dataTypes.append(",");
+			}
+		}
+		if (dataTypes.length() > 0) {
+			dataTypes.setLength(dataTypes.length() - 1);
+		}
+
+		// Now we are forcing to run a custom query (measurements)
+		Scanner scanner = null;
+		try {
+			scanner = new Scanner(OSUtils.getInputStreamResource(Measurement.class, Measurement.MEASUREMENTS_FILE,
+					Activator.PLUGIN_ID));
+			final StringBuilder builder = new StringBuilder();
+			while (scanner.hasNextLine()) {
+				builder.append(scanner.nextLine());
+				builder.append("\n");
+			}
+			final List<Object> parameters = new ArrayList<>();
+			final SimpleDateFormat sqlDateFormat = new SimpleDateFormat(SqliteDatabaseConnection.SQLITE_DATE_FORMAT);
+			// Let's add the time period filter
+			final TimePeriod timePeriod = configuration.getTimePeriod();
+			if (timePeriod != null) {
+				if (timePeriod.getStartDTG() != null && timePeriod.getStartDTG().getDate() != null) {
+					parameters.add(sqlDateFormat.format(timePeriod.getStartDTG().getDate()));
+				} else {
+					parameters.add(null);
+				}
+				if (timePeriod.getEndDTG() != null && timePeriod.getEndDTG().getDate() != null) {
+					parameters.add(sqlDateFormat.format(timePeriod.getEndDTG().getDate()));
+				} else {
+					parameters.add(null);
+				}
+			} else {
+				parameters.add(null);
+				parameters.add(null);
+			}
+			// Let's add the area filter
+			parameters.add(configuration.getCurrentAreaAsParameter());
+
+			// Let's add the data types
+			parameters.add(dataTypes.toString());
+
+			// Let's add the text filter
+			if (configuration.getFilter() != null) {
+				parameters.add(configuration.getFilter());
+			} else {
+				parameters.add(null);
+			}
+
+			final List<Measurement> list = configuration.getDatabaseConnection().listAll(Measurement.class,
+					builder.toString(), parameters);
+
+			for (final Measurement measurement : list) {
+				final TreeStructurable treeStructurable = measurement.export();
+				if (treeStructurable != null) {
+					allItems.add(treeStructurable);
+				}
+			}
+		} finally {
+			if (scanner != null) {
+				scanner.close();
+			}
+		}
+
+		return allItems;
 	}
 
 	private static void buildTreeSearchMap(final List<SearchTreeResult> result, final String text,

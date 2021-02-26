@@ -308,6 +308,8 @@ public abstract class DatabaseConnection {
 
 	}
 
+	public abstract String getBasicDescription();
+
 	public DatabaseConfiguration getDatabaseConfiguration() {
 		return databaseConfiguration;
 	}
@@ -341,71 +343,10 @@ public abstract class DatabaseConnection {
 	}
 
 	/**
-	 * Method similar to listAll(final Class<T> type, final Collection<Condition>
-	 * conditions)
-	 * 
-	 * but it receives a custom query hand-made, creating a list of objects from
-	 * it.
-	 * 
-	 * @param <T>
-	 * @param type
-	 * @param customQuery Query to run
-	 * @param parameters Parameters to replace inside the query.
-	 * @return
-	 * @throws SQLException 
-	 * @throws IOException 
-	 * @throws ClassNotFoundException 
-	 * @throws NoSuchMethodException 
-	 * @throws InvocationTargetException 
-	 * @throws IllegalAccessException 
-	 * @throws InstantiationException 
-	 */
-	public <T> List<T> listAll(final Class<T> type, final String customQuery, final List<Object> parameters) throws SQLException, ClassNotFoundException, IOException, InstantiationException, IllegalAccessException, InvocationTargetException, NoSuchMethodException {
-		if (SHOW_SQL) {
-			System.out.println(customQuery);
-		}
-		
-
-		final Connection connection = pool.getConnection();
-		final List<T> ans = new ArrayList<>();
-		ResultSet resultSet = null;
-		PreparedStatement statement = null;
-		
-		try {
-			statement = connection.prepareStatement(customQuery);
-			
-			for (int i = 0 ; parameters != null && i < parameters.size(); i++) {
-				final Object valueToAssign = parameters.get(i);
-				statement.setObject(i + 1, valueToAssign); // TODO improve this.
-			}
-			
-			loadExtention(connection, statement);
-
-			resultSet = statement.executeQuery();
-
-			while (resultSet.next()) {
-				final T instance = storeFieldValue(type, resultSet, "", false);
-				ans.add(instance);
-			}
-
-			return ans;
-		}finally {
-			if (connection != null) {
-				connection.close();
-			}
-			if (statement != null) {
-				statement.close();
-			}
-			if (resultSet != null) {
-				resultSet.close();
-			}
-		}
-	}
-
-	/**
 	 * Method that automatically query a list of objects that satisfy a collection
-	 * of conditions. This method generates the SQL Query, connects to database,
-	 * and run the query, building the list of objects by reflection. 
+	 * of conditions. This method generates the SQL Query, connects to database, and
+	 * run the query, building the list of objects by reflection.
+	 * 
 	 * @param <T>
 	 * @param type
 	 * @param conditions
@@ -471,6 +412,68 @@ public abstract class DatabaseConnection {
 		}
 	}
 
+	/**
+	 * Method similar to listAll(final Class<T> type, final Collection<Condition>
+	 * conditions)
+	 *
+	 * but it receives a custom query hand-made, creating a list of objects from it.
+	 *
+	 * @param <T>
+	 * @param type
+	 * @param customQuery Query to run
+	 * @param parameters  Parameters to replace inside the query.
+	 * @return
+	 * @throws SQLException
+	 * @throws IOException
+	 * @throws ClassNotFoundException
+	 * @throws NoSuchMethodException
+	 * @throws InvocationTargetException
+	 * @throws IllegalAccessException
+	 * @throws InstantiationException
+	 */
+	public <T> List<T> listAll(final Class<T> type, final String customQuery, final List<Object> parameters)
+			throws SQLException, ClassNotFoundException, IOException, InstantiationException, IllegalAccessException,
+			InvocationTargetException, NoSuchMethodException {
+		if (SHOW_SQL) {
+			System.out.println(customQuery);
+		}
+
+		final Connection connection = pool.getConnection();
+		final List<T> ans = new ArrayList<>();
+		ResultSet resultSet = null;
+		PreparedStatement statement = null;
+
+		try {
+			statement = connection.prepareStatement(customQuery);
+
+			for (int i = 0; parameters != null && i < parameters.size(); i++) {
+				final Object valueToAssign = parameters.get(i);
+				statement.setObject(i + 1, valueToAssign); // TODO improve this.
+			}
+
+			loadExtention(connection, statement);
+
+			resultSet = statement.executeQuery();
+
+			while (resultSet.next()) {
+				final T instance = storeFieldValue(type, resultSet, "", false);
+				ans.add(instance);
+			}
+
+			return ans;
+		} finally {
+			if (connection != null) {
+				connection.close();
+			}
+			if (statement != null) {
+				statement.close();
+			}
+			if (resultSet != null) {
+				resultSet.close();
+			}
+		}
+	}
+
 	public <T> T listById(final Class<T> type, final Object id)
 			throws SQLException, NoSuchMethodException, SecurityException, InstantiationException,
 			IllegalAccessException, IllegalArgumentException, InvocationTargetException {
@@ -502,8 +505,6 @@ public abstract class DatabaseConnection {
 		}
 	}
 
-	public abstract String getBasicDescription();
-
 	protected abstract void loadExtention(final Connection connection, final Statement statement)
 			throws SQLException, ClassNotFoundException, IOException;
 
@@ -516,7 +517,7 @@ public abstract class DatabaseConnection {
 			if (field.isAnnotationPresent(Transient.class)) {
 				// let's just skip it, because it is probably being used
 				// by another process or it doesn't come from database.
-			}else {
+			} else {
 				final String columnName = AnnotationsUtils.getColumnName(field);
 
 				if (field.getType().equals(WorldLocation.class)) {
@@ -562,9 +563,9 @@ public abstract class DatabaseConnection {
 		return query.toString();
 	}
 
-	public <T> T storeFieldValue(final Class<T> type, final ResultSet resultSet, final String prefix, final boolean useAlias)
-			throws InstantiationException, IllegalAccessException, InvocationTargetException, NoSuchMethodException,
-			SQLException {
+	public <T> T storeFieldValue(final Class<T> type, final ResultSet resultSet, final String prefix,
+			final boolean useAlias) throws InstantiationException, IllegalAccessException, InvocationTargetException,
+			NoSuchMethodException, SQLException {
 		final Constructor<T> constructor = type.getConstructor();
 		final T instance = constructor.newInstance();
 		final Field[] fields = type.getDeclaredFields();
@@ -572,18 +573,19 @@ public abstract class DatabaseConnection {
 			final Class<?> fieldType = field.getType();
 			try {
 				final Method method = type.getDeclaredMethod("set" + capitalizeFirstLetter(field.getName()), fieldType);
-	
+
 				final String thisColumnName;
 				if (useAlias) {
 					thisColumnName = getAlias(
 							prefix + AnnotationsUtils.getTableName(type) + AnnotationsUtils.getColumnName(field));
-				}else {
+				} else {
 					thisColumnName = AnnotationsUtils.getColumnName(field);
 				}
-				
+
 				if (field.isAnnotationPresent(ManyToOne.class) || field.isAnnotationPresent(OneToOne.class)) {
 					method.invoke(instance, storeFieldValue(fieldType, resultSet,
-							prefix + AnnotationsUtils.getTableName(type) + AnnotationsUtils.getColumnName(field), useAlias));
+							prefix + AnnotationsUtils.getTableName(type) + AnnotationsUtils.getColumnName(field),
+							useAlias));
 				} else if (int.class == fieldType) {
 					try {
 						method.invoke(instance, resultSet.getInt(thisColumnName));
@@ -609,9 +611,9 @@ public abstract class DatabaseConnection {
 					} catch (final Exception e) {
 						e.printStackTrace();
 					}
-	
+
 				}
-			}catch (Exception e) {
+			} catch (final Exception e) {
 				// somehow we haven't found the method
 			}
 		}

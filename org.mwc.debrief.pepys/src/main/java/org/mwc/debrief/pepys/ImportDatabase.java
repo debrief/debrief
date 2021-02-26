@@ -72,7 +72,7 @@ public class ImportDatabase extends CoreEditorAction {
 			messageBox.open();
 
 			return;
-		} catch (PepsysException e) {
+		} catch (final PepsysException e) {
 			/**
 			 * in case that something rise, we are going to show that message to the user.
 			 */
