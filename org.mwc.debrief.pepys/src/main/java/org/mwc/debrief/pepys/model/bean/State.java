@@ -8,6 +8,7 @@ import java.sql.Timestamp;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
+import java.util.Enumeration;
 import java.util.List;
 
 import org.mwc.debrief.pepys.model.PepsysException;
@@ -28,6 +29,9 @@ import org.mwc.debrief.pepys.model.tree.TreeStructurable;
 
 import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.TrackWrapper;
+import Debrief.Wrappers.Track.LightweightTrackWrapper;
+import MWC.GUI.BaseLayer;
+import MWC.GUI.Editable;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
 import MWC.GenericData.HiResDate;
@@ -97,22 +101,40 @@ public class State implements AbstractBean, TreeStructurable {
 
 	}
 
-	@Override
-	public void doImport(final Layers _layers) {
-		// see if the track is in already
-		final String trackName = getPlatform().getTrackName();
-		final Layer target = _layers.findLayer(trackName, true);
-		final TrackWrapper track;
-		if (target != null && target instanceof TrackWrapper) {
-			// ok, use it
-			track = (TrackWrapper) target;
-		} else {
+	private LightweightTrackWrapper getParent(final Layers layers, final String datafile, final String trackName) {
+		// first the parent folder
+		Layer parent = layers.findLayer(datafile, false);
+		if (parent == null) {
+			parent = new BaseLayer();
+			parent.setName(datafile);
+			layers.addThisLayer(parent);
+		}
+
+		// now the track
+		LightweightTrackWrapper track = null;
+		Enumeration<Editable> iter = parent.elements();
+		while (iter.hasMoreElements() && track == null) {
+			Editable item = iter.nextElement();
+			if (item instanceof LightweightTrackWrapper && item.getName().equals(trackName)) {
+				track = (LightweightTrackWrapper) item;
+			}
+		}
+
+		// did we find it?
+		if (track == null) {
 			// create a new track
 			track = new TrackWrapper();
 			track.setName(trackName);
 			// and store it
-			_layers.addThisLayer(track);
+			parent.add(track);
+
 		}
+		return track;
+	}
+
+	@Override
+	public void doImport(final Layers _layers) {
+		final LightweightTrackWrapper track = getParent(_layers, getDatafile().getReference(), getPlatform().getTrackName());
 
 		// create the wrapper for this annotation
 		final FixWrapper fixWrapper = new FixWrapper(new Fix(new HiResDate(time.getTime()), location, course, speed));
