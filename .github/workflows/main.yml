@@ -40,11 +40,6 @@ jobs:
                     sudo apt-get install libgcab-dev
                     sudo apt-get install libgconf-2-4
                     sudo apt-get install xvfb
-                    #  sudo find / -name uuid.pc
-                    #  echo printing uuid cflags
-                    #  pkg-config --cflags uuid
-                    #  echo printing uuid libs
-                    #  pkg-config --libs uuid
       # Checks-out repository
       - name: Checkout
         uses: actions/checkout@v2
@@ -86,7 +81,7 @@ jobs:
           allow_failure: true
       - name: Upload  release
         uses: softprops/action-gh-release@v1
-        if: startsWith(github.ref, 'refs/tags/')
+        #if: startsWith(github.ref, 'refs/tags/')
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
