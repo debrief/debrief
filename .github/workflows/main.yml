@@ -86,7 +86,7 @@ jobs:
                 /home/runner/work/debrief/debrief/org.mwc.debrief.product/target/products/*.zip
                 /home/runner/work/debrief/debrief/org.mwc.debrief.product/target/products/*.msi
                 /home/runner/work/debrief/debrief/org.mwc.debrief.legacy/dist/DebriefLegacy*.jar
-                /home/runner/work/debrief/debrief/org.mwc.debiref.lite/dist/*.zip
+                /home/runner/work/debrief/debrief/org.mwc.debrief.lite/dist/*.zip
       - name: Upload  release
         uses: softprops/action-gh-release@v1
         if: startsWith(github.ref, 'refs/tags/')
