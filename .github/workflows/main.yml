@@ -83,8 +83,7 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           path: |
-                /home/runner/work/debrief/debrief/org.mwc.debrief.product/target/products/*.zip
-                /home/runner/work/debrief/debrief/org.mwc.debrief.product/target/products/*.msi
+                /home/runner/work/debrief/debrief/org.mwc.debrief.product/target/products/DebriefNG-Windows64Bit.zip
                 /home/runner/work/debrief/debrief/org.mwc.debrief.legacy/dist/DebriefLegacy*.jar
                 /home/runner/work/debrief/debrief/org.mwc.debrief.lite/dist/*.zip
       - name: Upload  release
