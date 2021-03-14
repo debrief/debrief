@@ -20,6 +20,8 @@ public class StateFastMode {
 
 	@FieldName(name = "platform_name")
 	private String platformName;
+	
+	private String sourceid;
 
 	@FieldName(name = "platform_type")
 	private String platformType;
@@ -127,6 +129,14 @@ public class StateFastMode {
 
 	public void setTime(final Timestamp time) {
 		this.time = time;
+	}
+
+	public String getSourceid() {
+		return sourceid;
+	}
+
+	public void setSourceid(String sourceid) {
+		this.sourceid = sourceid;
 	}
 
 }

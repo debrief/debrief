@@ -24,7 +24,7 @@ ui_filter_input as
 		from
 				ui_filter_input as ui_input
 		)
-select filtered_states.state_id, filtered_states.time, Sensors.name as sensor_name, Platforms.name as platform_name,
+select filtered_states.state_id, filtered_states.time, Sensors.name as sensor_name, Platforms.name as platform_name, filtered_states.source_id as sourceid,
 	PlatformTypes.name as platform_type, Nationalities.name as nationality_name,
 	filtered_states.location, filtered_states.elevation, filtered_states.heading, filtered_states.course, filtered_states.speed from
 	pepys."States" as filtered_states inner join

@@ -489,11 +489,12 @@ public class ModelConfiguration implements AbstractConfiguration {
 		final ArrayList<State> selectedStates = new ArrayList<State>();
 		final ArrayList<Comment> selectedComments = new ArrayList<Comment>();
 		final ArrayList<Contact> selectedContacts = new ArrayList<Contact>();
+		final HashMap<String, String> datafilesNames = new HashMap<String, String>();
 
 		int total = 0;
 		populateSelectedDatafiles(treeModel, selectedStates, selectedComments, selectedContacts);
 
-		total += populateFastModeStates(selectedStates);
+		total += populateFastModeStates(selectedStates, datafilesNames);
 		total += populateFastModeComments(selectedComments);
 		total += populateFastModeContacts(selectedContacts);
 		return total;
@@ -680,13 +681,14 @@ public class ModelConfiguration implements AbstractConfiguration {
 				currentContact.setName(contact.getName());
 				currentContact.setSensor(sensor);
 				currentContact.setDatafile(datafile);
+				
+				platform.setName(contact.getPlatform_name());
 
 				sensor.setName(contact.getSensor_name());
 				sensor.setPlatform(platform);
 
 				datafile.setReference(contact.getReference());
 
-				platform.setName(contact.getName());
 				currentContact.setBearing(contact.getBearing());
 				currentContact.setLocation(contact.getLocation());
 
@@ -697,7 +699,8 @@ public class ModelConfiguration implements AbstractConfiguration {
 		}
 	}
 
-	private int populateFastModeStates(final ArrayList<State> selectedStates)
+	private int populateFastModeStates(final ArrayList<State> selectedStates,
+			final HashMap<String, String> datafilesNames)
 			throws IOException, ClassNotFoundException, InstantiationException, IllegalAccessException,
 			InvocationTargetException, NoSuchMethodException, SQLException {
 
@@ -730,6 +733,8 @@ public class ModelConfiguration implements AbstractConfiguration {
 
 				builderPlatformId.append(state.getPlatform().getPlatform_id());
 				builderPlatformId.append(",");
+
+				datafilesNames.put(state.getDatafile().getDatafile_id(), state.getDatafile().getReference());
 			}
 			if (builderSensorId.length() > 0) {
 				builderSensorId.setLength(builderSensorId.length() - 1);
@@ -756,6 +761,7 @@ public class ModelConfiguration implements AbstractConfiguration {
 				final SensorType sensorType = new SensorType();
 				final Datafile datafile = new Datafile();
 
+				datafile.setReference(datafilesNames.get(stateFastMode.getSourceid()));
 				currentState.setSensor(sensor);
 				sensor.setSensorType(sensorType);
 				sensor.setPlatform(platform);
