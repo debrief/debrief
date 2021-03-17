@@ -16,9 +16,9 @@ jobs:
     steps:
       - name: Update ubuntu
         run: |
-        		echo "Deploying to production server on branch $GITHUB_REF"
-        		echo "head ref $GITHUB_HEAD_REF"
-        		echo "head ref $GITHUB_BASE_REF"
+        	    echo "Deploying to production server on branch $GITHUB_REF"
+        	    echo "head ref $GITHUB_HEAD_REF"
+        	    echo "base ref $GITHUB_BASE_REF"
                 sudo apt-get update -y
                 sudo apt-get install -y libsqlite3-mod-spatialite
                 sudo apt-get install libspatialite-dev
