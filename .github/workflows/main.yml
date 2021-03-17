@@ -16,8 +16,6 @@ jobs:
     steps:
       - name: Update ubuntu
         run: |
-                artifact_name = `echo $GITHUB_REF|cut -c 11-`
-                echo "artifact name will be $artifact_name"
                 sudo apt-get update -y
                 sudo apt-get install -y libsqlite3-mod-spatialite
                 sudo apt-get install libspatialite-dev
