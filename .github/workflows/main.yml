@@ -13,11 +13,12 @@ jobs:
   buildandrelease:
     name: Build and release Debrief
     runs-on: ubuntu-18.04
+    id: get-id
     steps:
       - name: Update ubuntu
         run: |
-                artifact_name = `echo $GITHUB_REF|cut -c 11-`
-                echo "artifact name will be $artifact_name"
+                id = `echo $GITHUB_REF|cut -c 11-`
+                echo "artifact name will be $id"
                 sudo apt-get update -y
                 sudo apt-get install -y libsqlite3-mod-spatialite
                 sudo apt-get install libspatialite-dev
@@ -85,7 +86,7 @@ jobs:
         uses: actions/upload-artifact@v2
         if: startsWith(github.ref, 'refs/tags/')!=true
         with:
-          name: Debrief_Win64_2021031_$artifact_name
+          name: Debrief_Win64_2021031_$id
           path: |
                 /home/runner/work/debrief/debrief/org.mwc.debrief.product/target/products/DebriefNG-Windows64Bit.zip
                 /home/runner/work/debrief/debrief/org.mwc.debrief.legacy/dist/DebriefLegacy*.jar
