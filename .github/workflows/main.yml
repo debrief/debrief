@@ -83,6 +83,7 @@ jobs:
         uses: actions/upload-artifact@v2
         if: startsWith(github.ref, 'refs/tags/')!=true
         with:
+          name: Debrief_Win64_2021031_${github.ref}
           path: |
                 /home/runner/work/debrief/debrief/org.mwc.debrief.product/target/products/DebriefNG-Windows64Bit.zip
                 /home/runner/work/debrief/debrief/org.mwc.debrief.legacy/dist/DebriefLegacy*.jar
