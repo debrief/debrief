@@ -84,7 +84,7 @@ jobs:
              mkdir /home/runner/work/debrief/debrief/Debrief_Win64_20210311_${{ env.build_ref }}
              cp /home/runner/work/debrief/debrief/org.mwc.debrief.product/target/products/DebriefNG-Windows64Bit.zip /home/runner/work/debrief/debrief/artifacts
              cp /home/runner/work/debrief/debrief/org.mwc.debrief.legacy/dist/DebriefLegacy*.jar /home/runner/work/debrief/debrief/artifacts
-             cp /home/runner/work/debrief/debrief/org.mwc.debrief.legacy/dist/*.zip /home/runner/work/debrief/debrief/artifacts
+             cp /home/runner/work/debrief/debrief/org.mwc.debrief.lite/dist/debrief-lite*.zip /home/runner/work/debrief/debrief/artifacts
              zip /home/runner/work/debrief/debrief/Debrief_Win64_20210311_${{ env.build_ref }} /home/runner/work/debrief/debrief/Debrief_Win64_20210311_${{ env.build_ref }}.zip
       - name: Upload the artifacts
         uses: actions/upload-artifact@v2
