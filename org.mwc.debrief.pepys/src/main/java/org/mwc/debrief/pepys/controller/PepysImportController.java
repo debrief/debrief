@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 
 import org.eclipse.jface.viewers.CheckStateChangedEvent;
@@ -69,7 +70,6 @@ import MWC.GUI.ToolParent;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.TimePeriod;
 import MWC.GenericData.WorldArea;
-import MWC.GenericData.WorldLocation;
 
 public class PepysImportController {
 
@@ -323,7 +323,8 @@ public class PepysImportController {
 					Display.getCurrent().asyncExec(new Runnable() {
 						@Override
 						public void run() {
-							Application.logError2(ToolParent.INFO, "Starting run process - PepysImportController", null);
+							Application.logError2(ToolParent.INFO, "Starting run process - PepysImportController",
+									null);
 							try {
 								updateAreaView2Model(model, view);
 								model.apply();
@@ -406,6 +407,12 @@ public class PepysImportController {
 					messageToUser.append("\n");
 					messageToUser.append("Configuration in use: ");
 					messageToUser.append(configurationToUse);
+					final HashMap<String, String> databaseCategory = model.getDatabaseConnection().getDatabaseConfiguration()
+							.getCategory(DatabaseConnection.CONFIGURATION_TAG);
+					if (databaseCategory != null) {
+						messageToUser.append("\n\n");
+						messageToUser.append(model.getDatabaseConnection().getBasicDescription());
+					}
 
 					try {
 						showError = !model.doTestQuery();
@@ -445,6 +452,17 @@ public class PepysImportController {
 			public void handleEvent(final Event event) {
 				if (event.type == SWT.Selection) {
 					model.setCurrentViewport();
+					updateAreaModel2View(model, view);
+				}
+			}
+		});
+		
+		view.getClearAreaButton().addListener(SWT.Selection, new Listener() {
+			
+			@Override
+			public void handleEvent(Event event) {
+				if (event.type == SWT.Selection) {
+					model.setArea(null);
 					updateAreaModel2View(model, view);
 				}
 			}
@@ -655,29 +673,31 @@ public class PepysImportController {
 	}
 
 	public void updateAreaModel2View(final AbstractConfiguration model, final AbstractViewSWT view) {
-		view.getTopLeftLocation().setValue(model.getCurrentArea().getTopLeft());
-		view.getBottomRightLocation().setValue(model.getCurrentArea().getBottomRight());
-	}
-
-	public void updateAreaView2Model(final AbstractConfiguration model, final AbstractViewSWT view) {
-		Application.logError2(ToolParent.INFO, "Starting updade from Area View to Model", null);
-		final WorldLocation topLeft;
-
-		if (view.getTopLeftLocation().getValue() == null) {
-			topLeft = model.getDefaultTopLeft();
+		if (model.getCurrentArea() == null) {
 			view.getTopLeftLocation().clean();
-		} else {
-			topLeft = view.getTopLeftLocation().getValue();
-		}
-		final WorldLocation bottomRight;
-		if (view.getBottomRightLocation().getValue() == null) {
-			bottomRight = model.getDefaultBottomRight();
 			view.getBottomRightLocation().clean();
-		} else {
-			bottomRight = view.getBottomRightLocation().getValue();
+		}else {
+			view.getTopLeftLocation().setValue(model.getCurrentArea().getTopLeft());
+			view.getBottomRightLocation().setValue(model.getCurrentArea().getBottomRight());
+		}
+	}
+	
+	public void updateAreaView2Model(final AbstractConfiguration model, final AbstractViewSWT view)
+			throws PepsysException {
+		Application.logError2(ToolParent.INFO, "Starting updade from Area View to Model", null);
+		// User must select both or none.
+		if ((view.getTopLeftLocation().getValue() != null) != (view.getBottomRightLocation().getValue() != null)) {
+			throw new PepsysException("Please, indicate the area",
+					"Please provide both top-left and bottom-right bounds");
+		}
+		
+		if (view.getTopLeftLocation().getValue() != null && view.getBottomRightLocation().getValue() != null) {
+			model.setArea(
+					new WorldArea(view.getTopLeftLocation().getValue(), view.getBottomRightLocation().getValue()));
+		}else {
+			model.setArea(null);
 		}
 
-		model.setArea(new WorldArea(topLeft, bottomRight));
 		Application.logError2(ToolParent.INFO, "Finished update from Area View to Model", null);
 	}
 }
