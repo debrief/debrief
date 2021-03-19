@@ -8,6 +8,7 @@ on:
 env:
   SPATIALITE_LIBRARY_PATH: mod_spatialite
   build_ref: ${GITHUB_REF##*/}
+  GITHUB_BRANCH: ${{ github.ref }}
 # Build and release debrief.  First do the required updates and installations needed for building debrief
 jobs:
   buildandrelease:
