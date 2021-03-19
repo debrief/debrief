@@ -16,7 +16,8 @@ jobs:
     steps:
       - name: Update ubuntu
         run: |
-                echo "echo running on branch ${GITHUB_REF##*/}"         
+                echo "echo running on branch ${GITHUB_REF##*/}"      
+                echo "the branch ref is ${GITHUB_BRANCH##*/}"   
                 echo "The github ref from env variable ${{ env.build_ref }}"
                 sudo apt-get update -y
                 sudo apt-get install -y libsqlite3-mod-spatialite
