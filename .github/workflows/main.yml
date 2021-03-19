@@ -7,7 +7,7 @@ on:
   [push, pull_request]
 env:
   SPATIALITE_LIBRARY_PATH: mod_spatialite
-  build_ref: ${GITHUB_REF##"/}
+  build_ref: ${GITHUB_REF##*/}
 # Build and release debrief.  First do the required updates and installations needed for building debrief
 jobs:
   buildandrelease:
@@ -16,7 +16,7 @@ jobs:
     steps:
       - name: Update ubuntu
         run: |
-                echo "The github ref after extracting branch is ${GITHUB_REF##"/}"         
+                echo "The github ref after extracting branch is ${GITHUB_REF##*/}"         
                 echo "The github ref from env variable ${{ env.build_ref }}"
                 sudo apt-get update -y
                 sudo apt-get install -y libsqlite3-mod-spatialite
