@@ -226,6 +226,7 @@
 -->
 
     </plugins>
+    </pluginManagement>
   </build>
   <profiles>
     <profile>
