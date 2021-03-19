@@ -107,6 +107,7 @@
   </modules>
 
   <build>
+    <pluginManagement>
     <plugins>
       <plugin>
         <groupId>org.eclipse.tycho</groupId>
