@@ -86,15 +86,15 @@ jobs:
           files: "/home/runner/work/debrief/debrief/org.mwc.debrief.product/target/products/DebriefNG-Windows64Bit.msi"
           allow_failure: true
       - name: Set current date as env
-        run: echo "NOW::$(date +'%Y-%m-%d')" >> $GITHUB_ENV
+        run: run: echo "MY_DATE=$(date +%Y%m%d)" >> $GITHUB_ENV
       - name: Build the artifact
         if: startsWith(github.ref, 'refs/tags/')!=true
         run: |
-             mkdir /home/runner/work/debrief/debrief/Debrief_Win64_$NOW_${{ env.build_ref }}
-             cp /home/runner/work/debrief/debrief/org.mwc.debrief.product/target/products/DebriefNG-Windows64Bit.zip /home/runner/work/debrief/debrief/Debrief_Win64_$NOW_${{ env.build_ref }}
-             cp /home/runner/work/debrief/debrief/org.mwc.debrief.legacy/dist/DebriefLegacy*.jar /home/runner/work/debrief/debrief/Debrief_Win64_$NOW_${{ env.build_ref }}
-             cp /home/runner/work/debrief/debrief/org.mwc.debrief.lite/dist/debrief-lite*.zip /home/runner/work/debrief/debrief/Debrief_Win64_$NOW_${{ env.build_ref }}
-             zip /home/runner/work/debrief/debrief/Debrief_Win64_$NOW_${{ env.build_ref }}.zip /home/runner/work/debrief/debrief/Debrief_Win64_$NOW_${{ env.build_ref }}
+             mkdir /home/runner/work/debrief/debrief/Debrief_Win64_${{ env.MY_DATE }}_${{ env.build_ref }}
+             cp /home/runner/work/debrief/debrief/org.mwc.debrief.product/target/products/DebriefNG-Windows64Bit.zip /home/runner/work/debrief/debrief/Debrief_Win64_${{ env.MY_DATE }}_${{ env.build_ref }}
+             cp /home/runner/work/debrief/debrief/org.mwc.debrief.legacy/dist/DebriefLegacy*.jar /home/runner/work/debrief/debrief/Debrief_Win64_${{ env.MY_DATE }}_${{ env.build_ref }}
+             cp /home/runner/work/debrief/debrief/org.mwc.debrief.lite/dist/debrief-lite*.zip /home/runner/work/debrief/debrief/Debrief_Win64_${{ env.MY_DATE }}_${{ env.build_ref }}
+             zip /home/runner/work/debrief/debrief/Debrief_Win64_${{ env.MY_DATE }}_${{ env.build_ref }}.zip /home/runner/work/debrief/debrief/Debrief_Win64_${{ env.MY_DATE }}_${{ env.build_ref }}
       - name: Upload the artifacts
         uses: actions/upload-artifact@v2
         if: startsWith(github.ref, 'refs/tags/')!=true
