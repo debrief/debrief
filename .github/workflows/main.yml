@@ -86,7 +86,7 @@ jobs:
           files: "/home/runner/work/debrief/debrief/org.mwc.debrief.product/target/products/DebriefNG-Windows64Bit.msi"
           allow_failure: true
       - name: Set current date as env
-        run: run: echo "MY_DATE=$(date +%Y%m%d)" >> $GITHUB_ENV
+        run: echo "MY_DATE=$(date +%Y%m%d)" >> $GITHUB_ENV
       - name: Build the artifact
         if: startsWith(github.ref, 'refs/tags/')!=true
         run: |
