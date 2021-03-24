@@ -20,7 +20,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Scanner;
 
+import org.mwc.debrief.pepys.Activator;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.FrameworkUtil;
 
@@ -71,5 +73,23 @@ public class OSUtils {
 					.toURL();
 		}
 		return answer;
+	}
+
+	public static String readFile(final Class clazz, final String url) throws IOException {
+		Scanner scanner = null;
+		try {
+			scanner = new Scanner(OSUtils.getInputStreamResource(clazz, url, Activator.PLUGIN_ID));
+			final StringBuilder builder = new StringBuilder();
+			while (scanner.hasNextLine()) {
+				builder.append(scanner.nextLine());
+				builder.append("\n");
+			}
+
+			return builder.toString();
+		} finally {
+			if (scanner != null) {
+				scanner.close();
+			}
+		}
 	}
 }

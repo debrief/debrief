@@ -30,6 +30,13 @@ public class Platform implements AbstractBean {
 		return platform_id;
 	}
 
+	public String getTrackName() {
+		if (getIdentifier() == null) {
+			return name;
+		}
+		return name + " " + getIdentifier();
+	}
+
 	public void setIdentifier(final String identifier) {
 		this.identifier = identifier;
 	}
@@ -40,10 +47,6 @@ public class Platform implements AbstractBean {
 
 	public void setPlatform_id(final String platform_id) {
 		this.platform_id = platform_id;
-	}
-	
-	public String getTrackName() {
-		return name + " " + getIdentifier();
 	}
 
 }

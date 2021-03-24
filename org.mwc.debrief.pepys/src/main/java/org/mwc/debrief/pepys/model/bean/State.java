@@ -6,7 +6,9 @@ import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Date;
+import java.util.Enumeration;
 import java.util.List;
 
 import org.mwc.debrief.pepys.model.PepsysException;
@@ -27,6 +29,9 @@ import org.mwc.debrief.pepys.model.tree.TreeStructurable;
 
 import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.TrackWrapper;
+import Debrief.Wrappers.Track.LightweightTrackWrapper;
+import MWC.GUI.BaseLayer;
+import MWC.GUI.Editable;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
 import MWC.GenericData.HiResDate;
@@ -42,21 +47,22 @@ public class State implements AbstractBean, TreeStructurable {
 		public void testStatesQuery() {
 			try {
 				final DatabaseConfiguration _config = new DatabaseConfiguration();
-				ConfigurationReader.loadDatabaseConfiguration(_config, new LoaderOption[] {
-						new LoaderOption(LoaderType.DEFAULT_FILE, DatabaseConnection.DEFAULT_SQLITE_TEST_DATABASE_FILE) });
+				ConfigurationReader.loadDatabaseConfiguration(_config,
+						new LoaderOption[] { new LoaderOption(LoaderType.DEFAULT_FILE,
+								DatabaseConnection.DEFAULT_SQLITE_TEST_DATABASE_FILE) });
 				final SqliteDatabaseConnection sqlite = new SqliteDatabaseConnection();
 				sqlite.initializeInstance(_config);
-				final List<State> list = sqlite.listAll(State.class, null);
+				final List<State> list = sqlite.listAll(State.class, (Collection<Condition>) null);
 
 				assertTrue("States - database entries", list.size() == 12239);
 
-				final List<State> list2 = sqlite.listAll(State.class,
-						Arrays.asList(new Condition[] { new Condition("source_id = \"638471a99e264761830b3f6575816e67\"") }));
+				final List<State> list2 = sqlite.listAll(State.class, Arrays
+						.asList(new Condition[] { new Condition("source_id = \"638471a99e264761830b3f6575816e67\"") }));
 
 				assertTrue("States - database entries", list2.size() == 5);
-				
-				final List<State> list3 = sqlite.listAll(State.class,
-						Arrays.asList(new Condition[] { new Condition("source_id = \"db8692a392924d27bfacdbddc4eb9a29\"") }));
+
+				final List<State> list3 = sqlite.listAll(State.class, Arrays
+						.asList(new Condition[] { new Condition("source_id = \"db8692a392924d27bfacdbddc4eb9a29\"") }));
 
 				assertTrue("States - database entries", list3.size() == 11400);
 			} catch (NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException
@@ -95,22 +101,40 @@ public class State implements AbstractBean, TreeStructurable {
 
 	}
 
-	@Override
-	public void doImport(final Layers _layers) {
-		// see if the track is in already
-		final String trackName = getPlatform().getTrackName();
-		final Layer target = _layers.findLayer(trackName, true);
-		final TrackWrapper track;
-		if (target != null && target instanceof TrackWrapper) {
-			// ok, use it
-			track = (TrackWrapper) target;
-		} else {
+	private LightweightTrackWrapper getParent(final Layers layers, final String datafile, final String trackName) {
+		// first the parent folder
+		Layer parent = layers.findLayer(datafile, false);
+		if (parent == null) {
+			parent = new BaseLayer();
+			parent.setName(datafile);
+			layers.addThisLayer(parent);
+		}
+
+		// now the track
+		LightweightTrackWrapper track = null;
+		Enumeration<Editable> iter = parent.elements();
+		while (iter.hasMoreElements() && track == null) {
+			Editable item = iter.nextElement();
+			if (item instanceof LightweightTrackWrapper && item.getName().equals(trackName)) {
+				track = (LightweightTrackWrapper) item;
+			}
+		}
+
+		// did we find it?
+		if (track == null) {
 			// create a new track
 			track = new TrackWrapper();
 			track.setName(trackName);
 			// and store it
-			_layers.addThisLayer(track);
+			parent.add(track);
+
 		}
+		return track;
+	}
+
+	@Override
+	public void doImport(final Layers _layers) {
+		final LightweightTrackWrapper track = getParent(_layers, getDatafile().getReference(), getPlatform().getTrackName());
 
 		// create the wrapper for this annotation
 		final FixWrapper fixWrapper = new FixWrapper(new Fix(new HiResDate(time.getTime()), location, course, speed));
@@ -149,6 +173,10 @@ public class State implements AbstractBean, TreeStructurable {
 
 	public String getPrivacy_id() {
 		return privacy_id;
+	}
+
+	public Sensor getSensor() {
+		return sensor;
 	}
 
 	@Override

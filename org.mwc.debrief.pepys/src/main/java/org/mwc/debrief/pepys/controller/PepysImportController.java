@@ -356,13 +356,21 @@ public class PepysImportController {
 			@Override
 			public void handleEvent(final Event event) {
 				if (event.type == SWT.Selection) {
-					final int importedItems = model.doImport();
-					final MessageBox messageBox = new MessageBox(_parent, SWT.OK);
-					messageBox.setMessage(importedItems + " data files have been successfully imported");
-					messageBox.setText("Database Import");
-					messageBox.open();
+					try {
+						final int importedItems = model.doImport();
+						final MessageBox messageBox = new MessageBox(_parent, SWT.OK);
+						messageBox.setMessage(importedItems + " data items have been successfully imported");
+						messageBox.setText("Database Import");
+						messageBox.open();
 
-					return;
+						return;
+					} catch (final Exception e) {
+						e.printStackTrace();
+						final MessageBox messageBox = new MessageBox(_parent, SWT.ERROR | SWT.OK);
+						messageBox.setMessage(DatabaseConnection.GENERIC_CONNECTION_ERROR);
+						messageBox.setText("DebriefNG");
+						messageBox.open();
+					}
 				}
 			}
 		});
@@ -407,8 +415,8 @@ public class PepysImportController {
 					messageToUser.append("\n");
 					messageToUser.append("Configuration in use: ");
 					messageToUser.append(configurationToUse);
-					final HashMap<String, String> databaseCategory = model.getDatabaseConnection().getDatabaseConfiguration()
-							.getCategory(DatabaseConnection.CONFIGURATION_TAG);
+					final HashMap<String, String> databaseCategory = model.getDatabaseConnection()
+							.getDatabaseConfiguration().getCategory(DatabaseConnection.CONFIGURATION_TAG);
 					if (databaseCategory != null) {
 						messageToUser.append("\n\n");
 						messageToUser.append(model.getDatabaseConnection().getBasicDescription());
@@ -456,11 +464,11 @@ public class PepysImportController {
 				}
 			}
 		});
-		
+
 		view.getClearAreaButton().addListener(SWT.Selection, new Listener() {
-			
+
 			@Override
-			public void handleEvent(Event event) {
+			public void handleEvent(final Event event) {
 				if (event.type == SWT.Selection) {
 					model.setArea(null);
 					updateAreaModel2View(model, view);
@@ -676,12 +684,12 @@ public class PepysImportController {
 		if (model.getCurrentArea() == null) {
 			view.getTopLeftLocation().clean();
 			view.getBottomRightLocation().clean();
-		}else {
+		} else {
 			view.getTopLeftLocation().setValue(model.getCurrentArea().getTopLeft());
 			view.getBottomRightLocation().setValue(model.getCurrentArea().getBottomRight());
 		}
 	}
-	
+
 	public void updateAreaView2Model(final AbstractConfiguration model, final AbstractViewSWT view)
 			throws PepsysException {
 		Application.logError2(ToolParent.INFO, "Starting updade from Area View to Model", null);
@@ -690,11 +698,11 @@ public class PepysImportController {
 			throw new PepsysException("Please, indicate the area",
 					"Please provide both top-left and bottom-right bounds");
 		}
-		
+
 		if (view.getTopLeftLocation().getValue() != null && view.getBottomRightLocation().getValue() != null) {
 			model.setArea(
 					new WorldArea(view.getTopLeftLocation().getValue(), view.getBottomRightLocation().getValue()));
-		}else {
+		} else {
 			model.setArea(null);
 		}
 

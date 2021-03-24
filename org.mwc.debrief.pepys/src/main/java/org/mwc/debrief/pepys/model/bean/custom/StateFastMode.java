@@ -1,0 +1,142 @@
+package org.mwc.debrief.pepys.model.bean.custom;
+
+import java.sql.Timestamp;
+
+import org.mwc.debrief.pepys.model.db.annotation.FieldName;
+
+import MWC.GenericData.WorldLocation;
+
+public class StateFastMode {
+
+	public static final String STATES_FILE = "/states.sql";
+
+	@FieldName(name = "state_id")
+	private String stateId;
+
+	private Timestamp time;
+
+	@FieldName(name = "sensor_name")
+	private String sensorName;
+
+	@FieldName(name = "platform_name")
+	private String platformName;
+	
+	private String sourceid;
+
+	@FieldName(name = "platform_type")
+	private String platformType;
+
+	@FieldName(name = "nationality_name")
+	private String nationalityName;
+
+	private WorldLocation location;
+
+	private double elevation;
+
+	private double heading;
+
+	private double course;
+
+	private double speed;
+
+	public StateFastMode() {
+
+	}
+
+	public double getCourse() {
+		return course;
+	}
+
+	public double getElevation() {
+		return elevation;
+	}
+
+	public double getHeading() {
+		return heading;
+	}
+
+	public WorldLocation getLocation() {
+		return location;
+	}
+
+	public String getNationalityName() {
+		return nationalityName;
+	}
+
+	public String getPlatformName() {
+		return platformName;
+	}
+
+	public String getPlatformType() {
+		return platformType;
+	}
+
+	public String getSensorName() {
+		return sensorName;
+	}
+
+	public double getSpeed() {
+		return speed;
+	}
+
+	public String getStateId() {
+		return stateId;
+	}
+
+	public Timestamp getTime() {
+		return time;
+	}
+
+	public void setCourse(final double course) {
+		this.course = course;
+	}
+
+	public void setElevation(final double elevation) {
+		this.elevation = elevation;
+	}
+
+	public void setHeading(final double heading) {
+		this.heading = heading;
+	}
+
+	public void setLocation(final WorldLocation location) {
+		this.location = location;
+	}
+
+	public void setNationalityName(final String nationalityName) {
+		this.nationalityName = nationalityName;
+	}
+
+	public void setPlatformName(final String platformName) {
+		this.platformName = platformName;
+	}
+
+	public void setPlatformType(final String platformType) {
+		this.platformType = platformType;
+	}
+
+	public void setSensorName(final String sensorName) {
+		this.sensorName = sensorName;
+	}
+
+	public void setSpeed(final double speed) {
+		this.speed = speed;
+	}
+
+	public void setStateId(final String stateId) {
+		this.stateId = stateId;
+	}
+
+	public void setTime(final Timestamp time) {
+		this.time = time;
+	}
+
+	public String getSourceid() {
+		return sourceid;
+	}
+
+	public void setSourceid(String sourceid) {
+		this.sourceid = sourceid;
+	}
+
+}
