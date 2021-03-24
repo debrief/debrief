@@ -13,7 +13,7 @@ env:
 jobs:
   buildandrelease:
     name: Build and release Debrief
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-latest
     steps:
       - name: Update ubuntu
         run: |
