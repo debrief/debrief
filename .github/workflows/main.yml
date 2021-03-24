@@ -93,7 +93,7 @@ jobs:
       - name: Set current date as env
         run: echo "MY_DATE=$(date +%Y%m%d)" >> $GITHUB_ENV
       - name: Set branch name as env
-        run: echo "BRANCH_NAME=${{ env.build_ref }}" >> $GITHUB_ENV
+        run: echo "BRANCH_NAME=${{ env.base_ref }}" >> $GITHUB_ENV
       - name: Build the artifact
         if: startsWith(github.ref, 'refs/tags/')!=true
         run: |
