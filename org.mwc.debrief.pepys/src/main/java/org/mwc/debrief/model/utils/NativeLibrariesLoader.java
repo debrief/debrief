@@ -31,6 +31,8 @@ public class NativeLibrariesLoader {
 		public void assign(final String path);
 	}
 
+	public static Set<String> previouslyLoaded = new HashSet<>();
+
 	private static void cleanDirectory(final File directory) {
 		for (final File child : directory.listFiles()) {
 			if (child.isDirectory()) {
@@ -39,8 +41,6 @@ public class NativeLibrariesLoader {
 			child.delete();
 		}
 	}
-	
-	public static Set<String> previouslyLoaded = new HashSet<>();
 
 	public static void loadBundledSpatialite(final File nativeLibrariesDirectory, final ModSpatialiteAssigner assigner)
 			throws IOException {
@@ -74,8 +74,8 @@ public class NativeLibrariesLoader {
 						assigner.assign(libraryToLoad);
 					}
 					final File libraryFile = new File(nativeLibrariesDirectory, libraryToLoad);
-					FileUtils.copyURLToFile(OSUtils.getURLResource(NativeLibrariesLoader.class, nativePath + libraryToLoad,
-							Activator.PLUGIN_ID), libraryFile);
+					FileUtils.copyURLToFile(OSUtils.getURLResource(NativeLibrariesLoader.class,
+							nativePath + libraryToLoad, Activator.PLUGIN_ID), libraryFile);
 					System.load(libraryFile.getCanonicalPath());
 				}
 			} finally {

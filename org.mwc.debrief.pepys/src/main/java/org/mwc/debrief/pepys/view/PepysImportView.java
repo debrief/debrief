@@ -379,14 +379,9 @@ public class PepysImportView extends Dialog implements AbstractViewSWT {
 
 		importGridDataButton.widthHint = 120;
 		importGridDataButton.heightHint = 40;
-    
- 		parent.setText("Debrief Pepys Import");
-		parent.setImage(DebriefPlugin.getImageDescriptor("/icons/16/debrief_icon.png").createImage());
-	}
 
-	@Override
-	public Button getClearAreaButton() {
-		return clearAreaButton;
+		parent.setText("Debrief Pepys Import");
+		parent.setImage(DebriefPlugin.getImageDescriptor("/icons/16/debrief_icon.png").createImage());
 	}
 
 	@Override
@@ -397,6 +392,11 @@ public class PepysImportView extends Dialog implements AbstractViewSWT {
 	@Override
 	public CWorldLocation getBottomRightLocation() {
 		return bottomRightLocation;
+	}
+
+	@Override
+	public Button getClearAreaButton() {
+		return clearAreaButton;
 	}
 
 	@Override

@@ -4,9 +4,11 @@ import java.beans.PropertyVetoException;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLException;
+import java.util.Collection;
 import java.util.List;
 
 import org.mwc.debrief.pepys.model.PepsysException;
+import org.mwc.debrief.pepys.model.db.Condition;
 import org.mwc.debrief.pepys.model.db.DatabaseConnection;
 import org.mwc.debrief.pepys.model.db.SqliteDatabaseConnection;
 import org.mwc.debrief.pepys.model.db.annotation.Id;
@@ -26,11 +28,12 @@ public class SensorType implements AbstractBean {
 		public void testSensorTypeQuery() {
 			try {
 				final DatabaseConfiguration _config = new DatabaseConfiguration();
-				ConfigurationReader.loadDatabaseConfiguration(_config, new LoaderOption[] {
-						new LoaderOption(LoaderType.DEFAULT_FILE, DatabaseConnection.DEFAULT_SQLITE_TEST_DATABASE_FILE) });
+				ConfigurationReader.loadDatabaseConfiguration(_config,
+						new LoaderOption[] { new LoaderOption(LoaderType.DEFAULT_FILE,
+								DatabaseConnection.DEFAULT_SQLITE_TEST_DATABASE_FILE) });
 				final SqliteDatabaseConnection sqlite = new SqliteDatabaseConnection();
 				sqlite.initializeInstance(_config);
-				final List<SensorType> list = sqlite.listAll(SensorType.class, null);
+				final List<SensorType> list = sqlite.listAll(SensorType.class, (Collection<Condition>) null);
 
 				assertTrue("States - database entries", list.size() == 6);
 
