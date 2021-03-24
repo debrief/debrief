@@ -26,7 +26,7 @@ import javax.xml.bind.JAXBIntrospector;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
-import java.time.*;
+import javax.xml.datatype.XMLGregorianCalendar;
 
 import org.eclipse.core.runtime.IStatus;
 import org.mwc.cmap.core.CorePlugin;
@@ -145,23 +145,6 @@ public class FixMapper implements DebriefJaxbContextAware {
 				CorePlugin.logError(IStatus.ERROR, "Error while mapping Track from GPX", pe);
 			}
 		}
-
-		// have we managed to sort out the course & speed?
-		// have a go at the speed
-		// if(previousFix != null)
-		// {
-		// WorldVector fromLast = null;
-		// if(previousFix != null)
-		// fromLast = val.subtract(previousFix.getLocation());
-		//
-		// long timeDiffMillis = theDate.getDate().getTime() -
-		// previousFix.getTime().getDate().getTime();
-		// WorldDistance dist = new WorldDistance( fromLast.getRange(),
-		// WorldDistance.DEGS);
-		// double speedYps = (dist.getValueIn(WorldDistance.YARDS)) /
-		// (timeDiffMillis / 1000d);
-		// fix.setSpeed(speedYps);
-		// }
 
 		return trackPoint;
 	}
