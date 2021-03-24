@@ -98,7 +98,7 @@ jobs:
         uses: actions/upload-artifact@v2
         if: startsWith(github.ref, 'refs/tags/')!=true
         with:
-          name: Debrief_Win64_${{ env.MY_DATE }}_${{ env.BRANCH_NAME }}
+          name: Debrief_Win64_${{ env.MY_DATE }}_${{ GITHUB_REF##*/ }}
           path: /home/runner/work/debrief/debrief/Debrief_Win64_*.zip
       - name: Upload  release
         uses: softprops/action-gh-release@v1
