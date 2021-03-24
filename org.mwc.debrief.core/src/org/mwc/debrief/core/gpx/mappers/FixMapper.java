@@ -129,7 +129,8 @@ public class FixMapper implements DebriefJaxbContextAware {
 
 				trackPoint.setCourse(Math.toRadians(MWCXMLReader.readThisDouble(fixExtension.getCourse())));
 				trackPoint.setLabel(fixExtension.getLabel());
-				trackPoint.setSpeed(MWCXMLReader.readThisDouble(fixExtension.getSpeed()));
+				final double speedMS = MWCXMLReader.readThisDouble(fixExtension.getSpeed());
+				trackPoint.setSpeed(MWC.Algorithms.Conversions.Mps2Kts(speedMS));
 				final LocationPropertyEditor locationConverter = new LocationPropertyEditor();
 				locationConverter.setAsText(fixExtension.getLabelLocation().value());
 				trackPoint.setLabelLocation((Integer) locationConverter.getValue());
@@ -144,23 +145,6 @@ public class FixMapper implements DebriefJaxbContextAware {
 				CorePlugin.logError(IStatus.ERROR, "Error while mapping Track from GPX", pe);
 			}
 		}
-
-		// have we managed to sort out the course & speed?
-		// have a go at the speed
-		// if(previousFix != null)
-		// {
-		// WorldVector fromLast = null;
-		// if(previousFix != null)
-		// fromLast = val.subtract(previousFix.getLocation());
-		//
-		// long timeDiffMillis = theDate.getDate().getTime() -
-		// previousFix.getTime().getDate().getTime();
-		// WorldDistance dist = new WorldDistance( fromLast.getRange(),
-		// WorldDistance.DEGS);
-		// double speedYps = (dist.getValueIn(WorldDistance.YARDS)) /
-		// (timeDiffMillis / 1000d);
-		// fix.setSpeed(speedYps);
-		// }
 
 		return trackPoint;
 	}
@@ -201,7 +185,7 @@ public class FixMapper implements DebriefJaxbContextAware {
 
 		final BigDecimal speed = pointType.getSpeed();
 		if (speed != null) {
-			fix.setSpeed(speed.doubleValue());
+			fix.setSpeed(MWC.Algorithms.Conversions.m2ft(speed.doubleValue())/3d);
 		}
 		final FixWrapper trackPoint = new FixWrapper(fix);
 
