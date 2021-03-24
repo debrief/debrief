@@ -17,8 +17,8 @@ jobs:
     steps:
       - name: Update ubuntu
         run: |
-                echo "running on branch ${GITHUB_REF##*/}"      
-                echo "the branch ref is ${GITHUB_BRANCH##*/}"   
+                echo "running on branch ${GITHUB_REF##*/}"
+                echo "the branch ref is ${GITHUB_BRANCH##*/}"
                 echo "The github ref from env variable ${{ env.build_ref }}"
                 echo "running on branch ${GITHUB_BASE_REF##*/}"
                 echo "running on branch ${GITHUB_HEAD_REF##*/}"
