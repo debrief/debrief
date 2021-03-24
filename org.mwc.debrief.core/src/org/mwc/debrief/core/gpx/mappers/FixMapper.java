@@ -26,7 +26,7 @@ import javax.xml.bind.JAXBIntrospector;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
-import javax.xml.datatype.XMLGregorianCalendar;
+import java.time.*;
 
 import org.eclipse.core.runtime.IStatus;
 import org.mwc.cmap.core.CorePlugin;
@@ -129,7 +129,8 @@ public class FixMapper implements DebriefJaxbContextAware {
 
 				trackPoint.setCourse(Math.toRadians(MWCXMLReader.readThisDouble(fixExtension.getCourse())));
 				trackPoint.setLabel(fixExtension.getLabel());
-				trackPoint.setSpeed(MWCXMLReader.readThisDouble(fixExtension.getSpeed()));
+				final double speedMS = MWCXMLReader.readThisDouble(fixExtension.getSpeed());
+				trackPoint.setSpeed(MWC.Algorithms.Conversions.Mps2Kts(speedMS));
 				final LocationPropertyEditor locationConverter = new LocationPropertyEditor();
 				locationConverter.setAsText(fixExtension.getLabelLocation().value());
 				trackPoint.setLabelLocation((Integer) locationConverter.getValue());
@@ -201,7 +202,7 @@ public class FixMapper implements DebriefJaxbContextAware {
 
 		final BigDecimal speed = pointType.getSpeed();
 		if (speed != null) {
-			fix.setSpeed(speed.doubleValue());
+			fix.setSpeed(MWC.Algorithms.Conversions.m2ft(speed.doubleValue())/3d);
 		}
 		final FixWrapper trackPoint = new FixWrapper(fix);
 
