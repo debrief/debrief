@@ -27,7 +27,7 @@ location "http://download.eclipse.org/releases/2021-03" {
 	org.eclipse.ecf.filetransfer.httpclient45.feature.feature.group
 	org.eclipse.ecf.filetransfer.ssl.feature.feature.group
 	org.eclipse.pde.feature.group
-	
+	org.eclipse.xsd.edit
 }
 
 location "https://download.eclipse.org/ease/release/latest" {
