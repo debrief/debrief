@@ -11,6 +11,9 @@ location "http://download.eclipse.org/releases/2021-03" {
 	org.eclipse.emf.edit.feature.group
 	org.eclipse.emf.edit.ui.feature.group
 	org.eclipse.emf.ecore.edit.feature.group
+	org.eclipse.equinox.p2.user.ui.feature.group
+	org.eclipse.equinox.p2.core.feature.feature.group
+	org.eclipse.ecf.core.feature.feature.group
 	org.eclipse.gef.feature.group
 	org.eclipse.jdt.feature.group
 	org.eclipse.platform.feature.group
@@ -20,6 +23,9 @@ location "http://download.eclipse.org/releases/2021-03" {
 	org.eclipse.equinox.core.feature.feature.group
 	org.eclipse.equinox.executable.feature.group
 	org.eclipse.ecf.remoteservice.feature.feature.group
+	org.eclipse.ecf.core.ssl.feature.feature.group
+	org.eclipse.ecf.filetransfer.httpclient45.feature.feature.group
+	org.eclipse.ecf.filetransfer.ssl.feature.feature.group
 }
 
 location "https://download.eclipse.org/ease/release/latest" {

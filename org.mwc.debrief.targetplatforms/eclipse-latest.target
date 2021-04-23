@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <?pde?>
 <!-- generated with https://github.com/eclipse-cbi/targetplatform-dsl -->
-<target name="eclipse-latest" sequenceNumber="1619159877">
+<target name="eclipse-latest" sequenceNumber="1619160498">
   <locations>
     <location includeMode="slicer" includeAllPlatforms="false" includeSource="true" includeConfigurePhase="false" type="InstallableUnit">
       <unit id="org.eclipse.wst.xml_ui.feature.feature.group" version="3.21.0.v202102222242"/>
@@ -11,6 +11,9 @@
       <unit id="org.eclipse.emf.edit.feature.group" version="2.16.0.v20190920-0401"/>
       <unit id="org.eclipse.emf.edit.ui.feature.group" version="2.20.0.v20200917-1406"/>
       <unit id="org.eclipse.emf.ecore.edit.feature.group" version="2.14.0.v20190822-1451"/>
+      <unit id="org.eclipse.equinox.p2.user.ui.feature.group" version="2.4.1100.v20210227-0235"/>
+      <unit id="org.eclipse.equinox.p2.core.feature.feature.group" version="1.6.900.v20210227-0235"/>
+      <unit id="org.eclipse.ecf.core.feature.feature.group" version="1.5.701.v20201027-0550"/>
       <unit id="org.eclipse.gef.feature.group" version="3.11.0.201606061308"/>
       <unit id="org.eclipse.jdt.feature.group" version="3.18.700.v20210303-1800"/>
       <unit id="org.eclipse.platform.feature.group" version="4.19.0.v20210303-1800"/>
@@ -20,6 +23,9 @@
       <unit id="org.eclipse.equinox.core.feature.feature.group" version="1.13.100.v20210226-1447"/>
       <unit id="org.eclipse.equinox.executable.feature.group" version="3.8.1100.v20210209-1541"/>
       <unit id="org.eclipse.ecf.remoteservice.feature.feature.group" version="2.5.201.v20201024-0045"/>
+      <unit id="org.eclipse.ecf.core.ssl.feature.feature.group" version="1.1.500.v20200812-2314"/>
+      <unit id="org.eclipse.ecf.filetransfer.httpclient45.feature.feature.group" version="1.0.702.v20201025-2303"/>
+      <unit id="org.eclipse.ecf.filetransfer.ssl.feature.feature.group" version="1.1.400.v20200812-2314"/>
       <repository location="http://download.eclipse.org/releases/2021-03"/>
     </location>
     <location includeMode="slicer" includeAllPlatforms="false" includeSource="true" includeConfigurePhase="false" type="InstallableUnit">
