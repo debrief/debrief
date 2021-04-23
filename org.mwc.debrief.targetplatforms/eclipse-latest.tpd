@@ -6,6 +6,7 @@ with source
 location "http://download.eclipse.org/releases/2021-03" {
 	org.eclipse.wst.xml_ui.feature.feature.group
 	org.eclipse.emf.common.feature.group
+	org.eclipse.emf.common.ui.feature.group
 	org.eclipse.emf.ecore.feature.group
 	org.eclipse.emf.edit.feature.group
 	org.eclipse.emf.edit.ui.feature.group
