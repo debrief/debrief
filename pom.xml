@@ -10,7 +10,7 @@
 
   <properties>
     <tycho.version>1.5.0</tycho.version>
-    <tycho-extras.version>1.5.0/tycho-extras.version>
+    <tycho-extras.version>1.5.0</tycho-extras.version>
 
     <tycho-repo.url>https://oss.sonatype.org/content/groups/public/</tycho-repo.url>
 
