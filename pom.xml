@@ -124,7 +124,6 @@
          <artifactId>target-platform-configuration</artifactId>
          <version>${tycho.version}</version>
          <configuration>
-         <resolveWithExecutionEnvironmentConstraints>false</resolveWithExecutionEnvironmentConstraints>
          <target>
            <artifact>
              <groupId>org.mwc.debrief</groupId>
