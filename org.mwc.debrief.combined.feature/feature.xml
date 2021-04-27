@@ -16,7 +16,7 @@
 <feature
       id="org.mwc.debrief.combined.feature"
       label="%featureName"
-      version="1.1.25"
+      version="1.1.26"
       provider-name="MWC"
       plugin="org.mwc.debrief.core">
 
@@ -664,7 +664,7 @@ Library.
          id="org.objectweb.asm"
          download-size="0"
          install-size="0"
-         version="0.0.0"
+         version="5.0.1.v201404251740"
          unpack="false"/>
 
    <plugin
