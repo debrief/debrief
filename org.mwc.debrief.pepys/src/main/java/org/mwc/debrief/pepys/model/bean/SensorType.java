@@ -26,25 +26,27 @@ public class SensorType implements AbstractBean {
 	public static class SensorTypeTest extends TestCase {
 
 		public void testSensorTypeQuery() {
-			try {
-				final DatabaseConfiguration _config = new DatabaseConfiguration();
-				ConfigurationReader.loadDatabaseConfiguration(_config,
-						new LoaderOption[] { new LoaderOption(LoaderType.DEFAULT_FILE,
-								DatabaseConnection.DEFAULT_SQLITE_TEST_DATABASE_FILE) });
-				final SqliteDatabaseConnection sqlite = new SqliteDatabaseConnection();
-				sqlite.initializeInstance(_config);
-				final List<SensorType> list = sqlite.listAll(SensorType.class, (Collection<Condition>) null);
-
-				assertTrue("States - database entries", list.size() == 6);
-
-				final SensorType gpsSensor = sqlite.listById(SensorType.class, "347a37e873024c0882007f5531c19a8d");
-
-				assertTrue("States - database entries", "GPS".equals(gpsSensor.getName()));
-			} catch (NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException
-					| IllegalArgumentException | InvocationTargetException | PropertyVetoException | SQLException
-					| ClassNotFoundException | IOException | PepsysException e) {
-				e.printStackTrace();
-				fail("Couldn't connect to database or query error");
+			if (System.getProperty("os.name").toLowerCase().indexOf("mac") == -1) {
+				try {
+					final DatabaseConfiguration _config = new DatabaseConfiguration();
+					ConfigurationReader.loadDatabaseConfiguration(_config,
+							new LoaderOption[] { new LoaderOption(LoaderType.DEFAULT_FILE,
+									DatabaseConnection.DEFAULT_SQLITE_TEST_DATABASE_FILE) });
+					final SqliteDatabaseConnection sqlite = new SqliteDatabaseConnection();
+					sqlite.initializeInstance(_config);
+					final List<SensorType> list = sqlite.listAll(SensorType.class, (Collection<Condition>) null);
+	
+					assertTrue("States - database entries", list.size() == 6);
+	
+					final SensorType gpsSensor = sqlite.listById(SensorType.class, "347a37e873024c0882007f5531c19a8d");
+	
+					assertTrue("States - database entries", "GPS".equals(gpsSensor.getName()));
+				} catch (NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException
+						| IllegalArgumentException | InvocationTargetException | PropertyVetoException | SQLException
+						| ClassNotFoundException | IOException | PepsysException e) {
+					e.printStackTrace();
+					fail("Couldn't connect to database or query error");
+				}
 			}
 		}
 	}

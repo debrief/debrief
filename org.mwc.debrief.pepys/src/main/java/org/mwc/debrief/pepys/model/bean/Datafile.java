@@ -45,40 +45,41 @@ public class Datafile implements AbstractBean {
 	public static class DatafilesTest extends TestCase {
 
 		public void testDatafilesQuery() {
-			try {
-				final DatabaseConfiguration _config = new DatabaseConfiguration();
-				ConfigurationReader.loadDatabaseConfiguration(_config,
-						new LoaderOption[] { new LoaderOption(LoaderType.DEFAULT_FILE,
-								DatabaseConnection.DEFAULT_SQLITE_TEST_DATABASE_FILE) });
-				final SqliteDatabaseConnection sqlite = new SqliteDatabaseConnection();
-				sqlite.initializeInstance(_config);
-				final List<Datafile> list = sqlite.listAll(Datafile.class, (Collection<Condition>) null);
+			if (System.getProperty("os.name").toLowerCase().indexOf("mac") == -1) {
+				try {
+					final DatabaseConfiguration _config = new DatabaseConfiguration();
+					ConfigurationReader.loadDatabaseConfiguration(_config,
+							new LoaderOption[] { new LoaderOption(LoaderType.DEFAULT_FILE,
+									DatabaseConnection.DEFAULT_SQLITE_TEST_DATABASE_FILE) });
+					final SqliteDatabaseConnection sqlite = new SqliteDatabaseConnection();
+					sqlite.initializeInstance(_config);
+					final List<Datafile> list = sqlite.listAll(Datafile.class, (Collection<Condition>) null);
 
-				assertTrue("Datafiles - database entries", list.size() == 25);
+					assertTrue("Datafiles - database entries", list.size() == 25);
 
-				final String[][] datafilesSomeReferences = new String[][] {
-						{ "db8692a392924d27bfacdbddc4eb9a29", "NMEA_TRIAL.log" },
-						{ "ab39eec7c29f4cee871b98474b00bfdc", "sen_ssk_freq.dsf" },
-						{ "f6384dd27282439aa164acf6be1bb393", "rep_test1.rep" },
-						{ "265db426cf194e498ce38911e06d17e0", "uk_track.rep" } };
+					final String[][] datafilesSomeReferences = new String[][] {
+							{ "db8692a392924d27bfacdbddc4eb9a29", "NMEA_TRIAL.log" },
+							{ "ab39eec7c29f4cee871b98474b00bfdc", "sen_ssk_freq.dsf" },
+							{ "f6384dd27282439aa164acf6be1bb393", "rep_test1.rep" },
+							{ "265db426cf194e498ce38911e06d17e0", "uk_track.rep" } };
 
-				for (int i = 0; i < datafilesSomeReferences.length; i++) {
-					boolean exist = false;
-					for (final Datafile dataFile : list) {
-						exist |= datafilesSomeReferences[i][0].equals(dataFile.getDatafile_id())
-								&& datafilesSomeReferences[i][1].equals(dataFile.getReference());
+					for (int i = 0; i < datafilesSomeReferences.length; i++) {
+						boolean exist = false;
+						for (final Datafile dataFile : list) {
+							exist |= datafilesSomeReferences[i][0].equals(dataFile.getDatafile_id())
+									&& datafilesSomeReferences[i][1].equals(dataFile.getReference());
+						}
+
+						assertTrue("Datafiles - Reference Name", exist);
 					}
 
-					assertTrue("Datafiles - Reference Name", exist);
-				}
-
-			} catch (NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException
-					| IllegalArgumentException | InvocationTargetException | PropertyVetoException | SQLException
-					| ClassNotFoundException | IOException | PepsysException e) {
-				e.printStackTrace();
-				fail("Couldn't connect to database or query error:" + e);
+				} catch (NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException
+						| IllegalArgumentException | InvocationTargetException | PropertyVetoException | SQLException
+						| ClassNotFoundException | IOException | PepsysException e) {
+					e.printStackTrace();
+					fail("Couldn't connect to database or query error:" + e);
+				}	
 			}
-
 		}
 	}
 

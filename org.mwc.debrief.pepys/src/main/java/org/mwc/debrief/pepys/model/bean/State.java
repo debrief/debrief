@@ -45,33 +45,34 @@ public class State implements AbstractBean, TreeStructurable {
 	public static class StatesTest extends TestCase {
 
 		public void testStatesQuery() {
-			try {
-				final DatabaseConfiguration _config = new DatabaseConfiguration();
-				ConfigurationReader.loadDatabaseConfiguration(_config,
-						new LoaderOption[] { new LoaderOption(LoaderType.DEFAULT_FILE,
-								DatabaseConnection.DEFAULT_SQLITE_TEST_DATABASE_FILE) });
-				final SqliteDatabaseConnection sqlite = new SqliteDatabaseConnection();
-				sqlite.initializeInstance(_config);
-				final List<State> list = sqlite.listAll(State.class, (Collection<Condition>) null);
-
-				assertTrue("States - database entries", list.size() == 12239);
-
-				final List<State> list2 = sqlite.listAll(State.class, Arrays
-						.asList(new Condition[] { new Condition("source_id = \"638471a99e264761830b3f6575816e67\"") }));
-
-				assertTrue("States - database entries", list2.size() == 5);
-
-				final List<State> list3 = sqlite.listAll(State.class, Arrays
-						.asList(new Condition[] { new Condition("source_id = \"db8692a392924d27bfacdbddc4eb9a29\"") }));
-
-				assertTrue("States - database entries", list3.size() == 11400);
-			} catch (NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException
-					| IllegalArgumentException | InvocationTargetException | PropertyVetoException | SQLException
-					| ClassNotFoundException | IOException | PepsysException e) {
-				e.printStackTrace();
-				fail("Couldn't connect to database or query error");
+			if (System.getProperty("os.name").toLowerCase().indexOf("mac") == -1) {
+				try {
+					final DatabaseConfiguration _config = new DatabaseConfiguration();
+					ConfigurationReader.loadDatabaseConfiguration(_config,
+							new LoaderOption[] { new LoaderOption(LoaderType.DEFAULT_FILE,
+									DatabaseConnection.DEFAULT_SQLITE_TEST_DATABASE_FILE) });
+					final SqliteDatabaseConnection sqlite = new SqliteDatabaseConnection();
+					sqlite.initializeInstance(_config);
+					final List<State> list = sqlite.listAll(State.class, (Collection<Condition>) null);
+	
+					assertTrue("States - database entries", list.size() == 12239);
+	
+					final List<State> list2 = sqlite.listAll(State.class, Arrays
+							.asList(new Condition[] { new Condition("source_id = \"638471a99e264761830b3f6575816e67\"") }));
+	
+					assertTrue("States - database entries", list2.size() == 5);
+	
+					final List<State> list3 = sqlite.listAll(State.class, Arrays
+							.asList(new Condition[] { new Condition("source_id = \"db8692a392924d27bfacdbddc4eb9a29\"") }));
+	
+					assertTrue("States - database entries", list3.size() == 11400);
+				} catch (NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException
+						| IllegalArgumentException | InvocationTargetException | PropertyVetoException | SQLException
+						| ClassNotFoundException | IOException | PepsysException e) {
+					e.printStackTrace();
+					fail("Couldn't connect to database or query error");
+				}
 			}
-
 		}
 	}
 
