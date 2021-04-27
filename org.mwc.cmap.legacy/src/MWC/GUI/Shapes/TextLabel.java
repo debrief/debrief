@@ -313,7 +313,7 @@ public class TextLabel extends PlainShape implements Editable {
 	public TextLabel(final WorldLocation theLocation, final String theString) {
 		this();
 
-		_theString = theString;
+		_theString = replaceNewLines(theString);
 		_theLocation = theLocation;
 	}
 
