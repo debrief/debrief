@@ -42,39 +42,40 @@ public class DatafileType implements AbstractBean {
 	public static class DatafileTypesTest extends TestCase {
 
 		public void testDatafileTypesQuery() {
-			try {
-				final DatabaseConfiguration _config = new DatabaseConfiguration();
-				ConfigurationReader.loadDatabaseConfiguration(_config,
-						new LoaderOption[] { new LoaderOption(LoaderType.DEFAULT_FILE,
-								DatabaseConnection.DEFAULT_SQLITE_TEST_DATABASE_FILE) });
-				final SqliteDatabaseConnection sqlite = new SqliteDatabaseConnection();
-				sqlite.initializeInstance(_config);
-				final List<DatafileType> list = sqlite.listAll(DatafileType.class, (Collection<Condition>) null);
-
-				assertTrue("Datafiletypes - database entries", list.size() == 8);
-
-				final String[][] datafilesSomeReferences = new String[][] {
-						{ "dc5daeb0ca6e424290cf432372cdfdc7", "NMEA" },
-						{ "4f6fc5aab7a449e2b4ee0f7d639773df", "E-Trac" },
-						{ "dffab2b752b14ce2830690743720ac53", "DATAFILE-TYPE-1" } };
-
-				for (int i = 0; i < datafilesSomeReferences.length; i++) {
-					boolean exist = false;
-					for (final DatafileType dataFile : list) {
-						exist |= datafilesSomeReferences[i][0].equals(dataFile.getDatafile_type_id())
-								&& datafilesSomeReferences[i][1].equals(dataFile.getName());
+			if (System.getProperty("os.name").toLowerCase().indexOf("mac") == -1) {
+				try {
+					final DatabaseConfiguration _config = new DatabaseConfiguration();
+					ConfigurationReader.loadDatabaseConfiguration(_config,
+							new LoaderOption[] { new LoaderOption(LoaderType.DEFAULT_FILE,
+									DatabaseConnection.DEFAULT_SQLITE_TEST_DATABASE_FILE) });
+					final SqliteDatabaseConnection sqlite = new SqliteDatabaseConnection();
+					sqlite.initializeInstance(_config);
+					final List<DatafileType> list = sqlite.listAll(DatafileType.class, (Collection<Condition>) null);
+	
+					assertTrue("Datafiletypes - database entries", list.size() == 8);
+	
+					final String[][] datafilesSomeReferences = new String[][] {
+							{ "dc5daeb0ca6e424290cf432372cdfdc7", "NMEA" },
+							{ "4f6fc5aab7a449e2b4ee0f7d639773df", "E-Trac" },
+							{ "dffab2b752b14ce2830690743720ac53", "DATAFILE-TYPE-1" } };
+	
+					for (int i = 0; i < datafilesSomeReferences.length; i++) {
+						boolean exist = false;
+						for (final DatafileType dataFile : list) {
+							exist |= datafilesSomeReferences[i][0].equals(dataFile.getDatafile_type_id())
+									&& datafilesSomeReferences[i][1].equals(dataFile.getName());
+						}
+	
+						assertTrue("Datafiles - Reference Name", exist);
 					}
-
-					assertTrue("Datafiles - Reference Name", exist);
+	
+				} catch (NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException
+						| IllegalArgumentException | InvocationTargetException | PropertyVetoException | SQLException
+						| ClassNotFoundException | IOException | PepsysException e) {
+					e.printStackTrace();
+					fail("Couldn't connect to database or query error");
 				}
-
-			} catch (NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException
-					| IllegalArgumentException | InvocationTargetException | PropertyVetoException | SQLException
-					| ClassNotFoundException | IOException | PepsysException e) {
-				e.printStackTrace();
-				fail("Couldn't connect to database or query error");
 			}
-
 		}
 	}
 
