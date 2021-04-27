@@ -204,6 +204,8 @@ public class ImportNisida {
 				++lineNumber;
 			}
 		} catch (final IOException e) {
+			e.printStackTrace();
+			
 			// There were problems reading the file. It cannot be loaded.
 		}
 		return false;
