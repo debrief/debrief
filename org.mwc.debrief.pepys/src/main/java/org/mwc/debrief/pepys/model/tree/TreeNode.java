@@ -48,51 +48,54 @@ public class TreeNode {
 
 		public void testTreeNode() {
 			List<State> list = null;
-			try {
-				final DatabaseConfiguration _config = new DatabaseConfiguration();
-				ConfigurationReader.loadDatabaseConfiguration(_config, new LoaderOption[] {
-						new LoaderOption(LoaderType.DEFAULT_FILE, DatabaseConnection.DEFAULT_SQLITE_DATABASE_FILE) });
-				final SqliteDatabaseConnection sqlite = new SqliteDatabaseConnection();
-				sqlite.initializeInstance(_config);
-				list = sqlite.listAll(State.class, (Collection<Condition>) null);
-			} catch (final Exception e) {
-				fail("Failed retrieving data from Database");
+			if (System.getProperty("os.name").toLowerCase().indexOf("mac") == -1) {
+	
+				try {
+					final DatabaseConfiguration _config = new DatabaseConfiguration();
+					ConfigurationReader.loadDatabaseConfiguration(_config, new LoaderOption[] {
+							new LoaderOption(LoaderType.DEFAULT_FILE, DatabaseConnection.DEFAULT_SQLITE_DATABASE_FILE) });
+					final SqliteDatabaseConnection sqlite = new SqliteDatabaseConnection();
+					sqlite.initializeInstance(_config);
+					list = sqlite.listAll(State.class, (Collection<Condition>) null);
+				} catch (final Exception e) {
+					fail("Failed retrieving data from Database");
+				}
+	
+				assertTrue("States - database entries", list.size() == 12239);
+	
+				final String rootName = "ROOT";
+				final TreeNode root = new TreeNode(NodeType.ROOT, rootName, null);
+				root.addItem(list.get(0));
+				final String child1Name = "CHILD1";
+				final TreeNode child1 = new TreeNode(NodeType.PLATFORM, child1Name, root);
+				child1.addItem(list.get(1));
+				final String child2Name = "CHILD2";
+				final TreeNode child2 = new TreeNode(NodeType.MEASURE, child2Name, root);
+				child2.addItem(list.get(2));
+				final String child3Name = "CHILD3";
+				final TreeNode child3 = new TreeNode(NodeType.ROOT, child3Name, root);
+				child3.addItem(list.get(3));
+				final String child1child1Name = "child1child1Name";
+				final TreeNode child1child1 = new TreeNode(NodeType.ROOT, child1child1Name, child1);
+				child1child1.addItem(list.get(4));
+				final String child1child2Name = "child1child2Name";
+				final TreeNode child1child2 = new TreeNode(NodeType.ROOT, child1child2Name, child1);
+				child1child2.addItem(list.get(5));
+	
+				root.addChild(child1);
+				root.addChild(child2);
+				root.addChild(child3);
+	
+				child1.addChild(child1child1);
+				child1.addChild(child1child2);
+	
+				assertTrue("Retrieving child1 correctly", child1.equals(root.getChild(child1Name)));
+				assertTrue("Retrieving child2 correctly", child2.equals(root.getChild(child2Name)));
+				assertTrue("Retrieving child3 correctly", child3.equals(root.getChild(child3Name)));
+	
+				assertTrue("Retrieving child1child1 correctly", child1child1.equals(child1.getChild(child1child1Name)));
+				assertTrue("Retrieving child1child2 correctly", child1child2.equals(child1.getChild(child1child2Name)));
 			}
-
-			assertTrue("States - database entries", list.size() == 12239);
-
-			final String rootName = "ROOT";
-			final TreeNode root = new TreeNode(NodeType.ROOT, rootName, null);
-			root.addItem(list.get(0));
-			final String child1Name = "CHILD1";
-			final TreeNode child1 = new TreeNode(NodeType.PLATFORM, child1Name, root);
-			child1.addItem(list.get(1));
-			final String child2Name = "CHILD2";
-			final TreeNode child2 = new TreeNode(NodeType.MEASURE, child2Name, root);
-			child2.addItem(list.get(2));
-			final String child3Name = "CHILD3";
-			final TreeNode child3 = new TreeNode(NodeType.ROOT, child3Name, root);
-			child3.addItem(list.get(3));
-			final String child1child1Name = "child1child1Name";
-			final TreeNode child1child1 = new TreeNode(NodeType.ROOT, child1child1Name, child1);
-			child1child1.addItem(list.get(4));
-			final String child1child2Name = "child1child2Name";
-			final TreeNode child1child2 = new TreeNode(NodeType.ROOT, child1child2Name, child1);
-			child1child2.addItem(list.get(5));
-
-			root.addChild(child1);
-			root.addChild(child2);
-			root.addChild(child3);
-
-			child1.addChild(child1child1);
-			child1.addChild(child1child2);
-
-			assertTrue("Retrieving child1 correctly", child1.equals(root.getChild(child1Name)));
-			assertTrue("Retrieving child2 correctly", child2.equals(root.getChild(child2Name)));
-			assertTrue("Retrieving child3 correctly", child3.equals(root.getChild(child3Name)));
-
-			assertTrue("Retrieving child1child1 correctly", child1child1.equals(child1.getChild(child1child1Name)));
-			assertTrue("Retrieving child1child2 correctly", child1child2.equals(child1.getChild(child1child2Name)));
 		}
 	}
 
