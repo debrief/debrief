@@ -137,7 +137,7 @@ location "https://download.eclipse.org/tools/orbit/downloads/drops/R202102232326
 	com.google.guava
 	com.google.gson
 	com.google.protobuf
-	org.objectweb.asm [3.3.1,8.0.0)
+	org.objectweb.asm [5.0.1,5.1.0)
 	javax.activation
 	
 }
