@@ -33,6 +33,7 @@ import junit.framework.TestCase;
 public class ImportNisidaTest extends TestCase {
 	private final String nisida_track = "../org.mwc.cmap.combined.feature/root_installs/sample_data/other_formats/nisida_sample.txt";
 	private final String not_nisida_track = "../org.mwc.cmap.combined.feature/root_installs/sample_data/other_formats/Clog_Trial.txt";
+	private final String missing_track = "../org.mwc.cmap.combined.feature/root_installs/sample_data/other_formats/NOT_EXIST_Trial.txt";
 
 	public void testAttack() {
 		final String inputFileContent = "UNIT/ADRI/OCT03/SRF/\n311206Z/ATT/OTHER";
@@ -52,13 +53,13 @@ public class ImportNisidaTest extends TestCase {
 
 	public void testCanLoad() throws FileNotFoundException {
 		assertTrue(ImportNisida.canLoadThisFile(new FileInputStream(nisida_track)));
+		assertFalse(ImportNisida.canLoadThisFile(new FileInputStream(not_nisida_track)));
 		try {
-			ImportNisida.canLoadThisFile(new FileInputStream(not_nisida_track));
+			ImportNisida.canLoadThisFile(new FileInputStream(missing_track));
 			fail("It was able to read a file that doesn't exits");
 		} catch (final Exception e) {
 			// OK
 		}
-
 	}
 
 	public void testDetection() {
