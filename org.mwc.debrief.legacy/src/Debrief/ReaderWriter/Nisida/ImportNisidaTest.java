@@ -32,7 +32,7 @@ import junit.framework.TestCase;
 
 public class ImportNisidaTest extends TestCase {
 	private final String nisida_track = "../org.mwc.cmap.combined.feature/root_installs/sample_data/other_formats/nisida_sample.txt";
-	private final String not_nisida_track = "../org.mwc.cmap.combined.feature/root_installs/sample_data/other_formats/Clog_Trial.txt";
+	private final String not_nisida_track = "../org.mwc.cmap.combined.feature/root_installs/sample_data/other_formats/CLog_Trial.txt";
 	private final String missing_track = "../org.mwc.cmap.combined.feature/root_installs/sample_data/other_formats/NOT_EXIST_Trial.txt";
 
 	public void testAttack() {
