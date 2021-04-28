@@ -356,21 +356,32 @@ public class PepysImportController {
 			@Override
 			public void handleEvent(final Event event) {
 				if (event.type == SWT.Selection) {
-					try {
-						final int importedItems = model.doImport();
-						final MessageBox messageBox = new MessageBox(_parent, SWT.OK);
-						messageBox.setMessage(importedItems + " data items have been successfully imported");
-						messageBox.setText("Database Import");
-						messageBox.open();
+					final Cursor _cursor = new Cursor(Display.getCurrent(), SWT.CURSOR_WAIT);
+					_parent.setCursor(_cursor);
+					Display.getCurrent().asyncExec(new Runnable() {
+						@Override
+						public void run() {
+							try {
+								final int importedItems = model.doImport();
+								final MessageBox messageBox = new MessageBox(_parent, SWT.OK);
+								messageBox.setMessage(importedItems + " data items have been successfully imported");
+								messageBox.setText("Database Import");
+								messageBox.open();
+		
+								return;
+							} catch (final Exception e) {
+								e.printStackTrace();
+								final MessageBox messageBox = new MessageBox(_parent, SWT.ERROR | SWT.OK);
+								messageBox.setMessage(DatabaseConnection.GENERIC_CONNECTION_ERROR);
+								messageBox.setText("DebriefNG");
+								messageBox.open();
+							} finally {
+								_parent.setCursor(null);
+								_cursor.dispose();
+							}
 
-						return;
-					} catch (final Exception e) {
-						e.printStackTrace();
-						final MessageBox messageBox = new MessageBox(_parent, SWT.ERROR | SWT.OK);
-						messageBox.setMessage(DatabaseConnection.GENERIC_CONNECTION_ERROR);
-						messageBox.setText("DebriefNG");
-						messageBox.open();
-					}
+						}
+					});
 				}
 			}
 		});
