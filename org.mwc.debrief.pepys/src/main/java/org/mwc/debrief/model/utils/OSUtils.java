@@ -57,7 +57,6 @@ public class OSUtils {
 
 	public static InputStream getInputStreamResource(final Class clazz, final String resourcePath,
 			final String pluginID) throws IOException {
-		Application.logStack2(IStatus.INFO, "Input stream details:"+ clazz + "," + resourcePath + "," + pluginID);
 		return getURLResource(clazz, resourcePath, pluginID).openStream();
 	}
 
