@@ -22,9 +22,13 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Scanner;
 
+import org.eclipse.core.runtime.IStatus;
+import org.mwc.cmap.core.CorePlugin;
 import org.mwc.debrief.pepys.Activator;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.FrameworkUtil;
+
+import Debrief.GUI.Frames.Application;
 
 public class OSUtils {
 
@@ -53,6 +57,7 @@ public class OSUtils {
 
 	public static InputStream getInputStreamResource(final Class clazz, final String resourcePath,
 			final String pluginID) throws IOException {
+		Application.logStack2(IStatus.INFO, "Input stream details:"+ clazz + "," + resourcePath + "," + pluginID);
 		return getURLResource(clazz, resourcePath, pluginID).openStream();
 	}
 
