@@ -22,9 +22,13 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Scanner;
 
+import org.eclipse.core.runtime.IStatus;
+import org.mwc.cmap.core.CorePlugin;
 import org.mwc.debrief.pepys.Activator;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.FrameworkUtil;
+
+import Debrief.GUI.Frames.Application;
 
 public class OSUtils {
 

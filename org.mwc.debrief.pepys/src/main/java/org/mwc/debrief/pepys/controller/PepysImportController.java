@@ -25,6 +25,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.jface.viewers.CheckStateChangedEvent;
 import org.eclipse.jface.viewers.ICheckStateListener;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
@@ -47,6 +48,7 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TreeItem;
+import org.mwc.cmap.core.CorePlugin;
 import org.mwc.debrief.core.DebriefPlugin;
 import org.mwc.debrief.pepys.model.AbstractConfiguration;
 import org.mwc.debrief.pepys.model.ModelConfiguration;
@@ -330,12 +332,14 @@ public class PepysImportController {
 								model.apply();
 								view.getImportButton().setEnabled(false);
 							} catch (final PepsysException e) {
+								CorePlugin.logError(IStatus.ERROR, "PepysException on updating area filter", e);
 								e.printStackTrace();
 								final MessageBox messageBox = new MessageBox(_parent, SWT.ERROR | SWT.OK);
 								messageBox.setMessage(e.getMessage());
 								messageBox.setText(e.getTitle());
 								messageBox.open();
 							} catch (final Exception e) {
+								CorePlugin.logError(IStatus.ERROR, "Exception on updating area filter", e);
 								e.printStackTrace();
 								final MessageBox messageBox = new MessageBox(_parent, SWT.ERROR | SWT.OK);
 								messageBox.setMessage(DatabaseConnection.GENERIC_CONNECTION_ERROR);
@@ -365,6 +369,7 @@ public class PepysImportController {
 
 						return;
 					} catch (final Exception e) {
+						CorePlugin.logError(IStatus.ERROR, "Exception on import process", e);
 						e.printStackTrace();
 						final MessageBox messageBox = new MessageBox(_parent, SWT.ERROR | SWT.OK);
 						messageBox.setMessage(DatabaseConnection.GENERIC_CONNECTION_ERROR);
@@ -427,10 +432,12 @@ public class PepysImportController {
 						errorMessage = "Database didn't contain the basic State, Contacts or Comments";
 					} catch (final SQLException e) {
 						e.printStackTrace();
+						CorePlugin.logError(IStatus.ERROR, "SQLException on running query", e);
 
 						errorMessage = DatabaseConnection.GENERIC_CONNECTION_ERROR;
 						showError = true;
 					} catch (final Exception e) {
+						CorePlugin.logError(IStatus.ERROR, "Exception on running query", e);
 						errorMessage = "You have incorrect database type.\nPlease provide the correct database type in the config file";
 						showError = true;
 					}
