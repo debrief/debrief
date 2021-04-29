@@ -130,6 +130,7 @@ public class Measurement {
 		datafile.setReference(getReference());
 		datafile.setDatafile_id(getDatafileId());
 		answer.setDatafile(datafile);
+		answer.setCount(getStateAggCount());
 
 		return answer;
 	}
@@ -155,6 +156,7 @@ public class Measurement {
 		datafile.setDatafile_id(getDatafileId());
 		datafile.setReference(getReference());
 		answer.setDatafile(datafile);
+		answer.setCount(getStateAggCount());
 
 		return answer;
 	}
@@ -178,6 +180,7 @@ public class Measurement {
 		datafile.setDatafile_id(getDatafileId());
 		datafile.setReference(getReference());
 		answer.setDatafile(datafile);
+		answer.setCount(getStateAggCount());
 
 		return answer;
 	}

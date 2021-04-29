@@ -147,7 +147,6 @@ public class TreeUtils {
 
 					measureNode.addChild(leaf);
 				}
-				leaf.addItem(currentItem);
 			} else {
 				final String sensorName = currentItem.getSensorType().getName();
 				TreeNode sensorNode = measureNode.getChild(sensorName);
