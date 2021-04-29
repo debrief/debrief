@@ -127,6 +127,11 @@ public class Contact implements AbstractBean, TreeStructurable {
 		return contact_type;
 	}
 
+	@Override
+	public int getCount() {
+		return count;
+	}
+
 	public Date getCreated_date() {
 		return created_date;
 	}
@@ -229,6 +234,10 @@ public class Contact implements AbstractBean, TreeStructurable {
 		this.contact_type = contact_type;
 	}
 
+	public void setCount(final int count) {
+		this.count = count;
+	}
+
 	public void setCreated_date(final Date created_date) {
 		this.created_date = created_date;
 	}
@@ -291,14 +300,6 @@ public class Contact implements AbstractBean, TreeStructurable {
 
 	public void setTime(final Timestamp time) {
 		this.time = time;
-	}
-
-	public int getCount() {
-		return count;
-	}
-
-	public void setCount(int count) {
-		this.count = count;
 	}
 
 }

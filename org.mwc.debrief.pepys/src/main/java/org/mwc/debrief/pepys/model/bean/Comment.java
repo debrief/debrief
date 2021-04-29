@@ -60,7 +60,7 @@ public class Comment implements AbstractBean, TreeStructurable {
 
 	@Transient
 	private int count;
-	
+
 	public Comment() {
 
 	}
@@ -101,6 +101,11 @@ public class Comment implements AbstractBean, TreeStructurable {
 		return content;
 	}
 
+	@Override
+	public int getCount() {
+		return count;
+	}
+
 	public Date getCreated_date() {
 		return created_date;
 	}
@@ -130,14 +135,6 @@ public class Comment implements AbstractBean, TreeStructurable {
 		return time;
 	}
 
-	public int getCount() {
-		return count;
-	}
-
-	public void setCount(int count) {
-		this.count = count;
-	}
-
 	public void setComment_id(final String comment_id) {
 		this.comment_id = comment_id;
 	}
@@ -148,6 +145,10 @@ public class Comment implements AbstractBean, TreeStructurable {
 
 	public void setContent(final String content) {
 		this.content = content;
+	}
+
+	public void setCount(final int count) {
+		this.count = count;
 	}
 
 	public void setCreated_date(final Date created_date) {

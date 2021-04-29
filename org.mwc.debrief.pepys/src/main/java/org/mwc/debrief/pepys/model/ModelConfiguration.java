@@ -681,7 +681,7 @@ public class ModelConfiguration implements AbstractConfiguration {
 				currentContact.setName(contact.getName());
 				currentContact.setSensor(sensor);
 				currentContact.setDatafile(datafile);
-				
+
 				platform.setName(contact.getPlatform_name());
 
 				sensor.setName(contact.getSensor_name());
