@@ -21,6 +21,7 @@ import org.mwc.debrief.pepys.model.db.annotation.Location;
 import org.mwc.debrief.pepys.model.db.annotation.ManyToOne;
 import org.mwc.debrief.pepys.model.db.annotation.TableName;
 import org.mwc.debrief.pepys.model.db.annotation.Time;
+import org.mwc.debrief.pepys.model.db.annotation.Transient;
 import org.mwc.debrief.pepys.model.db.config.ConfigurationReader;
 import org.mwc.debrief.pepys.model.db.config.DatabaseConfiguration;
 import org.mwc.debrief.pepys.model.db.config.LoaderOption;
@@ -54,17 +55,17 @@ public class State implements AbstractBean, TreeStructurable {
 					final SqliteDatabaseConnection sqlite = new SqliteDatabaseConnection();
 					sqlite.initializeInstance(_config);
 					final List<State> list = sqlite.listAll(State.class, (Collection<Condition>) null);
-	
+
 					assertTrue("States - database entries", list.size() == 12239);
-	
-					final List<State> list2 = sqlite.listAll(State.class, Arrays
-							.asList(new Condition[] { new Condition("source_id = \"638471a99e264761830b3f6575816e67\"") }));
-	
+
+					final List<State> list2 = sqlite.listAll(State.class, Arrays.asList(
+							new Condition[] { new Condition("source_id = \"638471a99e264761830b3f6575816e67\"") }));
+
 					assertTrue("States - database entries", list2.size() == 5);
-	
-					final List<State> list3 = sqlite.listAll(State.class, Arrays
-							.asList(new Condition[] { new Condition("source_id = \"db8692a392924d27bfacdbddc4eb9a29\"") }));
-	
+
+					final List<State> list3 = sqlite.listAll(State.class, Arrays.asList(
+							new Condition[] { new Condition("source_id = \"db8692a392924d27bfacdbddc4eb9a29\"") }));
+
 					assertTrue("States - database entries", list3.size() == 11400);
 				} catch (NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException
 						| IllegalArgumentException | InvocationTargetException | PropertyVetoException | SQLException
@@ -98,49 +99,27 @@ public class State implements AbstractBean, TreeStructurable {
 	@Location
 	private WorldLocation location;
 
+	@Transient
+	private int count;
+
 	public State() {
 
 	}
 
-	private LightweightTrackWrapper getParent(final Layers layers, final String datafile, final String trackName) {
-		// first the parent folder
-		Layer parent = layers.findLayer(datafile, false);
-		if (parent == null) {
-			parent = new BaseLayer();
-			parent.setName(datafile);
-			layers.addThisLayer(parent);
-		}
-
-		// now the track
-		LightweightTrackWrapper track = null;
-		Enumeration<Editable> iter = parent.elements();
-		while (iter.hasMoreElements() && track == null) {
-			Editable item = iter.nextElement();
-			if (item instanceof LightweightTrackWrapper && item.getName().equals(trackName)) {
-				track = (LightweightTrackWrapper) item;
-			}
-		}
-
-		// did we find it?
-		if (track == null) {
-			// create a new track
-			track = new TrackWrapper();
-			track.setName(trackName);
-			// and store it
-			parent.add(track);
-
-		}
-		return track;
-	}
-
 	@Override
 	public void doImport(final Layers _layers) {
-		final LightweightTrackWrapper track = getParent(_layers, getDatafile().getReference(), getPlatform().getTrackName());
+		final LightweightTrackWrapper track = getParent(_layers, getDatafile().getReference(),
+				getPlatform().getTrackName());
 
 		// create the wrapper for this annotation
 		final FixWrapper fixWrapper = new FixWrapper(new Fix(new HiResDate(time.getTime()), location, course, speed));
 		fixWrapper.setName(time.toString());
 		track.add(fixWrapper);
+	}
+
+	@Override
+	public int getCount() {
+		return count;
 	}
 
 	public double getCourse() {
@@ -162,6 +141,37 @@ public class State implements AbstractBean, TreeStructurable {
 
 	public WorldLocation getLocation() {
 		return location;
+	}
+
+	private LightweightTrackWrapper getParent(final Layers layers, final String datafile, final String trackName) {
+		// first the parent folder
+		Layer parent = layers.findLayer(datafile, false);
+		if (parent == null) {
+			parent = new BaseLayer();
+			parent.setName(datafile);
+			layers.addThisLayer(parent);
+		}
+
+		// now the track
+		LightweightTrackWrapper track = null;
+		final Enumeration<Editable> iter = parent.elements();
+		while (iter.hasMoreElements() && track == null) {
+			final Editable item = iter.nextElement();
+			if (item instanceof LightweightTrackWrapper && item.getName().equals(trackName)) {
+				track = (LightweightTrackWrapper) item;
+			}
+		}
+
+		// did we find it?
+		if (track == null) {
+			// create a new track
+			track = new TrackWrapper();
+			track.setName(trackName);
+			// and store it
+			parent.add(track);
+
+		}
+		return track;
 	}
 
 	@Override
@@ -199,6 +209,10 @@ public class State implements AbstractBean, TreeStructurable {
 	@Override
 	public Date getTime() {
 		return time;
+	}
+
+	public void setCount(final int count) {
+		this.count = count;
 	}
 
 	public void setCourse(final double course) {
@@ -240,4 +254,5 @@ public class State implements AbstractBean, TreeStructurable {
 	public void setTime(final Timestamp time) {
 		this.time = time;
 	}
+
 }

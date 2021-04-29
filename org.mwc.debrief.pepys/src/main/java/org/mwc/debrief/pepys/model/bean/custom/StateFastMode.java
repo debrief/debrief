@@ -20,7 +20,7 @@ public class StateFastMode {
 
 	@FieldName(name = "platform_name")
 	private String platformName;
-	
+
 	private String sourceid;
 
 	@FieldName(name = "platform_type")
@@ -75,6 +75,10 @@ public class StateFastMode {
 		return sensorName;
 	}
 
+	public String getSourceid() {
+		return sourceid;
+	}
+
 	public double getSpeed() {
 		return speed;
 	}
@@ -119,6 +123,10 @@ public class StateFastMode {
 		this.sensorName = sensorName;
 	}
 
+	public void setSourceid(final String sourceid) {
+		this.sourceid = sourceid;
+	}
+
 	public void setSpeed(final double speed) {
 		this.speed = speed;
 	}
@@ -129,14 +137,6 @@ public class StateFastMode {
 
 	public void setTime(final Timestamp time) {
 		this.time = time;
-	}
-
-	public String getSourceid() {
-		return sourceid;
-	}
-
-	public void setSourceid(String sourceid) {
-		this.sourceid = sourceid;
 	}
 
 }
