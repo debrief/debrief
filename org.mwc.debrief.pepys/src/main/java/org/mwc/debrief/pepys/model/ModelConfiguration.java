@@ -579,18 +579,26 @@ public class ModelConfiguration implements AbstractConfiguration {
 			// Let's create ids.
 			final StringBuilder builderPlatformId = new StringBuilder();
 
+			final StringBuilder builderSourceId = new StringBuilder();
+
 			for (final Comment comment : selectedComments) {
 				builderPlatformId.append(comment.getPlatform().getPlatform_id());
 				builderPlatformId.append(",");
+				
+				builderSourceId.append(comment.getDatafile().getDatafile_id());
+				builderSourceId.append(",");
 			}
 			if (builderPlatformId.length() > 0) {
 				builderPlatformId.setLength(builderPlatformId.length() - 1);
+			}
+			if (builderSourceId.length() > 0) {
+				builderSourceId.setLength(builderSourceId.length() - 1);
 			}
 
 			// sensor id
 			parameters.add(null);
 			// source id
-			parameters.add(null);
+			parameters.add(builderSourceId.toString());
 
 			parameters.add(builderPlatformId.toString());
 
