@@ -584,7 +584,7 @@ public class ModelConfiguration implements AbstractConfiguration {
 			for (final Comment comment : selectedComments) {
 				builderPlatformId.append(comment.getPlatform().getPlatform_id());
 				builderPlatformId.append(",");
-				
+
 				builderSourceId.append(comment.getDatafile().getDatafile_id());
 				builderSourceId.append(",");
 			}

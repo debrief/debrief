@@ -518,6 +518,14 @@ public class PepysImportController {
 				view.getImportButton().setEnabled(model.getTreeModel().countCheckedItems() > 0);
 			}
 		});
+		
+		view.getTree().addCheckStateListener(new ICheckStateListener() {
+			
+			@Override
+			public void checkStateChanged(CheckStateChangedEvent arg0) {
+				view.getImportButton().setText("Import (" + model.getTreeModel().countCheckedItems() + ")");
+			}
+		});
 
 		view.getSearchText().addModifyListener(new ModifyListener() {
 
