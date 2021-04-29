@@ -80,6 +80,9 @@ public class Contact implements AbstractBean, TreeStructurable {
 	@Transient
 	private String reference;
 
+	@Transient
+	private int count;
+
 	public Contact() {
 
 	}
@@ -288,6 +291,14 @@ public class Contact implements AbstractBean, TreeStructurable {
 
 	public void setTime(final Timestamp time) {
 		this.time = time;
+	}
+
+	public int getCount() {
+		return count;
+	}
+
+	public void setCount(int count) {
+		this.count = count;
 	}
 
 }

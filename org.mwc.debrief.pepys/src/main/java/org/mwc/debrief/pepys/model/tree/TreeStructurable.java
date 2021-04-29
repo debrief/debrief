@@ -18,4 +18,6 @@ public interface TreeStructurable {
 	public SensorType getSensorType();
 
 	public Date getTime();
+	
+	public int getCount();
 }

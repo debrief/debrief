@@ -24,6 +24,7 @@ import org.mwc.debrief.pepys.model.db.annotation.ManyToOne;
 import org.mwc.debrief.pepys.model.db.annotation.OneToOne;
 import org.mwc.debrief.pepys.model.db.annotation.TableName;
 import org.mwc.debrief.pepys.model.db.annotation.Time;
+import org.mwc.debrief.pepys.model.db.annotation.Transient;
 import org.mwc.debrief.pepys.model.tree.TreeStructurable;
 
 import Debrief.Wrappers.TrackWrapper;
@@ -57,6 +58,9 @@ public class Comment implements AbstractBean, TreeStructurable {
 	private Privacy privacy;
 	private Date created_date;
 
+	@Transient
+	private int count;
+	
 	public Comment() {
 
 	}
@@ -124,6 +128,14 @@ public class Comment implements AbstractBean, TreeStructurable {
 	@Override
 	public Date getTime() {
 		return time;
+	}
+
+	public int getCount() {
+		return count;
+	}
+
+	public void setCount(int count) {
+		this.count = count;
 	}
 
 	public void setComment_id(final String comment_id) {

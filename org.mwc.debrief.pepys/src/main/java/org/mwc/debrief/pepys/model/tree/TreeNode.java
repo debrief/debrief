@@ -106,11 +106,15 @@ public class TreeNode {
 	public static final String COMMENT = "Comments";
 
 	private static final String ADD_VALUE = "ADD_VALUE";
+	
+	private static final String ADD_CHILD = "ADD_CHILD";
 
 	private final NodeType type;
 	private final String name;
 	private TreeNode parent = null;
 	private final TimePeriod currentPeriod = new BaseTimePeriod(TimePeriod.INVALID_DATE, TimePeriod.INVALID_DATE);
+	
+	private int count = 0; // amount of item it contains.
 
 	private boolean checked = false;
 
@@ -128,8 +132,30 @@ public class TreeNode {
 					&& evt.getNewValue() instanceof TreeStructurable) {
 				final TreeStructurable newItem = (TreeStructurable) evt.getNewValue();
 				if (newItem.getTime() != null) {
-					currentPeriod.extend(new HiResDate(newItem.getTime()));
+					currentPeriod.extend(new HiResDate(newItem.getTime())); // Update the time period.
 				}
+				count += newItem.getCount();
+				
+				updateParentsCount(getParent(), newItem.getCount());
+			}
+		}
+
+		private void updateParentsCount(TreeNode parent, int count) {
+			if (parent != null) {
+				parent.count += count;
+				updateParentsCount(parent.getParent(), count);
+			}
+		}
+	};
+	
+	private final PropertyChangeListener addNewChildListener = new PropertyChangeListener() {
+		
+		@Override
+		public void propertyChange(PropertyChangeEvent evt) {
+			if (ADD_CHILD.equals(evt.getPropertyName()) && evt.getNewValue() != null
+					&& evt.getNewValue() instanceof TreeNode) {
+				final TreeNode newItem = (TreeNode) evt.getNewValue();
+				count += newItem.getCount(); // update the count, just adding the number of my new child
 			}
 		}
 	};
@@ -138,19 +164,27 @@ public class TreeNode {
 		this.type = _type;
 		this.name = _name;
 
-		_pSupport.addPropertyChangeListener(addNewItemListener);
+		addListeners();
 	}
 
 	public TreeNode(final NodeType _type, final String _name, final TreeNode _parent) {
 		this.type = _type;
 		this.name = _name;
 		this.parent = _parent;
-
+		
+		addListeners();
+	}
+	
+	private void addListeners() {
+		_pSupport.addPropertyChangeListener(addNewChildListener);
 		_pSupport.addPropertyChangeListener(addNewItemListener);
+		
 	}
 
 	public void addChild(final TreeNode node) {
 		children.put(node.name, node);
+		
+		_pSupport.firePropertyChange(ADD_CHILD, null, node);
 	}
 
 	public void addItem(final TreeStructurable item) {
@@ -241,6 +275,14 @@ public class TreeNode {
 
 	public void setParent(final TreeNode parent) {
 		this.parent = parent;
+	}
+
+	public int getCount() {
+		return count;
+	}
+
+	public void setCount(int count) {
+		this.count = count;
 	}
 
 }

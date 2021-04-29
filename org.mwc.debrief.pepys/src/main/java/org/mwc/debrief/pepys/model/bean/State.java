@@ -21,6 +21,7 @@ import org.mwc.debrief.pepys.model.db.annotation.Location;
 import org.mwc.debrief.pepys.model.db.annotation.ManyToOne;
 import org.mwc.debrief.pepys.model.db.annotation.TableName;
 import org.mwc.debrief.pepys.model.db.annotation.Time;
+import org.mwc.debrief.pepys.model.db.annotation.Transient;
 import org.mwc.debrief.pepys.model.db.config.ConfigurationReader;
 import org.mwc.debrief.pepys.model.db.config.DatabaseConfiguration;
 import org.mwc.debrief.pepys.model.db.config.LoaderOption;
@@ -97,6 +98,9 @@ public class State implements AbstractBean, TreeStructurable {
 
 	@Location
 	private WorldLocation location;
+	
+	@Transient
+	private int count;
 
 	public State() {
 
@@ -240,4 +244,15 @@ public class State implements AbstractBean, TreeStructurable {
 	public void setTime(final Timestamp time) {
 		this.time = time;
 	}
+
+	public int getCount() {
+		return count;
+	}
+
+	public void setCount(int count) {
+		this.count = count;
+	}
+	
+	
+	
 }
