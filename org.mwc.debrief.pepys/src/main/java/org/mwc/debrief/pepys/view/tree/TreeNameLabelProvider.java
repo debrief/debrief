@@ -86,6 +86,7 @@ public class TreeNameLabelProvider implements ILabelProvider {
 				name = name + "  " + DebriefFormatDateTime.toStringHiRes(node.getCurrentPeriod().getStartDTG()) + " - "
 						+ DebriefFormatDateTime.toStringHiRes(node.getCurrentPeriod().getEndDTG());
 			}
+			name = name + " (" + node.getCount() + ")";
 			return name;
 		}
 		return "";

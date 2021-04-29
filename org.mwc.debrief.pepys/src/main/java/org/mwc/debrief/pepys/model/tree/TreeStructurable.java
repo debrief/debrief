@@ -11,6 +11,8 @@ import MWC.GUI.Layers;
 public interface TreeStructurable {
 	public void doImport(final Layers _layers);
 
+	public int getCount();
+
 	public Datafile getDatafile();
 
 	public Platform getPlatform();

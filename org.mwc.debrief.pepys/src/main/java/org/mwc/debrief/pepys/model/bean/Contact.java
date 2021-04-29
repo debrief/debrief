@@ -80,6 +80,9 @@ public class Contact implements AbstractBean, TreeStructurable {
 	@Transient
 	private String reference;
 
+	@Transient
+	private int count;
+
 	public Contact() {
 
 	}
@@ -122,6 +125,11 @@ public class Contact implements AbstractBean, TreeStructurable {
 
 	public String getContact_type() {
 		return contact_type;
+	}
+
+	@Override
+	public int getCount() {
+		return count;
 	}
 
 	public Date getCreated_date() {
@@ -224,6 +232,10 @@ public class Contact implements AbstractBean, TreeStructurable {
 
 	public void setContact_type(final String contact_type) {
 		this.contact_type = contact_type;
+	}
+
+	public void setCount(final int count) {
+		this.count = count;
 	}
 
 	public void setCreated_date(final Date created_date) {

@@ -346,7 +346,7 @@ public abstract class DatabaseConnection {
 	 * Method that automatically query a list of objects that satisfy a collection
 	 * of conditions. This method generates the SQL Query, connects to database, and
 	 * run the query, building the list of objects by reflection.
-	 * 
+	 *
 	 * @param <T>
 	 * @param type
 	 * @param conditions
