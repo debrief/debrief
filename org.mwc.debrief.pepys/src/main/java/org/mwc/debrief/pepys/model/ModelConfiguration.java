@@ -150,7 +150,7 @@ public class ModelConfiguration implements AbstractConfiguration {
 		case FAST_MODE_STORED_PROC:
 			currentItems = TreeUtils.buildStructureFastMode(this);
 			break;
-		
+
 		case FAST_MODE:
 			// currentItems = TreeUtils.buildStructure(this);
 			currentItems = TreeUtils.buildStructureFastMode(this);
@@ -232,7 +232,8 @@ public class ModelConfiguration implements AbstractConfiguration {
 			 * model we need to populate the missing values
 			 */
 
-			if (ALGORITHM_TYPE.FAST_MODE == getAlgorithmType() || ALGORITHM_TYPE.FAST_MODE_STORED_PROC == getAlgorithmType()) {
+			if (ALGORITHM_TYPE.FAST_MODE == getAlgorithmType()
+					|| ALGORITHM_TYPE.FAST_MODE_STORED_PROC == getAlgorithmType()) {
 				// Let's populate it
 				return importFastMode(treeModel);
 			} else {
@@ -326,6 +327,26 @@ public class ModelConfiguration implements AbstractConfiguration {
 	}
 
 	@Override
+	public String getCommentQuery(final ALGORITHM_TYPE algorithType) {
+		if (getAlgorithmType() == ALGORITHM_TYPE.FAST_MODE) {
+			return "/comments.sql";
+		} else if (getAlgorithmType() == ALGORITHM_TYPE.FAST_MODE_STORED_PROC) {
+			return "/commentsProc.sql";
+		}
+		return null;
+	}
+
+	@Override
+	public String getContactQuery(final ALGORITHM_TYPE algorithType) {
+		if (getAlgorithmType() == ALGORITHM_TYPE.FAST_MODE) {
+			return "/contacts.sql";
+		} else if (getAlgorithmType() == ALGORITHM_TYPE.FAST_MODE_STORED_PROC) {
+			return "/contactsProc.sql";
+		}
+		return null;
+	}
+
+	@Override
 	public WorldArea getCurrentArea() {
 		return currentArea;
 	}
@@ -415,10 +436,58 @@ public class ModelConfiguration implements AbstractConfiguration {
 	}
 
 	@Override
+	public String getMeasurementQuery(final ALGORITHM_TYPE algorithType) {
+		if (getAlgorithmType() == ALGORITHM_TYPE.FAST_MODE) {
+			return "/measurements.sql";
+		} else if (getAlgorithmType() == ALGORITHM_TYPE.FAST_MODE_STORED_PROC) {
+			return "/measurementsProc.sql";
+		}
+		return null;
+	}
+
+	@Override
 	public SearchTreeResult getNextSearch() {
 		final SearchTreeResult result = getSearch(1);
 		updateResultUI(result);
 		return result;
+	}
+
+	@Override
+	public QueryParameterAccumulator getParameterAccumulator() {
+		if (getAlgorithmType() == ALGORITHM_TYPE.FAST_MODE) {
+			return new QueryParameterAccumulator() {
+				final StringBuilder builder = new StringBuilder();
+
+				@Override
+				public void addPart(final Object o) {
+					builder.append(o);
+					builder.append(",");
+				}
+
+				@Override
+				public Object getAccumulated() {
+					if (builder.length() > 0) {
+						builder.setLength(builder.length() - 1);
+					}
+					return builder.toString();
+				}
+			};
+		} else if (getAlgorithmType() == ALGORITHM_TYPE.FAST_MODE_STORED_PROC) {
+			return new QueryParameterAccumulator() {
+				final ArrayList<Object> accumulator = new ArrayList<>();
+
+				@Override
+				public void addPart(final Object o) {
+					accumulator.add(o);
+				}
+
+				@Override
+				public Object getAccumulated() {
+					return accumulator;
+				}
+			};
+		}
+		return null;
 	}
 
 	@Override
@@ -464,6 +533,16 @@ public class ModelConfiguration implements AbstractConfiguration {
 		} else {
 			return (currentMatch + 1) + " / " + totalMatches;
 		}
+	}
+
+	@Override
+	public String getStateQuery(final ALGORITHM_TYPE algorithType) {
+		if (getAlgorithmType() == ALGORITHM_TYPE.FAST_MODE) {
+			return "/states.sql";
+		} else if (getAlgorithmType() == ALGORITHM_TYPE.FAST_MODE_STORED_PROC) {
+			return "/statesProc.sql";
+		}
+		return null;
 	}
 
 	@Override
@@ -586,7 +665,7 @@ public class ModelConfiguration implements AbstractConfiguration {
 
 			for (final Comment comment : selectedComments) {
 				platformAccumulator.addPart(comment.getPlatform().getPlatform_id());
-				
+
 				sourceAccumulator.addPart(comment.getDatafile().getDatafile_id());
 			}
 
@@ -905,83 +984,5 @@ public class ModelConfiguration implements AbstractConfiguration {
 		if (!currentPeriod.isConsistent()) {
 			throw new PepsysException("Date validation", "The Start date-time must be before the End date-time");
 		}
-	}
-
-	@Override
-	public String getMeasurementQuery(ALGORITHM_TYPE algorithType) {
-		if (getAlgorithmType() == ALGORITHM_TYPE.FAST_MODE) {
-			return "/measurements.sql";
-		}else if (getAlgorithmType() == ALGORITHM_TYPE.FAST_MODE_STORED_PROC) {
-			return "/measurementsProc.sql";
-		}
-		return null;
-	}
-
-	@Override
-	public String getCommentQuery(ALGORITHM_TYPE algorithType) {
-		if (getAlgorithmType() == ALGORITHM_TYPE.FAST_MODE) {
-			return "/comments.sql";
-		}else if (getAlgorithmType() == ALGORITHM_TYPE.FAST_MODE_STORED_PROC) {
-			return "/commentsProc.sql";
-		}
-		return null;
-	}
-
-	@Override
-	public String getContactQuery(ALGORITHM_TYPE algorithType) {
-		if (getAlgorithmType() == ALGORITHM_TYPE.FAST_MODE) {
-			return "/contacts.sql";
-		}else if (getAlgorithmType() == ALGORITHM_TYPE.FAST_MODE_STORED_PROC) {
-			return "/contactsProc.sql";
-		}
-		return null;
-	}
-
-	@Override
-	public String getStateQuery(ALGORITHM_TYPE algorithType) {
-		if (getAlgorithmType() == ALGORITHM_TYPE.FAST_MODE) {
-			return "/states.sql";
-		}else if (getAlgorithmType() == ALGORITHM_TYPE.FAST_MODE_STORED_PROC) {
-			return "/statesProc.sql";
-		}
-		return null;
-	}
-
-	@Override
-	public QueryParameterAccumulator getParameterAccumulator() {
-		if (getAlgorithmType() == ALGORITHM_TYPE.FAST_MODE) {
-			return new QueryParameterAccumulator() {
-				final StringBuilder builder = new StringBuilder();
-				
-				@Override
-				public Object getAccumulated() {
-					if (builder.length() > 0) {
-						builder.setLength(builder.length() - 1);
-					}
-					return builder.toString();
-				}
-				
-				@Override
-				public void addPart(Object o) {
-					builder.append(o);
-					builder.append(",");
-				}
-			};
-		}else if (getAlgorithmType() == ALGORITHM_TYPE.FAST_MODE_STORED_PROC) {
-			return new QueryParameterAccumulator() {
-				final ArrayList<Object> accumulator = new ArrayList<>();
-				
-				@Override
-				public Object getAccumulated() {
-					return accumulator;
-				}
-				
-				@Override
-				public void addPart(Object o) {
-					accumulator.add(o);
-				}
-			};
-		}
-		return null;
 	}
 }
