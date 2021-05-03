@@ -25,6 +25,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.sql.Array;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -448,7 +449,18 @@ public abstract class DatabaseConnection {
 
 			for (int i = 0; parameters != null && i < parameters.size(); i++) {
 				final Object valueToAssign = parameters.get(i);
-				statement.setObject(i + 1, valueToAssign);
+				if (valueToAssign instanceof List) {
+					// For now let's assume that all the arrays are String
+					final List<Object> listValue = (List<Object>)valueToAssign;
+					final String[] arrayValue = new String[listValue.size()];
+					for (int j = 0 ; j < arrayValue.length; j++) {
+						arrayValue[j] = listValue.get(j).toString();
+					}
+					final Array arrayToSet = connection.createArrayOf("text", arrayValue);
+					statement.setArray(i + 1, arrayToSet);
+				}else {
+					statement.setObject(i + 1, valueToAssign);
+				}
 			}
 
 			loadExtention(connection, statement);

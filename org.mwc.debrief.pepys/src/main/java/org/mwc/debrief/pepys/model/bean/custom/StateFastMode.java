@@ -8,8 +8,6 @@ import MWC.GenericData.WorldLocation;
 
 public class StateFastMode {
 
-	public static final String STATES_FILE = "/states.sql";
-
 	@FieldName(name = "state_id")
 	private String stateId;
 

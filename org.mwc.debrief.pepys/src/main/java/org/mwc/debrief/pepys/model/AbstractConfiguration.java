@@ -36,7 +36,8 @@ public interface AbstractConfiguration extends hasPropertyListeners {
 
 	public static enum ALGORITHM_TYPE {
 		LEGACY, // Legacy Tree Structure, it is based doing the query to database,
-		FAST_MODE // New mode using Custom Database Query to build the tree quicker.
+		FAST_MODE, // New mode using Custom Database Query to build the tree quicker.
+		FAST_MODE_STORED_PROC // Alternative new mode for using Postgres custom store procedure instead of a direct query.
 	}
 
 	static String AREA_PROPERTY = "AREA";
@@ -121,5 +122,28 @@ public interface AbstractConfiguration extends hasPropertyListeners {
 
 	void updateTree();
 
-	public void validate() throws Exception;
+	void validate() throws Exception;
+	
+	String getMeasurementQuery(final ALGORITHM_TYPE algorithType);
+	
+	String getCommentQuery(final ALGORITHM_TYPE algorithType);
+	
+	String getContactQuery(final ALGORITHM_TYPE algorithType);
+	
+	String getStateQuery(final ALGORITHM_TYPE algorithType);
+	
+	/**
+	 * This is a helper to accumulate parameters into query
+	 * 
+	 * For example:
+	 * In case of stored procedures, accumulator should return
+	 * 
+	 *
+	 */
+	public static interface QueryParameterAccumulator{
+		void addPart(final Object o);
+		Object getAccumulated(); 
+	}
+	
+	QueryParameterAccumulator getParameterAccumulator();
 }

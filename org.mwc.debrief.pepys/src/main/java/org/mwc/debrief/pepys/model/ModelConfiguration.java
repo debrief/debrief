@@ -147,6 +147,10 @@ public class ModelConfiguration implements AbstractConfiguration {
 	public void apply() throws Exception {
 		validate();
 		switch (getAlgorithmType()) {
+		case FAST_MODE_STORED_PROC:
+			currentItems = TreeUtils.buildStructureFastMode(this);
+			break;
+		
 		case FAST_MODE:
 			// currentItems = TreeUtils.buildStructure(this);
 			currentItems = TreeUtils.buildStructureFastMode(this);
@@ -228,7 +232,7 @@ public class ModelConfiguration implements AbstractConfiguration {
 			 * model we need to populate the missing values
 			 */
 
-			if (ALGORITHM_TYPE.FAST_MODE == getAlgorithmType()) {
+			if (ALGORITHM_TYPE.FAST_MODE == getAlgorithmType() || ALGORITHM_TYPE.FAST_MODE_STORED_PROC == getAlgorithmType()) {
 				// Let's populate it
 				return importFastMode(treeModel);
 			} else {
@@ -314,7 +318,7 @@ public class ModelConfiguration implements AbstractConfiguration {
 			if (databaseConnection instanceof SqliteDatabaseConnection) {
 				return ALGORITHM_TYPE.LEGACY;
 			} else if (databaseConnection instanceof PostgresDatabaseConnection) {
-				return ALGORITHM_TYPE.FAST_MODE;
+				return ALGORITHM_TYPE.FAST_MODE_STORED_PROC;
 			}
 		}
 		// LEGACY AS DEFAULT.
@@ -565,7 +569,7 @@ public class ModelConfiguration implements AbstractConfiguration {
 		if (selectedComments.isEmpty()) {
 			return 0;
 		} else {
-			final String query = OSUtils.readFile(CommentFastMode.class, CommentFastMode.COMMENTS_FILE);
+			final String query = OSUtils.readFile(CommentFastMode.class, getCommentQuery(getAlgorithmType()));
 
 			final List<Object> parameters = new ArrayList<>();
 
@@ -577,30 +581,21 @@ public class ModelConfiguration implements AbstractConfiguration {
 			parameters.add(getFilter());
 
 			// Let's create ids.
-			final StringBuilder builderPlatformId = new StringBuilder();
-
-			final StringBuilder builderSourceId = new StringBuilder();
+			final QueryParameterAccumulator platformAccumulator = getParameterAccumulator();
+			final QueryParameterAccumulator sourceAccumulator = getParameterAccumulator();
 
 			for (final Comment comment : selectedComments) {
-				builderPlatformId.append(comment.getPlatform().getPlatform_id());
-				builderPlatformId.append(",");
+				platformAccumulator.addPart(comment.getPlatform().getPlatform_id());
 				
-				builderSourceId.append(comment.getDatafile().getDatafile_id());
-				builderSourceId.append(",");
-			}
-			if (builderPlatformId.length() > 0) {
-				builderPlatformId.setLength(builderPlatformId.length() - 1);
-			}
-			if (builderSourceId.length() > 0) {
-				builderSourceId.setLength(builderSourceId.length() - 1);
+				sourceAccumulator.addPart(comment.getDatafile().getDatafile_id());
 			}
 
 			// sensor id
 			parameters.add(null);
 			// source id
-			parameters.add(builderSourceId.toString());
+			parameters.add(sourceAccumulator.getAccumulated());
 
-			parameters.add(builderPlatformId.toString());
+			parameters.add(platformAccumulator.getAccumulated());
 
 			final List<CommentFastMode> list = getDatabaseConnection().listAll(CommentFastMode.class, query,
 					parameters);
@@ -632,7 +627,7 @@ public class ModelConfiguration implements AbstractConfiguration {
 		if (selectedContacts.isEmpty()) {
 			return 0;
 		} else {
-			final String query = OSUtils.readFile(ContactFastMode.class, ContactFastMode.CONTACTS_FILE);
+			final String query = OSUtils.readFile(ContactFastMode.class, getContactQuery(getAlgorithmType()));
 
 			final List<Object> parameters = new ArrayList<>();
 
@@ -645,33 +640,19 @@ public class ModelConfiguration implements AbstractConfiguration {
 			parameters.add(getCurrentAreaAsParameter());
 
 			// Let's create ids.
-			final StringBuilder builderSensorId = new StringBuilder();
-			final StringBuilder builderSourceId = new StringBuilder();
-			final StringBuilder builderPlatformId = new StringBuilder();
+			final QueryParameterAccumulator sensorAccumulator = getParameterAccumulator();
+			final QueryParameterAccumulator sourceAccumulator = getParameterAccumulator();
+			final QueryParameterAccumulator platformAccumulator = getParameterAccumulator();
 
 			for (final Contact contact : selectedContacts) {
-				builderSensorId.append(contact.getSensor().getSensor_id());
-				builderSensorId.append(",");
-
-				builderSourceId.append(contact.getDatafile().getDatafile_id());
-				builderSourceId.append(",");
-
-				builderPlatformId.append(contact.getPlatform().getPlatform_id());
-				builderPlatformId.append(",");
-			}
-			if (builderSensorId.length() > 0) {
-				builderSensorId.setLength(builderSensorId.length() - 1);
-			}
-			if (builderSourceId.length() > 0) {
-				builderSourceId.setLength(builderSourceId.length() - 1);
-			}
-			if (builderPlatformId.length() > 0) {
-				builderPlatformId.setLength(builderPlatformId.length() - 1);
+				sensorAccumulator.addPart(contact.getSensor().getSensor_id());
+				sourceAccumulator.addPart(contact.getDatafile().getDatafile_id());
+				platformAccumulator.addPart(contact.getPlatform().getPlatform_id());
 			}
 
-			parameters.add(builderSensorId.toString());
-			parameters.add(builderSourceId.toString());
-			parameters.add(builderPlatformId.toString());
+			parameters.add(sensorAccumulator.getAccumulated());
+			parameters.add(sourceAccumulator.getAccumulated());
+			parameters.add(platformAccumulator.getAccumulated());
 
 			final List<ContactFastMode> list = getDatabaseConnection().listAll(ContactFastMode.class, query,
 					parameters);
@@ -716,7 +697,7 @@ public class ModelConfiguration implements AbstractConfiguration {
 		if (selectedStates.isEmpty()) {
 			return 0;
 		} else {
-			final String query = OSUtils.readFile(ContactFastMode.class, StateFastMode.STATES_FILE);
+			final String query = OSUtils.readFile(ContactFastMode.class, getStateQuery(getAlgorithmType()));
 			final List<Object> parameters = new ArrayList<>();
 
 			// Let's add the time period filter
@@ -728,35 +709,21 @@ public class ModelConfiguration implements AbstractConfiguration {
 			parameters.add(getCurrentAreaAsParameter());
 
 			// Let's create ids.
-			final StringBuilder builderSensorId = new StringBuilder();
-			final StringBuilder builderSourceId = new StringBuilder();
-			final StringBuilder builderPlatformId = new StringBuilder();
+			final QueryParameterAccumulator sensorAccumulator = getParameterAccumulator();
+			final QueryParameterAccumulator sourceAccumulator = getParameterAccumulator();
+			final QueryParameterAccumulator platformAccumulator = getParameterAccumulator();
 
 			for (final State state : selectedStates) {
-				builderSensorId.append(state.getSensor().getSensor_id());
-				builderSensorId.append(",");
-
-				builderSourceId.append(state.getDatafile().getDatafile_id());
-				builderSourceId.append(",");
-
-				builderPlatformId.append(state.getPlatform().getPlatform_id());
-				builderPlatformId.append(",");
+				sensorAccumulator.addPart(state.getSensor().getSensor_id());
+				sourceAccumulator.addPart(state.getDatafile().getDatafile_id());
+				platformAccumulator.addPart(state.getPlatform().getPlatform_id());
 
 				datafilesNames.put(state.getDatafile().getDatafile_id(), state.getDatafile().getReference());
 			}
-			if (builderSensorId.length() > 0) {
-				builderSensorId.setLength(builderSensorId.length() - 1);
-			}
-			if (builderSourceId.length() > 0) {
-				builderSourceId.setLength(builderSourceId.length() - 1);
-			}
-			if (builderPlatformId.length() > 0) {
-				builderPlatformId.setLength(builderPlatformId.length() - 1);
-			}
 
-			parameters.add(builderSensorId.toString());
-			parameters.add(builderSourceId.toString());
-			parameters.add(builderPlatformId.toString());
+			parameters.add(sensorAccumulator.getAccumulated());
+			parameters.add(sourceAccumulator.getAccumulated());
+			parameters.add(platformAccumulator.getAccumulated());
 
 			final List<StateFastMode> list = getDatabaseConnection().listAll(StateFastMode.class, query, parameters);
 
@@ -769,7 +736,7 @@ public class ModelConfiguration implements AbstractConfiguration {
 				final SensorType sensorType = new SensorType();
 				final Datafile datafile = new Datafile();
 
-				datafile.setReference(datafilesNames.get(stateFastMode.getSourceid()));
+				datafile.setReference(datafilesNames.get("0dd9d471-d5cf-4acb-85d5-8a90b11b55de"));
 				currentState.setSensor(sensor);
 				sensor.setSensorType(sensorType);
 				sensor.setPlatform(platform);
@@ -938,5 +905,83 @@ public class ModelConfiguration implements AbstractConfiguration {
 		if (!currentPeriod.isConsistent()) {
 			throw new PepsysException("Date validation", "The Start date-time must be before the End date-time");
 		}
+	}
+
+	@Override
+	public String getMeasurementQuery(ALGORITHM_TYPE algorithType) {
+		if (getAlgorithmType() == ALGORITHM_TYPE.FAST_MODE) {
+			return "/measurements.sql";
+		}else if (getAlgorithmType() == ALGORITHM_TYPE.FAST_MODE_STORED_PROC) {
+			return "/measurementsProc.sql";
+		}
+		return null;
+	}
+
+	@Override
+	public String getCommentQuery(ALGORITHM_TYPE algorithType) {
+		if (getAlgorithmType() == ALGORITHM_TYPE.FAST_MODE) {
+			return "/comments.sql";
+		}else if (getAlgorithmType() == ALGORITHM_TYPE.FAST_MODE_STORED_PROC) {
+			return "/commentsProc.sql";
+		}
+		return null;
+	}
+
+	@Override
+	public String getContactQuery(ALGORITHM_TYPE algorithType) {
+		if (getAlgorithmType() == ALGORITHM_TYPE.FAST_MODE) {
+			return "/contacts.sql";
+		}else if (getAlgorithmType() == ALGORITHM_TYPE.FAST_MODE_STORED_PROC) {
+			return "/contactsProc.sql";
+		}
+		return null;
+	}
+
+	@Override
+	public String getStateQuery(ALGORITHM_TYPE algorithType) {
+		if (getAlgorithmType() == ALGORITHM_TYPE.FAST_MODE) {
+			return "/states.sql";
+		}else if (getAlgorithmType() == ALGORITHM_TYPE.FAST_MODE_STORED_PROC) {
+			return "/statesProc.sql";
+		}
+		return null;
+	}
+
+	@Override
+	public QueryParameterAccumulator getParameterAccumulator() {
+		if (getAlgorithmType() == ALGORITHM_TYPE.FAST_MODE) {
+			return new QueryParameterAccumulator() {
+				final StringBuilder builder = new StringBuilder();
+				
+				@Override
+				public Object getAccumulated() {
+					if (builder.length() > 0) {
+						builder.setLength(builder.length() - 1);
+					}
+					return builder.toString();
+				}
+				
+				@Override
+				public void addPart(Object o) {
+					builder.append(o);
+					builder.append(",");
+				}
+			};
+		}else if (getAlgorithmType() == ALGORITHM_TYPE.FAST_MODE_STORED_PROC) {
+			return new QueryParameterAccumulator() {
+				final ArrayList<Object> accumulator = new ArrayList<>();
+				
+				@Override
+				public Object getAccumulated() {
+					return accumulator;
+				}
+				
+				@Override
+				public void addPart(Object o) {
+					accumulator.add(o);
+				}
+			};
+		}
+		return null;
 	}
 }
