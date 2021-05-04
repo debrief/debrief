@@ -28,8 +28,11 @@ import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
 
 public class ResetPerspective {
-	private static final String RESET_PERSPECTIVE = "";
-	private static final long resetPerspective = 7;
+	// NOTE: clear the next string to show the default phrase. The below
+	// phrase was provided in support of the deprecation of Navigator
+	private static final String RESET_PERSPECTIVE = "Your Debrief layout has been reset, since the now-retired Navigator view\nhas been replaced with the Project Explorer";
+
+	private static final long resetPerspective = 8;
 
 	public void resetPerspective() {
 		try {
