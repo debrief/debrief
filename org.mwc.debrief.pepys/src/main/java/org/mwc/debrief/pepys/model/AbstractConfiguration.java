@@ -34,6 +34,9 @@ import MWC.GenericData.WorldLocation;
 
 public interface AbstractConfiguration extends hasPropertyListeners {
 
+	/** as the database interactions have developed the ways of connecting
+	 * it have evolved.  These strategies are by these enums
+	 */
 	public static enum QUERY_STRATEGY {
 		LEGACY, // Legacy Tree Structure, it is based doing the query to database,
 		FAST_MODE, // New mode using Custom Database Query to build the tree quicker.
