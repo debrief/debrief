@@ -372,12 +372,12 @@ public class PepysImportView extends Dialog implements AbstractViewSWT {
 		importGridDataButton.horizontalSpan = 5;
 
 		this.importButton = new Button(parent, SWT.PUSH);
-		this.importButton.setText("Import");
+		this.importButton.setText("Import (0)");
 		this.importButton.setLayoutData(importGridDataButton);
 		this.importButton.setImage(DebriefPlugin.getImageDescriptor("/icons/24/import.png").createImage());
 		this.importButton.setEnabled(false);
 
-		importGridDataButton.widthHint = 120;
+		importGridDataButton.widthHint = 160;
 		importGridDataButton.heightHint = 40;
 
 		parent.setText("Debrief Pepys Import");

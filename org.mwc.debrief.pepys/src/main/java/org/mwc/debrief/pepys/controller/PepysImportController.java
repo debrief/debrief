@@ -113,6 +113,8 @@ public class PepysImportController {
 
 	private final String SQLITE_FILE_SUFFIX = "sqlite";
 
+	private final int MAXIMUM_SELECTED_FILES_BEFORE_WARNING = 200000;
+
 	public PepysImportController(final Shell parent, final AbstractConfiguration model, final AbstractViewSWT view) {
 		model.addDatafileTypeFilter(new TypeDomain(State.class, TreeNode.STATE, true, IMAGE_PREFIX + "fix.png"));
 		model.addDatafileTypeFilter(
@@ -359,9 +361,22 @@ public class PepysImportController {
 
 			@Override
 			public void handleEvent(final Event event) {
+				final int currentSelectedItem = model.getTreeModel().countCheckedItems();
 				if (event.type == SWT.Selection) {
 					final Cursor _cursor = new Cursor(Display.getCurrent(), SWT.CURSOR_WAIT);
 					_parent.setCursor(_cursor);
+					if (currentSelectedItem > MAXIMUM_SELECTED_FILES_BEFORE_WARNING) {
+						final MessageBox messageBox = new MessageBox(_parent, SWT.ICON_QUESTION | SWT.YES | SWT.NO);
+						messageBox.setMessage("A huge amount of data will be imported (" + currentSelectedItem
+								+ " items). Debrief performance can be affected when loading more than 200k entries. Do you want to continue?");
+						messageBox.setText("Database Import");
+						final int answer = messageBox.open();
+						if (answer != SWT.YES) {
+							_parent.setCursor(null);
+							_cursor.dispose();
+							return;
+						}
+					}
 					Display.getCurrent().asyncExec(new Runnable() {
 						@Override
 						public void run() {
@@ -516,6 +531,14 @@ public class PepysImportController {
 			@Override
 			public void checkStateChanged(final CheckStateChangedEvent event) {
 				view.getImportButton().setEnabled(model.getTreeModel().countCheckedItems() > 0);
+			}
+		});
+
+		view.getTree().addCheckStateListener(new ICheckStateListener() {
+
+			@Override
+			public void checkStateChanged(final CheckStateChangedEvent arg0) {
+				view.getImportButton().setText("Import (" + model.getTreeModel().countCheckedItems() + ")");
 			}
 		});
 
