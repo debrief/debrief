@@ -368,7 +368,7 @@ public class PepysImportController {
 					if (currentSelectedItem > MAXIMUM_SELECTED_FILES_BEFORE_WARNING) {
 						final MessageBox messageBox = new MessageBox(_parent, SWT.ICON_QUESTION | SWT.YES | SWT.NO);
 						messageBox.setMessage("A huge amount of data will be imported (" + currentSelectedItem
-								+ " items), it might take a long time. Do you want to continue?");
+								+ " items). Debrief performance can be affected when loading more than 200k entries. Do you want to continue?");
 						messageBox.setText("Database Import");
 						final int answer = messageBox.open();
 						if (answer != SWT.YES) {
