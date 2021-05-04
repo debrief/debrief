@@ -34,7 +34,7 @@ import MWC.GenericData.WorldLocation;
 
 public interface AbstractConfiguration extends hasPropertyListeners {
 
-	public static enum ALGORITHM_TYPE {
+	public static enum QUERY_STRATEGY {
 		LEGACY, // Legacy Tree Structure, it is based doing the query to database,
 		FAST_MODE, // New mode using Custom Database Query to build the tree quicker.
 		FAST_MODE_STORED_PROC // Alternative new mode for using Postgres custom store procedure instead of a
@@ -74,11 +74,11 @@ public interface AbstractConfiguration extends hasPropertyListeners {
 
 	boolean doTestQuery() throws SQLException;
 
-	ALGORITHM_TYPE getAlgorithmType();
+	QUERY_STRATEGY getAlgorithmType();
 
-	String getCommentQuery(final ALGORITHM_TYPE algorithType);
+	String getCommentQuery(final QUERY_STRATEGY algorithType);
 
-	String getContactQuery(final ALGORITHM_TYPE algorithType);
+	String getContactQuery(final QUERY_STRATEGY algorithType);
 
 	WorldArea getCurrentArea();
 
@@ -98,7 +98,7 @@ public interface AbstractConfiguration extends hasPropertyListeners {
 
 	SearchTreeResult getHereSearch();
 
-	String getMeasurementQuery(final ALGORITHM_TYPE algorithType);
+	String getMeasurementQuery(final QUERY_STRATEGY algorithType);
 
 	SearchTreeResult getNextSearch();
 
@@ -110,7 +110,7 @@ public interface AbstractConfiguration extends hasPropertyListeners {
 
 	String getSearchResultsText();
 
-	String getStateQuery(final ALGORITHM_TYPE algorithType);
+	String getStateQuery(final QUERY_STRATEGY algorithType);
 
 	TimePeriod getTimePeriod();
 

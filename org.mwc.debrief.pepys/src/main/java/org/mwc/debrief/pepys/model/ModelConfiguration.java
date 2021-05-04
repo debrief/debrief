@@ -232,8 +232,8 @@ public class ModelConfiguration implements AbstractConfiguration {
 			 * model we need to populate the missing values
 			 */
 
-			if (ALGORITHM_TYPE.FAST_MODE == getAlgorithmType()
-					|| ALGORITHM_TYPE.FAST_MODE_STORED_PROC == getAlgorithmType()) {
+			if (QUERY_STRATEGY.FAST_MODE == getAlgorithmType()
+					|| QUERY_STRATEGY.FAST_MODE_STORED_PROC == getAlgorithmType()) {
 				// Let's populate it
 				return importFastMode(treeModel);
 			} else {
@@ -314,33 +314,34 @@ public class ModelConfiguration implements AbstractConfiguration {
 	 * for now) the fast mode for Postgres, and Legacy Mode for SQLite. It is open
 	 * to future improvements.
 	 */
-	public ALGORITHM_TYPE getAlgorithmType() {
+	public QUERY_STRATEGY getAlgorithmType() {
 		if (databaseConnection != null) {
 			if (databaseConnection instanceof SqliteDatabaseConnection) {
-				return ALGORITHM_TYPE.LEGACY;
+				return QUERY_STRATEGY.LEGACY;
 			} else if (databaseConnection instanceof PostgresDatabaseConnection) {
-				return ALGORITHM_TYPE.FAST_MODE_STORED_PROC;
+				return QUERY_STRATEGY.FAST_MODE_STORED_PROC;
 			}
 		}
 		// LEGACY AS DEFAULT.
-		return ALGORITHM_TYPE.LEGACY;
+		return QUERY_STRATEGY.LEGACY;
 	}
 
 	@Override
-	public String getCommentQuery(final ALGORITHM_TYPE algorithType) {
-		if (getAlgorithmType() == ALGORITHM_TYPE.FAST_MODE) {
+	public String getCommentQuery(final QUERY_STRATEGY algorithType) {
+		if (getAlgorithmType() == QUERY_STRATEGY.FAST_MODE) {
 			return "/comments.sql";
-		} else if (getAlgorithmType() == ALGORITHM_TYPE.FAST_MODE_STORED_PROC) {
+		} else if (getAlgorithmType() == QUERY_STRATEGY.FAST_MODE_STORED_PROC) {
 			return "/commentsProc.sql";
 		}
 		return null;
 	}
 
+
 	@Override
-	public String getContactQuery(final ALGORITHM_TYPE algorithType) {
-		if (getAlgorithmType() == ALGORITHM_TYPE.FAST_MODE) {
+	public String getContactQuery(final QUERY_STRATEGY algorithType) {
+		if (getAlgorithmType() == QUERY_STRATEGY.FAST_MODE) {
 			return "/contacts.sql";
-		} else if (getAlgorithmType() == ALGORITHM_TYPE.FAST_MODE_STORED_PROC) {
+		} else if (getAlgorithmType() == QUERY_STRATEGY.FAST_MODE_STORED_PROC) {
 			return "/contactsProc.sql";
 		}
 		return null;
@@ -436,10 +437,10 @@ public class ModelConfiguration implements AbstractConfiguration {
 	}
 
 	@Override
-	public String getMeasurementQuery(final ALGORITHM_TYPE algorithType) {
-		if (getAlgorithmType() == ALGORITHM_TYPE.FAST_MODE) {
+	public String getMeasurementQuery(final QUERY_STRATEGY algorithType) {
+		if (getAlgorithmType() == QUERY_STRATEGY.FAST_MODE) {
 			return "/measurements.sql";
-		} else if (getAlgorithmType() == ALGORITHM_TYPE.FAST_MODE_STORED_PROC) {
+		} else if (getAlgorithmType() == QUERY_STRATEGY.FAST_MODE_STORED_PROC) {
 			return "/measurementsProc.sql";
 		}
 		return null;
@@ -454,7 +455,7 @@ public class ModelConfiguration implements AbstractConfiguration {
 
 	@Override
 	public QueryParameterAccumulator getParameterAccumulator() {
-		if (getAlgorithmType() == ALGORITHM_TYPE.FAST_MODE) {
+		if (getAlgorithmType() == QUERY_STRATEGY.FAST_MODE) {
 			return new QueryParameterAccumulator() {
 				final StringBuilder builder = new StringBuilder();
 
@@ -472,7 +473,7 @@ public class ModelConfiguration implements AbstractConfiguration {
 					return builder.toString();
 				}
 			};
-		} else if (getAlgorithmType() == ALGORITHM_TYPE.FAST_MODE_STORED_PROC) {
+		} else if (getAlgorithmType() == QUERY_STRATEGY.FAST_MODE_STORED_PROC) {
 			return new QueryParameterAccumulator() {
 				final ArrayList<Object> accumulator = new ArrayList<>();
 
@@ -536,10 +537,10 @@ public class ModelConfiguration implements AbstractConfiguration {
 	}
 
 	@Override
-	public String getStateQuery(final ALGORITHM_TYPE algorithType) {
-		if (getAlgorithmType() == ALGORITHM_TYPE.FAST_MODE) {
+	public String getStateQuery(final QUERY_STRATEGY algorithType) {
+		if (getAlgorithmType() == QUERY_STRATEGY.FAST_MODE) {
 			return "/states.sql";
-		} else if (getAlgorithmType() == ALGORITHM_TYPE.FAST_MODE_STORED_PROC) {
+		} else if (getAlgorithmType() == QUERY_STRATEGY.FAST_MODE_STORED_PROC) {
 			return "/statesProc.sql";
 		}
 		return null;
