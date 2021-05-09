@@ -34,14 +34,21 @@ import MWC.GenericData.WorldLocation;
 
 public interface AbstractConfiguration extends hasPropertyListeners {
 
-	/** as the database interactions have developed the ways of connecting
-	 * it have evolved.  These strategies are by these enums
+	/**
+	 * as the database interactions have developed the ways of connecting it have
+	 * evolved. These strategies are by these enums
 	 */
 	public static enum QUERY_STRATEGY {
-		LEGACY, // Legacy Tree Structure, it is based doing the query to database,
-		FAST_MODE, // New mode using Custom Database Query to build the tree quicker.
+		LEGACY, // Legacy Tree Structure, queries are generated automatically by the orm. This
+				// stores all the information in the tree model, which might not be very
+				// efficient for big databases.
+		FAST_MODE, // New mode using Custom Database Query to build the tree quicker. Queries are
+					// taken from a file, and only basic information is stored in the tree.
+					// Depending on the selection, new queries are done to database to load the
+					// missing data.
 		FAST_MODE_STORED_PROC // Alternative new mode for using Postgres custom store procedure instead of a
-								// direct query.
+								// direct query. Logic is exactly the same as the previous mode, however,
+								// queries are done to a stored procedure.
 	}
 
 	/**
