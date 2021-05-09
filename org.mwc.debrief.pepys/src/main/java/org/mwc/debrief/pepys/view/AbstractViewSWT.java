@@ -50,5 +50,7 @@ public interface AbstractViewSWT {
 	CheckboxTreeViewer getTree();
 
 	Widget getUseCurrentViewportButton();
+	
+	Button getSplitByDatafileButton();
 
 }

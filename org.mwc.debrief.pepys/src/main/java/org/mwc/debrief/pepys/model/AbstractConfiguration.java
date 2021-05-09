@@ -62,6 +62,10 @@ public interface AbstractConfiguration extends hasPropertyListeners {
 	ALGORITHM_TYPE getAlgorithmType();
 
 	WorldArea getCurrentArea();
+	
+	boolean isSplitByDatafile();
+	
+	void setSplitByDataile(final boolean splitByDatafile);
 
 	String getCurrentAreaAsParameter();
 

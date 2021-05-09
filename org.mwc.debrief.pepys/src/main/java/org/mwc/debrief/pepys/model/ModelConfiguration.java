@@ -107,6 +107,8 @@ public class ModelConfiguration implements AbstractConfiguration {
 	// let's search from there
 	// Saul.
 	public boolean searchFromUser = true;
+	
+	private boolean splitByDafile = false;
 
 	private int treeOrderIndex = 0;
 
@@ -271,7 +273,7 @@ public class ModelConfiguration implements AbstractConfiguration {
 			for (final TreeStructurable item : treeModel.getItems()) {
 				if (filter.isAcceptable(item)) {
 					imported = true;
-					item.doImport(_bridge.getLayers());
+					item.doImport(_bridge.getLayers(), isSplitByDatafile());
 				}
 			}
 		}
@@ -618,7 +620,7 @@ public class ModelConfiguration implements AbstractConfiguration {
 				currentComment.setPlatform(platform);
 				platform.setName(comment.getPlatform_name());
 
-				currentComment.doImport(_bridge.getLayers());
+				currentComment.doImport(_bridge.getLayers(), isSplitByDatafile());
 				++total;
 			}
 			return total;
@@ -700,7 +702,7 @@ public class ModelConfiguration implements AbstractConfiguration {
 				currentContact.setBearing(contact.getBearing());
 				currentContact.setLocation(contact.getLocation());
 
-				currentContact.doImport(_bridge.getLayers());
+				currentContact.doImport(_bridge.getLayers(), isSplitByDatafile());
 				++total;
 			}
 			return total;
@@ -784,7 +786,7 @@ public class ModelConfiguration implements AbstractConfiguration {
 				currentState.setCourse(stateFastMode.getCourse());
 				currentState.setSpeed(stateFastMode.getSpeed());
 				currentState.setHeading(stateFastMode.getHeading());
-				currentState.doImport(_bridge.getLayers());
+				currentState.doImport(_bridge.getLayers(), isSplitByDatafile());
 				++total;
 			}
 			return total;
@@ -938,5 +940,15 @@ public class ModelConfiguration implements AbstractConfiguration {
 		if (!currentPeriod.isConsistent()) {
 			throw new PepsysException("Date validation", "The Start date-time must be before the End date-time");
 		}
+	}
+
+	@Override
+	public boolean isSplitByDatafile() {
+		return splitByDafile;
+	}
+
+	@Override
+	public void setSplitByDataile(boolean splitByDatafile) {
+		this.splitByDafile = splitByDatafile;
 	}
 }

@@ -88,8 +88,13 @@ public class Contact implements AbstractBean, TreeStructurable {
 	}
 
 	@Override
-	public void doImport(final Layers _layers) {
-		final String layerName = getDatafile().getReference();
+	public void doImport(final Layers _layers, final boolean splitByDatafile) {
+		final String layerName;
+		if (splitByDatafile) {
+			layerName = getDatafile().getReference();
+		}else {
+			layerName = getPlatform().getTrackName();
+		}
 		final Layer target = _layers.findLayer(layerName, false);
 
 		if (target != null && target instanceof BaseLayer) {

@@ -107,9 +107,9 @@ public class State implements AbstractBean, TreeStructurable {
 	}
 
 	@Override
-	public void doImport(final Layers _layers) {
+	public void doImport(final Layers _layers, final boolean splitByDatafile) {
 		final LightweightTrackWrapper track = getParent(_layers, getDatafile().getReference(),
-				getPlatform().getTrackName());
+				getPlatform().getTrackName(), splitByDatafile);
 
 		// create the wrapper for this annotation
 		final FixWrapper fixWrapper = new FixWrapper(new Fix(new HiResDate(time.getTime()), location, course, speed));
@@ -143,12 +143,19 @@ public class State implements AbstractBean, TreeStructurable {
 		return location;
 	}
 
-	private LightweightTrackWrapper getParent(final Layers layers, final String datafile, final String trackName) {
+	private LightweightTrackWrapper getParent(final Layers layers, final String datafile, final String trackName,
+			final boolean splitByDatafile) {
 		// first the parent folder
-		Layer parent = layers.findLayer(datafile, false);
+		final String layerName; 
+		if (splitByDatafile) {
+			layerName = datafile;
+		}else {
+			layerName = trackName;
+		}
+		Layer parent = layers.findLayer(layerName, false);
 		if (parent == null) {
 			parent = new BaseLayer();
-			parent.setName(datafile);
+			parent.setName(layerName);
 			layers.addThisLayer(parent);
 		}
 
