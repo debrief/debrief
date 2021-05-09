@@ -149,36 +149,57 @@ public class State implements AbstractBean, TreeStructurable {
 		final String layerName;
 		if (splitByDatafile) {
 			layerName = datafile;
+			Layer parent = layers.findLayer(layerName, false);
+			if (parent == null) {
+				parent = new BaseLayer();
+				parent.setName(layerName);
+				layers.addThisLayer(parent);
+			}
+
+			// now the track
+			LightweightTrackWrapper track = null;
+			final Enumeration<Editable> iter = parent.elements();
+			while (iter.hasMoreElements() && track == null) {
+				final Editable item = iter.nextElement();
+				if (item instanceof LightweightTrackWrapper && item.getName().equals(trackName)) {
+					track = (LightweightTrackWrapper) item;
+				}
+			}
+
+			// did we find it?
+			if (track == null) {
+				// create a new track
+				track = new TrackWrapper();
+				track.setName(trackName);
+				// and store it
+				parent.add(track);
+			}
+			return track;
 		} else {
 			layerName = trackName;
-		}
-		Layer parent = layers.findLayer(layerName, false);
-		if (parent == null) {
-			parent = new BaseLayer();
-			parent.setName(layerName);
-			layers.addThisLayer(parent);
-		}
+			// If we don't want to split by datafile, then we will add the track directly.
+			// Let's find it then
+			TrackWrapper track = null;
 
-		// now the track
-		LightweightTrackWrapper track = null;
-		final Enumeration<Editable> iter = parent.elements();
-		while (iter.hasMoreElements() && track == null) {
-			final Editable item = iter.nextElement();
-			if (item instanceof LightweightTrackWrapper && item.getName().equals(trackName)) {
-				track = (LightweightTrackWrapper) item;
+			final Enumeration<Editable> iter = layers.elements();
+			while (iter.hasMoreElements() && track == null) {
+				final Editable item = iter.nextElement();
+				if (item instanceof TrackWrapper && item.getName().equals(trackName)) {
+					track = (TrackWrapper) item;
+				}
 			}
-		}
 
-		// did we find it?
-		if (track == null) {
-			// create a new track
-			track = new TrackWrapper();
-			track.setName(trackName);
-			// and store it
-			parent.add(track);
+			// did we find it?
+			if (track == null) {
+				// create a new track
+				track = new TrackWrapper();
+				track.setName(trackName);
+				// and store it
+				layers.addThisLayer(track);
+			}
 
+			return track;
 		}
-		return track;
 	}
 
 	@Override

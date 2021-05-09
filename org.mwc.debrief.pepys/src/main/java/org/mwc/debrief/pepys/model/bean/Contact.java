@@ -87,28 +87,45 @@ public class Contact implements AbstractBean, TreeStructurable {
 
 	}
 
+	/**
+	 * Method that receives an editable and if it is a trackwrapper, we create a
+	 * contact from using our data and we add it to the element passed.
+	 * 
+	 * @param found
+	 */
+	protected void addContactIfFound(final Editable found) {
+		if (found != null && found instanceof TrackWrapper) {
+			final TrackWrapper track = (TrackWrapper) found;
+
+			final SensorWrapper newSensorWrapper = new SensorWrapper(getSensor().getName());
+			final SensorContactWrapper contact = new SensorContactWrapper(track.getName(), new HiResDate(getTime()),
+					null, bearing, location, null, getName(), 0, getSensor().getName());
+			newSensorWrapper.add(contact);
+			track.add(newSensorWrapper);
+		}
+	}
+
 	@Override
 	public void doImport(final Layers _layers, final boolean splitByDatafile) {
 		final String layerName;
 		if (splitByDatafile) {
 			layerName = getDatafile().getReference();
+
+			final Layer target = _layers.findLayer(layerName, false);
+
+			if (target != null && target instanceof BaseLayer) {
+				final BaseLayer folder = (BaseLayer) target;
+				final Editable found = folder.find(getPlatform().getTrackName());
+				addContactIfFound(found);
+			}
 		} else {
 			layerName = getPlatform().getTrackName();
-		}
-		final Layer target = _layers.findLayer(layerName, false);
 
-		if (target != null && target instanceof BaseLayer) {
-			final BaseLayer folder = (BaseLayer) target;
-			final Editable found = folder.find(getPlatform().getTrackName());
-			if (found != null && found instanceof TrackWrapper) {
-				final TrackWrapper track = (TrackWrapper) found;
+			// In this case, the track has been added directly to the root of the layers, so
+			// let's just find it
+			final Editable found = _layers.findLayer(layerName);
+			addContactIfFound(found);
 
-				final SensorWrapper newSensorWrapper = new SensorWrapper(getSensor().getName());
-				final SensorContactWrapper contact = new SensorContactWrapper(track.getName(), new HiResDate(getTime()),
-						null, bearing, location, null, getName(), 0, getSensor().getName());
-				newSensorWrapper.add(contact);
-				track.add(newSensorWrapper);
-			}
 		}
 	}
 
