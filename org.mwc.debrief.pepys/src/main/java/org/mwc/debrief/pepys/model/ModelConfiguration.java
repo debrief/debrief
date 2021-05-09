@@ -107,7 +107,7 @@ public class ModelConfiguration implements AbstractConfiguration {
 	// let's search from there
 	// Saul.
 	public boolean searchFromUser = true;
-	
+
 	private boolean splitByDafile = false;
 
 	private int treeOrderIndex = 0;
@@ -500,6 +500,11 @@ public class ModelConfiguration implements AbstractConfiguration {
 		total += populateFastModeComments(selectedComments);
 		total += populateFastModeContacts(selectedContacts);
 		return total;
+	}
+
+	@Override
+	public boolean isSplitByDatafile() {
+		return splitByDafile;
 	}
 
 	@Override
@@ -903,6 +908,11 @@ public class ModelConfiguration implements AbstractConfiguration {
 	}
 
 	@Override
+	public void setSplitByDataile(final boolean splitByDatafile) {
+		this.splitByDafile = splitByDatafile;
+	}
+
+	@Override
 	public void setTimePeriod(final TimePeriod newPeriod) {
 		final TimePeriod oldPeriod = currentPeriod;
 		currentPeriod = newPeriod;
@@ -940,15 +950,5 @@ public class ModelConfiguration implements AbstractConfiguration {
 		if (!currentPeriod.isConsistent()) {
 			throw new PepsysException("Date validation", "The Start date-time must be before the End date-time");
 		}
-	}
-
-	@Override
-	public boolean isSplitByDatafile() {
-		return splitByDafile;
-	}
-
-	@Override
-	public void setSplitByDataile(boolean splitByDatafile) {
-		this.splitByDafile = splitByDatafile;
 	}
 }

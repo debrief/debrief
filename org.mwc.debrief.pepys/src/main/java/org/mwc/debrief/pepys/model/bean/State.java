@@ -146,10 +146,10 @@ public class State implements AbstractBean, TreeStructurable {
 	private LightweightTrackWrapper getParent(final Layers layers, final String datafile, final String trackName,
 			final boolean splitByDatafile) {
 		// first the parent folder
-		final String layerName; 
+		final String layerName;
 		if (splitByDatafile) {
 			layerName = datafile;
-		}else {
+		} else {
 			layerName = trackName;
 		}
 		Layer parent = layers.findLayer(layerName, false);

@@ -677,14 +677,14 @@ public class PepysImportController {
 
 					}
 				});
-		
+
 		// I am not building the model two view listener/binding because
 		// It is not needed (at least for now).
 		// Saul
 		view.getSplitByDatafileButton().addListener(SWT.Selection, new Listener() {
-			
+
 			@Override
-			public void handleEvent(Event event) {
+			public void handleEvent(final Event event) {
 				model.setSplitByDataile(view.getSplitByDatafileButton().getSelection());
 			}
 		});

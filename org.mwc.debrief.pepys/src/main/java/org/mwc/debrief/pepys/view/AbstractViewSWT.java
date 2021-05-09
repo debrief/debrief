@@ -37,6 +37,8 @@ public interface AbstractViewSWT {
 
 	Text getSearchText();
 
+	Button getSplitByDatafileButton();
+
 	CDateTime getStartDate();
 
 	CDateTime getStartTime();
@@ -50,7 +52,5 @@ public interface AbstractViewSWT {
 	CheckboxTreeViewer getTree();
 
 	Widget getUseCurrentViewportButton();
-	
-	Button getSplitByDatafileButton();
 
 }

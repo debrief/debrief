@@ -375,12 +375,12 @@ public class PepysImportView extends Dialog implements AbstractViewSWT {
 		final GridData splitByDatafileGridData = new GridData();
 		splitByDatafileGridData.horizontalAlignment = GridData.END;
 		splitByDatafileGridData.horizontalSpan = 2;
-		
+
 		this.splitByDatafile = new Button(parent, SWT.CHECK);
 		this.splitByDatafile.setText("Split by Datafile");
 		this.splitByDatafile.setLayoutData(splitByDatafileGridData);
 		this.splitByDatafile.setEnabled(true);
-		
+
 		this.importButton = new Button(parent, SWT.PUSH);
 		this.importButton.setText("Import (0)");
 		this.importButton.setLayoutData(importGridDataButton);
@@ -455,6 +455,11 @@ public class PepysImportView extends Dialog implements AbstractViewSWT {
 	}
 
 	@Override
+	public Button getSplitByDatafileButton() {
+		return splitByDatafile;
+	}
+
+	@Override
 	public CDateTime getStartDate() {
 		return startDate;
 	}
@@ -487,11 +492,6 @@ public class PepysImportView extends Dialog implements AbstractViewSWT {
 	@Override
 	public Button getUseCurrentViewportButton() {
 		return useCurrentViewportButton;
-	}
-
-	@Override
-	public Button getSplitByDatafileButton() {
-		return splitByDatafile;
 	}
 
 }

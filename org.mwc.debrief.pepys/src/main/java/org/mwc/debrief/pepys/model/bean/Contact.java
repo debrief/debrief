@@ -92,7 +92,7 @@ public class Contact implements AbstractBean, TreeStructurable {
 		final String layerName;
 		if (splitByDatafile) {
 			layerName = getDatafile().getReference();
-		}else {
+		} else {
 			layerName = getPlatform().getTrackName();
 		}
 		final Layer target = _layers.findLayer(layerName, false);
