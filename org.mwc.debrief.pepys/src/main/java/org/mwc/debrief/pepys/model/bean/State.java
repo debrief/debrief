@@ -146,13 +146,11 @@ public class State implements AbstractBean, TreeStructurable {
 	private LightweightTrackWrapper getParent(final Layers layers, final String datafile, final String trackName,
 			final boolean splitByDatafile) {
 		// first the parent folder
-		final String layerName;
 		if (splitByDatafile) {
-			layerName = datafile;
-			Layer parent = layers.findLayer(layerName, false);
+			Layer parent = layers.findLayer(datafile, false);
 			if (parent == null) {
 				parent = new BaseLayer();
-				parent.setName(layerName);
+				parent.setName(datafile);
 				layers.addThisLayer(parent);
 			}
 
@@ -168,15 +166,15 @@ public class State implements AbstractBean, TreeStructurable {
 
 			// did we find it?
 			if (track == null) {
-				// create a new track
-				track = new TrackWrapper();
+				// create a new track. Since we're inside a parent folder,
+				// just use lightweight track
+				track = new LightweightTrackWrapper();
 				track.setName(trackName);
 				// and store it
 				parent.add(track);
 			}
 			return track;
 		} else {
-			layerName = trackName;
 			// If we don't want to split by datafile, then we will add the track directly.
 			// Let's find it then
 			TrackWrapper track = null;
