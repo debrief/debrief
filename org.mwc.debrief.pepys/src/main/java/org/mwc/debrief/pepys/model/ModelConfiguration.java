@@ -108,6 +108,8 @@ public class ModelConfiguration implements AbstractConfiguration {
 	// Saul.
 	public boolean searchFromUser = true;
 
+	private boolean splitByDafile = false;
+
 	private int treeOrderIndex = 0;
 
 	private DatabaseConnection databaseConnection;
@@ -271,7 +273,7 @@ public class ModelConfiguration implements AbstractConfiguration {
 			for (final TreeStructurable item : treeModel.getItems()) {
 				if (filter.isAcceptable(item)) {
 					imported = true;
-					item.doImport(_bridge.getLayers());
+					item.doImport(_bridge.getLayers(), isSplitByDatafile());
 				}
 			}
 		}
@@ -501,6 +503,11 @@ public class ModelConfiguration implements AbstractConfiguration {
 	}
 
 	@Override
+	public boolean isSplitByDatafile() {
+		return splitByDafile;
+	}
+
+	@Override
 	public void loadDatabaseConfiguration(final DatabaseConfiguration _configuration)
 			throws FileNotFoundException, PropertyVetoException, IOException, PepsysException {
 		final HashMap<String, String> category = _configuration.getCategory(DatabaseConnection.CONFIGURATION_TAG);
@@ -618,7 +625,7 @@ public class ModelConfiguration implements AbstractConfiguration {
 				currentComment.setPlatform(platform);
 				platform.setName(comment.getPlatform_name());
 
-				currentComment.doImport(_bridge.getLayers());
+				currentComment.doImport(_bridge.getLayers(), isSplitByDatafile());
 				++total;
 			}
 			return total;
@@ -700,7 +707,7 @@ public class ModelConfiguration implements AbstractConfiguration {
 				currentContact.setBearing(contact.getBearing());
 				currentContact.setLocation(contact.getLocation());
 
-				currentContact.doImport(_bridge.getLayers());
+				currentContact.doImport(_bridge.getLayers(), isSplitByDatafile());
 				++total;
 			}
 			return total;
@@ -784,7 +791,7 @@ public class ModelConfiguration implements AbstractConfiguration {
 				currentState.setCourse(stateFastMode.getCourse());
 				currentState.setSpeed(stateFastMode.getSpeed());
 				currentState.setHeading(stateFastMode.getHeading());
-				currentState.doImport(_bridge.getLayers());
+				currentState.doImport(_bridge.getLayers(), isSplitByDatafile());
 				++total;
 			}
 			return total;
@@ -898,6 +905,11 @@ public class ModelConfiguration implements AbstractConfiguration {
 					newResults);
 			_pSupport.firePropertyChange(pce);
 		}
+	}
+
+	@Override
+	public void setSplitByDataile(final boolean splitByDatafile) {
+		this.splitByDafile = splitByDatafile;
 	}
 
 	@Override
