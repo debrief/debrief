@@ -142,27 +142,35 @@ public class State implements AbstractBean, TreeStructurable {
 	public WorldLocation getLocation() {
 		return location;
 	}
+	
+	private static Layer findLayer(final Layers layers, final String name) {
+		Layer parent = layers.findLayer(name, false);
+		if (parent == null) {
+			parent = new BaseLayer();
+			parent.setName(name);
+			layers.addThisLayer(parent);
+		}
+		return parent;
+	}
+	
+	private static LightweightTrackWrapper findTrack(final Enumeration<Editable> iter, final String trackName) {
+		LightweightTrackWrapper track = null;
+		while (iter.hasMoreElements() && track == null) {
+			final Editable item = iter.nextElement();
+			if (item instanceof LightweightTrackWrapper && item.getName().equals(trackName)) {
+				track = (LightweightTrackWrapper) item;
+			}
+		}
+		return track;
+	}
 
 	private LightweightTrackWrapper getParent(final Layers layers, final String datafile, final String trackName,
 			final boolean splitByDatafile) {
-		// first the parent folder
 		if (splitByDatafile) {
-			Layer parent = layers.findLayer(datafile, false);
-			if (parent == null) {
-				parent = new BaseLayer();
-				parent.setName(datafile);
-				layers.addThisLayer(parent);
-			}
+			final Layer parent = findLayer(layers, datafile);
 
 			// now the track
-			LightweightTrackWrapper track = null;
-			final Enumeration<Editable> iter = parent.elements();
-			while (iter.hasMoreElements() && track == null) {
-				final Editable item = iter.nextElement();
-				if (item instanceof LightweightTrackWrapper && item.getName().equals(trackName)) {
-					track = (LightweightTrackWrapper) item;
-				}
-			}
+			LightweightTrackWrapper track = findTrack(parent.elements(), trackName);
 
 			// did we find it?
 			if (track == null) {
@@ -177,15 +185,7 @@ public class State implements AbstractBean, TreeStructurable {
 		} else {
 			// If we don't want to split by datafile, then we will add the track directly.
 			// Let's find it then
-			TrackWrapper track = null;
-
-			final Enumeration<Editable> iter = layers.elements();
-			while (iter.hasMoreElements() && track == null) {
-				final Editable item = iter.nextElement();
-				if (item instanceof TrackWrapper && item.getName().equals(trackName)) {
-					track = (TrackWrapper) item;
-				}
-			}
+			LightweightTrackWrapper track = findTrack(layers.elements(), trackName);
 
 			// did we find it?
 			if (track == null) {
