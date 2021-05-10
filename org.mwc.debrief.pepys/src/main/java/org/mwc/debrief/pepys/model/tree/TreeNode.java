@@ -195,9 +195,11 @@ public class TreeNode {
 	}
 
 	public int countCheckedItems() {
-		int total = isChecked() && !items.isEmpty() ? 1 : 0;
-		for (final TreeNode child : children.values()) {
-			total += child.countCheckedItems();
+		int total = isChecked() && !items.isEmpty() ? getCount() : 0;
+		if (total == 0) {
+			for (final TreeNode child : children.values()) {
+				total += child.countCheckedItems();
+			}
 		}
 		return total;
 	}

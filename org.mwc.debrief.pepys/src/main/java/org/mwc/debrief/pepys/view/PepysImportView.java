@@ -70,6 +70,7 @@ public class PepysImportView extends Dialog implements AbstractViewSWT {
 	private final Button useCurrentViewportButton;
 	private final Button clearAreaButton;
 	private final Button searchNextButton;
+	private final Button splitByDatafile;
 
 	private final Button searchPreviousButton;
 	private final CDateTime startDate;
@@ -369,15 +370,24 @@ public class PepysImportView extends Dialog implements AbstractViewSWT {
 		final GridData importGridDataButton = new GridData();
 		importGridDataButton.horizontalAlignment = GridData.END;
 		importGridDataButton.minimumWidth = 200;
-		importGridDataButton.horizontalSpan = 5;
+		importGridDataButton.horizontalSpan = 3;
+
+		final GridData splitByDatafileGridData = new GridData();
+		splitByDatafileGridData.horizontalAlignment = GridData.END;
+		splitByDatafileGridData.horizontalSpan = 2;
+
+		this.splitByDatafile = new Button(parent, SWT.CHECK);
+		this.splitByDatafile.setText("Split by Datafile");
+		this.splitByDatafile.setLayoutData(splitByDatafileGridData);
+		this.splitByDatafile.setEnabled(true);
 
 		this.importButton = new Button(parent, SWT.PUSH);
-		this.importButton.setText("Import");
+		this.importButton.setText("Import (0)");
 		this.importButton.setLayoutData(importGridDataButton);
 		this.importButton.setImage(DebriefPlugin.getImageDescriptor("/icons/24/import.png").createImage());
 		this.importButton.setEnabled(false);
 
-		importGridDataButton.widthHint = 120;
+		importGridDataButton.widthHint = 160;
 		importGridDataButton.heightHint = 40;
 
 		parent.setText("Debrief Pepys Import");
@@ -442,6 +452,11 @@ public class PepysImportView extends Dialog implements AbstractViewSWT {
 	@Override
 	public Text getSearchText() {
 		return searchText;
+	}
+
+	@Override
+	public Button getSplitByDatafileButton() {
+		return splitByDatafile;
 	}
 
 	@Override
