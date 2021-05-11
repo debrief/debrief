@@ -336,22 +336,30 @@ public class ModelConfiguration implements AbstractConfiguration {
 
 	@Override
 	public String getCommentQuery(final QUERY_STRATEGY algorithType) {
-		if (getAlgorithmType() == QUERY_STRATEGY.FAST_MODE) {
+		switch (algorithType) {
+		case FAST_MODE:
 			return "/comments.sql";
-		} else if (getAlgorithmType() == QUERY_STRATEGY.FAST_MODE_STORED_PROC) {
+
+		case FAST_MODE_STORED_PROC:
 			return "/commentsProc.sql";
+		
+		default:
+			return null;
 		}
-		return null;
 	}
 
 	@Override
 	public String getContactQuery(final QUERY_STRATEGY algorithType) {
-		if (getAlgorithmType() == QUERY_STRATEGY.FAST_MODE) {
+		switch (algorithType) {
+		case FAST_MODE:
 			return "/contacts.sql";
-		} else if (getAlgorithmType() == QUERY_STRATEGY.FAST_MODE_STORED_PROC) {
+
+		case FAST_MODE_STORED_PROC:
 			return "/contactsProc.sql";
+		
+		default:
+			return null;
 		}
-		return null;
 	}
 
 	@Override
@@ -445,12 +453,16 @@ public class ModelConfiguration implements AbstractConfiguration {
 
 	@Override
 	public String getMeasurementQuery(final QUERY_STRATEGY algorithType) {
-		if (getAlgorithmType() == QUERY_STRATEGY.FAST_MODE) {
+		switch (algorithType) {
+		case FAST_MODE:
 			return "/measurements.sql";
-		} else if (getAlgorithmType() == QUERY_STRATEGY.FAST_MODE_STORED_PROC) {
+
+		case FAST_MODE_STORED_PROC:
 			return "/measurementsProc.sql";
+		
+		default:
+			return null;
 		}
-		return null;
 	}
 
 	@Override
