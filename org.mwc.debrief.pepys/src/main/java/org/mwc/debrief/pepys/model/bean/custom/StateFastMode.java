@@ -20,6 +20,8 @@ public class StateFastMode {
 	private String platformName;
 
 	private String sourceid;
+	
+	private String reference;
 
 	@FieldName(name = "platform_type")
 	private String platformType;
@@ -137,4 +139,13 @@ public class StateFastMode {
 		this.time = time;
 	}
 
+	public String getReference() {
+		return reference;
+	}
+
+	public void setReference(String reference) {
+		this.reference = reference;
+	}
+
+	
 }
