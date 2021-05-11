@@ -342,7 +342,7 @@ public class ModelConfiguration implements AbstractConfiguration {
 
 		case FAST_MODE_STORED_PROC:
 			return "/commentsProc.sql";
-		
+
 		default:
 			return null;
 		}
@@ -356,7 +356,7 @@ public class ModelConfiguration implements AbstractConfiguration {
 
 		case FAST_MODE_STORED_PROC:
 			return "/contactsProc.sql";
-		
+
 		default:
 			return null;
 		}
@@ -459,7 +459,7 @@ public class ModelConfiguration implements AbstractConfiguration {
 
 		case FAST_MODE_STORED_PROC:
 			return "/measurementsProc.sql";
-		
+
 		default:
 			return null;
 		}
