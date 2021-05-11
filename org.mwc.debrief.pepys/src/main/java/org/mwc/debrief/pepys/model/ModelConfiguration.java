@@ -835,7 +835,7 @@ public class ModelConfiguration implements AbstractConfiguration {
 				final SensorType sensorType = new SensorType();
 				final Datafile datafile = new Datafile();
 
-				datafile.setReference(datafilesNames.get("0dd9d471-d5cf-4acb-85d5-8a90b11b55de"));
+				datafile.setReference(datafilesNames.get(stateFastMode.getSourceid()));
 				currentState.setSensor(sensor);
 				sensor.setSensorType(sensorType);
 				sensor.setPlatform(platform);
