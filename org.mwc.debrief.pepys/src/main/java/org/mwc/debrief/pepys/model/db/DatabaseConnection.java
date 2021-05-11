@@ -451,14 +451,14 @@ public abstract class DatabaseConnection {
 				final Object valueToAssign = parameters.get(i);
 				if (valueToAssign instanceof List) {
 					// For now let's assume that all the arrays are String
-					final List<Object> listValue = (List<Object>)valueToAssign;
+					final List<Object> listValue = (List<Object>) valueToAssign;
 					final String[] arrayValue = new String[listValue.size()];
-					for (int j = 0 ; j < arrayValue.length; j++) {
+					for (int j = 0; j < arrayValue.length; j++) {
 						arrayValue[j] = listValue.get(j).toString();
 					}
 					final Array arrayToSet = connection.createArrayOf("text", arrayValue);
 					statement.setArray(i + 1, arrayToSet);
-				}else {
+				} else {
 					statement.setObject(i + 1, valueToAssign);
 				}
 			}

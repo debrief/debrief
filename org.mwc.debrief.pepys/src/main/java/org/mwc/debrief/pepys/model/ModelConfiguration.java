@@ -31,6 +31,8 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 
+import org.mwc.cmap.core.CorePlugin;
+import org.mwc.debrief.core.preferences.PrefsPage;
 import org.mwc.debrief.model.utils.OSUtils;
 import org.mwc.debrief.pepys.model.bean.Comment;
 import org.mwc.debrief.pepys.model.bean.Contact;
@@ -319,7 +321,13 @@ public class ModelConfiguration implements AbstractConfiguration {
 			if (databaseConnection instanceof SqliteDatabaseConnection) {
 				return QUERY_STRATEGY.LEGACY;
 			} else if (databaseConnection instanceof PostgresDatabaseConnection) {
-				return QUERY_STRATEGY.FAST_MODE_STORED_PROC;
+				final boolean useStoredProcedures = CorePlugin.getDefault().getPreferenceStore()
+						.getBoolean(PrefsPage.PreferenceConstants.PEPYS_USE_STORED_FUNCTIONS);
+				if (useStoredProcedures) {
+					return QUERY_STRATEGY.FAST_MODE_STORED_PROC;
+				} else {
+					return QUERY_STRATEGY.FAST_MODE;
+				}
 			}
 		}
 		// LEGACY AS DEFAULT.
@@ -335,7 +343,6 @@ public class ModelConfiguration implements AbstractConfiguration {
 		}
 		return null;
 	}
-
 
 	@Override
 	public String getContactQuery(final QUERY_STRATEGY algorithType) {
