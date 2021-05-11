@@ -66,7 +66,7 @@ public class Comment implements AbstractBean, TreeStructurable {
 	}
 
 	@Override
-	public void doImport(final Layers _layers) {
+	public void doImport(final Layers _layers, final boolean splitByDatafile) {
 		Layer dest = _layers.findLayer(NarrativeEntry.NARRATIVE_LAYER, true);
 		if (dest == null) {
 			dest = new NarrativeWrapper(NarrativeEntry.NARRATIVE_LAYER);

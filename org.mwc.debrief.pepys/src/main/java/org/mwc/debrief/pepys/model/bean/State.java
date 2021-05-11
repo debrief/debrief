@@ -107,9 +107,9 @@ public class State implements AbstractBean, TreeStructurable {
 	}
 
 	@Override
-	public void doImport(final Layers _layers) {
+	public void doImport(final Layers _layers, final boolean splitByDatafile) {
 		final LightweightTrackWrapper track = getParent(_layers, getDatafile().getReference(),
-				getPlatform().getTrackName());
+				getPlatform().getTrackName(), splitByDatafile);
 
 		// create the wrapper for this annotation
 		final FixWrapper fixWrapper = new FixWrapper(new Fix(new HiResDate(time.getTime()), location, course, speed));
@@ -142,36 +142,62 @@ public class State implements AbstractBean, TreeStructurable {
 	public WorldLocation getLocation() {
 		return location;
 	}
-
-	private LightweightTrackWrapper getParent(final Layers layers, final String datafile, final String trackName) {
-		// first the parent folder
-		Layer parent = layers.findLayer(datafile, false);
+	
+	private static Layer findLayer(final Layers layers, final String name) {
+		Layer parent = layers.findLayer(name, false);
 		if (parent == null) {
 			parent = new BaseLayer();
-			parent.setName(datafile);
+			parent.setName(name);
 			layers.addThisLayer(parent);
 		}
-
-		// now the track
+		return parent;
+	}
+	
+	private static LightweightTrackWrapper findTrack(final Enumeration<Editable> iter, final String trackName) {
 		LightweightTrackWrapper track = null;
-		final Enumeration<Editable> iter = parent.elements();
 		while (iter.hasMoreElements() && track == null) {
 			final Editable item = iter.nextElement();
 			if (item instanceof LightweightTrackWrapper && item.getName().equals(trackName)) {
 				track = (LightweightTrackWrapper) item;
 			}
 		}
-
-		// did we find it?
-		if (track == null) {
-			// create a new track
-			track = new TrackWrapper();
-			track.setName(trackName);
-			// and store it
-			parent.add(track);
-
-		}
 		return track;
+	}
+
+	private LightweightTrackWrapper getParent(final Layers layers, final String datafile, final String trackName,
+			final boolean splitByDatafile) {
+		if (splitByDatafile) {
+			final Layer parent = findLayer(layers, datafile);
+
+			// now the track
+			LightweightTrackWrapper track = findTrack(parent.elements(), trackName);
+
+			// did we find it?
+			if (track == null) {
+				// create a new track. Since we're inside a parent folder,
+				// just use lightweight track
+				track = new LightweightTrackWrapper();
+				track.setName(trackName);
+				// and store it
+				parent.add(track);
+			}
+			return track;
+		} else {
+			// If we don't want to split by datafile, then we will add the track directly.
+			// Let's find it then
+			LightweightTrackWrapper track = findTrack(layers.elements(), trackName);
+
+			// did we find it?
+			if (track == null) {
+				// create a new track
+				track = new TrackWrapper();
+				track.setName(trackName);
+				// and store it
+				layers.addThisLayer(track);
+			}
+
+			return track;
+		}
 	}
 
 	@Override

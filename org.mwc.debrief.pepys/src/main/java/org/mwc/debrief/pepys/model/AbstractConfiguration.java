@@ -126,6 +126,8 @@ public interface AbstractConfiguration extends hasPropertyListeners {
 
 	TreeNode getTreeModel();
 
+	boolean isSplitByDatafile();
+
 	void loadDatabaseConfiguration(final DatabaseConfiguration _configuration)
 			throws FileNotFoundException, PropertyVetoException, IOException, PepsysException;
 
@@ -151,6 +153,8 @@ public interface AbstractConfiguration extends hasPropertyListeners {
 	void setSearch(final String _newSearch);
 
 	void setSearchResults(final int current, final int total);
+
+	void setSplitByDataile(final boolean splitByDatafile);
 
 	void setTimePeriod(final TimePeriod newPeriod);
 
