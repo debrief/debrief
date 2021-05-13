@@ -95,7 +95,7 @@ public class DebriefPerspectiveFactory implements IPerspectiveFactory {
 
 		// it via action (so we can populate it)
 
-		layout.addShowViewShortcut(IPageLayout.ID_RES_NAV);
+		layout.addShowViewShortcut(IPageLayout.ID_PROJECT_EXPLORER);
 		layout.addShowViewShortcut(IPageLayout.ID_PROP_SHEET);
 		layout.addShowViewShortcut(IPageLayout.ID_BOOKMARKS);
 
