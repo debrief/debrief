@@ -62,6 +62,7 @@ public class PrefsPage extends FieldEditorPreferencePage implements IWorkbenchPr
 		public static final String ASK_ABOUT_PROJECT = "createProject";
 		public static final String DEFAULT_PLOT_COLOR = SWTCanvasAdapter.BACKGROUND_COLOR_PROPERTY;
 		public static final String PPT_TEMPLATE = "pptTemplate";
+		public static final String PEPYS_USE_STORED_FUNCTIONS = "PEPYS_USE_STORED_FUNCTIONS";
 	}
 
 	private Label slideDims;
@@ -91,6 +92,8 @@ public class PrefsPage extends FieldEditorPreferencePage implements IWorkbenchPr
 				"Show the wizard when importing sensor data from REP", getFieldEditorParent()));
 		addField(new BooleanFieldEditor(PreferenceConstants.REUSE_TRIM_NARRATIVES_DIALOG_CHOICE,
 				"Re-use existing choice for trimming imported narratives", getFieldEditorParent()));
+		addField(new BooleanFieldEditor(PreferenceConstants.PEPYS_USE_STORED_FUNCTIONS,
+				"Load Pepys data using stored functions", getFieldEditorParent()));
 
 		// insert a separator
 		final Label label1 = new Label(getFieldEditorParent(), SWT.SEPARATOR | SWT.HORIZONTAL);
