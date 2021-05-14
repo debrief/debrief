@@ -269,6 +269,7 @@ public final class SensorContactWrapper extends SnailDrawTMAContact.PlottableWra
 						prop("Visible", "whether this sensor contact data is visible", FORMAT),
 						prop("Frequency", "the frequency measurement for this data item", OPTIONAL),
 						prop("Bearing", "bearing to target", SPATIAL),
+						prop("Range", "range to centre of solution", SPATIAL),
 						displayProp("AmbiguousBearing", "Ambiguous bearing", "ambiguous bearing to target", SPATIAL), };
 
 				return res;
@@ -1080,6 +1081,9 @@ public final class SensorContactWrapper extends SnailDrawTMAContact.PlottableWra
 	 * get the range (in yards)
 	 */
 	public final WorldDistance getRange() {
+		if(_range == null) {
+			return new WorldDistance(0,WorldDistance.METRES);
+		}
 		return _range;
 	}
 
