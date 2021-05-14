@@ -23,6 +23,7 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.jface.preference.BooleanFieldEditor;
 import org.eclipse.jface.preference.ColorFieldEditor;
+import org.eclipse.jface.preference.FieldEditor;
 import org.eclipse.jface.preference.FieldEditorPreferencePage;
 import org.eclipse.jface.preference.FileFieldEditor;
 import org.eclipse.jface.util.PropertyChangeEvent;
@@ -119,7 +120,7 @@ public class PrefsPage extends FieldEditorPreferencePage implements IWorkbenchPr
 
 		// ok, get the current path
 		final String templatePath = getPreferenceStore().getString(PreferenceConstants.PPT_TEMPLATE);
-		final PropertyChangeEvent event = new PropertyChangeEvent(this, "field_editor_value", null, templatePath);
+		final PropertyChangeEvent event = new PropertyChangeEvent(this, FieldEditor.VALUE, null, templatePath);
 		this.propertyChange(event);
 	}
 
@@ -141,7 +142,7 @@ public class PrefsPage extends FieldEditorPreferencePage implements IWorkbenchPr
 
 	@Override
 	public void propertyChange(final PropertyChangeEvent event) {
-		if (event.getProperty().equals("field_editor_value")) {
+		if (FieldEditor.VALUE.equals(event.getProperty())) {
 			final IPath path = new Path(event.getNewValue().toString());
 			if (!path.toFile().exists()) {
 				setErrorMessage("Invalid file path, File does not exist");
