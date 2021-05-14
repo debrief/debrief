@@ -8,8 +8,6 @@ import MWC.GenericData.WorldLocation;
 
 public class StateFastMode {
 
-	public static final String STATES_FILE = "/states.sql";
-
 	@FieldName(name = "state_id")
 	private String stateId;
 
@@ -22,6 +20,8 @@ public class StateFastMode {
 	private String platformName;
 
 	private String sourceid;
+	
+	private String reference;
 
 	@FieldName(name = "platform_type")
 	private String platformType;
@@ -139,4 +139,13 @@ public class StateFastMode {
 		this.time = time;
 	}
 
+	public String getReference() {
+		return reference;
+	}
+
+	public void setReference(String reference) {
+		this.reference = reference;
+	}
+
+	
 }

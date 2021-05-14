@@ -6,8 +6,6 @@ import MWC.GenericData.WorldLocation;
 
 public class ContactFastMode {
 
-	public static final String CONTACTS_FILE = "/contacts.sql";
-
 	private String contact_id;
 
 	private Timestamp time;

@@ -28,6 +28,7 @@ import java.util.Scanner;
 import org.mwc.debrief.model.utils.OSUtils;
 import org.mwc.debrief.pepys.Activator;
 import org.mwc.debrief.pepys.model.AbstractConfiguration;
+import org.mwc.debrief.pepys.model.AbstractConfiguration.QueryParameterAccumulator;
 import org.mwc.debrief.pepys.model.TypeDomain;
 import org.mwc.debrief.pepys.model.bean.AbstractBean;
 import org.mwc.debrief.pepys.model.bean.custom.Measurement;
@@ -182,24 +183,20 @@ public class TreeUtils {
 		final ArrayList<TreeStructurable> allItems = new ArrayList<>();
 
 		// Let's collect the types of objects to collect
-		final StringBuilder dataTypes = new StringBuilder();
+		final QueryParameterAccumulator typeAccumulator = configuration.getParameterAccumulator();
 		for (final TypeDomain domain : configuration.getDatafileTypeFilters()) {
 			final Class<TreeStructurable> currentBeanType = domain.getDatatype();
 
 			if (AbstractBean.class.isAssignableFrom(currentBeanType) && domain.isChecked()) {
-				dataTypes.append(domain.getName().toUpperCase());
-				dataTypes.append(",");
+				typeAccumulator.addPart(domain.getName().toUpperCase());
 			}
-		}
-		if (dataTypes.length() > 0) {
-			dataTypes.setLength(dataTypes.length() - 1);
 		}
 
 		// Now we are forcing to run a custom query (measurements)
 		Scanner scanner = null;
 		try {
-			scanner = new Scanner(OSUtils.getInputStreamResource(Measurement.class, Measurement.MEASUREMENTS_FILE,
-					Activator.PLUGIN_ID));
+			scanner = new Scanner(OSUtils.getInputStreamResource(Measurement.class,
+					configuration.getMeasurementQuery(configuration.getAlgorithmType()), Activator.PLUGIN_ID));
 			final StringBuilder builder = new StringBuilder();
 			while (scanner.hasNextLine()) {
 				builder.append(scanner.nextLine());
@@ -228,7 +225,7 @@ public class TreeUtils {
 			parameters.add(configuration.getCurrentAreaAsParameter());
 
 			// Let's add the data types
-			parameters.add(dataTypes.toString());
+			parameters.add(typeAccumulator.getAccumulated());
 
 			// Let's add the text filter
 			if (configuration.getFilter() != null) {

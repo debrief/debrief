@@ -4,8 +4,6 @@ import java.sql.Timestamp;
 
 public class CommentFastMode {
 
-	public static final String COMMENTS_FILE = "/comments.sql";
-
 	private String comment_id;
 
 	private Timestamp time;
