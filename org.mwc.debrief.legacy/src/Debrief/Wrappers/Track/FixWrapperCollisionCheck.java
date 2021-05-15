@@ -53,7 +53,7 @@ public class FixWrapperCollisionCheck {
 		}
 
 		while (_currentPlotables.contains(_fixWrapper)) {
-			timeToAdd += 1000; // add 1 second
+			timeToAdd += 1000; // add 1 millisecond.
 			_fixWrapper.getFix().setTime(new HiResDate(timeToAdd / 1000L));
 		}
 	}
