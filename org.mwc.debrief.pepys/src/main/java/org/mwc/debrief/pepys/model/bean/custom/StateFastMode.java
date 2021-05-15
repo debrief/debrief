@@ -76,6 +76,10 @@ public class StateFastMode implements AbstractBean, PlainBean {
 		return platformType;
 	}
 
+	public String getReference() {
+		return reference;
+	}
+
 	public String getSensorName() {
 		return sensorName;
 	}
@@ -94,6 +98,23 @@ public class StateFastMode implements AbstractBean, PlainBean {
 
 	public Timestamp getTime() {
 		return time;
+	}
+
+	@Override
+	public void retrieveObject(final ResultSet resultSet, final DatabaseConnection connection) throws SQLException {
+		setStateId(resultSet.getString("state_id"));
+		setTime(resultSet.getTimestamp("time"));
+		setSensorName(resultSet.getString("sensor_name"));
+		setPlatformName(resultSet.getString("platform_name"));
+		setSourceid(resultSet.getString("sourceid"));
+		setReference(resultSet.getString("reference"));
+		setPlatformType(resultSet.getString("platform_type"));
+		setNationalityName(resultSet.getString("nationality_name"));
+		setLocation(connection.createWorldLocation(resultSet, "location"));
+		setElevation(resultSet.getDouble("elevation"));
+		setHeading(resultSet.getDouble("heading"));
+		setCourse(resultSet.getDouble("course"));
+		setSpeed(resultSet.getDouble("speed"));
 	}
 
 	public void setCourse(final double course) {
@@ -124,6 +145,10 @@ public class StateFastMode implements AbstractBean, PlainBean {
 		this.platformType = platformType;
 	}
 
+	public void setReference(final String reference) {
+		this.reference = reference;
+	}
+
 	public void setSensorName(final String sensorName) {
 		this.sensorName = sensorName;
 	}
@@ -142,31 +167,6 @@ public class StateFastMode implements AbstractBean, PlainBean {
 
 	public void setTime(final Timestamp time) {
 		this.time = time;
-	}
-
-	public String getReference() {
-		return reference;
-	}
-
-	public void setReference(String reference) {
-		this.reference = reference;
-	}
-
-	@Override
-	public void retrieveObject(ResultSet resultSet, DatabaseConnection connection) throws SQLException {
-		setStateId(resultSet.getString("state_id"));
-		setTime(resultSet.getTimestamp("time"));
-		setSensorName(resultSet.getString("sensor_name"));
-		setPlatformName(resultSet.getString("platform_name"));
-		setSourceid(resultSet.getString("sourceid"));
-		setReference(resultSet.getString("reference"));
-		setPlatformType(resultSet.getString("platform_type"));
-		setNationalityName(resultSet.getString("nationality_name"));
-		setLocation(connection.createWorldLocation(resultSet, "location"));
-		setElevation(resultSet.getDouble("elevation"));
-		setHeading(resultSet.getDouble("heading"));
-		setCourse(resultSet.getDouble("course"));
-		setSpeed(resultSet.getDouble("speed"));
 	}
 
 }

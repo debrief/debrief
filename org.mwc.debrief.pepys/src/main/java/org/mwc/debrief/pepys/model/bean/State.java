@@ -77,23 +77,44 @@ public class State implements AbstractBean, TreeStructurable {
 		}
 	}
 
+	private static Layer findLayer(final Layers layers, final String name) {
+		Layer parent = layers.findLayer(name, false);
+		if (parent == null) {
+			parent = new BaseLayer();
+			parent.setName(name);
+			layers.addThisLayer(parent);
+		}
+		return parent;
+	}
+
+	private static LightweightTrackWrapper findTrack(final Enumeration<Editable> iter, final String trackName) {
+		LightweightTrackWrapper track = null;
+		while (iter.hasMoreElements() && track == null) {
+			final Editable item = iter.nextElement();
+			if (item instanceof LightweightTrackWrapper && item.getName().equals(trackName)) {
+				track = (LightweightTrackWrapper) item;
+			}
+		}
+		return track;
+	}
+
 	@Id
 	private String state_id;
-
 	@Time
 	private Timestamp time;
-
 	@ManyToOne
 	@FieldName(name = "sensor_id")
 	private Sensor sensor;
+
 	private double heading;
 	private double course;
-
 	private double speed;
 	@ManyToOne
 	@FieldName(name = "source_id")
 	private Datafile datafile;
+
 	private String privacy_id;
+
 	private Timestamp created_date;
 
 	@Location
@@ -141,27 +162,6 @@ public class State implements AbstractBean, TreeStructurable {
 
 	public WorldLocation getLocation() {
 		return location;
-	}
-	
-	private static Layer findLayer(final Layers layers, final String name) {
-		Layer parent = layers.findLayer(name, false);
-		if (parent == null) {
-			parent = new BaseLayer();
-			parent.setName(name);
-			layers.addThisLayer(parent);
-		}
-		return parent;
-	}
-	
-	private static LightweightTrackWrapper findTrack(final Enumeration<Editable> iter, final String trackName) {
-		LightweightTrackWrapper track = null;
-		while (iter.hasMoreElements() && track == null) {
-			final Editable item = iter.nextElement();
-			if (item instanceof LightweightTrackWrapper && item.getName().equals(trackName)) {
-				track = (LightweightTrackWrapper) item;
-			}
-		}
-		return track;
 	}
 
 	private LightweightTrackWrapper getParent(final Layers layers, final String datafile, final String trackName,

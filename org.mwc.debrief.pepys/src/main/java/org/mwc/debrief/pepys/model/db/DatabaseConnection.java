@@ -584,12 +584,13 @@ public abstract class DatabaseConnection {
 		if (PlainBean.class.isAssignableFrom(type)) {
 			final PlainBean plainBean = (PlainBean) instance;
 			plainBean.retrieveObject(resultSet, this);
-		}else {
+		} else {
 			final Field[] fields = type.getDeclaredFields();
 			for (final Field field : fields) {
 				final Class<?> fieldType = field.getType();
 				try {
-					final Method method = type.getDeclaredMethod("set" + capitalizeFirstLetter(field.getName()), fieldType);
+					final Method method = type.getDeclaredMethod("set" + capitalizeFirstLetter(field.getName()),
+							fieldType);
 
 					final String thisColumnName;
 					if (useAlias) {
@@ -635,8 +636,7 @@ public abstract class DatabaseConnection {
 				}
 			}
 		}
-		
-		
+
 		return instance;
 	}
 

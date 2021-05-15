@@ -41,7 +41,7 @@ import org.mwc.debrief.pepys.model.tree.TreeStructurable;
 
 import junit.framework.TestCase;
 
-public class Measurement implements AbstractBean, PlainBean{
+public class Measurement implements AbstractBean, PlainBean {
 
 	public static class MeasurementTest extends TestCase {
 
@@ -221,6 +221,18 @@ public class Measurement implements AbstractBean, PlainBean{
 		return stateAggCount;
 	}
 
+	@Override
+	public void retrieveObject(final ResultSet resultSet, final DatabaseConnection connection) throws SQLException {
+		setPlatformName(resultSet.getString("PLATFORM_NAME"));
+		setPlatformId(resultSet.getString("platform_id"));
+		setDataType(resultSet.getString("datatype"));
+		setSensorName(resultSet.getString("SENSOR_NAME"));
+		setSensorId(resultSet.getString("sensor_id"));
+		setReference(resultSet.getString("reference"));
+		setDatafileId(resultSet.getString("datafile_id"));
+		setStateAggCount(resultSet.getInt("state_agg_count"));
+	}
+
 	public void setDatafileId(final String datafileId) {
 		this.datafileId = datafileId;
 	}
@@ -251,18 +263,6 @@ public class Measurement implements AbstractBean, PlainBean{
 
 	public void setStateAggCount(final int stateAggCount) {
 		this.stateAggCount = stateAggCount;
-	}
-
-	@Override
-	public void retrieveObject(ResultSet resultSet, DatabaseConnection connection) throws SQLException {
-		setPlatformName(resultSet.getString("PLATFORM_NAME"));
-		setPlatformId(resultSet.getString("platform_id"));
-		setDataType(resultSet.getString("datatype"));
-		setSensorName(resultSet.getString("SENSOR_NAME"));
-		setSensorId(resultSet.getString("sensor_id"));
-		setReference(resultSet.getString("reference"));
-		setDatafileId(resultSet.getString("datafile_id"));
-		setStateAggCount(resultSet.getInt("state_agg_count"));
 	}
 
 }

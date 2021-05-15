@@ -30,12 +30,12 @@ public interface PlainBean {
 
 	/**
 	 * Method that will assign to the values from the resultset using the setters
-	 * 
+	 *
 	 * @param resultSet  to retrieve values from
 	 * @param connection Needed to parse the Database type fields, for example,
 	 *                   WorldLocation
-	 * @throws SQLException 
-	 * 
+	 * @throws SQLException
+	 *
 	 */
 	void retrieveObject(final ResultSet resultSet, final DatabaseConnection connection) throws SQLException;
 }

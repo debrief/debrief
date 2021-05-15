@@ -10,7 +10,7 @@ import org.mwc.debrief.pepys.model.db.DatabaseConnection;
 
 import MWC.GenericData.WorldLocation;
 
-public class ContactFastMode implements AbstractBean, PlainBean{
+public class ContactFastMode implements AbstractBean, PlainBean {
 
 	private String contact_id;
 
@@ -82,6 +82,21 @@ public class ContactFastMode implements AbstractBean, PlainBean{
 		return time;
 	}
 
+	@Override
+	public void retrieveObject(final ResultSet resultSet, final DatabaseConnection connection) throws SQLException {
+		setContact_id(resultSet.getString("contact_id"));
+		setTime(resultSet.getTimestamp("time"));
+		setName(resultSet.getString("name"));
+		setSensor_name(resultSet.getString("sensor_name"));
+		setPlatform_name(resultSet.getString("platform_name"));
+		setPlatform_type_name(resultSet.getString("platform_type_name"));
+		setNationality_name(resultSet.getString("nationality_name"));
+		setBearing(resultSet.getDouble("bearing"));
+		setRange(resultSet.getDouble("range"));
+		setLocation(connection.createWorldLocation(resultSet, "location"));
+		setReference(resultSet.getString("reference"));
+	}
+
 	public void setBearing(final double bearing) {
 		this.bearing = bearing;
 	}
@@ -124,20 +139,5 @@ public class ContactFastMode implements AbstractBean, PlainBean{
 
 	public void setTime(final Timestamp time) {
 		this.time = time;
-	}
-
-	@Override
-	public void retrieveObject(ResultSet resultSet, DatabaseConnection connection) throws SQLException {
-		setContact_id(resultSet.getString("contact_id"));
-		setTime(resultSet.getTimestamp("time"));
-		setName(resultSet.getString("name"));
-		setSensor_name(resultSet.getString("sensor_name"));
-		setPlatform_name(resultSet.getString("platform_name"));
-		setPlatform_type_name(resultSet.getString("platform_type_name"));
-		setNationality_name(resultSet.getString("nationality_name"));
-		setBearing(resultSet.getDouble("bearing"));
-		setRange(resultSet.getDouble("range"));
-		setLocation(connection.createWorldLocation(resultSet, "location"));
-		setReference(resultSet.getString("reference"));
 	}
 }
