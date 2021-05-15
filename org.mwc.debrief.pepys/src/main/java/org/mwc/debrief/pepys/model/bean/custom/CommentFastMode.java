@@ -1,8 +1,14 @@
 package org.mwc.debrief.pepys.model.bean.custom;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Timestamp;
 
-public class CommentFastMode {
+import org.mwc.debrief.pepys.model.bean.AbstractBean;
+import org.mwc.debrief.pepys.model.bean.PlainBean;
+import org.mwc.debrief.pepys.model.db.DatabaseConnection;
+
+public class CommentFastMode implements AbstractBean, PlainBean{
 
 	private String comment_id;
 
@@ -76,5 +82,16 @@ public class CommentFastMode {
 
 	public void setTime(final Timestamp time) {
 		this.time = time;
+	}
+
+	@Override
+	public void retrieveObject(ResultSet resultSet, DatabaseConnection connection) throws SQLException {
+		setComment_id(resultSet.getString("comment_id"));
+		setTime(resultSet.getTimestamp("time"));
+		setPlatform_name(resultSet.getString("platform_name"));
+		setPlatform_type_name(resultSet.getString("platform_type_name"));
+		setNationalities_name(resultSet.getString("nationalities_name"));
+		setContent(resultSet.getString("content"));
+		setComment_type_name(resultSet.getString("comment_type_name"));
 	}
 }

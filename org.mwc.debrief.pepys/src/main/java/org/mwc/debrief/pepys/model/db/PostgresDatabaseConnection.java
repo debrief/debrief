@@ -77,7 +77,7 @@ public class PostgresDatabaseConnection extends DatabaseConnection {
 	}
 
 	@Override
-	protected WorldLocation createWorldLocation(final ResultSet result, final String columnName) throws SQLException {
+	public WorldLocation createWorldLocation(final ResultSet result, final String columnName) throws SQLException {
 		try {
 			final PGobject object = (PGobject) result.getObject(columnName);
 			if (object instanceof PGpoint) {

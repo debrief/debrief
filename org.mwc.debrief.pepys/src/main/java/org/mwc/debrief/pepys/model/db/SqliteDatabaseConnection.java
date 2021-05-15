@@ -85,7 +85,7 @@ public class SqliteDatabaseConnection extends DatabaseConnection {
 	}
 
 	@Override
-	protected WorldLocation createWorldLocation(final ResultSet result, final String columnName) throws SQLException {
+	public WorldLocation createWorldLocation(final ResultSet result, final String columnName) throws SQLException {
 		// WARNING.
 		// THIS WILL INTERPRETE NULL LOCATION AT (0,0,0)
 		// SAUL
