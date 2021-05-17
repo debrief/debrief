@@ -587,57 +587,64 @@ public abstract class DatabaseConnection {
 		} else {
 			final Field[] fields = type.getDeclaredFields();
 			for (final Field field : fields) {
-				final Class<?> fieldType = field.getType();
-				try {
-					final Method method = type.getDeclaredMethod("set" + capitalizeFirstLetter(field.getName()),
-							fieldType);
-
-					final String thisColumnName;
-					if (useAlias) {
-						thisColumnName = getAlias(
-								prefix + AnnotationsUtils.getTableName(type) + AnnotationsUtils.getColumnName(field));
-					} else {
-						thisColumnName = AnnotationsUtils.getColumnName(field);
-					}
-
-					if (field.isAnnotationPresent(ManyToOne.class) || field.isAnnotationPresent(OneToOne.class)) {
-						method.invoke(instance, storeFieldValue(fieldType, resultSet,
-								prefix + AnnotationsUtils.getTableName(type) + AnnotationsUtils.getColumnName(field),
-								useAlias));
-					} else if (int.class == fieldType) {
-						try {
-							method.invoke(instance, resultSet.getInt(thisColumnName));
-						} catch (final Exception e) {
-							e.printStackTrace();
-						}
-					} else if (String.class == fieldType) {
-						method.invoke(instance, resultSet.getString(thisColumnName));
-					} else if (Date.class == fieldType) {
-						method.invoke(instance, resultSet.getDate(thisColumnName));
-					} else if (boolean.class == fieldType) {
-						method.invoke(instance, resultSet.getBoolean(thisColumnName));
-					} else if (Timestamp.class == fieldType) {
-						method.invoke(instance, resultSet.getTimestamp(thisColumnName));
-					} else if (double.class == fieldType) {
-						method.invoke(instance, resultSet.getDouble(thisColumnName));
-					} else if (WorldLocation.class == fieldType) {
-						method.invoke(instance, createWorldLocation(resultSet, thisColumnName));
-					} else {
-						try {
-							// Unknown type. We will find out what to do here later.
-							method.invoke(instance, resultSet.getObject(field.getName()));
-						} catch (final Exception e) {
-							e.printStackTrace();
-						}
-
-					}
-				} catch (final Exception e) {
-					// somehow we haven't found the method
-				}
+				storeField(type, resultSet, prefix, useAlias, instance, field);
 			}
 		}
 
 		return instance;
 	}
+
+  private <T> void storeField(final Class<T> type, final ResultSet resultSet,
+      final String prefix, final boolean useAlias, final T instance,
+      final Field field)
+  {
+    final Class<?> fieldType = field.getType();
+    try {
+    	final Method method = type.getDeclaredMethod("set" + capitalizeFirstLetter(field.getName()),
+    			fieldType);
+
+    	final String thisColumnName;
+    	if (useAlias) {
+    		thisColumnName = getAlias(
+    				prefix + AnnotationsUtils.getTableName(type) + AnnotationsUtils.getColumnName(field));
+    	} else {
+    		thisColumnName = AnnotationsUtils.getColumnName(field);
+    	}
+
+    	if (field.isAnnotationPresent(ManyToOne.class) || field.isAnnotationPresent(OneToOne.class)) {
+    		method.invoke(instance, storeFieldValue(fieldType, resultSet,
+    				prefix + AnnotationsUtils.getTableName(type) + AnnotationsUtils.getColumnName(field),
+    				useAlias));
+    	} else if (int.class == fieldType) {
+    		try {
+    			method.invoke(instance, resultSet.getInt(thisColumnName));
+    		} catch (final Exception e) {
+    			e.printStackTrace();
+    		}
+    	} else if (String.class == fieldType) {
+    		method.invoke(instance, resultSet.getString(thisColumnName));
+    	} else if (Date.class == fieldType) {
+    		method.invoke(instance, resultSet.getDate(thisColumnName));
+    	} else if (boolean.class == fieldType) {
+    		method.invoke(instance, resultSet.getBoolean(thisColumnName));
+    	} else if (Timestamp.class == fieldType) {
+    		method.invoke(instance, resultSet.getTimestamp(thisColumnName));
+    	} else if (double.class == fieldType) {
+    		method.invoke(instance, resultSet.getDouble(thisColumnName));
+    	} else if (WorldLocation.class == fieldType) {
+    		method.invoke(instance, createWorldLocation(resultSet, thisColumnName));
+    	} else {
+    		try {
+    			// Unknown type. We will find out what to do here later.
+    			method.invoke(instance, resultSet.getObject(field.getName()));
+    		} catch (final Exception e) {
+    			e.printStackTrace();
+    		}
+
+    	}
+    } catch (final Exception e) {
+    	// somehow we haven't found the method
+    }
+  }
 
 }
