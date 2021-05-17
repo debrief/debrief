@@ -665,6 +665,15 @@ public class Plottables implements Plottable, Serializable, PlottablesType, Prop
 	}
 
 	/**
+	 * @return all items in our list greater or equal to fromElement and less than
+	 *         toElement
+	 */
+	public SortedSet<Editable> subSet(final Editable fromElement, final boolean fromInclusive, final Editable toElement,
+			final boolean toInclusive) {
+		return _thePlottables.subSet(fromElement, fromInclusive, toElement, toInclusive);
+	}
+
+	/**
 	 * @return all items in our list greater or equal to fromElement
 	 */
 	public SortedSet<Editable> tailSet(final Editable fromElement) {

@@ -843,7 +843,7 @@ public class ModelConfiguration implements AbstractConfiguration {
 
 				if (stateFastMode.getReference() != null) {
 					datafile.setReference(stateFastMode.getReference());
-				}else {
+				} else {
 					datafile.setReference(datafilesNames.get(stateFastMode.getSourceid()));
 				}
 				currentState.setSensor(sensor);
