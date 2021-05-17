@@ -25,6 +25,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.sql.Array;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -42,6 +43,7 @@ import org.mwc.debrief.model.utils.OSUtils;
 import org.mwc.debrief.pepys.Activator;
 import org.mwc.debrief.pepys.model.PepsysException;
 import org.mwc.debrief.pepys.model.bean.AbstractBean;
+import org.mwc.debrief.pepys.model.bean.PlainBean;
 import org.mwc.debrief.pepys.model.db.annotation.AnnotationsUtils;
 import org.mwc.debrief.pepys.model.db.annotation.AnnotationsUtils.FieldsTable;
 import org.mwc.debrief.pepys.model.db.annotation.Filterable;
@@ -274,7 +276,7 @@ public abstract class DatabaseConnection {
 		return conditions;
 	}
 
-	protected abstract WorldLocation createWorldLocation(final ResultSet result, final String columnName)
+	public abstract WorldLocation createWorldLocation(final ResultSet result, final String columnName)
 			throws SQLException;
 
 	public abstract String databasePrefix();
@@ -448,7 +450,18 @@ public abstract class DatabaseConnection {
 
 			for (int i = 0; parameters != null && i < parameters.size(); i++) {
 				final Object valueToAssign = parameters.get(i);
-				statement.setObject(i + 1, valueToAssign);
+				if (valueToAssign instanceof List) {
+					// For now let's assume that all the arrays are String
+					final List<Object> listValue = (List<Object>) valueToAssign;
+					final String[] arrayValue = new String[listValue.size()];
+					for (int j = 0; j < arrayValue.length; j++) {
+						arrayValue[j] = listValue.get(j).toString();
+					}
+					final Array arrayToSet = connection.createArrayOf("text", arrayValue);
+					statement.setArray(i + 1, arrayToSet);
+				} else {
+					statement.setObject(i + 1, valueToAssign);
+				}
 			}
 
 			loadExtention(connection, statement);
@@ -568,56 +581,70 @@ public abstract class DatabaseConnection {
 			NoSuchMethodException, SQLException {
 		final Constructor<T> constructor = type.getConstructor();
 		final T instance = constructor.newInstance();
-		final Field[] fields = type.getDeclaredFields();
-		for (final Field field : fields) {
-			final Class<?> fieldType = field.getType();
-			try {
-				final Method method = type.getDeclaredMethod("set" + capitalizeFirstLetter(field.getName()), fieldType);
-
-				final String thisColumnName;
-				if (useAlias) {
-					thisColumnName = getAlias(
-							prefix + AnnotationsUtils.getTableName(type) + AnnotationsUtils.getColumnName(field));
-				} else {
-					thisColumnName = AnnotationsUtils.getColumnName(field);
-				}
-
-				if (field.isAnnotationPresent(ManyToOne.class) || field.isAnnotationPresent(OneToOne.class)) {
-					method.invoke(instance, storeFieldValue(fieldType, resultSet,
-							prefix + AnnotationsUtils.getTableName(type) + AnnotationsUtils.getColumnName(field),
-							useAlias));
-				} else if (int.class == fieldType) {
-					try {
-						method.invoke(instance, resultSet.getInt(thisColumnName));
-					} catch (final Exception e) {
-						e.printStackTrace();
-					}
-				} else if (String.class == fieldType) {
-					method.invoke(instance, resultSet.getString(thisColumnName));
-				} else if (Date.class == fieldType) {
-					method.invoke(instance, resultSet.getDate(thisColumnName));
-				} else if (boolean.class == fieldType) {
-					method.invoke(instance, resultSet.getBoolean(thisColumnName));
-				} else if (Timestamp.class == fieldType) {
-					method.invoke(instance, resultSet.getTimestamp(thisColumnName));
-				} else if (double.class == fieldType) {
-					method.invoke(instance, resultSet.getDouble(thisColumnName));
-				} else if (WorldLocation.class == fieldType) {
-					method.invoke(instance, createWorldLocation(resultSet, thisColumnName));
-				} else {
-					try {
-						// Unknown type. We will find out what to do here later.
-						method.invoke(instance, resultSet.getObject(field.getName()));
-					} catch (final Exception e) {
-						e.printStackTrace();
-					}
-
-				}
-			} catch (final Exception e) {
-				// somehow we haven't found the method
+		if (PlainBean.class.isAssignableFrom(type)) {
+			final PlainBean plainBean = (PlainBean) instance;
+			plainBean.retrieveObject(resultSet, this);
+		} else {
+			final Field[] fields = type.getDeclaredFields();
+			for (final Field field : fields) {
+				storeField(type, resultSet, prefix, useAlias, instance, field);
 			}
 		}
+
 		return instance;
 	}
+
+  private <T> void storeField(final Class<T> type, final ResultSet resultSet,
+      final String prefix, final boolean useAlias, final T instance,
+      final Field field)
+  {
+    final Class<?> fieldType = field.getType();
+    try {
+    	final Method method = type.getDeclaredMethod("set" + capitalizeFirstLetter(field.getName()),
+    			fieldType);
+
+    	final String thisColumnName;
+    	if (useAlias) {
+    		thisColumnName = getAlias(
+    				prefix + AnnotationsUtils.getTableName(type) + AnnotationsUtils.getColumnName(field));
+    	} else {
+    		thisColumnName = AnnotationsUtils.getColumnName(field);
+    	}
+
+    	if (field.isAnnotationPresent(ManyToOne.class) || field.isAnnotationPresent(OneToOne.class)) {
+    		method.invoke(instance, storeFieldValue(fieldType, resultSet,
+    				prefix + AnnotationsUtils.getTableName(type) + AnnotationsUtils.getColumnName(field),
+    				useAlias));
+    	} else if (int.class == fieldType) {
+    		try {
+    			method.invoke(instance, resultSet.getInt(thisColumnName));
+    		} catch (final Exception e) {
+    			e.printStackTrace();
+    		}
+    	} else if (String.class == fieldType) {
+    		method.invoke(instance, resultSet.getString(thisColumnName));
+    	} else if (Date.class == fieldType) {
+    		method.invoke(instance, resultSet.getDate(thisColumnName));
+    	} else if (boolean.class == fieldType) {
+    		method.invoke(instance, resultSet.getBoolean(thisColumnName));
+    	} else if (Timestamp.class == fieldType) {
+    		method.invoke(instance, resultSet.getTimestamp(thisColumnName));
+    	} else if (double.class == fieldType) {
+    		method.invoke(instance, resultSet.getDouble(thisColumnName));
+    	} else if (WorldLocation.class == fieldType) {
+    		method.invoke(instance, createWorldLocation(resultSet, thisColumnName));
+    	} else {
+    		try {
+    			// Unknown type. We will find out what to do here later.
+    			method.invoke(instance, resultSet.getObject(field.getName()));
+    		} catch (final Exception e) {
+    			e.printStackTrace();
+    		}
+
+    	}
+    } catch (final Exception e) {
+    	// somehow we haven't found the method
+    }
+  }
 
 }

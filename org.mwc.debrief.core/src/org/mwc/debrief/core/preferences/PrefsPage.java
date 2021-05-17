@@ -23,6 +23,7 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.jface.preference.BooleanFieldEditor;
 import org.eclipse.jface.preference.ColorFieldEditor;
+import org.eclipse.jface.preference.FieldEditor;
 import org.eclipse.jface.preference.FieldEditorPreferencePage;
 import org.eclipse.jface.preference.FileFieldEditor;
 import org.eclipse.jface.util.PropertyChangeEvent;
@@ -62,9 +63,11 @@ public class PrefsPage extends FieldEditorPreferencePage implements IWorkbenchPr
 		public static final String ASK_ABOUT_PROJECT = "createProject";
 		public static final String DEFAULT_PLOT_COLOR = SWTCanvasAdapter.BACKGROUND_COLOR_PROPERTY;
 		public static final String PPT_TEMPLATE = "pptTemplate";
+		public static final String PEPYS_USE_STORED_FUNCTIONS = "PEPYS_USE_STORED_FUNCTIONS";
 	}
 
 	private Label slideDims;
+	FileFieldEditor templateLocationPrefEditor;
 
 	public PrefsPage() {
 		super("Debrief Preferences", CorePlugin.getImageDescriptor("icons/24/debrief_icon.png"), GRID);
@@ -91,6 +94,8 @@ public class PrefsPage extends FieldEditorPreferencePage implements IWorkbenchPr
 				"Show the wizard when importing sensor data from REP", getFieldEditorParent()));
 		addField(new BooleanFieldEditor(PreferenceConstants.REUSE_TRIM_NARRATIVES_DIALOG_CHOICE,
 				"Re-use existing choice for trimming imported narratives", getFieldEditorParent()));
+		addField(new BooleanFieldEditor(PreferenceConstants.PEPYS_USE_STORED_FUNCTIONS,
+				"Load Pepys data using stored functions", getFieldEditorParent()));
 
 		// insert a separator
 		final Label label1 = new Label(getFieldEditorParent(), SWT.SEPARATOR | SWT.HORIZONTAL);
@@ -104,7 +109,7 @@ public class PrefsPage extends FieldEditorPreferencePage implements IWorkbenchPr
 		final Label label3 = new Label(getFieldEditorParent(), SWT.HORIZONTAL);
 		label3.setText("Specify the PPT template to export recordings:");
 		label3.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 3, 1));
-		final FileFieldEditor templateLocationPrefEditor = new FileFieldEditor(PreferenceConstants.PPT_TEMPLATE,
+		templateLocationPrefEditor = new FileFieldEditor(PreferenceConstants.PPT_TEMPLATE,
 				"Select File: ", getFieldEditorParent());
 		final String[] extensions = new String[] { "*.pptx" }; // NON-NLS-1
 		templateLocationPrefEditor.setFileExtensions(extensions);
@@ -119,7 +124,7 @@ public class PrefsPage extends FieldEditorPreferencePage implements IWorkbenchPr
 
 		// ok, get the current path
 		final String templatePath = getPreferenceStore().getString(PreferenceConstants.PPT_TEMPLATE);
-		final PropertyChangeEvent event = new PropertyChangeEvent(this, "field_editor_value", null, templatePath);
+		final PropertyChangeEvent event = new PropertyChangeEvent(templateLocationPrefEditor, FieldEditor.VALUE, null, templatePath);
 		this.propertyChange(event);
 	}
 
@@ -141,7 +146,7 @@ public class PrefsPage extends FieldEditorPreferencePage implements IWorkbenchPr
 
 	@Override
 	public void propertyChange(final PropertyChangeEvent event) {
-		if (event.getProperty().equals("field_editor_value")) {
+		if (event.getSource() == templateLocationPrefEditor) {
 			final IPath path = new Path(event.getNewValue().toString());
 			if (!path.toFile().exists()) {
 				setErrorMessage("Invalid file path, File does not exist");
