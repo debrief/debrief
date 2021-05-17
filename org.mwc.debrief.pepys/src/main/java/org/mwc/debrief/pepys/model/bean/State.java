@@ -132,8 +132,13 @@ public class State implements AbstractBean, TreeStructurable {
 		final LightweightTrackWrapper track = getParent(_layers, getDatafile().getReference(),
 				getPlatform().getTrackName(), splitByDatafile);
 
-		// create the wrapper for this annotation
-		final FixWrapper fixWrapper = new FixWrapper(new Fix(new HiResDate(time.getTime()), location, course, speed));
+		// special handling. The concept of heading vs course isn't yet clear in the
+		// backend processing. For Debrief purposes it's probably acceptable to use either.
+		final double courseVal = (heading == 0d || course == 0d) ? heading + course : course;
+		
+		// create the wrapper for this annotation		
+		final FixWrapper fixWrapper = new FixWrapper(new Fix(new HiResDate(time.getTime()), 
+				location, courseVal, speed));
 		fixWrapper.setName(time.toString());
 		track.add(fixWrapper);
 	}
