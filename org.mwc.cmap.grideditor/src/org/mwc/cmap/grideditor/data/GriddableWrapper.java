@@ -189,14 +189,6 @@ public class GriddableWrapper implements GriddableSeries {
 
 							gd = new GriddableItemDescriptorExtension("Location", "Location", WorldLocation.class,
 									new WorldLocationHelper(), sampleLocationText);
-						}else if(dataClass == WorldDistance.class) {
-							final WorldLocationHelper worldLocationHelper = new WorldLocationHelper();
-							final WorldLocation sample = new WorldLocation(1, 1, 1);
-							final String sampleLocationText = worldLocationHelper.getLabelFor(sample).getText(sample);
-
-
-							gd = new GriddableItemDescriptorExtension("Range", "Range", WorldDistanceHelper.class,
-									new WorldDistanceHelper(), sampleLocationText);
 						}
 						else {
 							gd = new GriddableItemDescriptor(desc.getName(), desc.getDisplayName(), dataClass,
