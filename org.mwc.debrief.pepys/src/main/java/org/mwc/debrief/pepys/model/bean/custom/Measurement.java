@@ -14,14 +14,18 @@
  */
 package org.mwc.debrief.pepys.model.bean.custom;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Scanner;
 
 import org.mwc.debrief.model.utils.OSUtils;
 import org.mwc.debrief.pepys.Activator;
+import org.mwc.debrief.pepys.model.bean.AbstractBean;
 import org.mwc.debrief.pepys.model.bean.Comment;
 import org.mwc.debrief.pepys.model.bean.Contact;
 import org.mwc.debrief.pepys.model.bean.Datafile;
+import org.mwc.debrief.pepys.model.bean.PlainBean;
 import org.mwc.debrief.pepys.model.bean.Platform;
 import org.mwc.debrief.pepys.model.bean.Sensor;
 import org.mwc.debrief.pepys.model.bean.SensorType;
@@ -37,7 +41,7 @@ import org.mwc.debrief.pepys.model.tree.TreeStructurable;
 
 import junit.framework.TestCase;
 
-public class Measurement {
+public class Measurement implements AbstractBean, PlainBean {
 
 	public static class MeasurementTest extends TestCase {
 
@@ -215,6 +219,18 @@ public class Measurement {
 
 	public int getStateAggCount() {
 		return stateAggCount;
+	}
+
+	@Override
+	public void retrieveObject(final ResultSet resultSet, final DatabaseConnection connection) throws SQLException {
+		setPlatformName(resultSet.getString("PLATFORM_NAME"));
+		setPlatformId(resultSet.getString("platform_id"));
+		setDataType(resultSet.getString("datatype"));
+		setSensorName(resultSet.getString("SENSOR_NAME"));
+		setSensorId(resultSet.getString("sensor_id"));
+		setReference(resultSet.getString("reference"));
+		setDatafileId(resultSet.getString("datafile_id"));
+		setStateAggCount(resultSet.getInt("state_agg_count"));
 	}
 
 	public void setDatafileId(final String datafileId) {
