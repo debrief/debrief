@@ -21,6 +21,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 
+import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.viewers.CheckboxTreeViewer;
 import org.eclipse.nebula.widgets.cdatetime.CDT;
 import org.eclipse.nebula.widgets.cdatetime.CDateTime;
@@ -62,7 +63,9 @@ public class PepysImportView extends Dialog implements AbstractViewSWT {
 	final static RGB SWT_ORANGE = new RGB(255, 165, 0);
 	public static final String PEPYS_IMPORT_START_DATE = "PEPYS_IMPORT_START_DATE";
 	public static final String PEPYS_IMPORT_END_DATE = "PEPYS_IMPORT_END_DATE";
-	
+	private static final String HIRESDATE_PATTERN = "EEE MMM dd hh:mm:ss zzz yyyy";
+	private static final String TOOL_DATE_PATTERN="dd/MM/yyyy  ";
+	private static final String TOOL_TIME_PATTERN="hh:mm:ss a ";
 	private final Label startLabel;
 	private final Label endLabel;
 	private final Label topLeftLabel;
@@ -182,11 +185,11 @@ public class PepysImportView extends Dialog implements AbstractViewSWT {
 		this.startLabel.setLayoutData(gridData);
 
 		this.startDate = new CDateTime(timePeriodItem.getBody(), CDT.BORDER | CDT.DROP_DOWN | CDT.DATE_SHORT);
-		this.startDate.setPattern("dd/MM/yyyy  ");
+		this.startDate.setPattern(TOOL_DATE_PATTERN);
 		this.startDate.setSelection(model.getTimePeriod().getStartDTG().getDate());
 
 		this.startTime = new CDateTime(timePeriodItem.getBody(), CDT.BORDER | CDT.SPINNER | CDT.TIME_MEDIUM);
-		this.startTime.setPattern("hh:mm:ss a ");
+		this.startTime.setPattern(TOOL_TIME_PATTERN);
 		
 
 		this.endLabel = new Label(timePeriodItem.getBody(), SWT.NONE);
@@ -194,16 +197,15 @@ public class PepysImportView extends Dialog implements AbstractViewSWT {
 		this.endLabel.setLayoutData(gridData);
 
 		this.endDate = new CDateTime(timePeriodItem.getBody(), CDT.BORDER | CDT.DROP_DOWN | CDT.DATE_SHORT);
-		this.endDate.setPattern("dd/MM/yyyy  ");
+		this.endDate.setPattern(TOOL_DATE_PATTERN);
 		final String startDatePref = CorePlugin.getDefault().getPreference(PEPYS_IMPORT_START_DATE);
 		
-		System.out.println("STart date from preference:"+startDatePref);
 		if(!startDatePref.isBlank()) {
 			try {
 				this.startDate.setSelection(getDate(startDatePref));
 				this.startTime.setSelection(getDate(startDatePref));
 			} catch (ParseException e1) {
-				e1.printStackTrace();
+				CorePlugin.logError(Status.ERROR, "error parsing end date", e1);
 				this.startDate.setSelection(model.getTimePeriod().getStartDTG().getDate());
 				this.startTime.setSelection(model.getTimePeriod().getStartDTG().getDate());
 			}
@@ -213,15 +215,14 @@ public class PepysImportView extends Dialog implements AbstractViewSWT {
 			this.startTime.setSelection(model.getTimePeriod().getStartDTG().getDate());
 		}
 		final String endDate = CorePlugin.getDefault().getPreference(PEPYS_IMPORT_END_DATE);
-		System.out.println("End date:"+endDate);
 		this.endTime = new CDateTime(timePeriodItem.getBody(), CDT.BORDER | CDT.SPINNER | CDT.TIME_MEDIUM);
-		this.endTime.setPattern("hh:mm:ss a ");
+		this.endTime.setPattern(TOOL_TIME_PATTERN);
 		if(endDate!=null) {
 			try {
 				this.endDate.setSelection(getDate(endDate));
 				this.endTime.setSelection(getDate(endDate));
 			} catch (ParseException e1) {
-				e1.printStackTrace();
+				CorePlugin.logError(Status.ERROR, "error parsing end date", e1);
 				this.endDate.setSelection(model.getTimePeriod().getEndDTG().getDate());
 				this.endTime.setSelection(model.getTimePeriod().getEndDTG().getDate());
 			}
@@ -433,7 +434,7 @@ public class PepysImportView extends Dialog implements AbstractViewSWT {
 	}
 	
 	private Date getDate(String startDate2) throws ParseException {
-		DateFormat df = new SimpleDateFormat("EEE MMM dd hh:mm:ss zzz yyyy");
+		DateFormat df = new SimpleDateFormat(HIRESDATE_PATTERN);
 		return df.parse(startDate2);
 	}
 	
