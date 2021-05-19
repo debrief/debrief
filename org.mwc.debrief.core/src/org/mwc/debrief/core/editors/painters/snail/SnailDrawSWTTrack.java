@@ -63,7 +63,7 @@ final class SnailDrawSWTTrack {
 	 * @param datumTime the time of this data item
 	 * @return
 	 */
-	public static Color getFadedColorFor(final Color mainCol, final Color backColor, final long trail_len,
+	public static Color getFadedColorFor(final Color mainCol, final long trail_len,
 			final HiResDate stepTime, final HiResDate datumTime) {
 
 		// how far back through the time period are we?
@@ -77,26 +77,14 @@ final class SnailDrawSWTTrack {
 		// just check we've got a realistic proportion
 		proportion = Math.max(0, proportion);
 
-		// now apply this proportion to the indicated color
-		final float backR = backColor.getRed();
-		final float backG = backColor.getGreen();
-		final float backB = backColor.getBlue();
-
 		final int mainR = mainCol.getRed();
 		final int mainG = mainCol.getGreen();
 		final int mainB = mainCol.getBlue();
+		// Let's calculate the proporsion of the transparency
+		// (255 is totally opaque)
+		final int mainTransparency = (int) (proportion * 255);
 
-		// now apply this proportion to the indicated color
-		final float r = (mainR - backR) * proportion;
-		final float g = (mainG - backG) * proportion;
-		final float b = (mainB - backB) * proportion;
-
-		// create the colour shade for this item
-		final int new_r = (int) (backR + r);
-		final int new_g = (int) (backG + g);
-		final int new_b = (int) (backB + b);
-
-		final Color thisCol = new Color(new_r, new_g, new_b);
+		final Color thisCol = new Color(mainR, mainG, mainB, mainTransparency);
 
 		return thisCol;
 	}
@@ -270,7 +258,7 @@ final class SnailDrawSWTTrack {
 					if (_fadePoints) {
 						// calculate the color for this point in the track (using the fix
 						// color)
-						newCol = getFadedColorFor(gw.getColor(), backColor, trail_len, dtg, gw.getDateTimeGroup());
+						newCol = getFadedColorFor(gw.getColor(), trail_len, dtg, gw.getDateTimeGroup());
 					} else {
 						// just use the normal track colour
 						newCol = gw.getColor();
@@ -394,7 +382,7 @@ final class SnailDrawSWTTrack {
 			TrackSegment match = null;
 			while (iter.hasMoreElements()) {
 				final TrackSegment seg = (TrackSegment) iter.nextElement();
-				if(!seg.isEmpty()) {
+				if (!seg.isEmpty()) {
 					final FixWrapper first = (FixWrapper) seg.first();
 					final FixWrapper last = (FixWrapper) seg.last();
 
@@ -402,7 +390,7 @@ final class SnailDrawSWTTrack {
 							last.getDateTimeGroup());
 					if (period.contains(end)) {
 						match = seg;
-					}					
+					}
 				}
 			}
 			if (match != null) {
