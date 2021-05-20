@@ -90,7 +90,7 @@ public class Contact implements AbstractBean, TreeStructurable {
 	/**
 	 * Method that receives an editable and if it is a trackwrapper, we create a
 	 * contact from using our data and we add it to the element passed.
-	 * 
+	 *
 	 * @param found
 	 */
 	protected void addContactIfFound(final Editable found) {

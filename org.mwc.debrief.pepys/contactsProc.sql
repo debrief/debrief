@@ -1,1 +1,1 @@
-select contact_id, contact_time as time, sensor_name, platform_name, platformtype_name as platform_type_name, nationality_name, bearing, range, contact_location as location, reference from pepys.contacts_for (?, ?, ?, ?, ?, ?)
+select contact_id, contact_time as time, sensor_name, platform_name, platformtype_name as platform_type_name, nationality_name, bearing, range, contact_location as location, reference, null as name from pepys.contacts_for (?, ?, ?, ?, ?, ?)

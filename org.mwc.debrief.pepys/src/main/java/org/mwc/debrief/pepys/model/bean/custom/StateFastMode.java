@@ -1,12 +1,17 @@
 package org.mwc.debrief.pepys.model.bean.custom;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Timestamp;
 
+import org.mwc.debrief.pepys.model.bean.AbstractBean;
+import org.mwc.debrief.pepys.model.bean.PlainBean;
+import org.mwc.debrief.pepys.model.db.DatabaseConnection;
 import org.mwc.debrief.pepys.model.db.annotation.FieldName;
 
 import MWC.GenericData.WorldLocation;
 
-public class StateFastMode {
+public class StateFastMode implements AbstractBean, PlainBean {
 
 	@FieldName(name = "state_id")
 	private String stateId;
@@ -20,7 +25,7 @@ public class StateFastMode {
 	private String platformName;
 
 	private String sourceid;
-	
+
 	private String reference;
 
 	@FieldName(name = "platform_type")
@@ -71,6 +76,10 @@ public class StateFastMode {
 		return platformType;
 	}
 
+	public String getReference() {
+		return reference;
+	}
+
 	public String getSensorName() {
 		return sensorName;
 	}
@@ -89,6 +98,23 @@ public class StateFastMode {
 
 	public Timestamp getTime() {
 		return time;
+	}
+
+	@Override
+	public void retrieveObject(final ResultSet resultSet, final DatabaseConnection connection) throws SQLException {
+		setStateId(resultSet.getString("state_id"));
+		setTime(resultSet.getTimestamp("time"));
+		setSensorName(resultSet.getString("sensor_name"));
+		setPlatformName(resultSet.getString("platform_name"));
+		setSourceid(resultSet.getString("sourceid"));
+		setReference(resultSet.getString("reference"));
+		setPlatformType(resultSet.getString("platform_type"));
+		setNationalityName(resultSet.getString("nationality_name"));
+		setLocation(connection.createWorldLocation(resultSet, "location"));
+		setElevation(resultSet.getDouble("elevation"));
+		setHeading(resultSet.getDouble("heading"));
+		setCourse(resultSet.getDouble("course"));
+		setSpeed(resultSet.getDouble("speed"));
 	}
 
 	public void setCourse(final double course) {
@@ -119,6 +145,10 @@ public class StateFastMode {
 		this.platformType = platformType;
 	}
 
+	public void setReference(final String reference) {
+		this.reference = reference;
+	}
+
 	public void setSensorName(final String sensorName) {
 		this.sensorName = sensorName;
 	}
@@ -139,13 +169,4 @@ public class StateFastMode {
 		this.time = time;
 	}
 
-	public String getReference() {
-		return reference;
-	}
-
-	public void setReference(String reference) {
-		this.reference = reference;
-	}
-
-	
 }
