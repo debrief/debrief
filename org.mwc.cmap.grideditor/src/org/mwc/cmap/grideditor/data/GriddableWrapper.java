@@ -25,6 +25,7 @@ import org.eclipse.ui.views.properties.IPropertyDescriptor;
 import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.property_support.EditableWrapper;
 import org.mwc.cmap.core.property_support.IDebriefProperty;
+import org.mwc.cmap.core.property_support.WorldDistanceHelper;
 import org.mwc.cmap.core.ui_support.EventStack;
 import org.mwc.cmap.gridharness.data.GriddableItemDescriptor;
 import org.mwc.cmap.gridharness.data.GriddableItemDescriptorExtension;
@@ -40,6 +41,7 @@ import MWC.GUI.Layers;
 import MWC.GUI.Plottable;
 import MWC.GUI.SupportsPropertyListeners;
 import MWC.GUI.TimeStampedDataItem;
+import MWC.GenericData.WorldDistance;
 import MWC.GenericData.WorldLocation;
 
 /**
@@ -174,7 +176,7 @@ public class GriddableWrapper implements GriddableSeries {
 					// wrap them
 					for (int i = 0; i < props.length; i++) {
 						final IDebriefProperty desc = (IDebriefProperty) props[i];
-
+						
 						final Object dataObject = desc.getRawValue();
 						final Class<?> dataClass = dataObject.getClass();
 						GriddableItemDescriptor gd;
@@ -187,7 +189,8 @@ public class GriddableWrapper implements GriddableSeries {
 
 							gd = new GriddableItemDescriptorExtension("Location", "Location", WorldLocation.class,
 									new WorldLocationHelper(), sampleLocationText);
-						} else {
+						}
+						else {
 							gd = new GriddableItemDescriptor(desc.getName(), desc.getDisplayName(), dataClass,
 									desc.getHelper());
 						}
