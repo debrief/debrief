@@ -1517,7 +1517,12 @@ public final class SensorContactWrapper extends SnailDrawTMAContact.PlottableWra
 	 * set the range (in yards)
 	 */
 	public final void setEditableRange(final WorldDistance dist) {
-		setRange(dist);
+		if(dist.getValueIn(WorldDistance.METRES)==0) {
+			setRange(null);
+		}
+		else {
+			setRange(dist);
+		}
 	}
 
 	/**
