@@ -65,7 +65,7 @@ public class PepysImportView extends Dialog implements AbstractViewSWT {
 	public static final String PEPYS_IMPORT_END_DATE = "PEPYS_IMPORT_END_DATE";
 	private static final String HIRESDATE_PATTERN = "EEE MMM dd hh:mm:ss zzz yyyy";
 	private static final String TOOL_DATE_PATTERN="dd/MM/yyyy  ";
-	private static final String TOOL_TIME_PATTERN="hh:mm:ss a ";
+	private static final String TOOL_TIME_PATTERN="HH:mm:ss ";
 	private final Label startLabel;
 	private final Label endLabel;
 	private final Label topLeftLabel;
@@ -179,16 +179,16 @@ public class PepysImportView extends Dialog implements AbstractViewSWT {
 		timePeriodLayout.marginHeight = 10;
 		timePeriodItem.setImage(DebriefPlugin.getImageDescriptor("/icons/16/control_time.png").createImage());
 		timePeriodItem.getBody().setLayout(timePeriodLayout);
-
+		
 		this.startLabel = new Label(timePeriodItem.getBody(), SWT.PUSH);
 		this.startLabel.setText("Start:");
 		this.startLabel.setLayoutData(gridData);
 
-		this.startDate = new CDateTime(timePeriodItem.getBody(), CDT.BORDER | CDT.DROP_DOWN | CDT.DATE_SHORT);
+		this.startDate = new CDateTime(timePeriodItem.getBody(), CDT.BORDER | CDT.DROP_DOWN | CDT.DATE_SHORT|CDT.CLOCK_24_HOUR);
 		this.startDate.setPattern(TOOL_DATE_PATTERN);
 		this.startDate.setSelection(model.getTimePeriod().getStartDTG().getDate());
 
-		this.startTime = new CDateTime(timePeriodItem.getBody(), CDT.BORDER | CDT.SPINNER | CDT.TIME_MEDIUM);
+		this.startTime = new CDateTime(timePeriodItem.getBody(), CDT.BORDER | CDT.SPINNER | CDT.TIME_MEDIUM|CDT.CLOCK_24_HOUR);
 		this.startTime.setPattern(TOOL_TIME_PATTERN);
 		
 
@@ -196,7 +196,7 @@ public class PepysImportView extends Dialog implements AbstractViewSWT {
 		this.endLabel.setText("End:");
 		this.endLabel.setLayoutData(gridData);
 
-		this.endDate = new CDateTime(timePeriodItem.getBody(), CDT.BORDER | CDT.DROP_DOWN | CDT.DATE_SHORT);
+		this.endDate = new CDateTime(timePeriodItem.getBody(), CDT.BORDER | CDT.DROP_DOWN | CDT.DATE_SHORT|CDT.CLOCK_24_HOUR);
 		this.endDate.setPattern(TOOL_DATE_PATTERN);
 		final String startDatePref = CorePlugin.getDefault().getPreference(PEPYS_IMPORT_START_DATE);
 		
@@ -215,7 +215,7 @@ public class PepysImportView extends Dialog implements AbstractViewSWT {
 			this.startTime.setSelection(model.getTimePeriod().getStartDTG().getDate());
 		}
 		final String endDate = CorePlugin.getDefault().getPreference(PEPYS_IMPORT_END_DATE);
-		this.endTime = new CDateTime(timePeriodItem.getBody(), CDT.BORDER | CDT.SPINNER | CDT.TIME_MEDIUM);
+		this.endTime = new CDateTime(timePeriodItem.getBody(), CDT.BORDER | CDT.SPINNER | CDT.TIME_MEDIUM | CDT.CLOCK_24_HOUR);
 		this.endTime.setPattern(TOOL_TIME_PATTERN);
 		if(endDate!=null) {
 			try {
