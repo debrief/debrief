@@ -802,7 +802,7 @@ public class ModelConfiguration implements AbstractConfiguration {
 		if (selectedStates.isEmpty()) {
 			return 0;
 		} else {
-			final String query = OSUtils.readFile(ContactFastMode.class, getStateQuery(getAlgorithmType()));
+			final String query = OSUtils.readFile(StateFastMode.class, getStateQuery(getAlgorithmType()));
 			final List<Object> parameters = new ArrayList<>();
 
 			// Let's add the time period filter
@@ -843,7 +843,7 @@ public class ModelConfiguration implements AbstractConfiguration {
 
 				if (stateFastMode.getReference() != null) {
 					datafile.setReference(stateFastMode.getReference());
-				}else {
+				} else {
 					datafile.setReference(datafilesNames.get(stateFastMode.getSourceid()));
 				}
 				currentState.setSensor(sensor);
