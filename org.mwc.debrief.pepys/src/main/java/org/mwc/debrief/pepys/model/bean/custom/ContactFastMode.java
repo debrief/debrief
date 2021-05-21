@@ -7,6 +7,7 @@ import java.sql.Timestamp;
 import org.mwc.debrief.pepys.model.bean.AbstractBean;
 import org.mwc.debrief.pepys.model.bean.PlainBean;
 import org.mwc.debrief.pepys.model.db.DatabaseConnection;
+import org.mwc.debrief.pepys.model.db.annotation.FieldName;
 
 import MWC.GenericData.WorldLocation;
 
@@ -16,12 +17,11 @@ public class ContactFastMode implements AbstractBean, PlainBean {
 
 	private Timestamp time;
 
-	private String name;
-
 	private String sensor_name;
 
 	private String platform_name;
 
+	@FieldName(name = "platformtype_name")
 	private String platform_type_name;
 
 	private String nationality_name;
@@ -48,10 +48,6 @@ public class ContactFastMode implements AbstractBean, PlainBean {
 
 	public WorldLocation getLocation() {
 		return location;
-	}
-
-	public String getName() {
-		return name;
 	}
 
 	public String getNationality_name() {
@@ -86,10 +82,9 @@ public class ContactFastMode implements AbstractBean, PlainBean {
 	public void retrieveObject(final ResultSet resultSet, final DatabaseConnection connection) throws SQLException {
 		setContact_id(resultSet.getString("contact_id"));
 		setTime(resultSet.getTimestamp("time"));
-		setName(resultSet.getString("name"));
 		setSensor_name(resultSet.getString("sensor_name"));
 		setPlatform_name(resultSet.getString("platform_name"));
-		setPlatform_type_name(resultSet.getString("platform_type_name"));
+		setPlatform_type_name(resultSet.getString("platformtype_name"));
 		setNationality_name(resultSet.getString("nationality_name"));
 		setBearing(resultSet.getDouble("bearing"));
 		setRange(resultSet.getDouble("range"));
@@ -107,10 +102,6 @@ public class ContactFastMode implements AbstractBean, PlainBean {
 
 	public void setLocation(final WorldLocation location) {
 		this.location = location;
-	}
-
-	public void setName(final String name) {
-		this.name = name;
 	}
 
 	public void setNationality_name(final String nationality_name) {
