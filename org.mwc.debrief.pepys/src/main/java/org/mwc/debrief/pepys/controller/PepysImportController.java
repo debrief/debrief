@@ -333,6 +333,8 @@ public class PepysImportController {
 								updateAreaView2Model(model, view);
 								model.apply();
 								view.getImportButton().setEnabled(false);
+								CorePlugin.getDefault().getPreferenceStore().setValue(PepysImportView.PEPYS_IMPORT_START_DATE, model.getTimePeriod().getStartDTG().getDate().toString());
+								CorePlugin.getDefault().getPreferenceStore().setValue(PepysImportView.PEPYS_IMPORT_END_DATE, model.getTimePeriod().getEndDTG().getDate().toString());
 							} catch (final PepsysException e) {
 								CorePlugin.logError(IStatus.ERROR, "PepysException on updating area filter", e);
 								e.printStackTrace();
