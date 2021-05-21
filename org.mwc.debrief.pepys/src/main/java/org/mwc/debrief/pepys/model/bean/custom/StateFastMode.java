@@ -24,11 +24,9 @@ public class StateFastMode implements AbstractBean, PlainBean {
 	@FieldName(name = "platform_name")
 	private String platformName;
 
-	private String sourceid;
-
 	private String reference;
 
-	@FieldName(name = "platform_type")
+	@FieldName(name = "platformtype_name")
 	private String platformType;
 
 	@FieldName(name = "nationality_name")
@@ -84,10 +82,6 @@ public class StateFastMode implements AbstractBean, PlainBean {
 		return sensorName;
 	}
 
-	public String getSourceid() {
-		return sourceid;
-	}
-
 	public double getSpeed() {
 		return speed;
 	}
@@ -106,9 +100,8 @@ public class StateFastMode implements AbstractBean, PlainBean {
 		setTime(resultSet.getTimestamp("time"));
 		setSensorName(resultSet.getString("sensor_name"));
 		setPlatformName(resultSet.getString("platform_name"));
-		setSourceid(resultSet.getString("sourceid"));
 		setReference(resultSet.getString("reference"));
-		setPlatformType(resultSet.getString("platform_type"));
+		setPlatformType(resultSet.getString("platformtype_name"));
 		setNationalityName(resultSet.getString("nationality_name"));
 		setLocation(connection.createWorldLocation(resultSet, "location"));
 		setElevation(resultSet.getDouble("elevation"));
@@ -151,10 +144,6 @@ public class StateFastMode implements AbstractBean, PlainBean {
 
 	public void setSensorName(final String sensorName) {
 		this.sensorName = sensorName;
-	}
-
-	public void setSourceid(final String sourceid) {
-		this.sourceid = sourceid;
 	}
 
 	public void setSpeed(final double speed) {
