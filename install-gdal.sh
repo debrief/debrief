@@ -64,7 +64,7 @@ rm -rf gdal
 mkdir -p /build_gdal_python/usr/lib 
 mkdir -p /build_gdal_python/usr/bin 
 mkdir -p /build_gdal_version_changing/usr/include 
-mv /build/usr/lib/python3            /build_gdal_python/usr/lib 
+#mv /build/usr/lib/python3            /build_gdal_python/usr/lib 
 mv /build/usr/lib                    /build_gdal_version_changing/usr 
 mv /build/usr/include/gdal_version.h /build_gdal_version_changing/usr/include 
 mv /build/usr/bin/*.py               /build_gdal_python/usr/bin 
@@ -89,8 +89,6 @@ DEBIAN_FRONTEND=noninteractive apt-get install -y  --no-install-recommends \
         libxerces-c3.2 \
         libwebp6 \
         libzstd1 bash libpq5 libssl1.1 libopenjp2-7
-
-DEBIAN_FRONTEND=noninteractive apt-get install -y python-is-python3
 
 cp -r /build_projgrids/usr/* /usr/
 
