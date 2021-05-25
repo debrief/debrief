@@ -34,6 +34,36 @@ import MWC.GenericData.WorldLocation;
 
 public interface AbstractConfiguration extends hasPropertyListeners {
 
+	/**
+	 * as the database interactions have developed the ways of connecting it have
+	 * evolved. These strategies are by these enums
+	 */
+	public static enum QUERY_STRATEGY {
+		LEGACY, // Legacy Tree Structure, queries are generated automatically by the orm. This
+				// stores all the information in the tree model, which might not be very
+				// efficient for big databases.
+		FAST_MODE, // New mode using Custom Database Query to build the tree quicker. Queries are
+					// taken from a file, and only basic information is stored in the tree.
+					// Depending on the selection, new queries are done to database to load the
+					// missing data.
+		FAST_MODE_STORED_PROC // Alternative new mode for using Postgres custom store procedure instead of a
+								// direct query. Logic is exactly the same as the previous mode, however,
+								// queries are done to a stored procedure.
+	}
+
+	/**
+	 * This is a helper to accumulate parameters into query
+	 *
+	 * For example: In case of stored procedures, accumulator should return
+	 *
+	 *
+	 */
+	public static interface QueryParameterAccumulator {
+		void addPart(final Object o);
+
+		Object getAccumulated();
+	}
+
 	static String AREA_PROPERTY = "AREA";
 
 	static String PERIOD_PROPERTY = "PERIOD";
@@ -50,11 +80,19 @@ public interface AbstractConfiguration extends hasPropertyListeners {
 
 	void apply() throws Exception;
 
-	int doImport();
+	int doImport() throws Exception;
 
 	boolean doTestQuery() throws SQLException;
 
+	QUERY_STRATEGY getAlgorithmType();
+
+	String getCommentQuery(final QUERY_STRATEGY algorithType);
+
+	String getContactQuery(final QUERY_STRATEGY algorithType);
+
 	WorldArea getCurrentArea();
+
+	String getCurrentAreaAsParameter();
 
 	SearchTreeResult getCurrentSearchTreeResultModel();
 
@@ -70,7 +108,11 @@ public interface AbstractConfiguration extends hasPropertyListeners {
 
 	SearchTreeResult getHereSearch();
 
+	String getMeasurementQuery(final QUERY_STRATEGY algorithType);
+
 	SearchTreeResult getNextSearch();
+
+	QueryParameterAccumulator getParameterAccumulator();
 
 	SearchTreeResult getPreviousSearch();
 
@@ -78,9 +120,13 @@ public interface AbstractConfiguration extends hasPropertyListeners {
 
 	String getSearchResultsText();
 
+	String getStateQuery(final QUERY_STRATEGY algorithType);
+
 	TimePeriod getTimePeriod();
 
 	TreeNode getTreeModel();
+
+	boolean isSplitByDatafile();
 
 	void loadDatabaseConfiguration(final DatabaseConfiguration _configuration)
 			throws FileNotFoundException, PropertyVetoException, IOException, PepsysException;
@@ -108,9 +154,11 @@ public interface AbstractConfiguration extends hasPropertyListeners {
 
 	void setSearchResults(final int current, final int total);
 
+	void setSplitByDataile(final boolean splitByDatafile);
+
 	void setTimePeriod(final TimePeriod newPeriod);
 
 	void updateTree();
 
-	public void validate() throws Exception;
+	void validate() throws Exception;
 }

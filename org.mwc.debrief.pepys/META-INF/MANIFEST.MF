@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Pepys
 Bundle-SymbolicName: org.mwc.debrief.pepys;singleton:=true
-Bundle-Version: 1.0.5
+Bundle-Version: 1.0.12
 Automatic-Module-Name: org.mwc.debref.pepys
 Bundle-RequiredExecutionEnvironment: JavaSE-11
 Bundle-ClassPath: libs/c3p0-0.9.5.5.jar,
@@ -18,12 +18,14 @@ Require-Bundle: org.mwc.cmap.legacy;bundle-version="1.0.293",
  org.mwc.debrief.legacy;bundle-version="1.0.432",
  org.eclipse.jface,
  org.eclipse.nebula.cwt;bundle-version="0.9.3",
- org.eclipse.core.runtime;bundle-version="3.15.300"
+ org.eclipse.core.runtime;bundle-version="3.15.300",
+ org.mwc.debrief.core
 Import-Package: org.apache.commons.io,
  org.eclipse.jface.viewers,
  org.eclipse.nebula.widgets.cdatetime,
  org.eclipse.ui,
  org.eclipse.ui.plugin,
+ org.mwc.cmap.core,
  org.mwc.cmap.core.custom_widget,
  org.mwc.cmap.plotViewer.actions,
  org.mwc.debrief.core,

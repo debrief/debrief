@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Debrief Core
 Bundle-SymbolicName: org.mwc.debrief.core; singleton:=true
-Bundle-Version: 1.0.395
+Bundle-Version: 1.0.402
 Bundle-ClassPath: debrief_core.jar,
  libs/jdom-1.0.jar,
  libs/eclipselink.jar
@@ -67,5 +67,6 @@ Require-Bundle: org.mwc.cmap.core,
  org.eclipse.nebula.jface.cdatetime;bundle-version="0.14.0",
  org.eclipse.nebula.widgets.cdatetime;bundle-version="0.14.0",
  org.mwc.cmap.geotools;bundle-version="1.0.7",
- org.eclipse.e4.ui.model.workbench
+ org.eclipse.e4.ui.model.workbench,
+ org.eclipse.ui.navigator;bundle-version="3.10.0"
 Bundle-ActivationPolicy: lazy

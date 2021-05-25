@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.HashSet;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -265,7 +266,9 @@ public class GeoPDFSegmentedBuilder extends AbstractGeoPDFBuilder {
 		} else {
 			endTime = layers.getTimePeriod().getEndDTG();
 		}
+		
 		HiResDate currentTime = startTime;
+		final HashSet<String> usedNames = new HashSet<>();
 
 		while (currentTime.lessThan(endTime)) {
 			final HiResDate topCurrentPeriod = HiResDate.min(
@@ -273,12 +276,20 @@ public class GeoPDFSegmentedBuilder extends AbstractGeoPDFBuilder {
 			final TimePeriod period = new TimePeriod.BaseTimePeriod(currentTime, topCurrentPeriod);
 
 			final GeoPDFLayerTrack periodTrack = new GeoPDFLayerTrack();
-			final String periodName;
+			String periodName;
 			if (configuration.getDateFormat() != null) {
 				periodName = new SimpleDateFormat(configuration.getDateFormat()).format(period.getStartDTG().getDate());
 			} else {
 				periodName = period.getStartDTG().toString();
 			}
+			if (usedNames.contains(periodName)) {
+				int suffix = 2;
+				while (usedNames.contains(periodName + "_" + suffix)) {
+					++suffix;
+				}
+				periodName = periodName + "_" + suffix;
+			}
+			usedNames.add(periodName);
 
 			interactiveLayer.addChild(periodTrack);
 			periodTrack.setId(periodName);

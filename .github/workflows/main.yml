@@ -1,0 +1,104 @@
+# This is a workflow for debrief for continuous integration
+
+name: Debrief CI
+
+# Controls when the action will run.
+on:
+  [push, pull_request]
+env:
+  SPATIALITE_LIBRARY_PATH: mod_spatialite
+
+# Build and release debrief.  First do the required updates and installations needed for building debrief
+jobs:
+  buildandrelease:
+    name: Build and release Debrief
+    runs-on: ubuntu-latest
+    steps:
+      - name: Update ubuntu
+        run: |
+                sudo apt-get update -y
+                sudo apt-get install -y libsqlite3-mod-spatialite
+                sudo apt-get install libspatialite-dev
+                sudo apt-get install libpq-dev python-dev
+                sudo add-apt-repository -y ppa:ubuntugis/ubuntugis-unstable
+                sudo apt-get install -y postgis
+                sudo apt-get install postgresql
+      - name: The actual installation
+        run: |
+                    mvn --version
+                    sudo apt-get install intltool
+                    sudo apt-get install -y libgsf-1-dev
+                    sudo apt-get install uuid-runtime
+                    sudo apt-get install uuid
+                    sudo apt-get install uuid-dev
+                    sudo apt-get install libglib2.0-dev
+                    sudo apt-get install libxml2-dev
+                    sudo apt-get install unzip
+                    sudo apt-get install spatialite-bin
+                    sudo apt-get install gcab
+                    sudo apt-get install libgcab-1.0-0
+                    sudo apt-get install libgcab-dev
+                    sudo apt-get install libgconf-2-4
+                    sudo apt-get install xvfb
+                    #  sudo find / -name uuid.pc
+                    #  echo printing uuid cflags
+                    #  pkg-config --cflags uuid
+                    #  echo printing uuid libs
+                    #  pkg-config --libs uuid
+      # Checks-out repository
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Checkout from repository
+        uses: actions/setup-java@v1
+        with:
+           java-version: 1.11
+      - name: install java
+        run: |
+               sleep 3
+               echo "root.win32.win32.x86_64 = win-64" >> org.mwc.debrief.combined.feature/build.properties
+               # get a 64-bit windows JRE
+               wget -P dest https://github.com/AdoptOpenJDK/openjdk11-binaries/releases/download/jdk-11.0.5%2B10/OpenJDK11U-jre_x64_windows_hotspot_11.0.5_10.zip
+               # unpack it
+               cd dest
+               unzip OpenJD*.zip
+               # rename and move it
+               mv *-jre jre
+               mkdir ../org.mwc.debrief.combined.feature/win-64
+               # move it to the target folder
+               mv jre ../org.mwc.debrief.combined.feature/win-64/jre
+               # move back to top level
+               cd ../
+      - name: run build with test
+        uses: GabrielBB/xvfb-action@v1
+        with:
+              working-directory: ./
+              run: mvn clean verify -U -B -fae
+      - name: build installer
+        run: |
+          ls /home/runner/work/debrief/debrief/org.mwc.debrief.product/target/products/
+          sudo apt-cache search libuuid
+          ./install-msitools.sh
+          ./contribs/msi/make_x64msi.sh
+      - name: Check whether installer succeeded
+        uses: andstor/file-existence-action@v1
+        with:
+          files: "/home/runner/work/debrief/debrief/org.mwc.debrief.product/target/products/DebriefNG-Windows64Bit.msi"
+          allow_failure: true
+      - name: Upload  release
+        uses: softprops/action-gh-release@v1
+        if: startsWith(github.ref, 'refs/tags/')
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          files: |
+                 /home/runner/work/debrief/debrief/org.mwc.debrief.product/target/products/DebriefNG-Linux64Bit.zip
+                 /home/runner/work/debrief/debrief/org.mwc.debrief.product/target/products/DebriefNG-MacOSX64Bit.zip
+                 /home/runner/work/debrief/debrief/org.mwc.debrief.product/target/products/DebriefNG-Windows32Bit.zip
+                 /home/runner/work/debrief/debrief/org.mwc.debrief.product/target/products/DebriefNG-Windows64Bit.zip
+                 /home/runner/work/debrief/debrief/org.mwc.debrief.product/target/products/P2_Repository.zip
+                 /home/runner/work/debrief/debrief/org.mwc.debrief.legacy/dist/DebriefLegacy*.jar
+                 /home/runner/work/debrief/debrief/org.mwc.debrief.lite/dist/debrief-lite*.zip
+                 /home/runner/work/debrief/debrief/org.mwc.debrief.product/target/products/DebriefNG-Windows64Bit.msi
+      #make sure the xvfb windows that was opened is closed in the end
+      - name: Cleanup xvfb pidx
+        uses: bcomnes/cleanup-xvfb@v1

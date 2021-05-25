@@ -25,6 +25,7 @@ import org.mwc.debrief.pepys.model.db.annotation.ManyToOne;
 import org.mwc.debrief.pepys.model.db.annotation.OneToOne;
 import org.mwc.debrief.pepys.model.db.annotation.TableName;
 import org.mwc.debrief.pepys.model.db.annotation.Time;
+import org.mwc.debrief.pepys.model.db.annotation.Transient;
 import org.mwc.debrief.pepys.model.tree.TreeStructurable;
 
 import Debrief.Wrappers.SensorContactWrapper;
@@ -76,27 +77,55 @@ public class Contact implements AbstractBean, TreeStructurable {
 	@Location
 	private WorldLocation location;
 
+	@Transient
+	private String reference;
+
+	@Transient
+	private int count;
+
 	public Contact() {
 
 	}
 
+	/**
+	 * Method that receives an editable and if it is a trackwrapper, we create a
+	 * contact from using our data and we add it to the element passed.
+	 *
+	 * @param found
+	 */
+	protected void addContactIfFound(final Editable found) {
+		if (found != null && found instanceof TrackWrapper) {
+			final TrackWrapper track = (TrackWrapper) found;
+
+			final SensorWrapper newSensorWrapper = new SensorWrapper(getSensor().getName());
+			final SensorContactWrapper contact = new SensorContactWrapper(track.getName(), new HiResDate(getTime()),
+					null, bearing, location, null, getName(), 0, getSensor().getName());
+			newSensorWrapper.add(contact);
+			track.add(newSensorWrapper);
+		}
+	}
+
 	@Override
-	public void doImport(final Layers _layers) {
-		final String layerName = getDatafile().getReference();
-		final Layer target = _layers.findLayer(layerName, true);
+	public void doImport(final Layers _layers, final boolean splitByDatafile) {
+		final String layerName;
+		if (splitByDatafile) {
+			layerName = getDatafile().getReference();
 
-		if (target != null && target instanceof BaseLayer) {
-			final BaseLayer folder = (BaseLayer) target;
-			final Editable found = folder.find(getPlatform().getTrackName());
-			if (found != null && found instanceof TrackWrapper) {
-				final TrackWrapper track = (TrackWrapper) found;
+			final Layer target = _layers.findLayer(layerName, false);
 
-				final SensorWrapper newSensorWrapper = new SensorWrapper(getSensor().getName());
-				final SensorContactWrapper contact = new SensorContactWrapper(track.getName(), new HiResDate(getTime()),
-						null, bearing, location, null, getName(), 0, getSensor().getName());
-				newSensorWrapper.add(contact);
-				track.add(newSensorWrapper);
+			if (target != null && target instanceof BaseLayer) {
+				final BaseLayer folder = (BaseLayer) target;
+				final Editable found = folder.find(getPlatform().getTrackName());
+				addContactIfFound(found);
 			}
+		} else {
+			layerName = getPlatform().getTrackName();
+
+			// In this case, the track has been added directly to the root of the layers, so
+			// let's just find it
+			final Editable found = _layers.findLayer(layerName);
+			addContactIfFound(found);
+
 		}
 	}
 
@@ -118,6 +147,11 @@ public class Contact implements AbstractBean, TreeStructurable {
 
 	public String getContact_type() {
 		return contact_type;
+	}
+
+	@Override
+	public int getCount() {
+		return count;
 	}
 
 	public Date getCreated_date() {
@@ -173,6 +207,10 @@ public class Contact implements AbstractBean, TreeStructurable {
 		return privacy;
 	}
 
+	public String getReference() {
+		return reference;
+	}
+
 	public double getRel_bearing() {
 		return rel_bearing;
 	}
@@ -218,6 +256,10 @@ public class Contact implements AbstractBean, TreeStructurable {
 		this.contact_type = contact_type;
 	}
 
+	public void setCount(final int count) {
+		this.count = count;
+	}
+
 	public void setCreated_date(final Date created_date) {
 		this.created_date = created_date;
 	}
@@ -260,6 +302,10 @@ public class Contact implements AbstractBean, TreeStructurable {
 
 	public void setPrivacy(final Privacy privacy) {
 		this.privacy = privacy;
+	}
+
+	public void setReference(final String reference) {
+		this.reference = reference;
 	}
 
 	public void setRel_bearing(final double rel_bearing) {

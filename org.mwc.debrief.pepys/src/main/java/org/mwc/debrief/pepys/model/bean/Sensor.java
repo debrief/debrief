@@ -4,10 +4,12 @@ import java.beans.PropertyVetoException;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLException;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
 import org.mwc.debrief.pepys.model.PepsysException;
+import org.mwc.debrief.pepys.model.db.Condition;
 import org.mwc.debrief.pepys.model.db.DatabaseConnection;
 import org.mwc.debrief.pepys.model.db.SqliteDatabaseConnection;
 import org.mwc.debrief.pepys.model.db.annotation.FieldName;
@@ -26,24 +28,27 @@ public class Sensor implements AbstractBean, Comparable<Sensor> {
 
 	public static class SensorTest extends TestCase {
 		public void testSensorQuery() {
-			try {
-				final DatabaseConfiguration _config = new DatabaseConfiguration();
-				ConfigurationReader.loadDatabaseConfiguration(_config, new LoaderOption[] {
-						new LoaderOption(LoaderType.DEFAULT_FILE, DatabaseConnection.DEFAULT_SQLITE_TEST_DATABASE_FILE) });
-				final SqliteDatabaseConnection sqlite = new SqliteDatabaseConnection();
-				sqlite.initializeInstance(_config);
-				final List<Sensor> list = sqlite.listAll(Sensor.class, null);
+			if (System.getProperty("os.name").toLowerCase().indexOf("mac") == -1) {
+				try {
+					final DatabaseConfiguration _config = new DatabaseConfiguration();
+					ConfigurationReader.loadDatabaseConfiguration(_config,
+							new LoaderOption[] { new LoaderOption(LoaderType.DEFAULT_FILE,
+									DatabaseConnection.DEFAULT_SQLITE_TEST_DATABASE_FILE) });
+					final SqliteDatabaseConnection sqlite = new SqliteDatabaseConnection();
+					sqlite.initializeInstance(_config);
+					final List<Sensor> list = sqlite.listAll(Sensor.class, (Collection<Condition>) null);
 
-				assertTrue("States - database entries", list.size() == 43);
+					assertTrue("States - database entries", list.size() == 43);
 
-				final Sensor plantFormSensor = sqlite.listById(Sensor.class, "bb650d5beb3346ce88b0e7d5665060bc");
+					final Sensor plantFormSensor = sqlite.listById(Sensor.class, "bb650d5beb3346ce88b0e7d5665060bc");
 
-				assertTrue("States - database entries", "Frigate_Optic".equals(plantFormSensor.getName()));
-			} catch (NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException
-					| IllegalArgumentException | InvocationTargetException | PropertyVetoException | SQLException
-					| ClassNotFoundException | IOException | PepsysException e) {
-				e.printStackTrace();
-				fail("Couldn't connect to database or query error");
+					assertTrue("States - database entries", "Frigate_Optic".equals(plantFormSensor.getName()));
+				} catch (NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException
+						| IllegalArgumentException | InvocationTargetException | PropertyVetoException | SQLException
+						| ClassNotFoundException | IOException | PepsysException e) {
+					e.printStackTrace();
+					fail("Couldn't connect to database or query error");
+				}
 			}
 		}
 	}

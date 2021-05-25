@@ -25,38 +25,20 @@ public class LoaderOption {
 		ENV_VARIABLE, DEFAULT_FILE, DRAG_AND_DROP_INI, DRAG_AND_DROP_SQLITE
 	}
 
-	private LoaderType _type;
+	private final LoaderType _type;
 
 	/**
 	 * Path of the database source. It can be an ini or a sqlite
 	 */
-	private String _path;
+	private final String _path;
 
-	public LoaderOption(LoaderType _type, String _path) {
+	public LoaderOption(final LoaderType _type, final String _path) {
 		this._type = _type;
 		this._path = _path;
 	}
 
 	/**
-	 * Method that returns the type of database source we are using
-	 * 
-	 * @return type of database source we are using
-	 */
-	public LoaderType getType() {
-		return _type;
-	}
-
-	/**
-	 * Method that returns the path of the database source
-	 * 
-	 * @return path of the database source
-	 */
-	public String getPath() {
-		return _path;
-	}
-
-	/**
-	 * 
+	 *
 	 * @return An InputStream of the ini file contained (in case we have one), null
 	 *         for sqlite files
 	 * @throws IOException Exception when the file given in the constructor is
@@ -76,9 +58,27 @@ public class LoaderOption {
 	}
 
 	/**
-	 * 
-	 * @return true if the configuration is valid. It checks basic things
-	 * like if the file exists, if it is available, etc
+	 * Method that returns the path of the database source
+	 *
+	 * @return path of the database source
+	 */
+	public String getPath() {
+		return _path;
+	}
+
+	/**
+	 * Method that returns the type of database source we are using
+	 *
+	 * @return type of database source we are using
+	 */
+	public LoaderType getType() {
+		return _type;
+	}
+
+	/**
+	 *
+	 * @return true if the configuration is valid. It checks basic things like if
+	 *         the file exists, if it is available, etc
 	 */
 	public boolean isValid() {
 		if (_type == LoaderType.ENV_VARIABLE) {

@@ -37,6 +37,8 @@ public interface AbstractViewSWT {
 
 	Text getSearchText();
 
+	Button getSplitByDatafileButton();
+
 	CDateTime getStartDate();
 
 	CDateTime getStartTime();

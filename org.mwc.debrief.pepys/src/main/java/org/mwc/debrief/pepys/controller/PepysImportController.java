@@ -25,6 +25,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.jface.viewers.CheckStateChangedEvent;
 import org.eclipse.jface.viewers.ICheckStateListener;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
@@ -47,6 +48,7 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TreeItem;
+import org.mwc.cmap.core.CorePlugin;
 import org.mwc.debrief.core.DebriefPlugin;
 import org.mwc.debrief.pepys.model.AbstractConfiguration;
 import org.mwc.debrief.pepys.model.ModelConfiguration;
@@ -70,7 +72,6 @@ import MWC.GUI.ToolParent;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.TimePeriod;
 import MWC.GenericData.WorldArea;
-import MWC.GenericData.WorldLocation;
 
 public class PepysImportController {
 
@@ -111,6 +112,8 @@ public class PepysImportController {
 	private final String INI_FILE_SUFFIX = "ini";
 
 	private final String SQLITE_FILE_SUFFIX = "sqlite";
+
+	private final int MAXIMUM_SELECTED_FILES_BEFORE_WARNING = 200000;
 
 	public PepysImportController(final Shell parent, final AbstractConfiguration model, final AbstractViewSWT view) {
 		model.addDatafileTypeFilter(new TypeDomain(State.class, TreeNode.STATE, true, IMAGE_PREFIX + "fix.png"));
@@ -330,13 +333,17 @@ public class PepysImportController {
 								updateAreaView2Model(model, view);
 								model.apply();
 								view.getImportButton().setEnabled(false);
+								CorePlugin.getDefault().getPreferenceStore().setValue(PepysImportView.PEPYS_IMPORT_START_DATE, model.getTimePeriod().getStartDTG().getDate().toString());
+								CorePlugin.getDefault().getPreferenceStore().setValue(PepysImportView.PEPYS_IMPORT_END_DATE, model.getTimePeriod().getEndDTG().getDate().toString());
 							} catch (final PepsysException e) {
+								CorePlugin.logError(IStatus.ERROR, "PepysException on updating area filter", e);
 								e.printStackTrace();
 								final MessageBox messageBox = new MessageBox(_parent, SWT.ERROR | SWT.OK);
 								messageBox.setMessage(e.getMessage());
 								messageBox.setText(e.getTitle());
 								messageBox.open();
 							} catch (final Exception e) {
+								CorePlugin.logError(IStatus.ERROR, "Exception on updating area filter", e);
 								e.printStackTrace();
 								final MessageBox messageBox = new MessageBox(_parent, SWT.ERROR | SWT.OK);
 								messageBox.setMessage(DatabaseConnection.GENERIC_CONNECTION_ERROR);
@@ -356,14 +363,45 @@ public class PepysImportController {
 
 			@Override
 			public void handleEvent(final Event event) {
+				final int currentSelectedItem = model.getTreeModel().countCheckedItems();
 				if (event.type == SWT.Selection) {
-					final int importedItems = model.doImport();
-					final MessageBox messageBox = new MessageBox(_parent, SWT.OK);
-					messageBox.setMessage(importedItems + " data files have been successfully imported");
-					messageBox.setText("Database Import");
-					messageBox.open();
-
-					return;
+					final Cursor _cursor = new Cursor(Display.getCurrent(), SWT.CURSOR_WAIT);
+					_parent.setCursor(_cursor);
+					if (currentSelectedItem > MAXIMUM_SELECTED_FILES_BEFORE_WARNING) {
+						final MessageBox messageBox = new MessageBox(_parent, SWT.ICON_QUESTION | SWT.YES | SWT.NO);
+						messageBox.setMessage("A huge amount of data will be imported (" + currentSelectedItem
+								+ " items). Debrief performance can be affected when loading more than 200k entries. Do you want to continue?");
+						messageBox.setText("Database Import");
+						final int answer = messageBox.open();
+						if (answer != SWT.YES) {
+							_parent.setCursor(null);
+							_cursor.dispose();
+							return;
+						}
+					}
+					Display.getCurrent().asyncExec(new Runnable() {
+						@Override
+						public void run() {
+							try {
+								final int importedItems = model.doImport();
+								final MessageBox messageBox = new MessageBox(_parent, SWT.OK);
+								messageBox.setMessage(importedItems + " data items have been successfully imported");
+								messageBox.setText("Database Import");
+								messageBox.open();
+								return;
+							} catch (final Exception e) {
+								CorePlugin.logError(IStatus.ERROR, "Exception on import process", e);
+								e.printStackTrace();
+								final MessageBox messageBox = new MessageBox(_parent, SWT.ERROR | SWT.OK);
+								messageBox.setMessage(DatabaseConnection.GENERIC_CONNECTION_ERROR);
+								messageBox.setText("DebriefNG");
+								messageBox.open();
+							} finally {
+								_parent.setCursor(null);
+								_cursor.dispose();
+							}
+						}
+					});
 				}
 			}
 		});
@@ -408,8 +446,8 @@ public class PepysImportController {
 					messageToUser.append("\n");
 					messageToUser.append("Configuration in use: ");
 					messageToUser.append(configurationToUse);
-					final HashMap<String, String> databaseCategory = model.getDatabaseConnection().getDatabaseConfiguration()
-							.getCategory(DatabaseConnection.CONFIGURATION_TAG);
+					final HashMap<String, String> databaseCategory = model.getDatabaseConnection()
+							.getDatabaseConfiguration().getCategory(DatabaseConnection.CONFIGURATION_TAG);
 					if (databaseCategory != null) {
 						messageToUser.append("\n\n");
 						messageToUser.append(model.getDatabaseConnection().getBasicDescription());
@@ -420,10 +458,12 @@ public class PepysImportController {
 						errorMessage = "Database didn't contain the basic State, Contacts or Comments";
 					} catch (final SQLException e) {
 						e.printStackTrace();
+						CorePlugin.logError(IStatus.ERROR, "SQLException on running query", e);
 
 						errorMessage = DatabaseConnection.GENERIC_CONNECTION_ERROR;
 						showError = true;
 					} catch (final Exception e) {
+						CorePlugin.logError(IStatus.ERROR, "Exception on running query", e);
 						errorMessage = "You have incorrect database type.\nPlease provide the correct database type in the config file";
 						showError = true;
 					}
@@ -457,11 +497,11 @@ public class PepysImportController {
 				}
 			}
 		});
-		
+
 		view.getClearAreaButton().addListener(SWT.Selection, new Listener() {
-			
+
 			@Override
-			public void handleEvent(Event event) {
+			public void handleEvent(final Event event) {
 				if (event.type == SWT.Selection) {
 					model.setArea(null);
 					updateAreaModel2View(model, view);
@@ -493,6 +533,14 @@ public class PepysImportController {
 			@Override
 			public void checkStateChanged(final CheckStateChangedEvent event) {
 				view.getImportButton().setEnabled(model.getTreeModel().countCheckedItems() > 0);
+			}
+		});
+
+		view.getTree().addCheckStateListener(new ICheckStateListener() {
+
+			@Override
+			public void checkStateChanged(final CheckStateChangedEvent arg0) {
+				view.getImportButton().setText("Import (" + model.getTreeModel().countCheckedItems() + ")");
 			}
 		});
 
@@ -631,6 +679,17 @@ public class PepysImportController {
 
 					}
 				});
+
+		// I am not building the model two view listener/binding because
+		// It is not needed (at least for now).
+		// Saul
+		view.getSplitByDatafileButton().addListener(SWT.Selection, new Listener() {
+
+			@Override
+			public void handleEvent(final Event event) {
+				model.setSplitByDataile(view.getSplitByDatafileButton().getSelection());
+			}
+		});
 	}
 
 	private void addDataTypeFilters(final AbstractConfiguration _model, final AbstractViewSWT _view) {
@@ -677,31 +736,28 @@ public class PepysImportController {
 		if (model.getCurrentArea() == null) {
 			view.getTopLeftLocation().clean();
 			view.getBottomRightLocation().clean();
-		}else {
+		} else {
 			view.getTopLeftLocation().setValue(model.getCurrentArea().getTopLeft());
 			view.getBottomRightLocation().setValue(model.getCurrentArea().getBottomRight());
 		}
 	}
 
-	public void updateAreaView2Model(final AbstractConfiguration model, final AbstractViewSWT view) {
+	public void updateAreaView2Model(final AbstractConfiguration model, final AbstractViewSWT view)
+			throws PepsysException {
 		Application.logError2(ToolParent.INFO, "Starting updade from Area View to Model", null);
-		final WorldLocation topLeft;
-
-		if (view.getTopLeftLocation().getValue() == null) {
-			topLeft = model.getDefaultTopLeft();
-			view.getTopLeftLocation().clean();
-		} else {
-			topLeft = view.getTopLeftLocation().getValue();
-		}
-		final WorldLocation bottomRight;
-		if (view.getBottomRightLocation().getValue() == null) {
-			bottomRight = model.getDefaultBottomRight();
-			view.getBottomRightLocation().clean();
-		} else {
-			bottomRight = view.getBottomRightLocation().getValue();
+		// User must select both or none.
+		if ((view.getTopLeftLocation().getValue() != null) != (view.getBottomRightLocation().getValue() != null)) {
+			throw new PepsysException("Please, indicate the area",
+					"Please provide both top-left and bottom-right bounds");
 		}
 
-		model.setArea(new WorldArea(topLeft, bottomRight));
+		if (view.getTopLeftLocation().getValue() != null && view.getBottomRightLocation().getValue() != null) {
+			model.setArea(
+					new WorldArea(view.getTopLeftLocation().getValue(), view.getBottomRightLocation().getValue()));
+		} else {
+			model.setArea(null);
+		}
+
 		Application.logError2(ToolParent.INFO, "Finished update from Area View to Model", null);
 	}
 }

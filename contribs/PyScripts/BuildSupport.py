@@ -7,8 +7,8 @@ Created on 29 Nov 2017
 if __name__ == '__main__':
 	pass
 
-import json,urllib,shlex, os, string, xml.etree.ElementTree as ET
-import urllib.request, base64
+import json,urllib,shlex, os, ssl, xml.etree.ElementTree as ET
+import urllib.request
 from subprocess import Popen, PIPE
 from datetime import datetime
 
@@ -142,7 +142,9 @@ def updateMappings(filePath):
 
 
 url = "https://api.github.com/repos/debrief/debrief/releases/latest"
-with urllib.request.urlopen(url) as response:
+# context created according to tip here: https://stackoverflow.com/a/28052583/92441
+gcontext = ssl.SSLContext()  # Only for gangstars
+with urllib.request.urlopen(url, context=gcontext) as response:
 #jData = result.read()
 
 	data = response.read().decode("utf8")

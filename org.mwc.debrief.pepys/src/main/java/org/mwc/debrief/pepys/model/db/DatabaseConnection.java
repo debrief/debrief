@@ -25,6 +25,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.sql.Array;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -42,6 +43,7 @@ import org.mwc.debrief.model.utils.OSUtils;
 import org.mwc.debrief.pepys.Activator;
 import org.mwc.debrief.pepys.model.PepsysException;
 import org.mwc.debrief.pepys.model.bean.AbstractBean;
+import org.mwc.debrief.pepys.model.bean.PlainBean;
 import org.mwc.debrief.pepys.model.db.annotation.AnnotationsUtils;
 import org.mwc.debrief.pepys.model.db.annotation.AnnotationsUtils.FieldsTable;
 import org.mwc.debrief.pepys.model.db.annotation.Filterable;
@@ -50,6 +52,7 @@ import org.mwc.debrief.pepys.model.db.annotation.Location;
 import org.mwc.debrief.pepys.model.db.annotation.ManyToOne;
 import org.mwc.debrief.pepys.model.db.annotation.OneToOne;
 import org.mwc.debrief.pepys.model.db.annotation.Time;
+import org.mwc.debrief.pepys.model.db.annotation.Transient;
 import org.mwc.debrief.pepys.model.db.config.ConfigurationReader;
 import org.mwc.debrief.pepys.model.db.config.DatabaseConfiguration;
 
@@ -111,7 +114,6 @@ public abstract class DatabaseConnection {
 				if (new File(configurationFile).isFile()) {
 					// Here we are simply load the file as given
 					configurationFileStream = new FileInputStream(new File(configurationFile));
-					;
 				} else {
 					// show error:
 					// "Config file specified in "+ CONFIG_FILE_ENV_NAME + " environment variable
@@ -274,7 +276,7 @@ public abstract class DatabaseConnection {
 		return conditions;
 	}
 
-	protected abstract WorldLocation createWorldLocation(final ResultSet result, final String columnName)
+	public abstract WorldLocation createWorldLocation(final ResultSet result, final String columnName)
 			throws SQLException;
 
 	public abstract String databasePrefix();
@@ -308,6 +310,8 @@ public abstract class DatabaseConnection {
 
 	}
 
+	public abstract String getBasicDescription();
+
 	public DatabaseConfiguration getDatabaseConfiguration() {
 		return databaseConfiguration;
 	}
@@ -340,6 +344,26 @@ public abstract class DatabaseConnection {
 		return ans.reverse().toString();
 	}
 
+	/**
+	 * Method that automatically query a list of objects that satisfy a collection
+	 * of conditions. This method generates the SQL Query, connects to database, and
+	 * run the query, building the list of objects by reflection.
+	 *
+	 * @param <T>
+	 * @param type
+	 * @param conditions
+	 * @return
+	 * @throws PropertyVetoException
+	 * @throws SQLException
+	 * @throws NoSuchMethodException
+	 * @throws SecurityException
+	 * @throws InstantiationException
+	 * @throws IllegalAccessException
+	 * @throws IllegalArgumentException
+	 * @throws InvocationTargetException
+	 * @throws ClassNotFoundException
+	 * @throws IOException
+	 */
 	public <T> List<T> listAll(final Class<T> type, final Collection<Condition> conditions)
 			throws PropertyVetoException, SQLException, NoSuchMethodException, SecurityException,
 			InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException,
@@ -372,7 +396,80 @@ public abstract class DatabaseConnection {
 			resultSet = statement.executeQuery(query);
 
 			while (resultSet.next()) {
-				final T instance = storeFieldValue(type, resultSet, "");
+				final T instance = storeFieldValue(type, resultSet, "", true);
+				ans.add(instance);
+			}
+
+			return ans;
+		} finally {
+			if (connection != null) {
+				connection.close();
+			}
+			if (statement != null) {
+				statement.close();
+			}
+			if (resultSet != null) {
+				resultSet.close();
+			}
+		}
+	}
+
+	/**
+	 * Method similar to listAll(final Class<T> type, final Collection<Condition>
+	 * conditions)
+	 *
+	 * but it receives a custom query hand-made, creating a list of objects from it.
+	 *
+	 * @param <T>
+	 * @param type
+	 * @param customQuery Query to run
+	 * @param parameters  Parameters to replace inside the query.
+	 * @return
+	 * @throws SQLException
+	 * @throws IOException
+	 * @throws ClassNotFoundException
+	 * @throws NoSuchMethodException
+	 * @throws InvocationTargetException
+	 * @throws IllegalAccessException
+	 * @throws InstantiationException
+	 */
+	public <T> List<T> listAll(final Class<T> type, final String customQuery, final List<Object> parameters)
+			throws SQLException, ClassNotFoundException, IOException, InstantiationException, IllegalAccessException,
+			InvocationTargetException, NoSuchMethodException {
+		if (SHOW_SQL) {
+			System.out.println(customQuery);
+		}
+
+		final Connection connection = pool.getConnection();
+		final List<T> ans = new ArrayList<>();
+		ResultSet resultSet = null;
+		PreparedStatement statement = null;
+
+		try {
+			statement = connection.prepareStatement(customQuery);
+
+			for (int i = 0; parameters != null && i < parameters.size(); i++) {
+				final Object valueToAssign = parameters.get(i);
+				if (valueToAssign instanceof List) {
+					// For now let's assume that all the arrays are String
+					final List<Object> listValue = (List<Object>) valueToAssign;
+					final String[] arrayValue = new String[listValue.size()];
+					for (int j = 0; j < arrayValue.length; j++) {
+						arrayValue[j] = listValue.get(j).toString();
+					}
+					final Array arrayToSet = connection.createArrayOf("text", arrayValue);
+					statement.setArray(i + 1, arrayToSet);
+				} else {
+					statement.setObject(i + 1, valueToAssign);
+				}
+			}
+
+			loadExtention(connection, statement);
+
+			resultSet = statement.executeQuery();
+
+			while (resultSet.next()) {
+				final T instance = storeFieldValue(type, resultSet, "", false);
 				ans.add(instance);
 			}
 
@@ -406,7 +503,7 @@ public abstract class DatabaseConnection {
 			statement.setString(1, id.toString());
 			resultSet = statement.executeQuery();
 
-			final T instance = storeFieldValue(type, resultSet, "");
+			final T instance = storeFieldValue(type, resultSet, "", true);
 
 			connection.close();
 
@@ -421,8 +518,6 @@ public abstract class DatabaseConnection {
 		}
 	}
 
-	public abstract String getBasicDescription();
-
 	protected abstract void loadExtention(final Connection connection, final Statement statement)
 			throws SQLException, ClassNotFoundException, IOException;
 
@@ -432,95 +527,124 @@ public abstract class DatabaseConnection {
 		final StringBuilder query = new StringBuilder();
 		final Field[] fields = type.getDeclaredFields();
 		for (final Field field : fields) {
-			final String columnName = AnnotationsUtils.getColumnName(field);
-
-			if (field.getType().equals(WorldLocation.class)) {
-				query.append(createLocationQuery(tableName, columnName));
-			} else if (field.isAnnotationPresent(ManyToOne.class) || field.isAnnotationPresent(OneToOne.class)) {
-				final StringBuilder newJoin = new StringBuilder();
-				if (field.isAnnotationPresent(ManyToOne.class)) {
-					newJoin.append(" INNER ");
-				} else if (field.isAnnotationPresent(OneToOne.class)) {
-					newJoin.append(" LEFT ");
-				}
-				newJoin.append(" JOIN ");
-				newJoin.append(databasePrefix());
-				newJoin.append(AnnotationsUtils.getTableName(field.getType()));
-				newJoin.append(databaseSuffix());
-				newJoin.append(" AS ");
-				newJoin.append(getAlias(prefix + baseTableName + AnnotationsUtils.getColumnName(field)
-						+ AnnotationsUtils.getTableName(field.getType())));
-				newJoin.append(" ON ");
-				newJoin.append(getAlias(prefix + baseTableName + AnnotationsUtils.getColumnName(field)
-						+ AnnotationsUtils.getTableName(field.getType())));
-				newJoin.append(".");
-				newJoin.append(AnnotationsUtils.getField(field.getType(), Id.class).getName());
-				newJoin.append(" = ");
-				newJoin.append(getAlias(prefix + baseTableName));
-				newJoin.append(".");
-				newJoin.append(AnnotationsUtils.getColumnName(field));
-				join.add(newJoin.toString());
-				query.append(prepareSelect(field.getType(), join,
-						prefix + baseTableName + AnnotationsUtils.getColumnName(field)));
-				query.append(", ");
+			if (field.isAnnotationPresent(Transient.class)) {
+				// let's just skip it, because it is probably being used
+				// by another process or it doesn't come from database.
 			} else {
-				query.append(getAlias(prefix + baseTableName));
-				query.append(".");
-				query.append(field.getName());
-				query.append(" AS ");
-				query.append(getAlias(prefix + baseTableName + field.getName()));
-				query.append(", ");
+				final String columnName = AnnotationsUtils.getColumnName(field);
+
+				if (field.getType().equals(WorldLocation.class)) {
+					query.append(createLocationQuery(tableName, columnName));
+				} else if (field.isAnnotationPresent(ManyToOne.class) || field.isAnnotationPresent(OneToOne.class)) {
+					final StringBuilder newJoin = new StringBuilder();
+					if (field.isAnnotationPresent(ManyToOne.class)) {
+						newJoin.append(" INNER ");
+					} else if (field.isAnnotationPresent(OneToOne.class)) {
+						newJoin.append(" LEFT ");
+					}
+					newJoin.append(" JOIN ");
+					newJoin.append(databasePrefix());
+					newJoin.append(AnnotationsUtils.getTableName(field.getType()));
+					newJoin.append(databaseSuffix());
+					newJoin.append(" AS ");
+					newJoin.append(getAlias(prefix + baseTableName + AnnotationsUtils.getColumnName(field)
+							+ AnnotationsUtils.getTableName(field.getType())));
+					newJoin.append(" ON ");
+					newJoin.append(getAlias(prefix + baseTableName + AnnotationsUtils.getColumnName(field)
+							+ AnnotationsUtils.getTableName(field.getType())));
+					newJoin.append(".");
+					newJoin.append(AnnotationsUtils.getField(field.getType(), Id.class).getName());
+					newJoin.append(" = ");
+					newJoin.append(getAlias(prefix + baseTableName));
+					newJoin.append(".");
+					newJoin.append(AnnotationsUtils.getColumnName(field));
+					join.add(newJoin.toString());
+					query.append(prepareSelect(field.getType(), join,
+							prefix + baseTableName + AnnotationsUtils.getColumnName(field)));
+					query.append(", ");
+				} else {
+					query.append(getAlias(prefix + baseTableName));
+					query.append(".");
+					query.append(field.getName());
+					query.append(" AS ");
+					query.append(getAlias(prefix + baseTableName + field.getName()));
+					query.append(", ");
+				}
 			}
 		}
 		query.setLength(query.length() - 2);
 		return query.toString();
 	}
 
-	public <T> T storeFieldValue(final Class<T> type, final ResultSet resultSet, final String prefix)
-			throws InstantiationException, IllegalAccessException, InvocationTargetException, NoSuchMethodException,
-			SQLException {
+	public <T> T storeFieldValue(final Class<T> type, final ResultSet resultSet, final String prefix,
+			final boolean useAlias) throws InstantiationException, IllegalAccessException, InvocationTargetException,
+			NoSuchMethodException, SQLException {
 		final Constructor<T> constructor = type.getConstructor();
 		final T instance = constructor.newInstance();
-		final Field[] fields = type.getDeclaredFields();
-		for (final Field field : fields) {
-			final Class<?> fieldType = field.getType();
-			final Method method = type.getDeclaredMethod("set" + capitalizeFirstLetter(field.getName()), fieldType);
-
-			final String thisColumnName = getAlias(
-					prefix + AnnotationsUtils.getTableName(type) + AnnotationsUtils.getColumnName(field));
-			if (field.isAnnotationPresent(ManyToOne.class) || field.isAnnotationPresent(OneToOne.class)) {
-				method.invoke(instance, storeFieldValue(fieldType, resultSet,
-						prefix + AnnotationsUtils.getTableName(type) + AnnotationsUtils.getColumnName(field)));
-			} else if (int.class == fieldType) {
-				try {
-					method.invoke(instance, resultSet.getInt(thisColumnName));
-				} catch (final Exception e) {
-					e.printStackTrace();
-				}
-			} else if (String.class == fieldType) {
-				method.invoke(instance, resultSet.getString(thisColumnName));
-			} else if (Date.class == fieldType) {
-				method.invoke(instance, resultSet.getDate(thisColumnName));
-			} else if (boolean.class == fieldType) {
-				method.invoke(instance, resultSet.getBoolean(thisColumnName));
-			} else if (Timestamp.class == fieldType) {
-				method.invoke(instance, resultSet.getTimestamp(thisColumnName));
-			} else if (double.class == fieldType) {
-				method.invoke(instance, resultSet.getDouble(thisColumnName));
-			} else if (WorldLocation.class == fieldType) {
-				method.invoke(instance, createWorldLocation(resultSet, thisColumnName));
-			} else {
-				try {
-					// Unknown type. We will find out what to do here later.
-					method.invoke(instance, resultSet.getObject(field.getName()));
-				} catch (final Exception e) {
-					e.printStackTrace();
-				}
-
+		if (PlainBean.class.isAssignableFrom(type)) {
+			final PlainBean plainBean = (PlainBean) instance;
+			plainBean.retrieveObject(resultSet, this);
+		} else {
+			final Field[] fields = type.getDeclaredFields();
+			for (final Field field : fields) {
+				storeField(type, resultSet, prefix, useAlias, instance, field);
 			}
-
 		}
+
 		return instance;
 	}
+
+  private <T> void storeField(final Class<T> type, final ResultSet resultSet,
+      final String prefix, final boolean useAlias, final T instance,
+      final Field field)
+  {
+    final Class<?> fieldType = field.getType();
+    try {
+    	final Method method = type.getDeclaredMethod("set" + capitalizeFirstLetter(field.getName()),
+    			fieldType);
+
+    	final String thisColumnName;
+    	if (useAlias) {
+    		thisColumnName = getAlias(
+    				prefix + AnnotationsUtils.getTableName(type) + AnnotationsUtils.getColumnName(field));
+    	} else {
+    		thisColumnName = AnnotationsUtils.getColumnName(field);
+    	}
+
+    	if (field.isAnnotationPresent(ManyToOne.class) || field.isAnnotationPresent(OneToOne.class)) {
+    		method.invoke(instance, storeFieldValue(fieldType, resultSet,
+    				prefix + AnnotationsUtils.getTableName(type) + AnnotationsUtils.getColumnName(field),
+    				useAlias));
+    	} else if (int.class == fieldType) {
+    		try {
+    			method.invoke(instance, resultSet.getInt(thisColumnName));
+    		} catch (final Exception e) {
+    			e.printStackTrace();
+    		}
+    	} else if (String.class == fieldType) {
+    		method.invoke(instance, resultSet.getString(thisColumnName));
+    	} else if (Date.class == fieldType) {
+    		method.invoke(instance, resultSet.getDate(thisColumnName));
+    	} else if (boolean.class == fieldType) {
+    		method.invoke(instance, resultSet.getBoolean(thisColumnName));
+    	} else if (Timestamp.class == fieldType) {
+    		method.invoke(instance, resultSet.getTimestamp(thisColumnName));
+    	} else if (double.class == fieldType) {
+    		method.invoke(instance, resultSet.getDouble(thisColumnName));
+    	} else if (WorldLocation.class == fieldType) {
+    		method.invoke(instance, createWorldLocation(resultSet, thisColumnName));
+    	} else {
+    		try {
+    			// Unknown type. We will find out what to do here later.
+    			method.invoke(instance, resultSet.getObject(field.getName()));
+    		} catch (final Exception e) {
+    			e.printStackTrace();
+    		}
+
+    	}
+    } catch (final Exception e) {
+    	// somehow we haven't found the method
+    }
+  }
 
 }

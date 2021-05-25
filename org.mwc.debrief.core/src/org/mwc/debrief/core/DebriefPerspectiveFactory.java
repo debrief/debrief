@@ -38,7 +38,7 @@ public class DebriefPerspectiveFactory implements IPerspectiveFactory {
 
 		// Top left: Resource Navigator view and Bookmarks view placeholder
 		final IFolderLayout topLeft = layout.createFolder("topLeft", IPageLayout.LEFT, 0.25f, editorArea);
-		topLeft.addView(IPageLayout.ID_RES_NAV);
+		topLeft.addView(IPageLayout.ID_PROJECT_EXPLORER);
 		topLeft.addView(CorePlugin.TIME_CONTROLLER);
 		topLeft.addPlaceholder(CorePlugin.TIME_BAR);
 
@@ -95,7 +95,7 @@ public class DebriefPerspectiveFactory implements IPerspectiveFactory {
 
 		// it via action (so we can populate it)
 
-		layout.addShowViewShortcut(IPageLayout.ID_RES_NAV);
+		layout.addShowViewShortcut(IPageLayout.ID_PROJECT_EXPLORER);
 		layout.addShowViewShortcut(IPageLayout.ID_PROP_SHEET);
 		layout.addShowViewShortcut(IPageLayout.ID_BOOKMARKS);
 

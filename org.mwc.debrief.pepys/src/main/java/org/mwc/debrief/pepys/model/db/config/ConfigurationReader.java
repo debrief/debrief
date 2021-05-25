@@ -82,9 +82,9 @@ public class ConfigurationReader {
 	}
 
 	/**
-	 * Try to load the option to the database configuration.
-	 * It will try the first one, then the second one, etc
-	 * 
+	 * Try to load the option to the database configuration. It will try the first
+	 * one, then the second one, etc
+	 *
 	 * @param _config
 	 * @param option
 	 * @throws PropertyVetoException
@@ -96,16 +96,15 @@ public class ConfigurationReader {
 		InputStream configurationFileStream = null;
 		final StringBuilder filesTried = new StringBuilder();
 		try {
-			for (LoaderOption option : _options) {
+			for (final LoaderOption option : _options) {
 				filesTried.append(option.getPath());
 				filesTried.append(", ");
 				if (option.isValid()) {
 					configurationFileStream = option.getInputStream();
 					_config.setLoaderOption(option);
-					
 
 					loadDatabaseConfiguration(_config, configurationFileStream);
-					
+
 					if (DatabaseConfiguration.isValid(_config)) {
 						break;
 					}
@@ -126,8 +125,9 @@ public class ConfigurationReader {
 
 	/**
 	 * Given an InputStream, It loads it, and stores it in the DatabaseCondiguration
+	 *
 	 * @param configuration Where to store the configuration
-	 * @param inputStream Where to read the configuration from
+	 * @param inputStream   Where to read the configuration from
 	 */
 	public static void parseConfigurationFile(final DatabaseConfiguration configuration,
 			final InputStream inputStream) {

@@ -6,7 +6,9 @@ import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Date;
+import java.util.Enumeration;
 import java.util.List;
 
 import org.mwc.debrief.pepys.model.PepsysException;
@@ -19,6 +21,7 @@ import org.mwc.debrief.pepys.model.db.annotation.Location;
 import org.mwc.debrief.pepys.model.db.annotation.ManyToOne;
 import org.mwc.debrief.pepys.model.db.annotation.TableName;
 import org.mwc.debrief.pepys.model.db.annotation.Time;
+import org.mwc.debrief.pepys.model.db.annotation.Transient;
 import org.mwc.debrief.pepys.model.db.config.ConfigurationReader;
 import org.mwc.debrief.pepys.model.db.config.DatabaseConfiguration;
 import org.mwc.debrief.pepys.model.db.config.LoaderOption;
@@ -27,6 +30,9 @@ import org.mwc.debrief.pepys.model.tree.TreeStructurable;
 
 import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.TrackWrapper;
+import Debrief.Wrappers.Track.LightweightTrackWrapper;
+import MWC.GUI.BaseLayer;
+import MWC.GUI.Editable;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
 import MWC.GenericData.HiResDate;
@@ -40,82 +46,106 @@ public class State implements AbstractBean, TreeStructurable {
 	public static class StatesTest extends TestCase {
 
 		public void testStatesQuery() {
-			try {
-				final DatabaseConfiguration _config = new DatabaseConfiguration();
-				ConfigurationReader.loadDatabaseConfiguration(_config, new LoaderOption[] {
-						new LoaderOption(LoaderType.DEFAULT_FILE, DatabaseConnection.DEFAULT_SQLITE_TEST_DATABASE_FILE) });
-				final SqliteDatabaseConnection sqlite = new SqliteDatabaseConnection();
-				sqlite.initializeInstance(_config);
-				final List<State> list = sqlite.listAll(State.class, null);
+			if (System.getProperty("os.name").toLowerCase().indexOf("mac") == -1) {
+				try {
+					final DatabaseConfiguration _config = new DatabaseConfiguration();
+					ConfigurationReader.loadDatabaseConfiguration(_config,
+							new LoaderOption[] { new LoaderOption(LoaderType.DEFAULT_FILE,
+									DatabaseConnection.DEFAULT_SQLITE_TEST_DATABASE_FILE) });
+					final SqliteDatabaseConnection sqlite = new SqliteDatabaseConnection();
+					sqlite.initializeInstance(_config);
+					final List<State> list = sqlite.listAll(State.class, (Collection<Condition>) null);
 
-				assertTrue("States - database entries", list.size() == 12239);
+					assertTrue("States - database entries", list.size() == 12239);
 
-				final List<State> list2 = sqlite.listAll(State.class,
-						Arrays.asList(new Condition[] { new Condition("source_id = \"638471a99e264761830b3f6575816e67\"") }));
+					final List<State> list2 = sqlite.listAll(State.class, Arrays.asList(
+							new Condition[] { new Condition("source_id = \"638471a99e264761830b3f6575816e67\"") }));
 
-				assertTrue("States - database entries", list2.size() == 5);
-				
-				final List<State> list3 = sqlite.listAll(State.class,
-						Arrays.asList(new Condition[] { new Condition("source_id = \"db8692a392924d27bfacdbddc4eb9a29\"") }));
+					assertTrue("States - database entries", list2.size() == 5);
 
-				assertTrue("States - database entries", list3.size() == 11400);
-			} catch (NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException
-					| IllegalArgumentException | InvocationTargetException | PropertyVetoException | SQLException
-					| ClassNotFoundException | IOException | PepsysException e) {
-				e.printStackTrace();
-				fail("Couldn't connect to database or query error");
+					final List<State> list3 = sqlite.listAll(State.class, Arrays.asList(
+							new Condition[] { new Condition("source_id = \"db8692a392924d27bfacdbddc4eb9a29\"") }));
+
+					assertTrue("States - database entries", list3.size() == 11400);
+				} catch (NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException
+						| IllegalArgumentException | InvocationTargetException | PropertyVetoException | SQLException
+						| ClassNotFoundException | IOException | PepsysException e) {
+					e.printStackTrace();
+					fail("Couldn't connect to database or query error");
+				}
 			}
-
 		}
+	}
+
+	private static Layer findLayer(final Layers layers, final String name) {
+		Layer parent = layers.findLayer(name, false);
+		if (parent == null) {
+			parent = new BaseLayer();
+			parent.setName(name);
+			layers.addThisLayer(parent);
+		}
+		return parent;
+	}
+
+	private static LightweightTrackWrapper findTrack(final Enumeration<Editable> iter, final String trackName) {
+		LightweightTrackWrapper track = null;
+		while (iter.hasMoreElements() && track == null) {
+			final Editable item = iter.nextElement();
+			if (item instanceof LightweightTrackWrapper && item.getName().equals(trackName)) {
+				track = (LightweightTrackWrapper) item;
+			}
+		}
+		return track;
 	}
 
 	@Id
 	private String state_id;
-
 	@Time
 	private Timestamp time;
-
 	@ManyToOne
 	@FieldName(name = "sensor_id")
 	private Sensor sensor;
+
 	private double heading;
 	private double course;
-
 	private double speed;
 	@ManyToOne
 	@FieldName(name = "source_id")
 	private Datafile datafile;
+
 	private String privacy_id;
+
 	private Timestamp created_date;
 
 	@Location
 	private WorldLocation location;
+
+	@Transient
+	private int count;
 
 	public State() {
 
 	}
 
 	@Override
-	public void doImport(final Layers _layers) {
-		// see if the track is in already
-		final String trackName = getPlatform().getTrackName();
-		final Layer target = _layers.findLayer(trackName, true);
-		final TrackWrapper track;
-		if (target != null && target instanceof TrackWrapper) {
-			// ok, use it
-			track = (TrackWrapper) target;
-		} else {
-			// create a new track
-			track = new TrackWrapper();
-			track.setName(trackName);
-			// and store it
-			_layers.addThisLayer(track);
-		}
+	public void doImport(final Layers _layers, final boolean splitByDatafile) {
+		final LightweightTrackWrapper track = getParent(_layers, getDatafile().getReference(),
+				getPlatform().getTrackName(), splitByDatafile);
 
-		// create the wrapper for this annotation
-		final FixWrapper fixWrapper = new FixWrapper(new Fix(new HiResDate(time.getTime()), location, course, speed));
+		// special handling. The concept of heading vs course isn't yet clear in the
+		// backend processing. For Debrief purposes it's probably acceptable to use either.
+		final double courseVal = (heading == 0d || course == 0d) ? heading + course : course;
+		
+		// create the wrapper for this annotation		
+		final FixWrapper fixWrapper = new FixWrapper(new Fix(new HiResDate(time.getTime()), 
+				location, courseVal, speed));
 		fixWrapper.setName(time.toString());
 		track.add(fixWrapper);
+	}
+
+	@Override
+	public int getCount() {
+		return count;
 	}
 
 	public double getCourse() {
@@ -139,6 +169,42 @@ public class State implements AbstractBean, TreeStructurable {
 		return location;
 	}
 
+	private LightweightTrackWrapper getParent(final Layers layers, final String datafile, final String trackName,
+			final boolean splitByDatafile) {
+		if (splitByDatafile) {
+			final Layer parent = findLayer(layers, datafile);
+
+			// now the track
+			LightweightTrackWrapper track = findTrack(parent.elements(), trackName);
+
+			// did we find it?
+			if (track == null) {
+				// create a new track. Since we're inside a parent folder,
+				// just use lightweight track
+				track = new LightweightTrackWrapper();
+				track.setName(trackName);
+				// and store it
+				parent.add(track);
+			}
+			return track;
+		} else {
+			// If we don't want to split by datafile, then we will add the track directly.
+			// Let's find it then
+			LightweightTrackWrapper track = findTrack(layers.elements(), trackName);
+
+			// did we find it?
+			if (track == null) {
+				// create a new track
+				track = new TrackWrapper();
+				track.setName(trackName);
+				// and store it
+				layers.addThisLayer(track);
+			}
+
+			return track;
+		}
+	}
+
 	@Override
 	public Platform getPlatform() {
 		if (sensor != null) {
@@ -149,6 +215,10 @@ public class State implements AbstractBean, TreeStructurable {
 
 	public String getPrivacy_id() {
 		return privacy_id;
+	}
+
+	public Sensor getSensor() {
+		return sensor;
 	}
 
 	@Override
@@ -170,6 +240,10 @@ public class State implements AbstractBean, TreeStructurable {
 	@Override
 	public Date getTime() {
 		return time;
+	}
+
+	public void setCount(final int count) {
+		this.count = count;
 	}
 
 	public void setCourse(final double course) {
@@ -211,4 +285,5 @@ public class State implements AbstractBean, TreeStructurable {
 	public void setTime(final Timestamp time) {
 		this.time = time;
 	}
+
 }
