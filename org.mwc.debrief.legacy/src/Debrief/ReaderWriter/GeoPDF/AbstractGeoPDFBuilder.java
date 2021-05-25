@@ -138,7 +138,7 @@ public abstract class AbstractGeoPDFBuilder {
 		public static final String GDAL_CREATE_COMPOSITION_KEYWORD = "COMPOSITION_FILE=";
 		public static final String PROJ_PATH_TO_REGISTER = "windows\\proj6\\share";
 		public static final String PROJ_ENV_VAR = "PROJ_LIB";
-		public static final String GDAL_LIB_PATH_TO_REGISTER = "linux/build_gdal_version_changing/usr/lib/";
+		public static final String GDAL_LIB_PATH_TO_REGISTER = "linux/build_gdal_version_changing/usr/lib/:linux/build/usr/local/lib/";
 		public static final String GDAL_LIB_VAR = "LD_LIBRARY_PATH";
 
 		public static void createTemporaryEnvironment(final String destinationFolder, final String resourceFileListPath,
@@ -157,13 +157,19 @@ public abstract class AbstractGeoPDFBuilder {
 				final Path destinationPath = Paths.get(destinationFolder + line);
 				Files.createDirectories(destinationPath.getParent());
 
-				Files.copy(GeoPDFConfiguration.class.getResourceAsStream(GDAL_NATIVE_PREFIX_FOLDER + line),
-						destinationPath, StandardCopyOption.REPLACE_EXISTING);
-				if (line.endsWith(gdalWrapCommand) && configuration != null) {
-					configuration.setGdalWarpCommand(destinationPath.toString());
-				}
-				if (line.endsWith(gdalCreateCommend) && configuration != null) {
-					configuration.setGdalCreateCommand(destinationPath.toString());
+				final InputStream resourceToCopy = GeoPDFConfiguration.class
+						.getResourceAsStream(GDAL_NATIVE_PREFIX_FOLDER + line);
+				if (resourceToCopy == null) {
+					Application.logError3(ToolParent.WARNING, "Debrief didn't find the file " + line
+							+ " and it was not copied to the temporal environment", null, false);
+				} else {
+					Files.copy(resourceToCopy, destinationPath, StandardCopyOption.REPLACE_EXISTING);
+					if (line.endsWith(gdalWrapCommand) && configuration != null) {
+						configuration.setGdalWarpCommand(destinationPath.toString());
+					}
+					if (line.endsWith(gdalCreateCommend) && configuration != null) {
+						configuration.setGdalCreateCommand(destinationPath.toString());
+					}
 				}
 			}
 
@@ -211,8 +217,8 @@ public abstract class AbstractGeoPDFBuilder {
 					return true;
 				}
 				// SUCCESS
-				Application.logError3(ToolParent.INFO, "GeoPDF-Problem detected while checking the version of the command given.",
-						null, false);
+				Application.logError3(ToolParent.INFO,
+						"GeoPDF-Problem detected while checking the version of the command given.", null, false);
 
 				allOutput.setLength(0);
 				while ((line = gdalWarpErrorStream.readLine()) != null) {
@@ -397,8 +403,15 @@ public abstract class AbstractGeoPDFBuilder {
 
 					createTemporaryEnvironment(System.getProperty("java.io.tmpdir") + File.separatorChar,
 							"/unix-files.txt", this, GDALWARP_RAW_COMMAND_LINUX, GDAL_CREATE_RAW_COMMAND_LINUX);
-					registerEnvironmentVar(GDAL_LIB_VAR,
-							System.getProperty("java.io.tmpdir") + File.separatorChar + GDAL_LIB_PATH_TO_REGISTER);
+					final String[] libraries = GDAL_LIB_PATH_TO_REGISTER.split(":");
+					final StringBuilder librariesAccumulator = new StringBuilder();
+					for (String libraryPath : libraries) {
+						librariesAccumulator
+								.append(System.getProperty("java.io.tmpdir") + File.separatorChar + libraryPath);
+						librariesAccumulator.append(':');
+					}
+					librariesAccumulator.setLength(librariesAccumulator.length() - 1);
+					registerEnvironmentVar(GDAL_LIB_VAR, librariesAccumulator.toString());
 
 					// Adding executing permissions
 					for (final String file : new String[] { getGdalWarpCommand(), getGdalCreateCommand() }) {
