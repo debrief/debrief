@@ -49,20 +49,21 @@ public class TreeNode {
 		public void testTreeNode() {
 			List<State> list = null;
 			if (System.getProperty("os.name").toLowerCase().indexOf("mac") == -1) {
-	
+
 				try {
 					final DatabaseConfiguration _config = new DatabaseConfiguration();
-					ConfigurationReader.loadDatabaseConfiguration(_config, new LoaderOption[] {
-							new LoaderOption(LoaderType.DEFAULT_FILE, DatabaseConnection.DEFAULT_SQLITE_DATABASE_FILE) });
+					ConfigurationReader.loadDatabaseConfiguration(_config,
+							new LoaderOption[] { new LoaderOption(LoaderType.DEFAULT_FILE,
+									DatabaseConnection.DEFAULT_SQLITE_DATABASE_FILE) });
 					final SqliteDatabaseConnection sqlite = new SqliteDatabaseConnection();
 					sqlite.initializeInstance(_config);
 					list = sqlite.listAll(State.class, (Collection<Condition>) null);
 				} catch (final Exception e) {
 					fail("Failed retrieving data from Database");
 				}
-	
+
 				assertTrue("States - database entries", list.size() == 12239);
-	
+
 				final String rootName = "ROOT";
 				final TreeNode root = new TreeNode(NodeType.ROOT, rootName, null);
 				root.addItem(list.get(0));
@@ -81,18 +82,18 @@ public class TreeNode {
 				final String child1child2Name = "child1child2Name";
 				final TreeNode child1child2 = new TreeNode(NodeType.ROOT, child1child2Name, child1);
 				child1child2.addItem(list.get(5));
-	
+
 				root.addChild(child1);
 				root.addChild(child2);
 				root.addChild(child3);
-	
+
 				child1.addChild(child1child1);
 				child1.addChild(child1child2);
-	
+
 				assertTrue("Retrieving child1 correctly", child1.equals(root.getChild(child1Name)));
 				assertTrue("Retrieving child2 correctly", child2.equals(root.getChild(child2Name)));
 				assertTrue("Retrieving child3 correctly", child3.equals(root.getChild(child3Name)));
-	
+
 				assertTrue("Retrieving child1child1 correctly", child1child1.equals(child1.getChild(child1child1Name)));
 				assertTrue("Retrieving child1child2 correctly", child1child2.equals(child1.getChild(child1child2Name)));
 			}
@@ -107,10 +108,14 @@ public class TreeNode {
 
 	private static final String ADD_VALUE = "ADD_VALUE";
 
+	private static final String ADD_CHILD = "ADD_CHILD";
+
 	private final NodeType type;
 	private final String name;
 	private TreeNode parent = null;
 	private final TimePeriod currentPeriod = new BaseTimePeriod(TimePeriod.INVALID_DATE, TimePeriod.INVALID_DATE);
+
+	private int count = 0; // amount of item it contains.
 
 	private boolean checked = false;
 
@@ -128,8 +133,30 @@ public class TreeNode {
 					&& evt.getNewValue() instanceof TreeStructurable) {
 				final TreeStructurable newItem = (TreeStructurable) evt.getNewValue();
 				if (newItem.getTime() != null) {
-					currentPeriod.extend(new HiResDate(newItem.getTime()));
+					currentPeriod.extend(new HiResDate(newItem.getTime())); // Update the time period.
 				}
+				count += newItem.getCount();
+
+				updateParentsCount(getParent(), newItem.getCount());
+			}
+		}
+
+		private void updateParentsCount(final TreeNode parent, final int count) {
+			if (parent != null) {
+				parent.count += count;
+				updateParentsCount(parent.getParent(), count);
+			}
+		}
+	};
+
+	private final PropertyChangeListener addNewChildListener = new PropertyChangeListener() {
+
+		@Override
+		public void propertyChange(final PropertyChangeEvent evt) {
+			if (ADD_CHILD.equals(evt.getPropertyName()) && evt.getNewValue() != null
+					&& evt.getNewValue() instanceof TreeNode) {
+				final TreeNode newItem = (TreeNode) evt.getNewValue();
+				count += newItem.getCount(); // update the count, just adding the number of my new child
 			}
 		}
 	};
@@ -138,7 +165,7 @@ public class TreeNode {
 		this.type = _type;
 		this.name = _name;
 
-		_pSupport.addPropertyChangeListener(addNewItemListener);
+		addListeners();
 	}
 
 	public TreeNode(final NodeType _type, final String _name, final TreeNode _parent) {
@@ -146,11 +173,13 @@ public class TreeNode {
 		this.name = _name;
 		this.parent = _parent;
 
-		_pSupport.addPropertyChangeListener(addNewItemListener);
+		addListeners();
 	}
 
 	public void addChild(final TreeNode node) {
 		children.put(node.name, node);
+
+		_pSupport.firePropertyChange(ADD_CHILD, null, node);
 	}
 
 	public void addItem(final TreeStructurable item) {
@@ -159,10 +188,18 @@ public class TreeNode {
 		_pSupport.firePropertyChange(ADD_VALUE, null, item);
 	}
 
+	private void addListeners() {
+		_pSupport.addPropertyChangeListener(addNewChildListener);
+		_pSupport.addPropertyChangeListener(addNewItemListener);
+
+	}
+
 	public int countCheckedItems() {
-		int total = isChecked() && !items.isEmpty() ? 1 : 0;
-		for (final TreeNode child : children.values()) {
-			total += child.countCheckedItems();
+		int total = isChecked() && !items.isEmpty() ? getCount() : 0;
+		if (total == 0) {
+			for (final TreeNode child : children.values()) {
+				total += child.countCheckedItems();
+			}
 		}
 		return total;
 	}
@@ -178,6 +215,10 @@ public class TreeNode {
 
 	public TreeNode[] getChildren() {
 		return children.values().toArray(new TreeNode[] {});
+	}
+
+	public int getCount() {
+		return count;
 	}
 
 	public TimePeriod getCurrentPeriod() {
@@ -237,6 +278,10 @@ public class TreeNode {
 		for (final TreeNode child : children.values()) {
 			child.setCheckedRecursive(checked);
 		}
+	}
+
+	public void setCount(final int count) {
+		this.count = count;
 	}
 
 	public void setParent(final TreeNode parent) {

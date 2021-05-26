@@ -21,6 +21,7 @@ import org.mwc.debrief.pepys.model.db.annotation.Location;
 import org.mwc.debrief.pepys.model.db.annotation.ManyToOne;
 import org.mwc.debrief.pepys.model.db.annotation.TableName;
 import org.mwc.debrief.pepys.model.db.annotation.Time;
+import org.mwc.debrief.pepys.model.db.annotation.Transient;
 import org.mwc.debrief.pepys.model.db.config.ConfigurationReader;
 import org.mwc.debrief.pepys.model.db.config.DatabaseConfiguration;
 import org.mwc.debrief.pepys.model.db.config.LoaderOption;
@@ -54,17 +55,17 @@ public class State implements AbstractBean, TreeStructurable {
 					final SqliteDatabaseConnection sqlite = new SqliteDatabaseConnection();
 					sqlite.initializeInstance(_config);
 					final List<State> list = sqlite.listAll(State.class, (Collection<Condition>) null);
-	
+
 					assertTrue("States - database entries", list.size() == 12239);
-	
-					final List<State> list2 = sqlite.listAll(State.class, Arrays
-							.asList(new Condition[] { new Condition("source_id = \"638471a99e264761830b3f6575816e67\"") }));
-	
+
+					final List<State> list2 = sqlite.listAll(State.class, Arrays.asList(
+							new Condition[] { new Condition("source_id = \"638471a99e264761830b3f6575816e67\"") }));
+
 					assertTrue("States - database entries", list2.size() == 5);
-	
-					final List<State> list3 = sqlite.listAll(State.class, Arrays
-							.asList(new Condition[] { new Condition("source_id = \"db8692a392924d27bfacdbddc4eb9a29\"") }));
-	
+
+					final List<State> list3 = sqlite.listAll(State.class, Arrays.asList(
+							new Condition[] { new Condition("source_id = \"db8692a392924d27bfacdbddc4eb9a29\"") }));
+
 					assertTrue("States - database entries", list3.size() == 11400);
 				} catch (NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException
 						| IllegalArgumentException | InvocationTargetException | PropertyVetoException | SQLException
@@ -76,71 +77,75 @@ public class State implements AbstractBean, TreeStructurable {
 		}
 	}
 
+	private static Layer findLayer(final Layers layers, final String name) {
+		Layer parent = layers.findLayer(name, false);
+		if (parent == null) {
+			parent = new BaseLayer();
+			parent.setName(name);
+			layers.addThisLayer(parent);
+		}
+		return parent;
+	}
+
+	private static LightweightTrackWrapper findTrack(final Enumeration<Editable> iter, final String trackName) {
+		LightweightTrackWrapper track = null;
+		while (iter.hasMoreElements() && track == null) {
+			final Editable item = iter.nextElement();
+			if (item instanceof LightweightTrackWrapper && item.getName().equals(trackName)) {
+				track = (LightweightTrackWrapper) item;
+			}
+		}
+		return track;
+	}
+
 	@Id
 	private String state_id;
-
 	@Time
 	private Timestamp time;
-
 	@ManyToOne
 	@FieldName(name = "sensor_id")
 	private Sensor sensor;
+
 	private double heading;
 	private double course;
-
 	private double speed;
 	@ManyToOne
 	@FieldName(name = "source_id")
 	private Datafile datafile;
+
 	private String privacy_id;
+
 	private Timestamp created_date;
 
 	@Location
 	private WorldLocation location;
 
+	@Transient
+	private int count;
+
 	public State() {
 
 	}
 
-	private LightweightTrackWrapper getParent(final Layers layers, final String datafile, final String trackName) {
-		// first the parent folder
-		Layer parent = layers.findLayer(datafile, false);
-		if (parent == null) {
-			parent = new BaseLayer();
-			parent.setName(datafile);
-			layers.addThisLayer(parent);
-		}
+	@Override
+	public void doImport(final Layers _layers, final boolean splitByDatafile) {
+		final LightweightTrackWrapper track = getParent(_layers, getDatafile().getReference(),
+				getPlatform().getTrackName(), splitByDatafile);
 
-		// now the track
-		LightweightTrackWrapper track = null;
-		Enumeration<Editable> iter = parent.elements();
-		while (iter.hasMoreElements() && track == null) {
-			Editable item = iter.nextElement();
-			if (item instanceof LightweightTrackWrapper && item.getName().equals(trackName)) {
-				track = (LightweightTrackWrapper) item;
-			}
-		}
-
-		// did we find it?
-		if (track == null) {
-			// create a new track
-			track = new TrackWrapper();
-			track.setName(trackName);
-			// and store it
-			parent.add(track);
-
-		}
-		return track;
+		// special handling. The concept of heading vs course isn't yet clear in the
+		// backend processing. For Debrief purposes it's probably acceptable to use either.
+		final double courseVal = (heading == 0d || course == 0d) ? heading + course : course;
+		
+		// create the wrapper for this annotation		
+		final FixWrapper fixWrapper = new FixWrapper(new Fix(new HiResDate(time.getTime()), 
+				location, courseVal, speed));
+		fixWrapper.setName(time.toString());
+		track.add(fixWrapper);
 	}
 
 	@Override
-	public void doImport(final Layers _layers) {
-		final LightweightTrackWrapper track = getParent(_layers, getDatafile().getReference(), getPlatform().getTrackName());
-
-		// create the wrapper for this annotation
-		final FixWrapper fixWrapper = new FixWrapper(new Fix(new HiResDate(time.getTime()), location, course, speed));
-		fixWrapper.setName(time.toString());
-		track.add(fixWrapper);
+	public int getCount() {
+		return count;
 	}
 
 	public double getCourse() {
@@ -162,6 +167,42 @@ public class State implements AbstractBean, TreeStructurable {
 
 	public WorldLocation getLocation() {
 		return location;
+	}
+
+	private LightweightTrackWrapper getParent(final Layers layers, final String datafile, final String trackName,
+			final boolean splitByDatafile) {
+		if (splitByDatafile) {
+			final Layer parent = findLayer(layers, datafile);
+
+			// now the track
+			LightweightTrackWrapper track = findTrack(parent.elements(), trackName);
+
+			// did we find it?
+			if (track == null) {
+				// create a new track. Since we're inside a parent folder,
+				// just use lightweight track
+				track = new LightweightTrackWrapper();
+				track.setName(trackName);
+				// and store it
+				parent.add(track);
+			}
+			return track;
+		} else {
+			// If we don't want to split by datafile, then we will add the track directly.
+			// Let's find it then
+			LightweightTrackWrapper track = findTrack(layers.elements(), trackName);
+
+			// did we find it?
+			if (track == null) {
+				// create a new track
+				track = new TrackWrapper();
+				track.setName(trackName);
+				// and store it
+				layers.addThisLayer(track);
+			}
+
+			return track;
+		}
 	}
 
 	@Override
@@ -199,6 +240,10 @@ public class State implements AbstractBean, TreeStructurable {
 	@Override
 	public Date getTime() {
 		return time;
+	}
+
+	public void setCount(final int count) {
+		this.count = count;
 	}
 
 	public void setCourse(final double course) {
@@ -240,4 +285,5 @@ public class State implements AbstractBean, TreeStructurable {
 	public void setTime(final Timestamp time) {
 		this.time = time;
 	}
+
 }

@@ -15,8 +15,13 @@
 
 package org.mwc.debrief.pepys.view;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 
+import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.viewers.CheckboxTreeViewer;
 import org.eclipse.nebula.widgets.cdatetime.CDT;
 import org.eclipse.nebula.widgets.cdatetime.CDateTime;
@@ -41,6 +46,7 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.TreeItem;
+import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.custom_widget.CWorldLocation;
 import org.mwc.debrief.core.DebriefPlugin;
 import org.mwc.debrief.model.utils.OSUtils;
@@ -55,6 +61,11 @@ import org.mwc.debrief.pepys.view.tree.TreeNameLabelProvider;
 public class PepysImportView extends Dialog implements AbstractViewSWT {
 
 	final static RGB SWT_ORANGE = new RGB(255, 165, 0);
+	public static final String PEPYS_IMPORT_START_DATE = "PEPYS_IMPORT_START_DATE";
+	public static final String PEPYS_IMPORT_END_DATE = "PEPYS_IMPORT_END_DATE";
+	private static final String HIRESDATE_PATTERN = "EEE MMM dd hh:mm:ss zzz yyyy";
+	private static final String TOOL_DATE_PATTERN="dd/MM/yyyy  ";
+	private static final String TOOL_TIME_PATTERN="HH:mm:ss ";
 	private final Label startLabel;
 	private final Label endLabel;
 	private final Label topLeftLabel;
@@ -70,6 +81,7 @@ public class PepysImportView extends Dialog implements AbstractViewSWT {
 	private final Button useCurrentViewportButton;
 	private final Button clearAreaButton;
 	private final Button searchNextButton;
+	private final Button splitByDatafile;
 
 	private final Button searchPreviousButton;
 	private final CDateTime startDate;
@@ -167,30 +179,58 @@ public class PepysImportView extends Dialog implements AbstractViewSWT {
 		timePeriodLayout.marginHeight = 10;
 		timePeriodItem.setImage(DebriefPlugin.getImageDescriptor("/icons/16/control_time.png").createImage());
 		timePeriodItem.getBody().setLayout(timePeriodLayout);
-
+		
 		this.startLabel = new Label(timePeriodItem.getBody(), SWT.PUSH);
 		this.startLabel.setText("Start:");
 		this.startLabel.setLayoutData(gridData);
 
-		this.startDate = new CDateTime(timePeriodItem.getBody(), CDT.BORDER | CDT.DROP_DOWN | CDT.DATE_SHORT);
-		this.startDate.setPattern("dd/MM/yyyy  ");
+		this.startDate = new CDateTime(timePeriodItem.getBody(), CDT.BORDER | CDT.DROP_DOWN | CDT.DATE_SHORT|CDT.CLOCK_24_HOUR);
+		this.startDate.setPattern(TOOL_DATE_PATTERN);
 		this.startDate.setSelection(model.getTimePeriod().getStartDTG().getDate());
 
-		this.startTime = new CDateTime(timePeriodItem.getBody(), CDT.BORDER | CDT.SPINNER | CDT.TIME_MEDIUM);
-		this.startTime.setPattern("hh:mm:ss a ");
-		this.startTime.setSelection(model.getTimePeriod().getStartDTG().getDate());
+		this.startTime = new CDateTime(timePeriodItem.getBody(), CDT.BORDER | CDT.DROP_DOWN | CDT.CLOCK_DISCRETE | CDT.TIME_MEDIUM|CDT.CLOCK_24_HOUR);
+		this.startTime.setPattern(TOOL_TIME_PATTERN);
+		
 
 		this.endLabel = new Label(timePeriodItem.getBody(), SWT.NONE);
 		this.endLabel.setText("End:");
 		this.endLabel.setLayoutData(gridData);
 
-		this.endDate = new CDateTime(timePeriodItem.getBody(), CDT.BORDER | CDT.DROP_DOWN | CDT.DATE_SHORT);
-		this.endDate.setPattern("dd/MM/yyyy  ");
-		this.endDate.setSelection(model.getTimePeriod().getEndDTG().getDate());
-
-		this.endTime = new CDateTime(timePeriodItem.getBody(), CDT.BORDER | CDT.SPINNER | CDT.TIME_MEDIUM);
-		this.endTime.setPattern("hh:mm:ss a ");
-		this.endTime.setSelection(model.getTimePeriod().getEndDTG().getDate());
+		this.endDate = new CDateTime(timePeriodItem.getBody(), CDT.BORDER | CDT.DROP_DOWN | CDT.DATE_SHORT|CDT.CLOCK_24_HOUR);
+		this.endDate.setPattern(TOOL_DATE_PATTERN);
+		final String startDatePref = CorePlugin.getDefault().getPreference(PEPYS_IMPORT_START_DATE);
+		
+		if(!startDatePref.isBlank()) {
+			try {
+				this.startDate.setSelection(getDate(startDatePref));
+				this.startTime.setSelection(getDate(startDatePref));
+			} catch (ParseException e1) {
+				CorePlugin.logError(Status.ERROR, "error parsing end date", e1);
+				this.startDate.setSelection(model.getTimePeriod().getStartDTG().getDate());
+				this.startTime.setSelection(model.getTimePeriod().getStartDTG().getDate());
+			}
+		}
+		else {
+			this.startDate.setSelection(model.getTimePeriod().getStartDTG().getDate());
+			this.startTime.setSelection(model.getTimePeriod().getStartDTG().getDate());
+		}
+		final String endDate = CorePlugin.getDefault().getPreference(PEPYS_IMPORT_END_DATE);
+		this.endTime = new CDateTime(timePeriodItem.getBody(), CDT.BORDER | CDT.DROP_DOWN | CDT.CLOCK_DISCRETE | CDT.TIME_MEDIUM | CDT.CLOCK_24_HOUR);
+		this.endTime.setPattern(TOOL_TIME_PATTERN);
+		if(endDate!=null) {
+			try {
+				this.endDate.setSelection(getDate(endDate));
+				this.endTime.setSelection(getDate(endDate));
+			} catch (ParseException e1) {
+				CorePlugin.logError(Status.ERROR, "error parsing end date", e1);
+				this.endDate.setSelection(model.getTimePeriod().getEndDTG().getDate());
+				this.endTime.setSelection(model.getTimePeriod().getEndDTG().getDate());
+			}
+		}
+		else {
+			this.endDate.setSelection(model.getTimePeriod().getEndDTG().getDate());
+			this.endTime.setSelection(model.getTimePeriod().getEndDTG().getDate());
+		}
 
 		// AREA
 		final GridLayout areaItemLayout = new GridLayout();
@@ -369,20 +409,35 @@ public class PepysImportView extends Dialog implements AbstractViewSWT {
 		final GridData importGridDataButton = new GridData();
 		importGridDataButton.horizontalAlignment = GridData.END;
 		importGridDataButton.minimumWidth = 200;
-		importGridDataButton.horizontalSpan = 5;
+		importGridDataButton.horizontalSpan = 3;
+
+		final GridData splitByDatafileGridData = new GridData();
+		splitByDatafileGridData.horizontalAlignment = GridData.END;
+		splitByDatafileGridData.horizontalSpan = 2;
+
+		this.splitByDatafile = new Button(parent, SWT.CHECK);
+		this.splitByDatafile.setText("Split by Datafile");
+		this.splitByDatafile.setLayoutData(splitByDatafileGridData);
+		this.splitByDatafile.setEnabled(true);
 
 		this.importButton = new Button(parent, SWT.PUSH);
-		this.importButton.setText("Import");
+		this.importButton.setText("Import (0)");
 		this.importButton.setLayoutData(importGridDataButton);
 		this.importButton.setImage(DebriefPlugin.getImageDescriptor("/icons/24/import.png").createImage());
 		this.importButton.setEnabled(false);
 
-		importGridDataButton.widthHint = 120;
+		importGridDataButton.widthHint = 160;
 		importGridDataButton.heightHint = 40;
 
 		parent.setText("Debrief Pepys Import");
 		parent.setImage(DebriefPlugin.getImageDescriptor("/icons/16/debrief_icon.png").createImage());
 	}
+	
+	private Date getDate(String startDate2) throws ParseException {
+		DateFormat df = new SimpleDateFormat(HIRESDATE_PATTERN);
+		return df.parse(startDate2);
+	}
+	
 
 	@Override
 	public Button getApplyButton() {
@@ -442,6 +497,11 @@ public class PepysImportView extends Dialog implements AbstractViewSWT {
 	@Override
 	public Text getSearchText() {
 		return searchText;
+	}
+
+	@Override
+	public Button getSplitByDatafileButton() {
+		return splitByDatafile;
 	}
 
 	@Override

@@ -1218,6 +1218,8 @@ public class SWTCanvasAdapter implements CanvasType, Serializable, Editable, Ext
 
 		if (theCol != _currentColor) {
 			_currentColor = theCol;
+			// In case the color has alpha, Let's save it.
+			_theDest.setAlpha(theCol.getAlpha());
 
 			// transfer the color
 			final Color swtCol = ColorHelper.getColor(theCol);

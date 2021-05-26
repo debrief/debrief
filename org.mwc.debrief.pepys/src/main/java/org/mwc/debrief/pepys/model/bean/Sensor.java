@@ -37,11 +37,11 @@ public class Sensor implements AbstractBean, Comparable<Sensor> {
 					final SqliteDatabaseConnection sqlite = new SqliteDatabaseConnection();
 					sqlite.initializeInstance(_config);
 					final List<Sensor> list = sqlite.listAll(Sensor.class, (Collection<Condition>) null);
-	
+
 					assertTrue("States - database entries", list.size() == 43);
-	
+
 					final Sensor plantFormSensor = sqlite.listById(Sensor.class, "bb650d5beb3346ce88b0e7d5665060bc");
-	
+
 					assertTrue("States - database entries", "Frigate_Optic".equals(plantFormSensor.getName()));
 				} catch (NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException
 						| IllegalArgumentException | InvocationTargetException | PropertyVetoException | SQLException

@@ -51,9 +51,9 @@ import org.eclipse.ui.internal.IPreferenceConstants;
 import org.eclipse.ui.internal.WorkbenchPage;
 import org.eclipse.ui.internal.WorkbenchPlugin;
 import org.eclipse.ui.internal.WorkbenchWindow;
+import org.eclipse.ui.navigator.CommonNavigator;
 import org.eclipse.ui.part.WorkbenchPart;
 import org.eclipse.ui.views.contentoutline.ContentOutline;
-import org.eclipse.ui.views.navigator.ResourceNavigator;
 import org.eclipse.ui.views.properties.PropertySheet;
 
 @SuppressWarnings({ "deprecation", "restriction" })
@@ -117,7 +117,7 @@ public class Startup implements IStartup {
 
 		@Override
 		public void partOpened(final IWorkbenchPart part) {
-			if (part instanceof ContentOutline || part instanceof PropertySheet || part instanceof ResourceNavigator) {
+			if (part instanceof ContentOutline || part instanceof PropertySheet || part instanceof CommonNavigator) {
 				changeIcon(part);
 			}
 		}
@@ -151,7 +151,7 @@ public class Startup implements IStartup {
 				}
 				image = propertiesImage;
 			}
-			if (part instanceof ResourceNavigator) {
+			if (part instanceof CommonNavigator) {
 				if (navigatorImage == null) {
 					final ImageDescriptor descriptor = DebriefPlugin.getImageDescriptor("icons/16/navigator.png");
 					navigatorImage = JFaceResources.getResources().createImageWithDefault(descriptor);
@@ -389,8 +389,8 @@ public class Startup implements IStartup {
 				if (view instanceof PropertySheet) {
 					changeIcon(view);
 				}
-				view = page.findView(IPageLayout.ID_RES_NAV);
-				if (view instanceof ResourceNavigator) {
+				view = page.findView(IPageLayout.ID_PROJECT_EXPLORER);
+				if (view instanceof CommonNavigator) {
 					changeIcon(view);
 				}
 			}

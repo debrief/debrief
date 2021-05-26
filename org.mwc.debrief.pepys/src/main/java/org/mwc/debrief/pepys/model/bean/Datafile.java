@@ -78,7 +78,7 @@ public class Datafile implements AbstractBean {
 						| ClassNotFoundException | IOException | PepsysException e) {
 					e.printStackTrace();
 					fail("Couldn't connect to database or query error:" + e);
-				}	
+				}
 			}
 		}
 	}

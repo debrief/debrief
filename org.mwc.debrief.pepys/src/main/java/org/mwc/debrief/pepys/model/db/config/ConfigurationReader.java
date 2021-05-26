@@ -125,7 +125,7 @@ public class ConfigurationReader {
 
 	/**
 	 * Given an InputStream, It loads it, and stores it in the DatabaseCondiguration
-	 * 
+	 *
 	 * @param configuration Where to store the configuration
 	 * @param inputStream   Where to read the configuration from
 	 */

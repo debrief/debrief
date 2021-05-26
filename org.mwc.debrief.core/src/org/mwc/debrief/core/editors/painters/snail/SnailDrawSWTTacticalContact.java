@@ -137,7 +137,7 @@ public abstract class SnailDrawSWTTacticalContact implements drawSWTHighLight, M
 							final boolean doFade = parent.getSnailProperties().getFadePoints();
 
 							if (doFade) {
-								thisCol = SnailDrawSWTTrack.getFadedColorFor(thisCol, backColor, trail_len, dtg,
+								thisCol = SnailDrawSWTTrack.getFadedColorFor(thisCol, trail_len, dtg,
 										scw.getTime());
 							}
 

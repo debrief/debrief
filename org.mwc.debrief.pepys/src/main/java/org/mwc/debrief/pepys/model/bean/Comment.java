@@ -24,6 +24,7 @@ import org.mwc.debrief.pepys.model.db.annotation.ManyToOne;
 import org.mwc.debrief.pepys.model.db.annotation.OneToOne;
 import org.mwc.debrief.pepys.model.db.annotation.TableName;
 import org.mwc.debrief.pepys.model.db.annotation.Time;
+import org.mwc.debrief.pepys.model.db.annotation.Transient;
 import org.mwc.debrief.pepys.model.tree.TreeStructurable;
 
 import Debrief.Wrappers.TrackWrapper;
@@ -57,12 +58,15 @@ public class Comment implements AbstractBean, TreeStructurable {
 	private Privacy privacy;
 	private Date created_date;
 
+	@Transient
+	private int count;
+
 	public Comment() {
 
 	}
 
 	@Override
-	public void doImport(final Layers _layers) {
+	public void doImport(final Layers _layers, final boolean splitByDatafile) {
 		Layer dest = _layers.findLayer(NarrativeEntry.NARRATIVE_LAYER, true);
 		if (dest == null) {
 			dest = new NarrativeWrapper(NarrativeEntry.NARRATIVE_LAYER);
@@ -95,6 +99,11 @@ public class Comment implements AbstractBean, TreeStructurable {
 
 	public String getContent() {
 		return content;
+	}
+
+	@Override
+	public int getCount() {
+		return count;
 	}
 
 	public Date getCreated_date() {
@@ -136,6 +145,10 @@ public class Comment implements AbstractBean, TreeStructurable {
 
 	public void setContent(final String content) {
 		this.content = content;
+	}
+
+	public void setCount(final int count) {
+		this.count = count;
 	}
 
 	public void setCreated_date(final Date created_date) {

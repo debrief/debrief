@@ -9,7 +9,9 @@ import org.mwc.debrief.pepys.model.bean.SensorType;
 import MWC.GUI.Layers;
 
 public interface TreeStructurable {
-	public void doImport(final Layers _layers);
+	public void doImport(final Layers _layers, final boolean splitByDatafile);
+
+	public int getCount();
 
 	public Datafile getDatafile();
 

@@ -54,5 +54,6 @@ public class PreferenceInitializer extends AbstractPreferenceInitializer {
 		store.setDefault(PrefsPage.PreferenceConstants.DEFAULT_PLOT_COLOR, Color.white.getRGB());
 		store.setDefault(PrefsPage.PreferenceConstants.REUSE_TRIM_NARRATIVES_DIALOG_CHOICE, false);
 		store.setDefault(PrefsPage.PreferenceConstants.PPT_TEMPLATE, getDefaultTemplateLocation());
+		store.setDefault(PrefsPage.PreferenceConstants.PEPYS_USE_STORED_FUNCTIONS, true);
 	}
 }
