@@ -44,61 +44,61 @@
     <dependency>
       <groupId>org.apache.ant</groupId>
       <artifactId>ant-apache-log4j</artifactId>
-      <version>1.10.5</version>
+      <version>1.10.9</version>
     </dependency>
 
     <dependency>
       <groupId>org.apache.ant</groupId>
       <artifactId>ant-apache-oro</artifactId>
-      <version>1.10.5</version>
+      <version>1.10.9</version>
     </dependency>
 
     <dependency>
       <groupId>org.apache.ant</groupId>
       <artifactId>ant-apache-regexp</artifactId>
-      <version>1.10.5</version>
+      <version>1.10.9</version>
     </dependency>
 
     <dependency>
       <groupId>org.apache.ant</groupId>
       <artifactId>ant-apache-resolver</artifactId>
-      <version>1.10.5</version>
+      <version>1.10.9</version>
     </dependency>
 
     <dependency>
       <groupId>org.apache.ant</groupId>
       <artifactId>ant-apache-xalan2</artifactId>
-      <version>1.10.5</version>
+      <version>1.10.9</version>
     </dependency>
 
     <dependency>
       <groupId>org.apache.ant</groupId>
       <artifactId>ant-commons-logging</artifactId>
-      <version>1.10.5</version>
+      <version>1.10.9</version>
     </dependency>
 
     <dependency>
       <groupId>org.apache.ant</groupId>
       <artifactId>ant-commons-net</artifactId>
-      <version>1.10.5</version>
+      <version>1.10.9</version>
     </dependency>
 
     <dependency>
       <groupId>org.apache.ant</groupId>
       <artifactId>ant-jai</artifactId>
-      <version>1.10.5</version>
+      <version>1.10.9</version>
     </dependency>
 
     <dependency>
       <groupId>org.apache.ant</groupId>
       <artifactId>ant-javamail</artifactId>
-      <version>1.10.5</version>
+      <version>1.10.9</version>
     </dependency>
 
     <dependency>
       <groupId>org.apache.ant</groupId>
       <artifactId>ant-jdepend</artifactId>
-      <version>1.10.5</version>
+      <version>1.10.9</version>
     </dependency>
 
     <dependency>
@@ -110,7 +110,7 @@
     <dependency>
       <groupId>org.apache.ant</groupId>
       <artifactId>ant-jsch</artifactId>
-      <version>1.10.5</version>
+      <version>1.10.9</version>
     </dependency>
 
     <dependency>
@@ -122,7 +122,7 @@
     <dependency>
       <groupId>org.apache.ant</groupId>
       <artifactId>ant-junitlauncher</artifactId>
-      <version>1.10.5</version>
+      <version>1.10.9</version>
     </dependency>
 
     <dependency>
@@ -140,13 +140,13 @@
     <dependency>
       <groupId>org.apache.ant</groupId>
       <artifactId>ant-netrexx</artifactId>
-      <version>1.10.5</version>
+      <version>1.10.9</version>
     </dependency>
 
     <dependency>
       <groupId>org.apache.ant</groupId>
       <artifactId>ant-swing</artifactId>
-      <version>1.10.5</version>
+      <version>1.10.9</version>
     </dependency>
 
     <dependency>
@@ -163,7 +163,7 @@
     <dependency>
       <groupId>org.apache.ant</groupId>
       <artifactId>ant-xz</artifactId>
-      <version>1.10.5</version>
+      <version>1.10.9</version>
     </dependency>
   </dependencies>
 
