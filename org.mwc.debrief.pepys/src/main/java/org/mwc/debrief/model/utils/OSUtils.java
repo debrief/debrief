@@ -22,6 +22,8 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Scanner;
 
+import org.eclipse.core.runtime.Status;
+import org.mwc.cmap.core.CorePlugin;
 import org.mwc.debrief.pepys.Activator;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.FrameworkUtil;
@@ -53,7 +55,13 @@ public class OSUtils {
 
 	public static InputStream getInputStreamResource(final Class clazz, final String resourcePath,
 			final String pluginID) throws IOException {
-		return getURLResource(clazz, resourcePath, pluginID).openStream();
+		final URL urlResource = getURLResource(clazz, resourcePath, pluginID);
+		if(urlResource != null) {
+			return urlResource.openStream();			
+		} else {
+			CorePlugin.logError(Status.ERROR, "Failed to get resource:" + resourcePath + " from:" + pluginID, null, true);
+			return null;
+		}
 	}
 
 	public static URL getURLResource(final Class clazz, final String resourcePath, final String pluginID)
