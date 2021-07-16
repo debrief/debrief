@@ -1,9 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <?pde?>
-<!-- generated with https://github.com/eclipse-cbi/targetplatform-dsl -->
-<target name="eclipse-latest" sequenceNumber="1619512526">
+<!-- generated with https://github.com/eclipse-cbi/targetplatform-dsl --><target name="eclipse-latest" sequenceNumber="1619512526">
   <locations>
-    <location includeMode="slicer" includeAllPlatforms="false" includeSource="true" includeConfigurePhase="false" type="InstallableUnit">
+    <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
       <unit id="org.eclipse.wst.xml_ui.feature.feature.group" version="3.21.0.v202102222242"/>
       <unit id="org.eclipse.emf.common.feature.group" version="2.22.0.v20210114-1734"/>
       <unit id="org.eclipse.emf.common.ui.feature.group" version="2.17.0.v20190507-0402"/>
@@ -31,24 +30,27 @@
       <unit id="org.eclipse.xsd.feature.group" version="2.19.0.v20201230-0836"/>
       <repository location="http://download.eclipse.org/releases/2021-03"/>
     </location>
-    <location includeMode="slicer" includeAllPlatforms="false" includeSource="true" includeConfigurePhase="false" type="InstallableUnit">
-      <unit id="org.eclipse.ease.feature.feature.group" version="0.7.0.I201907120558"/>
-      <unit id="org.eclipse.ease.lang.javascript.feature.feature.group" version="0.7.0.I201906281229"/>
-      <unit id="org.eclipse.ease.lang.jvm.feature.feature.group" version="0.7.0.I201906281229"/>
-      <unit id="org.eclipse.ease.lang.unittest.feature.feature.group" version="0.7.0.I201906281229"/>
-      <unit id="org.eclipse.ease.modules.charting.feature.feature.group" version="0.7.0.I201906281232"/>
-      <unit id="org.eclipse.ease.modules.feature.feature.group" version="0.7.0.I201907160756"/>
-      <unit id="org.eclipse.ease.modules.modeling.feature.feature.group" version="0.7.0.I201906281232"/>
-      <unit id="org.eclipse.ease.lang.scriptarchive.feature.feature.group" version="0.7.0.I201906281229"/>
-      <unit id="org.eclipse.ease.ui.feature.feature.group" version="0.7.0.I201907161104"/>
+    <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
+      <unit id="org.eclipse.ease.feature.feature.group" version="0.8.0.I202105061131"/>
+      <unit id="org.eclipse.ease.lang.javascript.feature.feature.group" version="0.8.0.I202104091054"/>
+      <unit id="org.eclipse.ease.lang.jvm.feature.feature.group" version="0.8.0.I202103261223"/>
+      <unit id="org.eclipse.ease.modules.charting.feature.feature.group" version="0.8.0.I202105070930"/>
+      <unit id="org.eclipse.ease.modules.feature.feature.group" version="0.8.0.I202105111149"/>
+      <unit id="org.eclipse.ease.modules.modeling.feature.feature.group" version="0.8.0.I202104061631"/>
+      <unit id="org.eclipse.ease.ui.feature.feature.group" version="0.8.0.I202105111204"/>
       <repository location="https://download.eclipse.org/ease/release/latest"/>
+	    <unit id="org.eclipse.ease.lang.javascript.feature.source.feature.group" version="0.8.0.I202104091054"/>
+	    <unit id="org.eclipse.ease.lang.jvm.feature.source.feature.group" version="0.8.0.I202103261223"/>
+	    <unit id="org.eclipse.ease.lang.scriptarchive.feature.source.feature.group" version="0.8.0.I202104061519"/>
+	    <unit id="org.eclipse.ease.lang.unittest.feature.source.feature.group" version="0.8.0.I202105030811"/>
+	    <unit id="org.eclipse.ease.ui.feature.source.feature.group" version="0.8.0.I202105111204"/>
     </location>
-    <location includeMode="slicer" includeAllPlatforms="false" includeSource="true" includeConfigurePhase="false" type="InstallableUnit">
+    <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
       <unit id="org.eclipse.nebula.widgets.xviewer.feature.feature.group" version="1.1.0.201907151344"/>
       <unit id="org.eclipse.nebula.visualization.xygraph" version="3.1.0.201907151344"/>
       <repository location="http://download.eclipse.org/nebula/releases/2.2.0"/>
     </location>
-    <location includeMode="slicer" includeAllPlatforms="false" includeSource="true" includeConfigurePhase="false" type="InstallableUnit">
+    <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
       <unit id="org.eclipse.jpt.assembly.feature.feature.group" version="2.3.3.v202007091849"/>
       <unit id="org.eclipse.jpt.common.branding" version="1.4.1.v201902121834"/>
       <unit id="org.eclipse.jpt.common.core" version="1.5.1.v201902121834"/>
@@ -130,7 +132,7 @@
       <unit id="org.eclipse.wtp.jee.capabilities" version="1.0.100.v201903222024"/>
       <repository location="http://download.eclipse.org/webtools/repository/2021-03"/>
     </location>
-    <location includeMode="slicer" includeAllPlatforms="false" includeSource="true" includeConfigurePhase="false" type="InstallableUnit">
+    <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
       <unit id="com.google.guava" version="30.1.0.v20210127-2300"/>
       <unit id="com.google.gson" version="2.8.6.v20201231-1626"/>
       <unit id="com.google.protobuf" version="2.4.0.v201105131100"/>
