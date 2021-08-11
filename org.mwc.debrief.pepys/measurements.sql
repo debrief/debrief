@@ -4,7 +4,7 @@ ui_filter_input as
 			? as start_time,
 			? as end_time,
 			? as location,
-			? as data_types,
+			?::text[] as data_types,
 			? as comment_search_string
 	),
 	processed_ui_filter_values as
@@ -12,7 +12,7 @@ ui_filter_input as
 			case when (trim(ui_input.start_time)='' OR ui_input.start_time is null) then '1000-01-01 00:00:00.000000'::timestamp else to_timestamp(ui_input.start_time, 'YYYY-MM-DD HH24:MI:SS.US') end as start_time,
 			case when (trim(ui_input.end_time)='' OR ui_input.end_time is null) then '9999-12-12 23:59:59.000000'::timestamp else to_timestamp(ui_input.end_time, 'YYYY-MM-DD HH24:MI:SS.US') end as end_time,
 			case when (trim(ui_input.location)='' OR ui_input.location is null) then null else ST_GeomFromText(ui_input.location) end as location,
-			case when (trim(ui_input.data_types)='' OR ui_input.data_types is null) then string_to_array('NO_DATA_TYPE_SELECTED',',') else string_to_array(upper(ui_input.data_types),',') end as data_types,
+			case when (coalesce(array_length(ui_input.data_types,1),0)::int = 0) then null else ui_input.data_types end as data_types,
 			case when (trim(ui_input.comment_search_string)='' OR ui_input.comment_search_string is null) then null::varchar else '%'||upper(ui_input.comment_search_string)||'%' end as comment_search_string
 		from
 				ui_filter_input as ui_input

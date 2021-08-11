@@ -2,7 +2,6 @@ with parameters as
   (select ? as start_time,
           ? as end_time,
           ? as comment_search_string,
-          ? as sensor_id,
           ? as source_id,
           ? as platform_id)
 

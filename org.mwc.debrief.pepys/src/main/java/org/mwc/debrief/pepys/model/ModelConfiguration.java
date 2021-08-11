@@ -476,40 +476,19 @@ public class ModelConfiguration implements AbstractConfiguration {
 
 	@Override
 	public QueryParameterAccumulator getParameterAccumulator() {
-		if (getAlgorithmType() == QUERY_STRATEGY.FAST_MODE) {
-			return new QueryParameterAccumulator() {
-				final StringBuilder builder = new StringBuilder();
+		return new QueryParameterAccumulator() {
+			final ArrayList<Object> accumulator = new ArrayList<>();
 
-				@Override
-				public void addPart(final Object o) {
-					builder.append(o);
-					builder.append(",");
-				}
+			@Override
+			public void addPart(final Object o) {
+				accumulator.add(o);
+			}
 
-				@Override
-				public Object getAccumulated() {
-					if (builder.length() > 0) {
-						builder.setLength(builder.length() - 1);
-					}
-					return builder.toString();
-				}
-			};
-		} else if (getAlgorithmType() == QUERY_STRATEGY.FAST_MODE_STORED_PROC) {
-			return new QueryParameterAccumulator() {
-				final ArrayList<Object> accumulator = new ArrayList<>();
-
-				@Override
-				public void addPart(final Object o) {
-					accumulator.add(o);
-				}
-
-				@Override
-				public Object getAccumulated() {
-					return accumulator;
-				}
-			};
-		}
-		return null;
+			@Override
+			public Object getAccumulated() {
+				return accumulator;
+			}
+		};
 	}
 
 	@Override
@@ -694,9 +673,7 @@ public class ModelConfiguration implements AbstractConfiguration {
 				platformAccumulator.addPart(comment.getPlatform().getPlatform_id());
 				sourceAccumulator.addPart(comment.getDatafile().getDatafile_id());
 			}
-
-			// sensor id
-			parameters.add(null);
+			
 			// source id
 			parameters.add(sourceAccumulator.getAccumulated());
 
@@ -772,7 +749,6 @@ public class ModelConfiguration implements AbstractConfiguration {
 
 				currentContact.setContact_id(contact.getContact_id());
 				currentContact.setTime(contact.getTime());
-				currentContact.setName(contact.getName());
 				currentContact.setSensor(sensor);
 				currentContact.setDatafile(datafile);
 
@@ -841,11 +817,7 @@ public class ModelConfiguration implements AbstractConfiguration {
 				final SensorType sensorType = new SensorType();
 				final Datafile datafile = new Datafile();
 
-				if (stateFastMode.getReference() != null) {
-					datafile.setReference(stateFastMode.getReference());
-				} else {
-					datafile.setReference(datafilesNames.get(stateFastMode.getSourceid()));
-				}
+				datafile.setReference(stateFastMode.getReference());
 				currentState.setSensor(sensor);
 				sensor.setSensorType(sensorType);
 				sensor.setPlatform(platform);
