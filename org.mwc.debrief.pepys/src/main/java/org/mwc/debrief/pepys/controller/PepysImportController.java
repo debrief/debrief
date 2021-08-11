@@ -336,14 +336,21 @@ public class PepysImportController {
 								CorePlugin.getDefault().getPreferenceStore().setValue(PepysImportView.PEPYS_IMPORT_START_DATE, model.getTimePeriod().getStartDTG().getDate().toString());
 								CorePlugin.getDefault().getPreferenceStore().setValue(PepysImportView.PEPYS_IMPORT_END_DATE, model.getTimePeriod().getEndDTG().getDate().toString());
 							} catch (final PepsysException e) {
-								CorePlugin.logError(IStatus.ERROR, "PepysException on updating area filter", e);
+								CorePlugin.logError(IStatus.ERROR, "PepysException on applying filters", e);
 								e.printStackTrace();
 								final MessageBox messageBox = new MessageBox(_parent, SWT.ERROR | SWT.OK);
 								messageBox.setMessage(e.getMessage());
 								messageBox.setText(e.getTitle());
 								messageBox.open();
+              } catch (final SQLException e) {
+                CorePlugin.logError(IStatus.ERROR, "PepysException on applying filters", e);
+                e.printStackTrace();
+                final MessageBox messageBox = new MessageBox(_parent, SWT.ERROR | SWT.OK);
+                messageBox.setMessage("An error occurred running an SQL Query:\n" + e.getMessage());
+                messageBox.setText("DebriefNG");
+                messageBox.open();
 							} catch (final Exception e) {
-								CorePlugin.logError(IStatus.ERROR, "Exception on updating area filter", e);
+                CorePlugin.logError(IStatus.ERROR, "PepysException on applying filters", e);
 								e.printStackTrace();
 								final MessageBox messageBox = new MessageBox(_parent, SWT.ERROR | SWT.OK);
 								messageBox.setMessage(DatabaseConnection.GENERIC_CONNECTION_ERROR);
