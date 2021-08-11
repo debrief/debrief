@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Legacy Plug-in
 Bundle-SymbolicName: org.mwc.debrief.legacy;singleton:=true
-Bundle-Version: 1.0.445
+Bundle-Version: 1.0.446
 Bundle-ClassPath: debrief_legacy.jar,
  libs/pdfbox-2.0.3.jar,
  libs/commons-logging-1.2.jar,
