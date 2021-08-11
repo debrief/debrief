@@ -73,691 +73,921 @@ import MWC.GenericData.HiResDate;
 import MWC.GenericData.TimePeriod;
 import MWC.GenericData.WorldArea;
 
-public class PepysImportController {
-
-	public static void main(final String[] args) {
-		final Display display = new Display();
-		final Shell shell = new Shell(display);
-		try {
-			final DatabaseConfiguration _config = new DatabaseConfiguration();
-			ConfigurationReader.loadDatabaseConfiguration(_config, new LoaderOption[] {
-					new LoaderOption(LoaderType.DEFAULT_FILE, DatabaseConnection.DEFAULT_SQLITE_TEST_DATABASE_FILE) });
-
-			final AbstractConfiguration model = new ModelConfiguration();
-			model.loadDatabaseConfiguration(_config);
-			final AbstractViewSWT view = new PepysImportView(model, shell);
-
-			new PepysImportController(shell, model, view);
-		} catch (final PropertyVetoException | IOException | PepsysException e) {
-			e.printStackTrace();
-		}
-
-		shell.pack();
-		shell.open();
-		while (!shell.isDisposed()) {
-			if (!display.readAndDispatch()) {
-				display.sleep();
-			}
-		}
-	}
-
-	private final AbstractConfiguration _model;
-
-	private final AbstractViewSWT _view;
-
-	private final Shell _parent;
-
-	private final String IMAGE_PREFIX = "/icons/16/";
-
-	private final String INI_FILE_SUFFIX = "ini";
-
-	private final String SQLITE_FILE_SUFFIX = "sqlite";
-
-	private final int MAXIMUM_SELECTED_FILES_BEFORE_WARNING = 200000;
-
-	public PepysImportController(final Shell parent, final AbstractConfiguration model, final AbstractViewSWT view) {
-		model.addDatafileTypeFilter(new TypeDomain(State.class, TreeNode.STATE, true, IMAGE_PREFIX + "fix.png"));
-		model.addDatafileTypeFilter(
-				new TypeDomain(Contact.class, TreeNode.CONTACTS, true, IMAGE_PREFIX + "bearing.png"));
-		model.addDatafileTypeFilter(
-				new TypeDomain(Comment.class, TreeNode.COMMENT, true, IMAGE_PREFIX + "narrative.png"));
-
-		_model = model;
-		_view = view;
-		_parent = parent;
-
-		addDataTypeFilters(model, view);
-		addDatabindings(model, view);
-	}
-
-	public PepysImportController(final Shell parent, final AbstractConfiguration model, final AbstractViewSWT view,
-			final PepysConnectorBridge pepysBridge) {
-		this(parent, model, view);
-
-		_model.setPepysConnectorBridge(pepysBridge);
-	}
-
-	protected void addDatabindings(final AbstractConfiguration model, final AbstractViewSWT view) {
-
-		view.getStartDate().addSelectionListener(new SelectionListener() {
-
-			public void setStartTime(final AbstractConfiguration model) {
-				final HiResDate start = new HiResDate(view.getStartDate().getSelection());
-				final HiResDate oldStart = model.getTimePeriod().getStartDTG();
-				model.setTimePeriod(new TimePeriod.BaseTimePeriod(HiResDate.copyOnlyDate(start, oldStart),
-						model.getTimePeriod().getEndDTG()));
-			}
-
-			@Override
-			public void widgetDefaultSelected(final SelectionEvent sel) {
-				setStartTime(model);
-			}
-
-			@Override
-			public void widgetSelected(final SelectionEvent sel) {
-				setStartTime(model);
-			}
-		});
-
-		view.getEndDate().addSelectionListener(new SelectionListener() {
-
-			public void setEndTime(final AbstractConfiguration model) {
-				final HiResDate end = new HiResDate(view.getEndDate().getSelection());
-				final HiResDate oldEnd = model.getTimePeriod().getEndDTG();
-				model.setTimePeriod(new TimePeriod.BaseTimePeriod(model.getTimePeriod().getStartDTG(),
-						HiResDate.copyOnlyDate(end, oldEnd)));
-			}
-
-			@Override
-			public void widgetDefaultSelected(final SelectionEvent sel) {
-				setEndTime(model);
-			}
-
-			@Override
-			public void widgetSelected(final SelectionEvent sel) {
-				setEndTime(model);
-			}
-		});
-
-		view.getStartTime().addSelectionListener(new SelectionListener() {
-
-			public void setStartTime(final AbstractConfiguration model) {
-				final HiResDate start = new HiResDate(view.getStartTime().getSelection());
-				final HiResDate oldStart = model.getTimePeriod().getStartDTG();
-				model.setTimePeriod(new TimePeriod.BaseTimePeriod(HiResDate.copyOnlyTime(start, oldStart),
-						model.getTimePeriod().getEndDTG()));
-			}
-
-			@Override
-			public void widgetDefaultSelected(final SelectionEvent sel) {
-				setStartTime(model);
-			}
-
-			@Override
-			public void widgetSelected(final SelectionEvent arg0) {
-				setStartTime(model);
-			}
-		});
-
-		view.getEndTime().addSelectionListener(new SelectionListener() {
-
-			public void setEndTime(final AbstractConfiguration model) {
-				final HiResDate end = new HiResDate(view.getEndTime().getSelection());
-				final HiResDate oldEnd = model.getTimePeriod().getEndDTG();
-				model.setTimePeriod(new TimePeriod.BaseTimePeriod(model.getTimePeriod().getStartDTG(),
-						HiResDate.copyOnlyTime(end, oldEnd)));
-			}
-
-			@Override
-			public void widgetDefaultSelected(final SelectionEvent arg0) {
-				setEndTime(model);
-			}
-
-			@Override
-			public void widgetSelected(final SelectionEvent arg0) {
-				setEndTime(model);
-			}
-		});
-
-		model.addPropertyChangeListener(new PropertyChangeListener() {
-
-			@Override
-			public void propertyChange(final PropertyChangeEvent evt) {
-				if (AbstractConfiguration.PERIOD_PROPERTY.equals(evt.getPropertyName())
-						&& !evt.getOldValue().equals(evt.getNewValue())) {
-					view.getStartDate().setSelection(model.getTimePeriod().getStartDTG().getDate());
-				}
-			}
-		});
-
-		model.addPropertyChangeListener(new PropertyChangeListener() {
-
-			@Override
-			public void propertyChange(final PropertyChangeEvent evt) {
-				if (AbstractConfiguration.TREE_MODEL.equals(evt.getPropertyName())) {
-					view.getTree().setInput(model.getTreeModel());
-				}
-			}
-		});
-
-		model.addPropertyChangeListener(new PropertyChangeListener() {
-
-			@Override
-			public void propertyChange(final PropertyChangeEvent evt) {
-				if (AbstractConfiguration.SEARCH_PROPERTY.equals(evt.getPropertyName())) {
-
-					// In case we are modifying the model directly.
-					if (!view.getSearchText().getText().equals(evt.getNewValue())) {
-						view.getSearchText().setText((String) evt.getNewValue());
-					}
-					view.getTree().refresh();
-				}
-			}
-		});
-
-		model.addPropertyChangeListener(new PropertyChangeListener() {
-
-			@Override
-			public void propertyChange(final PropertyChangeEvent evt) {
-				if (AbstractConfiguration.HIGHLIGHT_PROPERTY.equals(evt.getPropertyName())) {
-					final List<TreeNode> path = new ArrayList<TreeNode>();
-					TreeNode currentNode = (TreeNode) evt.getNewValue();
-					while (currentNode != null) {
-						path.add(currentNode);
-						currentNode = currentNode.getParent();
-					}
-					Collections.reverse(path);
-
-					TreeItem item = view.getTree().getTree().getItem(0);
-					for (final TreeNode itemPath : path) {
-						if (item.getData() != itemPath) {
-							for (final TreeItem child : item.getItems()) {
-								if (child.getData() == itemPath) {
-									item = child;
-									break;
-								}
-							}
-						}
-						if (!item.getExpanded()) {
-							item.setExpanded(true);
-						}
-						view.getTree().refresh();
-					}
-
-					// There is a bug in Window which does not
-					// update the selection if it is the same node.
-					// So, we need to force an update
-					view.getTree().getTree().deselectAll();
-					view.getTree().getTree().setSelection(item);
-				}
-			}
-		});
-
-		view.getSearchText().addListener(SWT.Traverse, new Listener() {
-
-			@Override
-			public void handleEvent(final Event event) {
-				if (event.detail == SWT.TRAVERSE_RETURN) {
-					model.getNextSearch();
-					view.getTree().refresh();
-				}
-			}
-		});
-
-		view.getTree().addSelectionChangedListener(new ISelectionChangedListener() {
-
-			@Override
-			public void selectionChanged(final SelectionChangedEvent event) {
-				final TreeItem[] selected = view.getTree().getTree().getSelection();
-				if (selected.length > 0) {
-					model.setHighlightedElement((TreeNode) selected[0].getData());
-					model.searchFromUser(true);
-				} else {
-					model.setHighlightedElement(null);
-				}
-			}
-		});
-
-		view.getApplyButton().addListener(SWT.Selection, new Listener() {
-			@Override
-			public void handleEvent(final Event event) {
-				if (event.type == SWT.Selection) {
-					final Cursor _cursor = new Cursor(Display.getCurrent(), SWT.CURSOR_WAIT);
-					_parent.setCursor(_cursor);
-					Display.getCurrent().asyncExec(new Runnable() {
-						@Override
-						public void run() {
-							Application.logError2(ToolParent.INFO, "Starting run process - PepysImportController",
-									null);
-							try {
-								updateAreaView2Model(model, view);
-								model.apply();
-								view.getImportButton().setEnabled(false);
-								CorePlugin.getDefault().getPreferenceStore().setValue(PepysImportView.PEPYS_IMPORT_START_DATE, model.getTimePeriod().getStartDTG().getDate().toString());
-								CorePlugin.getDefault().getPreferenceStore().setValue(PepysImportView.PEPYS_IMPORT_END_DATE, model.getTimePeriod().getEndDTG().getDate().toString());
-							} catch (final PepsysException e) {
-								CorePlugin.logError(IStatus.ERROR, "PepysException on updating area filter", e);
-								e.printStackTrace();
-								final MessageBox messageBox = new MessageBox(_parent, SWT.ERROR | SWT.OK);
-								messageBox.setMessage(e.getMessage());
-								messageBox.setText(e.getTitle());
-								messageBox.open();
-							} catch (final Exception e) {
-								CorePlugin.logError(IStatus.ERROR, "Exception on updating area filter", e);
-								e.printStackTrace();
-								final MessageBox messageBox = new MessageBox(_parent, SWT.ERROR | SWT.OK);
-								messageBox.setMessage(DatabaseConnection.GENERIC_CONNECTION_ERROR);
-								messageBox.setText("DebriefNG");
-								messageBox.open();
-							} finally {
-								_parent.setCursor(null);
-								_cursor.dispose();
-							}
-						}
-					});
-				}
-			}
-		});
-
-		view.getImportButton().addListener(SWT.Selection, new Listener() {
-
-			@Override
-			public void handleEvent(final Event event) {
-				final int currentSelectedItem = model.getTreeModel().countCheckedItems();
-				if (event.type == SWT.Selection) {
-					final Cursor _cursor = new Cursor(Display.getCurrent(), SWT.CURSOR_WAIT);
-					_parent.setCursor(_cursor);
-					if (currentSelectedItem > MAXIMUM_SELECTED_FILES_BEFORE_WARNING) {
-						final MessageBox messageBox = new MessageBox(_parent, SWT.ICON_QUESTION | SWT.YES | SWT.NO);
-						messageBox.setMessage("A huge amount of data will be imported (" + currentSelectedItem
-								+ " items). Debrief performance can be affected when loading more than 200k entries. Do you want to continue?");
-						messageBox.setText("Database Import");
-						final int answer = messageBox.open();
-						if (answer != SWT.YES) {
-							_parent.setCursor(null);
-							_cursor.dispose();
-							return;
-						}
-					}
-					Display.getCurrent().asyncExec(new Runnable() {
-						@Override
-						public void run() {
-							try {
-								final int importedItems = model.doImport();
-								final MessageBox messageBox = new MessageBox(_parent, SWT.OK);
-								messageBox.setMessage(importedItems + " data items have been successfully imported");
-								messageBox.setText("Database Import");
-								messageBox.open();
-								return;
-							} catch (final Exception e) {
-								CorePlugin.logError(IStatus.ERROR, "Exception on import process", e);
-								e.printStackTrace();
-								final MessageBox messageBox = new MessageBox(_parent, SWT.ERROR | SWT.OK);
-								messageBox.setMessage(DatabaseConnection.GENERIC_CONNECTION_ERROR);
-								messageBox.setText("DebriefNG");
-								messageBox.open();
-							} finally {
-								_parent.setCursor(null);
-								_cursor.dispose();
-							}
-						}
-					});
-				}
-			}
-		});
-
-		view.getTestConnectionButton().addListener(SWT.Selection, new Listener() {
-
-			@Override
-			public void handleEvent(final Event event) {
-				if (event.type == SWT.Selection) {
-					boolean showError = false;
-					String errorMessage = "";
-					final String ENV_VARIABLE = DatabaseConnection.CONFIG_FILE_ENV_NAME;
-					final String envVariableValue = ModelConfiguration.getEnvironmentVariable();
-					String fileInUse = "N/A";
-					try {
-						fileInUse = model.getDatabaseConnection().getDatabaseConfiguration().getLoaderOption()
-								.getPath();
-					} catch (final Exception e) {
-
-					}
-
-					String configurationToUse = "N/A";
-					try {
-						configurationToUse = model.getDatabaseConnection().getDatabaseConfiguration().getLoaderOption()
-								.getType().name();
-					} catch (final Exception e) {
-
-					}
-
-					final StringBuilder messageToUser = new StringBuilder();
-					messageToUser.append("\n\n");
-					messageToUser.append("Value of the Environment Variable ");
-					messageToUser.append(ENV_VARIABLE);
-					messageToUser.append(": ");
-					messageToUser.append(envVariableValue);
-					if (!configurationToUse.equals(LoaderType.ENV_VARIABLE.name())) {
-						messageToUser.append(" (FILE NOT IN USE)");
-					}
-					messageToUser.append("\n\n");
-					messageToUser.append("File in use: ");
-					messageToUser.append(fileInUse);
-					messageToUser.append("\n");
-					messageToUser.append("Configuration in use: ");
-					messageToUser.append(configurationToUse);
-					final HashMap<String, String> databaseCategory = model.getDatabaseConnection()
-							.getDatabaseConfiguration().getCategory(DatabaseConnection.CONFIGURATION_TAG);
-					if (databaseCategory != null) {
-						messageToUser.append("\n\n");
-						messageToUser.append(model.getDatabaseConnection().getBasicDescription());
-					}
-
-					try {
-						showError = !model.doTestQuery();
-						errorMessage = "Database didn't contain the basic State, Contacts or Comments";
-					} catch (final SQLException e) {
-						e.printStackTrace();
-						CorePlugin.logError(IStatus.ERROR, "SQLException on running query", e);
-
-						errorMessage = DatabaseConnection.GENERIC_CONNECTION_ERROR;
-						showError = true;
-					} catch (final Exception e) {
-						CorePlugin.logError(IStatus.ERROR, "Exception on running query", e);
-						errorMessage = "You have incorrect database type.\nPlease provide the correct database type in the config file";
-						showError = true;
-					}
-					if (showError) {
-						final MessageBox messageBox = new MessageBox(_parent, SWT.ERROR | SWT.OK);
-
-						messageBox.setMessage(errorMessage + messageToUser);
-						messageBox.setText("DebriefNG");
-						messageBox.open();
-
-						return;
-					} else {
-						final MessageBox messageBox = new MessageBox(_parent, SWT.OK);
-						messageBox.setMessage("Successful database connection" + messageToUser);
-						messageBox.setText("Debrief NG");
-						messageBox.open();
-
-						return;
-					}
-				}
-			}
-		});
-
-		view.getUseCurrentViewportButton().addListener(SWT.Selection, new Listener() {
-
-			@Override
-			public void handleEvent(final Event event) {
-				if (event.type == SWT.Selection) {
-					model.setCurrentViewport();
-					updateAreaModel2View(model, view);
-				}
-			}
-		});
-
-		view.getClearAreaButton().addListener(SWT.Selection, new Listener() {
-
-			@Override
-			public void handleEvent(final Event event) {
-				if (event.type == SWT.Selection) {
-					model.setArea(null);
-					updateAreaModel2View(model, view);
-				}
-			}
-		});
-
-		view.getTree().addCheckStateListener(new ICheckStateListener() {
-
-			@Override
-			public void checkStateChanged(final CheckStateChangedEvent event) {
-				view.getTree().setSubtreeChecked(event.getElement(), event.getChecked());
-				((TreeNode) event.getElement()).setCheckedRecursive(event.getChecked());
-			}
-		});
-
-		view.getTree().addCheckStateListener(new ICheckStateListener() {
-
-			@Override
-			public void checkStateChanged(final CheckStateChangedEvent event) {
-				if (event.getElement() instanceof TreeNode) {
-					((TreeNode) event.getElement()).setChecked(event.getChecked());
-				}
-			}
-		});
-
-		view.getTree().addCheckStateListener(new ICheckStateListener() {
-
-			@Override
-			public void checkStateChanged(final CheckStateChangedEvent event) {
-				view.getImportButton().setEnabled(model.getTreeModel().countCheckedItems() > 0);
-			}
-		});
-
-		view.getTree().addCheckStateListener(new ICheckStateListener() {
-
-			@Override
-			public void checkStateChanged(final CheckStateChangedEvent arg0) {
-				view.getImportButton().setText("Import (" + model.getTreeModel().countCheckedItems() + ")");
-			}
-		});
-
-		view.getSearchText().addModifyListener(new ModifyListener() {
-
-			@Override
-			public void modifyText(final ModifyEvent evt) {
-				model.setSearch(view.getSearchText().getText());
-			}
-		});
-
-		view.getFilterText().addModifyListener(new ModifyListener() {
-
-			@Override
-			public void modifyText(final ModifyEvent evt) {
-				model.setFilter(view.getFilterText().getText());
-			}
-		});
-
-		view.getSearchNextButton().addListener(SWT.Selection, new Listener() {
-
-			@Override
-			public void handleEvent(final Event event) {
-				model.getNextSearch();
-
-				view.getTree().refresh();
-			}
-		});
-
-		view.getSearchPreviousButton().addListener(SWT.Selection, new Listener() {
-
-			@Override
-			public void handleEvent(final Event event) {
-				model.getPreviousSearch();
-				view.getTree().refresh();
-			}
-		});
-
-		model.addPropertyChangeListener(new PropertyChangeListener() {
-
-			@Override
-			public void propertyChange(final PropertyChangeEvent evt) {
-				if (AbstractConfiguration.SEARCH_RESULT_PROPERTY.equals(evt.getPropertyName())) {
-					view.getTextSearchResults().setText(model.getSearchResultsText());
-				}
-			}
-		});
-
-		view.getTree().setInput(model.getTreeModel());
-
-		view.getTree().addDropSupport(DND.DROP_MOVE, new FileTransfer[] { FileTransfer.getInstance() },
-				new DropTargetListener() {
-
-					@Override
-					public void dragEnter(final DropTargetEvent arg0) {
-
-					}
-
-					@Override
-					public void dragLeave(final DropTargetEvent arg0) {
-
-					}
-
-					@Override
-					public void dragOperationChanged(final DropTargetEvent arg0) {
-
-					}
-
-					@Override
-					public void dragOver(final DropTargetEvent arg0) {
-
-					}
-
-					@Override
-					public void drop(final DropTargetEvent event) {
-						final Object dataObject = event.data;
-						if (dataObject instanceof String[]) {
-							final String[] filesDropped = (String[]) dataObject;
-							if (filesDropped.length == 1) {
-								final String fileName = filesDropped[0];
-								try {
-
-									final DatabaseConfiguration _config;
-									if (fileName.toLowerCase().endsWith(INI_FILE_SUFFIX)) {
-										// Lets try to load the file as a configuration file.
-										_config = new DatabaseConfiguration();
-										ConfigurationReader.loadDatabaseConfiguration(_config, new LoaderOption[] {
-												new LoaderOption(LoaderType.DRAG_AND_DROP_INI, fileName) });
-
-									} else if (fileName.toLowerCase().endsWith(SQLITE_FILE_SUFFIX)) {
-										_config = DatabaseConfiguration.DatabaseConfigurationFactory
-												.createSqliteConfiguration(fileName);
-									} else {
-										_config = new DatabaseConfiguration();
-										final MessageBox messageBox = new MessageBox(_parent, SWT.ERROR | SWT.OK);
-										messageBox.setMessage("Dragged object not recognized. Wrote file extension");
-										messageBox.setText("Error processing dragged object.");
-										messageBox.open();
-
-										return;
-									}
-									model.loadDatabaseConfiguration(_config);
-									final MessageBox messageBox = new MessageBox(_parent, SWT.OK | SWT.OK);
-									final String filePath = _config.getLoaderOption().getPath() == null ? ""
-											: _config.getLoaderOption().getPath();
-									messageBox.setMessage("File loaded successfully\n" + filePath);
-									messageBox.setText("File processing finished successfully");
-									messageBox.open();
-
-									return;
-								} catch (PropertyVetoException | IOException | PepsysException e) {
-									final MessageBox messageBox = new MessageBox(_parent, SWT.ERROR | SWT.OK);
-									messageBox.setMessage(
-											"Unable to load database specified in the configuration file\n" + fileName);
-									messageBox.setText("Error processing dragged object.");
-									messageBox.open();
-
-									return;
-								}
-							} else {
-								System.out.println("No se pueden agregar mas de 2 archivos");
-								return;
-							}
-						} else {
-							final MessageBox messageBox = new MessageBox(_parent, SWT.ERROR | SWT.OK);
-							messageBox.setMessage("Dragged object not recognized");
-							messageBox.setText("Error processing dragged object.");
-							messageBox.open();
-
-							return;
-						}
-					}
-
-					@Override
-					public void dropAccept(final DropTargetEvent arg0) {
-
-					}
-				});
-
-		// I am not building the model two view listener/binding because
-		// It is not needed (at least for now).
-		// Saul
-		view.getSplitByDatafileButton().addListener(SWT.Selection, new Listener() {
-
-			@Override
-			public void handleEvent(final Event event) {
-				model.setSplitByDataile(view.getSplitByDatafileButton().getSelection());
-			}
-		});
-	}
-
-	private void addDataTypeFilters(final AbstractConfiguration _model, final AbstractViewSWT _view) {
-		final Composite composite = _view.getDataTypesComposite();
-
-		for (final TypeDomain type : _model.getDatafileTypeFilters()) {
-			final Button typeButton = new Button(composite, SWT.CHECK);
-			typeButton.setText(type.getName());
-			typeButton.setImage(DebriefPlugin.getImageDescriptor(type.getImagePath()).createImage());
-			typeButton.setSelection(type.isChecked());
-			type.removeAllPropertyChangeListeners();
-			type.addPropertyChangeListener(new PropertyChangeListener() {
-
-				@Override
-				public void propertyChange(final PropertyChangeEvent evt) {
-					typeButton.setSelection(type.isChecked());
-				}
-			});
-
-			typeButton.addSelectionListener(new SelectionListener() {
-
-				@Override
-				public void widgetDefaultSelected(final SelectionEvent event) {
-					type.setChecked(typeButton.getSelection());
-				}
-
-				@Override
-				public void widgetSelected(final SelectionEvent event) {
-					type.setChecked(typeButton.getSelection());
-				}
-			});
-		}
-	}
-
-	public AbstractConfiguration getModel() {
-		return _model;
-	}
-
-	public AbstractViewSWT getView() {
-		return _view;
-	}
-
-	public void updateAreaModel2View(final AbstractConfiguration model, final AbstractViewSWT view) {
-		if (model.getCurrentArea() == null) {
-			view.getTopLeftLocation().clean();
-			view.getBottomRightLocation().clean();
-		} else {
-			view.getTopLeftLocation().setValue(model.getCurrentArea().getTopLeft());
-			view.getBottomRightLocation().setValue(model.getCurrentArea().getBottomRight());
-		}
-	}
-
-	public void updateAreaView2Model(final AbstractConfiguration model, final AbstractViewSWT view)
-			throws PepsysException {
-		Application.logError2(ToolParent.INFO, "Starting updade from Area View to Model", null);
-		// User must select both or none.
-		if ((view.getTopLeftLocation().getValue() != null) != (view.getBottomRightLocation().getValue() != null)) {
-			throw new PepsysException("Please, indicate the area",
-					"Please provide both top-left and bottom-right bounds");
-		}
-
-		if (view.getTopLeftLocation().getValue() != null && view.getBottomRightLocation().getValue() != null) {
-			model.setArea(
-					new WorldArea(view.getTopLeftLocation().getValue(), view.getBottomRightLocation().getValue()));
-		} else {
-			model.setArea(null);
-		}
-
-		Application.logError2(ToolParent.INFO, "Finished update from Area View to Model", null);
-	}
+public class PepysImportController
+{
+
+  public static void main(final String[] args)
+  {
+    final Display display = new Display();
+    final Shell shell = new Shell(display);
+    try
+    {
+      final DatabaseConfiguration _config = new DatabaseConfiguration();
+      ConfigurationReader.loadDatabaseConfiguration(_config, new LoaderOption[]
+      {new LoaderOption(LoaderType.DEFAULT_FILE,
+          DatabaseConnection.DEFAULT_SQLITE_TEST_DATABASE_FILE)});
+
+      final AbstractConfiguration model = new ModelConfiguration();
+      model.loadDatabaseConfiguration(_config);
+      final AbstractViewSWT view = new PepysImportView(model, shell);
+
+      new PepysImportController(shell, model, view);
+    }
+    catch (final PropertyVetoException | IOException | PepsysException e)
+    {
+      e.printStackTrace();
+    }
+
+    shell.pack();
+    shell.open();
+    while (!shell.isDisposed())
+    {
+      if (!display.readAndDispatch())
+      {
+        display.sleep();
+      }
+    }
+  }
+
+  private final AbstractConfiguration _model;
+
+  private final AbstractViewSWT _view;
+
+  private final Shell _parent;
+
+  private final String IMAGE_PREFIX = "/icons/16/";
+
+  private final String INI_FILE_SUFFIX = "ini";
+
+  private final String SQLITE_FILE_SUFFIX = "sqlite";
+
+  private final int MAXIMUM_SELECTED_FILES_BEFORE_WARNING = 200000;
+
+  public PepysImportController(final Shell parent,
+      final AbstractConfiguration model, final AbstractViewSWT view)
+  {
+    model.addDatafileTypeFilter(new TypeDomain(State.class, TreeNode.STATE,
+        true, IMAGE_PREFIX + "fix.png"));
+    model.addDatafileTypeFilter(new TypeDomain(Contact.class, TreeNode.CONTACTS,
+        true, IMAGE_PREFIX + "bearing.png"));
+    model.addDatafileTypeFilter(new TypeDomain(Comment.class, TreeNode.COMMENT,
+        true, IMAGE_PREFIX + "narrative.png"));
+
+    _model = model;
+    _view = view;
+    _parent = parent;
+
+    addDataTypeFilters(model, view);
+    addDatabindings(model, view);
+  }
+
+  public PepysImportController(final Shell parent,
+      final AbstractConfiguration model, final AbstractViewSWT view,
+      final PepysConnectorBridge pepysBridge)
+  {
+    this(parent, model, view);
+
+    _model.setPepysConnectorBridge(pepysBridge);
+  }
+
+  protected void addDatabindings(final AbstractConfiguration model,
+      final AbstractViewSWT view)
+  {
+
+    view.getStartDate().addSelectionListener(new SelectionListener()
+    {
+
+      public void setStartTime(final AbstractConfiguration model)
+      {
+        final HiResDate start = new HiResDate(view.getStartDate()
+            .getSelection());
+        final HiResDate oldStart = model.getTimePeriod().getStartDTG();
+        model.setTimePeriod(new TimePeriod.BaseTimePeriod(HiResDate
+            .copyOnlyDate(start, oldStart), model.getTimePeriod().getEndDTG()));
+      }
+
+      @Override
+      public void widgetDefaultSelected(final SelectionEvent sel)
+      {
+        setStartTime(model);
+      }
+
+      @Override
+      public void widgetSelected(final SelectionEvent sel)
+      {
+        setStartTime(model);
+      }
+    });
+
+    view.getEndDate().addSelectionListener(new SelectionListener()
+    {
+
+      public void setEndTime(final AbstractConfiguration model)
+      {
+        final HiResDate end = new HiResDate(view.getEndDate().getSelection());
+        final HiResDate oldEnd = model.getTimePeriod().getEndDTG();
+        model.setTimePeriod(new TimePeriod.BaseTimePeriod(model.getTimePeriod()
+            .getStartDTG(), HiResDate.copyOnlyDate(end, oldEnd)));
+      }
+
+      @Override
+      public void widgetDefaultSelected(final SelectionEvent sel)
+      {
+        setEndTime(model);
+      }
+
+      @Override
+      public void widgetSelected(final SelectionEvent sel)
+      {
+        setEndTime(model);
+      }
+    });
+
+    view.getStartTime().addSelectionListener(new SelectionListener()
+    {
+
+      public void setStartTime(final AbstractConfiguration model)
+      {
+        final HiResDate start = new HiResDate(view.getStartTime()
+            .getSelection());
+        final HiResDate oldStart = model.getTimePeriod().getStartDTG();
+        model.setTimePeriod(new TimePeriod.BaseTimePeriod(HiResDate
+            .copyOnlyTime(start, oldStart), model.getTimePeriod().getEndDTG()));
+      }
+
+      @Override
+      public void widgetDefaultSelected(final SelectionEvent sel)
+      {
+        setStartTime(model);
+      }
+
+      @Override
+      public void widgetSelected(final SelectionEvent arg0)
+      {
+        setStartTime(model);
+      }
+    });
+
+    view.getEndTime().addSelectionListener(new SelectionListener()
+    {
+
+      public void setEndTime(final AbstractConfiguration model)
+      {
+        final HiResDate end = new HiResDate(view.getEndTime().getSelection());
+        final HiResDate oldEnd = model.getTimePeriod().getEndDTG();
+        model.setTimePeriod(new TimePeriod.BaseTimePeriod(model.getTimePeriod()
+            .getStartDTG(), HiResDate.copyOnlyTime(end, oldEnd)));
+      }
+
+      @Override
+      public void widgetDefaultSelected(final SelectionEvent arg0)
+      {
+        setEndTime(model);
+      }
+
+      @Override
+      public void widgetSelected(final SelectionEvent arg0)
+      {
+        setEndTime(model);
+      }
+    });
+
+    model.addPropertyChangeListener(new PropertyChangeListener()
+    {
+
+      @Override
+      public void propertyChange(final PropertyChangeEvent evt)
+      {
+        if (AbstractConfiguration.PERIOD_PROPERTY.equals(evt.getPropertyName())
+            && !evt.getOldValue().equals(evt.getNewValue()))
+        {
+          view.getStartDate().setSelection(model.getTimePeriod().getStartDTG()
+              .getDate());
+        }
+      }
+    });
+
+    model.addPropertyChangeListener(new PropertyChangeListener()
+    {
+
+      @Override
+      public void propertyChange(final PropertyChangeEvent evt)
+      {
+        if (AbstractConfiguration.TREE_MODEL.equals(evt.getPropertyName()))
+        {
+          view.getTree().setInput(model.getTreeModel());
+        }
+      }
+    });
+
+    model.addPropertyChangeListener(new PropertyChangeListener()
+    {
+
+      @Override
+      public void propertyChange(final PropertyChangeEvent evt)
+      {
+        if (AbstractConfiguration.SEARCH_PROPERTY.equals(evt.getPropertyName()))
+        {
+
+          // In case we are modifying the model directly.
+          if (!view.getSearchText().getText().equals(evt.getNewValue()))
+          {
+            view.getSearchText().setText((String) evt.getNewValue());
+          }
+          view.getTree().refresh();
+        }
+      }
+    });
+
+    model.addPropertyChangeListener(new PropertyChangeListener()
+    {
+
+      @Override
+      public void propertyChange(final PropertyChangeEvent evt)
+      {
+        if (AbstractConfiguration.HIGHLIGHT_PROPERTY.equals(evt
+            .getPropertyName()))
+        {
+          final List<TreeNode> path = new ArrayList<TreeNode>();
+          TreeNode currentNode = (TreeNode) evt.getNewValue();
+          while (currentNode != null)
+          {
+            path.add(currentNode);
+            currentNode = currentNode.getParent();
+          }
+          Collections.reverse(path);
+
+          TreeItem item = view.getTree().getTree().getItem(0);
+          for (final TreeNode itemPath : path)
+          {
+            if (item.getData() != itemPath)
+            {
+              for (final TreeItem child : item.getItems())
+              {
+                if (child.getData() == itemPath)
+                {
+                  item = child;
+                  break;
+                }
+              }
+            }
+            if (!item.getExpanded())
+            {
+              item.setExpanded(true);
+            }
+            view.getTree().refresh();
+          }
+
+          // There is a bug in Window which does not
+          // update the selection if it is the same node.
+          // So, we need to force an update
+          view.getTree().getTree().deselectAll();
+          view.getTree().getTree().setSelection(item);
+        }
+      }
+    });
+
+    view.getSearchText().addListener(SWT.Traverse, new Listener()
+    {
+
+      @Override
+      public void handleEvent(final Event event)
+      {
+        if (event.detail == SWT.TRAVERSE_RETURN)
+        {
+          model.getNextSearch();
+          view.getTree().refresh();
+        }
+      }
+    });
+
+    view.getTree().addSelectionChangedListener(new ISelectionChangedListener()
+    {
+
+      @Override
+      public void selectionChanged(final SelectionChangedEvent event)
+      {
+        final TreeItem[] selected = view.getTree().getTree().getSelection();
+        if (selected.length > 0)
+        {
+          model.setHighlightedElement((TreeNode) selected[0].getData());
+          model.searchFromUser(true);
+        }
+        else
+        {
+          model.setHighlightedElement(null);
+        }
+      }
+    });
+
+    view.getApplyButton().addListener(SWT.Selection, new Listener()
+    {
+      @Override
+      public void handleEvent(final Event event)
+      {
+        if (event.type == SWT.Selection)
+        {
+          final Cursor _cursor = new Cursor(Display.getCurrent(),
+              SWT.CURSOR_WAIT);
+          _parent.setCursor(_cursor);
+          Display.getCurrent().asyncExec(new Runnable()
+          {
+            @Override
+            public void run()
+            {
+              Application.logError2(ToolParent.INFO,
+                  "Starting run process - PepysImportController", null);
+              try
+              {
+                updateAreaView2Model(model, view);
+                model.apply();
+                view.getImportButton().setEnabled(false);
+                CorePlugin.getDefault().getPreferenceStore().setValue(
+                    PepysImportView.PEPYS_IMPORT_START_DATE, model
+                        .getTimePeriod().getStartDTG().getDate().toString());
+                CorePlugin.getDefault().getPreferenceStore().setValue(
+                    PepysImportView.PEPYS_IMPORT_END_DATE, model.getTimePeriod()
+                        .getEndDTG().getDate().toString());
+              }
+              catch (final PepsysException e)
+              {
+                CorePlugin.logError(IStatus.ERROR,
+                    "PepysException on applying filters", e);
+                e.printStackTrace();
+                final MessageBox messageBox = new MessageBox(_parent, SWT.ERROR
+                    | SWT.OK);
+                messageBox.setMessage(e.getMessage());
+                messageBox.setText(e.getTitle());
+                messageBox.open();
+              }
+              catch (final SQLException e)
+              {
+                CorePlugin.logError(IStatus.ERROR,
+                    "PepysException on applying filters", e);
+                e.printStackTrace();
+                final MessageBox messageBox = new MessageBox(_parent, SWT.ERROR
+                    | SWT.OK);
+                messageBox.setMessage(
+                    "An error occurred running an SQL Query:\n" + e
+                        .getMessage());
+                messageBox.setText("DebriefNG");
+                messageBox.open();
+              }
+              catch (final Exception e)
+              {
+                CorePlugin.logError(IStatus.ERROR,
+                    "PepysException on applying filters", e);
+                e.printStackTrace();
+                final MessageBox messageBox = new MessageBox(_parent, SWT.ERROR
+                    | SWT.OK);
+                messageBox.setMessage(
+                    DatabaseConnection.GENERIC_CONNECTION_ERROR);
+                messageBox.setText("DebriefNG");
+                messageBox.open();
+              }
+              finally
+              {
+                _parent.setCursor(null);
+                _cursor.dispose();
+              }
+            }
+          });
+        }
+      }
+    });
+
+    view.getImportButton().addListener(SWT.Selection, new Listener()
+    {
+
+      @Override
+      public void handleEvent(final Event event)
+      {
+        final int currentSelectedItem = model.getTreeModel()
+            .countCheckedItems();
+        if (event.type == SWT.Selection)
+        {
+          final Cursor _cursor = new Cursor(Display.getCurrent(),
+              SWT.CURSOR_WAIT);
+          _parent.setCursor(_cursor);
+          if (currentSelectedItem > MAXIMUM_SELECTED_FILES_BEFORE_WARNING)
+          {
+            final MessageBox messageBox = new MessageBox(_parent,
+                SWT.ICON_QUESTION | SWT.YES | SWT.NO);
+            messageBox.setMessage("A huge amount of data will be imported ("
+                + currentSelectedItem
+                + " items). Debrief performance can be affected when loading more than 200k entries. Do you want to continue?");
+            messageBox.setText("Database Import");
+            final int answer = messageBox.open();
+            if (answer != SWT.YES)
+            {
+              _parent.setCursor(null);
+              _cursor.dispose();
+              return;
+            }
+          }
+          Display.getCurrent().asyncExec(new Runnable()
+          {
+            @Override
+            public void run()
+            {
+              try
+              {
+                final int importedItems = model.doImport();
+                final MessageBox messageBox = new MessageBox(_parent, SWT.OK);
+                messageBox.setMessage(importedItems
+                    + " data items have been successfully imported");
+                messageBox.setText("Database Import");
+                messageBox.open();
+                return;
+              }
+              catch (final Exception e)
+              {
+                CorePlugin.logError(IStatus.ERROR,
+                    "Exception on import process", e);
+                e.printStackTrace();
+                final MessageBox messageBox = new MessageBox(_parent, SWT.ERROR
+                    | SWT.OK);
+                messageBox.setMessage(
+                    DatabaseConnection.GENERIC_CONNECTION_ERROR);
+                messageBox.setText("DebriefNG");
+                messageBox.open();
+              }
+              finally
+              {
+                _parent.setCursor(null);
+                _cursor.dispose();
+              }
+            }
+          });
+        }
+      }
+    });
+
+    view.getTestConnectionButton().addListener(SWT.Selection, new Listener()
+    {
+
+      @Override
+      public void handleEvent(final Event event)
+      {
+        if (event.type == SWT.Selection)
+        {
+          boolean showError = false;
+          String errorMessage = "";
+          final String ENV_VARIABLE = DatabaseConnection.CONFIG_FILE_ENV_NAME;
+          final String envVariableValue = ModelConfiguration
+              .getEnvironmentVariable();
+          String fileInUse = "N/A";
+          try
+          {
+            fileInUse = model.getDatabaseConnection().getDatabaseConfiguration()
+                .getLoaderOption().getPath();
+          }
+          catch (final Exception e)
+          {
+
+          }
+
+          String configurationToUse = "N/A";
+          try
+          {
+            configurationToUse = model.getDatabaseConnection()
+                .getDatabaseConfiguration().getLoaderOption().getType().name();
+          }
+          catch (final Exception e)
+          {
+
+          }
+
+          final StringBuilder messageToUser = new StringBuilder();
+          messageToUser.append("\n\n");
+          messageToUser.append("Value of the Environment Variable ");
+          messageToUser.append(ENV_VARIABLE);
+          messageToUser.append(": ");
+          messageToUser.append(envVariableValue);
+          if (!configurationToUse.equals(LoaderType.ENV_VARIABLE.name()))
+          {
+            messageToUser.append(" (FILE NOT IN USE)");
+          }
+          messageToUser.append("\n\n");
+          messageToUser.append("File in use: ");
+          messageToUser.append(fileInUse);
+          messageToUser.append("\n");
+          messageToUser.append("Configuration in use: ");
+          messageToUser.append(configurationToUse);
+          final HashMap<String, String> databaseCategory = model
+              .getDatabaseConnection().getDatabaseConfiguration().getCategory(
+                  DatabaseConnection.CONFIGURATION_TAG);
+          if (databaseCategory != null)
+          {
+            messageToUser.append("\n\n");
+            messageToUser.append(model.getDatabaseConnection()
+                .getBasicDescription());
+          }
+
+          try
+          {
+            showError = !model.doTestQuery();
+            errorMessage =
+                "Database didn't contain the basic State, Contacts or Comments";
+          }
+          catch (final SQLException e)
+          {
+            e.printStackTrace();
+            CorePlugin.logError(IStatus.ERROR, "SQLException on running query",
+                e);
+
+            errorMessage = DatabaseConnection.GENERIC_CONNECTION_ERROR;
+            showError = true;
+          }
+          catch (final Exception e)
+          {
+            CorePlugin.logError(IStatus.ERROR, "Exception on running query", e);
+            errorMessage =
+                "You have incorrect database type.\nPlease provide the correct database type in the config file";
+            showError = true;
+          }
+          if (showError)
+          {
+            final MessageBox messageBox = new MessageBox(_parent, SWT.ERROR
+                | SWT.OK);
+
+            messageBox.setMessage(errorMessage + messageToUser);
+            messageBox.setText("DebriefNG");
+            messageBox.open();
+
+            return;
+          }
+          else
+          {
+            final MessageBox messageBox = new MessageBox(_parent, SWT.OK);
+            messageBox.setMessage("Successful database connection"
+                + messageToUser);
+            messageBox.setText("Debrief NG");
+            messageBox.open();
+
+            return;
+          }
+        }
+      }
+    });
+
+    view.getUseCurrentViewportButton().addListener(SWT.Selection, new Listener()
+    {
+
+      @Override
+      public void handleEvent(final Event event)
+      {
+        if (event.type == SWT.Selection)
+        {
+          model.setCurrentViewport();
+          updateAreaModel2View(model, view);
+        }
+      }
+    });
+
+    view.getClearAreaButton().addListener(SWT.Selection, new Listener()
+    {
+
+      @Override
+      public void handleEvent(final Event event)
+      {
+        if (event.type == SWT.Selection)
+        {
+          model.setArea(null);
+          updateAreaModel2View(model, view);
+        }
+      }
+    });
+
+    view.getTree().addCheckStateListener(new ICheckStateListener()
+    {
+
+      @Override
+      public void checkStateChanged(final CheckStateChangedEvent event)
+      {
+        view.getTree().setSubtreeChecked(event.getElement(), event
+            .getChecked());
+        ((TreeNode) event.getElement()).setCheckedRecursive(event.getChecked());
+      }
+    });
+
+    view.getTree().addCheckStateListener(new ICheckStateListener()
+    {
+
+      @Override
+      public void checkStateChanged(final CheckStateChangedEvent event)
+      {
+        if (event.getElement() instanceof TreeNode)
+        {
+          ((TreeNode) event.getElement()).setChecked(event.getChecked());
+        }
+      }
+    });
+
+    view.getTree().addCheckStateListener(new ICheckStateListener()
+    {
+
+      @Override
+      public void checkStateChanged(final CheckStateChangedEvent event)
+      {
+        view.getImportButton().setEnabled(model.getTreeModel()
+            .countCheckedItems() > 0);
+      }
+    });
+
+    view.getTree().addCheckStateListener(new ICheckStateListener()
+    {
+
+      @Override
+      public void checkStateChanged(final CheckStateChangedEvent arg0)
+      {
+        view.getImportButton().setText("Import (" + model.getTreeModel()
+            .countCheckedItems() + ")");
+      }
+    });
+
+    view.getSearchText().addModifyListener(new ModifyListener()
+    {
+
+      @Override
+      public void modifyText(final ModifyEvent evt)
+      {
+        model.setSearch(view.getSearchText().getText());
+      }
+    });
+
+    view.getFilterText().addModifyListener(new ModifyListener()
+    {
+
+      @Override
+      public void modifyText(final ModifyEvent evt)
+      {
+        model.setFilter(view.getFilterText().getText());
+      }
+    });
+
+    view.getSearchNextButton().addListener(SWT.Selection, new Listener()
+    {
+
+      @Override
+      public void handleEvent(final Event event)
+      {
+        model.getNextSearch();
+
+        view.getTree().refresh();
+      }
+    });
+
+    view.getSearchPreviousButton().addListener(SWT.Selection, new Listener()
+    {
+
+      @Override
+      public void handleEvent(final Event event)
+      {
+        model.getPreviousSearch();
+        view.getTree().refresh();
+      }
+    });
+
+    model.addPropertyChangeListener(new PropertyChangeListener()
+    {
+
+      @Override
+      public void propertyChange(final PropertyChangeEvent evt)
+      {
+        if (AbstractConfiguration.SEARCH_RESULT_PROPERTY.equals(evt
+            .getPropertyName()))
+        {
+          view.getTextSearchResults().setText(model.getSearchResultsText());
+        }
+      }
+    });
+
+    view.getTree().setInput(model.getTreeModel());
+
+    view.getTree().addDropSupport(DND.DROP_MOVE, new FileTransfer[]
+    {FileTransfer.getInstance()}, new DropTargetListener()
+    {
+
+      @Override
+      public void dragEnter(final DropTargetEvent arg0)
+      {
+
+      }
+
+      @Override
+      public void dragLeave(final DropTargetEvent arg0)
+      {
+
+      }
+
+      @Override
+      public void dragOperationChanged(final DropTargetEvent arg0)
+      {
+
+      }
+
+      @Override
+      public void dragOver(final DropTargetEvent arg0)
+      {
+
+      }
+
+      @Override
+      public void drop(final DropTargetEvent event)
+      {
+        final Object dataObject = event.data;
+        if (dataObject instanceof String[])
+        {
+          final String[] filesDropped = (String[]) dataObject;
+          if (filesDropped.length == 1)
+          {
+            final String fileName = filesDropped[0];
+            try
+            {
+
+              final DatabaseConfiguration _config;
+              if (fileName.toLowerCase().endsWith(INI_FILE_SUFFIX))
+              {
+                // Lets try to load the file as a configuration file.
+                _config = new DatabaseConfiguration();
+                ConfigurationReader.loadDatabaseConfiguration(_config,
+                    new LoaderOption[]
+                {new LoaderOption(LoaderType.DRAG_AND_DROP_INI, fileName)});
+
+              }
+              else if (fileName.toLowerCase().endsWith(SQLITE_FILE_SUFFIX))
+              {
+                _config = DatabaseConfiguration.DatabaseConfigurationFactory
+                    .createSqliteConfiguration(fileName);
+              }
+              else
+              {
+                _config = new DatabaseConfiguration();
+                final MessageBox messageBox = new MessageBox(_parent, SWT.ERROR
+                    | SWT.OK);
+                messageBox.setMessage(
+                    "Dragged object not recognized. Wrote file extension");
+                messageBox.setText("Error processing dragged object.");
+                messageBox.open();
+
+                return;
+              }
+              model.loadDatabaseConfiguration(_config);
+              final MessageBox messageBox = new MessageBox(_parent, SWT.OK
+                  | SWT.OK);
+              final String filePath = _config.getLoaderOption()
+                  .getPath() == null ? "" : _config.getLoaderOption().getPath();
+              messageBox.setMessage("File loaded successfully\n" + filePath);
+              messageBox.setText("File processing finished successfully");
+              messageBox.open();
+
+              return;
+            }
+            catch (PropertyVetoException | IOException | PepsysException e)
+            {
+              final MessageBox messageBox = new MessageBox(_parent, SWT.ERROR
+                  | SWT.OK);
+              messageBox.setMessage(
+                  "Unable to load database specified in the configuration file\n"
+                      + fileName);
+              messageBox.setText("Error processing dragged object.");
+              messageBox.open();
+
+              return;
+            }
+          }
+          else
+          {
+            System.out.println("No se pueden agregar mas de 2 archivos");
+            return;
+          }
+        }
+        else
+        {
+          final MessageBox messageBox = new MessageBox(_parent, SWT.ERROR
+              | SWT.OK);
+          messageBox.setMessage("Dragged object not recognized");
+          messageBox.setText("Error processing dragged object.");
+          messageBox.open();
+
+          return;
+        }
+      }
+
+      @Override
+      public void dropAccept(final DropTargetEvent arg0)
+      {
+
+      }
+    });
+
+    // I am not building the model two view listener/binding because
+    // It is not needed (at least for now).
+    // Saul
+    view.getSplitByDatafileButton().addListener(SWT.Selection, new Listener()
+    {
+
+      @Override
+      public void handleEvent(final Event event)
+      {
+        model.setSplitByDataile(view.getSplitByDatafileButton().getSelection());
+      }
+    });
+  }
+
+  private void addDataTypeFilters(final AbstractConfiguration _model,
+      final AbstractViewSWT _view)
+  {
+    final Composite composite = _view.getDataTypesComposite();
+
+    for (final TypeDomain type : _model.getDatafileTypeFilters())
+    {
+      final Button typeButton = new Button(composite, SWT.CHECK);
+      typeButton.setText(type.getName());
+      typeButton.setImage(DebriefPlugin.getImageDescriptor(type.getImagePath())
+          .createImage());
+      typeButton.setSelection(type.isChecked());
+      type.removeAllPropertyChangeListeners();
+      type.addPropertyChangeListener(new PropertyChangeListener()
+      {
+
+        @Override
+        public void propertyChange(final PropertyChangeEvent evt)
+        {
+          typeButton.setSelection(type.isChecked());
+        }
+      });
+
+      typeButton.addSelectionListener(new SelectionListener()
+      {
+
+        @Override
+        public void widgetDefaultSelected(final SelectionEvent event)
+        {
+          type.setChecked(typeButton.getSelection());
+        }
+
+        @Override
+        public void widgetSelected(final SelectionEvent event)
+        {
+          type.setChecked(typeButton.getSelection());
+        }
+      });
+    }
+  }
+
+  public AbstractConfiguration getModel()
+  {
+    return _model;
+  }
+
+  public AbstractViewSWT getView()
+  {
+    return _view;
+  }
+
+  public void updateAreaModel2View(final AbstractConfiguration model,
+      final AbstractViewSWT view)
+  {
+    if (model.getCurrentArea() == null)
+    {
+      view.getTopLeftLocation().clean();
+      view.getBottomRightLocation().clean();
+    }
+    else
+    {
+      view.getTopLeftLocation().setValue(model.getCurrentArea().getTopLeft());
+      view.getBottomRightLocation().setValue(model.getCurrentArea()
+          .getBottomRight());
+    }
+  }
+
+  public void updateAreaView2Model(final AbstractConfiguration model,
+      final AbstractViewSWT view) throws PepsysException
+  {
+    Application.logError2(ToolParent.INFO,
+        "Starting updade from Area View to Model", null);
+    // User must select both or none.
+    if ((view.getTopLeftLocation().getValue() != null) != (view
+        .getBottomRightLocation().getValue() != null))
+    {
+      throw new PepsysException("Please, indicate the area",
+          "Please provide both top-left and bottom-right bounds");
+    }
+
+    if (view.getTopLeftLocation().getValue() != null && view
+        .getBottomRightLocation().getValue() != null)
+    {
+      model.setArea(new WorldArea(view.getTopLeftLocation().getValue(), view
+          .getBottomRightLocation().getValue()));
+    }
+    else
+    {
+      model.setArea(null);
+    }
+
+    Application.logError2(ToolParent.INFO,
+        "Finished update from Area View to Model", null);
+  }
 }
