@@ -574,9 +574,9 @@ public class PepysImportController
           messageToUser.append("\n");
           messageToUser.append("Configuration in use: ");
           messageToUser.append(configurationToUse);
-          final HashMap<String, String> databaseCategory = model
-              .getDatabaseConnection().getDatabaseConfiguration().getCategory(
-                  DatabaseConnection.CONFIGURATION_TAG);
+          final DatabaseConnection conn = model.getDatabaseConnection();
+          final DatabaseConfiguration config = conn.getDatabaseConfiguration();
+          final HashMap<String, String> databaseCategory = config.getCategory(DatabaseConnection.CONFIGURATION_TAG);
           if (databaseCategory != null)
           {
             messageToUser.append("\n\n");
