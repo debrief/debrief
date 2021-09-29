@@ -76,9 +76,9 @@ public abstract class DatabaseConnection {
 
 	public static final String CONFIGURATION_TAG = "database";
 
-	public static final String CONFIGURATION_DATABASE_TYPE = "db_type";
+	public static final String CONFIGURATION_DATABASE_TYPE = "database_type";
 
-	public static final String CONFIGURATION_DB_NAME = "db_name";
+	public static final String CONFIGURATION_DB_NAME = "database_name";
 
 	public static final String POSTGRES = "postgres";
 
