@@ -30,11 +30,11 @@ import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.XYItemRenderer;
 import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
+import org.jfree.chart.ui.ApplicationFrame;
 import org.jfree.data.time.Month;
 import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.TimeSeriesCollection;
 import org.jfree.data.xy.XYDataset;
-import org.jfree.ui.ApplicationFrame;
 import org.jfree.ui.RefineryUtilities;
 
 public class MouseClickSolutionDemo extends ApplicationFrame {
@@ -59,13 +59,13 @@ public class MouseClickSolutionDemo extends ApplicationFrame {
 				return renderer;
 			}
 			final XYLineAndShapeRenderer broken = (XYLineAndShapeRenderer) renderer;
-			final XYLineAndShapeRendererFix fixed = new XYLineAndShapeRendererFix(broken.getBaseLinesVisible(),
-					broken.getBaseShapesVisible());
+			final XYLineAndShapeRendererFix fixed = new XYLineAndShapeRendererFix(broken.getDefaultLinesVisible(),
+					broken.getDefaultShapesVisible());
 
 			// those are only fields set in ChartFactory#createTimeSeriesChart
 			// you may need to set other fields if you use different
 			// ChartFactory# method
-			fixed.setBaseToolTipGenerator(renderer.getBaseToolTipGenerator());
+			fixed.setDefaultToolTipGenerator(renderer.getDefaultToolTipGenerator());
 			fixed.setURLGenerator(renderer.getURLGenerator());
 
 			return fixed;

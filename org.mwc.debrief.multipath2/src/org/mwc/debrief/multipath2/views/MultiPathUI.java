@@ -27,7 +27,7 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Slider;
 import org.eclipse.wb.swt.ResourceManager;
 import org.eclipse.wb.swt.SWTResourceManager;
-import org.jfree.experimental.chart.swt.ChartComposite;
+import org.jfree.chart.swt.ChartComposite;
 
 public class MultiPathUI extends Composite {
 

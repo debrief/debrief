@@ -30,7 +30,7 @@ import org.eclipse.swt.graphics.Rectangle;
 import org.freehep.graphicsbase.util.UserProperties;
 import org.freehep.graphicsio.emf.EMFGraphics2D;
 import org.freehep.graphicsio.pdf.PDFGraphics2D;
-import org.jfree.ui.Drawable;
+import org.jfree.chart.ui.Drawable;
 
 import info.limpet.stackedcharts.ui.editor.Activator;
 

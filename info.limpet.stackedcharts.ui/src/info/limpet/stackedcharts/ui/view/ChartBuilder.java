@@ -32,6 +32,7 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
+import org.eclipse.draw2d.TextUtilities;
 import org.eclipse.emf.common.notify.Adapter;
 import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.common.notify.impl.AdapterImpl;
@@ -55,7 +56,14 @@ import org.jfree.chart.plot.ValueAxisPlot;
 import org.jfree.chart.plot.ValueMarker;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
+import org.jfree.chart.text.TextUtils;
+import org.jfree.chart.ui.Layer;
+import org.jfree.chart.ui.RectangleAnchor;
+import org.jfree.chart.ui.RectangleEdge;
+import org.jfree.chart.ui.RectangleInsets;
+import org.jfree.chart.ui.TextAnchor;
 import org.jfree.chart.util.AttrStringUtils;
+import org.jfree.chart.util.ShapeUtils;
 import org.jfree.data.Range;
 import org.jfree.data.general.Series;
 import org.jfree.data.time.Millisecond;
@@ -64,13 +72,6 @@ import org.jfree.data.time.TimeSeriesCollection;
 import org.jfree.data.xy.XYDataset;
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
-import org.jfree.text.TextUtilities;
-import org.jfree.ui.Layer;
-import org.jfree.ui.RectangleAnchor;
-import org.jfree.ui.RectangleEdge;
-import org.jfree.ui.RectangleInsets;
-import org.jfree.ui.TextAnchor;
-import org.jfree.util.ShapeUtilities;
 
 import info.limpet.stackedcharts.model.AbstractAnnotation;
 import info.limpet.stackedcharts.model.AngleAxis;
@@ -471,7 +472,7 @@ public class ChartBuilder {
 						if (tick.getText() == null) {
 							continue;
 						}
-						TextUtilities.drawRotatedString(tick.getText(), g2, anchorPoint[0], anchorPoint[1],
+						TextUtils.drawRotatedString(tick.getText(), g2, anchorPoint[0], anchorPoint[1],
 								tick.getTextAnchor(), tick.getAngle(), tick.getRotationAnchor());
 					}
 				}
@@ -715,14 +716,14 @@ public class ChartBuilder {
 						renderer.setSeriesShape(seriesIndex, new Ellipse2D.Double(0, 0, size, size));
 						break;
 					case TRIANGLE:
-						renderer.setSeriesShape(seriesIndex, ShapeUtilities.createUpTriangle((float) size));
+						renderer.setSeriesShape(seriesIndex, ShapeUtils.createUpTriangle((float) size));
 						break;
 					case CROSS:
 						renderer.setSeriesShape(seriesIndex,
-								ShapeUtilities.createRegularCross((float) size, (float) size));
+								ShapeUtils.createRegularCross((float) size, (float) size));
 						break;
 					case DIAMOND:
-						renderer.setSeriesShape(seriesIndex, ShapeUtilities.createDiamond((float) size));
+						renderer.setSeriesShape(seriesIndex, ShapeUtils.createDiamond((float) size));
 						break;
 					default:
 						renderer.setSeriesShapesVisible(seriesIndex, false);

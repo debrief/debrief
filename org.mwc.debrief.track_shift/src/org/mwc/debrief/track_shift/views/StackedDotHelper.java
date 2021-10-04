@@ -38,6 +38,7 @@ import java.util.Vector;
 
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.runtime.IStatus;
+import org.jfree.chart.util.ShapeUtils;
 import org.jfree.data.general.Series;
 import org.jfree.data.general.SeriesException;
 import org.jfree.data.time.FixedMillisecond;
@@ -45,7 +46,6 @@ import org.jfree.data.time.RegularTimePeriod;
 import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.TimeSeriesCollection;
 import org.jfree.data.time.TimeSeriesDataItem;
-import org.jfree.util.ShapeUtilities;
 import org.mwc.cmap.core.CorePlugin;
 import org.mwc.debrief.core.ContextOperations.GenerateTMASegmentFromCuts.TMAfromCuts;
 import org.mwc.debrief.track_shift.TrackShiftActivator;
@@ -2552,7 +2552,7 @@ public final class StackedDotHelper {
 			// sort out the rendering for the BaseFrequencies.
 			// we want to show a solid line, with no markers
 			final int BaseFreqSeries = 2;
-			lineRend.setSeriesShape(BaseFreqSeries, ShapeUtilities.createDiamond(0.2f));
+			lineRend.setSeriesShape(BaseFreqSeries, ShapeUtils.createDiamond(0.2f));
 			lineRend.setSeriesStroke(BaseFreqSeries, new BasicStroke(4));
 			lineRend.setSeriesShapesVisible(BaseFreqSeries, false);
 			lineRend.setSeriesShapesFilled(BaseFreqSeries, false);

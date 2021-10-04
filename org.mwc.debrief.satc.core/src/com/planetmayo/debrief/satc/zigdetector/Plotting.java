@@ -31,13 +31,13 @@ import org.jfree.chart.plot.Marker;
 import org.jfree.chart.plot.ValueMarker;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
+import org.jfree.chart.ui.Layer;
+import org.jfree.chart.ui.RectangleAnchor;
+import org.jfree.chart.ui.TextAnchor;
+import org.jfree.chart.util.ShapeUtils;
 import org.jfree.data.time.FixedMillisecond;
 import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.TimeSeriesCollection;
-import org.jfree.ui.Layer;
-import org.jfree.ui.RectangleAnchor;
-import org.jfree.ui.TextAnchor;
-import org.jfree.util.ShapeUtilities;
 
 import MWC.Utilities.TextFormatting.GMTDateFormat;
 
@@ -65,12 +65,12 @@ public class Plotting {
 
 		final XYLineAndShapeRenderer lineRenderer1 = new XYLineAndShapeRenderer(true, true);
 		lineRenderer1.setSeriesPaint(0, Color.green);
-		lineRenderer1.setSeriesShape(0, ShapeUtilities.createDownTriangle(2f));
+		lineRenderer1.setSeriesShape(0, ShapeUtils.createDownTriangle(2f));
 		ownshipPlot.setRenderer(2, lineRenderer1);
 
 		final XYLineAndShapeRenderer lineRenderer2 = new XYLineAndShapeRenderer(true, true);
 		lineRenderer2.setSeriesPaint(0, Color.green);
-		lineRenderer2.setSeriesShape(0, ShapeUtilities.createUpTriangle(2f));
+		lineRenderer2.setSeriesShape(0, ShapeUtils.createUpTriangle(2f));
 		ownshipPlot.setRenderer(3, lineRenderer2);
 
 		ownshipPlot.mapDatasetToRangeAxis(3, 1);
@@ -106,7 +106,7 @@ public class Plotting {
 			plotMarkers(xyPlot, valueMarkers);
 		}
 
-		xyPlot.getRenderer().setBaseSeriesVisibleInLegend(true);
+		xyPlot.getRenderer().setDefaultSeriesVisibleInLegend(true);
 
 		parent.add(xyPlot);
 	}
@@ -199,13 +199,13 @@ public class Plotting {
 		final XYLineAndShapeRenderer lineRenderer1 = new XYLineAndShapeRenderer(true, true);
 		lineRenderer1.setSeriesPaint(0, Color.blue);
 		lineRenderer1.setSeriesPaint(1, Color.red);
-		lineRenderer1.setSeriesShape(0, ShapeUtilities.createUpTriangle(2f));
-		lineRenderer1.setSeriesShape(1, ShapeUtilities.createDownTriangle(2f));
+		lineRenderer1.setSeriesShape(0, ShapeUtils.createUpTriangle(2f));
+		lineRenderer1.setSeriesShape(1, ShapeUtils.createDownTriangle(2f));
 		final XYLineAndShapeRenderer lineRenderer2 = new XYLineAndShapeRenderer(true, true);
 		lineRenderer2.setSeriesPaint(0, Color.blue);
 		lineRenderer2.setSeriesPaint(1, Color.red);
-		lineRenderer2.setSeriesShape(0, ShapeUtilities.createDownTriangle(2f));
-		lineRenderer2.setSeriesShape(1, ShapeUtilities.createUpTriangle(2f));
+		lineRenderer2.setSeriesShape(0, ShapeUtils.createDownTriangle(2f));
+		lineRenderer2.setSeriesShape(1, ShapeUtils.createUpTriangle(2f));
 
 		// ok, and store them
 		xyPlot.setRenderer(0, lineRenderer1);
@@ -339,7 +339,7 @@ public class Plotting {
 
 		final XYLineAndShapeRenderer lineRenderer2 = new XYLineAndShapeRenderer(false, true);
 		xyPlot.setRenderer(1, lineRenderer2);
-		xyPlot.getRenderer().setBaseSeriesVisibleInLegend(false);
+		xyPlot.getRenderer().setDefaultSeriesVisibleInLegend(false);
 		lineRenderer2.setSeriesPaint(0, Color.green);
 
 		// final NumberAxis rangeAxis = new LogarithmicAxis("Log(error)");
@@ -347,7 +347,7 @@ public class Plotting {
 
 		final XYLineAndShapeRenderer lineRenderer1 = new XYLineAndShapeRenderer(true, true);
 		xyPlot.setRenderer(0, lineRenderer1);
-		xyPlot.getRenderer().setBaseSeriesVisibleInLegend(true);
+		xyPlot.getRenderer().setDefaultSeriesVisibleInLegend(true);
 
 		parent.add(xyPlot);
 	}
@@ -399,11 +399,11 @@ public class Plotting {
 
 		final XYLineAndShapeRenderer lineRenderer1 = new XYLineAndShapeRenderer(true, true);
 		lineRenderer1.setSeriesPaint(0, color);
-		lineRenderer1.setSeriesShape(0, ShapeUtilities.createUpTriangle(2f));
+		lineRenderer1.setSeriesShape(0, ShapeUtils.createUpTriangle(2f));
 
 		final XYLineAndShapeRenderer lineRenderer2 = new XYLineAndShapeRenderer(true, true);
 		lineRenderer2.setSeriesPaint(0, color);
-		lineRenderer2.setSeriesShape(0, ShapeUtilities.createDownTriangle(2f));
+		lineRenderer2.setSeriesShape(0, ShapeUtils.createDownTriangle(2f));
 
 		// ok, and store them
 		xyPlot.setRenderer(0, lineRenderer1);
@@ -452,12 +452,12 @@ public class Plotting {
 
 		final XYLineAndShapeRenderer lineRenderer2 = new XYLineAndShapeRenderer(false, true);
 		xyPlot.setRenderer(1, lineRenderer2);
-		xyPlot.getRenderer().setBaseSeriesVisibleInLegend(false);
+		xyPlot.getRenderer().setDefaultSeriesVisibleInLegend(false);
 		lineRenderer2.setSeriesPaint(0, Color.green);
 
 		final XYLineAndShapeRenderer lineRenderer1 = new XYLineAndShapeRenderer(true, true);
 		xyPlot.setRenderer(0, lineRenderer1);
-		xyPlot.getRenderer().setBaseSeriesVisibleInLegend(true);
+		xyPlot.getRenderer().setDefaultSeriesVisibleInLegend(true);
 
 		// and the leg markers
 		final Iterator<LegOfData> iter = legList.iterator();

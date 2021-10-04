@@ -44,9 +44,9 @@ import org.jfree.chart.axis.DateAxis;
 import org.jfree.chart.axis.NumberAxis;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.DefaultXYItemRenderer;
+import org.jfree.chart.swt.ChartComposite;
 import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.TimeSeriesCollection;
-import org.jfree.experimental.chart.swt.ChartComposite;
 import org.mwc.cmap.core.CorePlugin;
 import org.mwc.debrief.multipath2.views.MultiPathUI;
 
@@ -208,7 +208,7 @@ public class MultiPathView extends ViewPart implements MultiPathPresenter.Displa
 
 		final NumberAxis valAxis = new NumberAxis("Delay (Secs)");
 		final DefaultXYItemRenderer theRenderer = new DefaultXYItemRenderer();
-		theRenderer.setBaseShapesVisible(false);
+		theRenderer.setDefaultShapesVisible(false);
 
 		_thePlot = new XYPlot(null, dateAxis, valAxis, theRenderer);
 		final JFreeChart _plotArea = new JFreeChart(_thePlot);

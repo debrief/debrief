@@ -42,7 +42,6 @@ import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
-import org.jfree.util.ReadOnlyIterator;
 import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.DataTypes.TrackData.TrackManager;
 import org.mwc.debrief.core.DebriefPlugin;
@@ -1023,7 +1022,7 @@ public class SATC_Solution extends BaseLayer implements NeedsToBeInformedOfRemov
 				Editable toBeRemoved = null;
 
 				// get read-only version of elements
-				final ReadOnlyIterator rIter = new ReadOnlyIterator(getData().iterator());
+				final Iterator<Editable> rIter = getData().iterator();
 				while (rIter.hasNext()) {
 					final Editable editable = (Editable) rIter.next();
 					final ContributionWrapper cw = (ContributionWrapper) editable;

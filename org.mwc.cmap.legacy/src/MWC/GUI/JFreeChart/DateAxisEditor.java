@@ -224,7 +224,6 @@ public class DateAxisEditor extends AbstractPropertyEditor {
 		 * instance rather than creating it lots of times.
 		 */
 		@Override
-		@SuppressWarnings("deprecation")
 		public Date addToDate(final Date base, final TimeZone zone) {
 
 			// do we have a calenar already?
@@ -232,7 +231,7 @@ public class DateAxisEditor extends AbstractPropertyEditor {
 				_myCal = Calendar.getInstance(zone);
 
 			_myCal.setTime(base);
-			_myCal.add(this.getUnitType().getCalendarField(), this.getCount());
+			_myCal.add(this.getUnitType().getCalendarField(), this.getMultiple());
 			return _myCal.getTime();
 
 		}

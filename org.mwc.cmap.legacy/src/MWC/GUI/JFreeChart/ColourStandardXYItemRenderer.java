@@ -76,7 +76,7 @@ public class ColourStandardXYItemRenderer extends DefaultXYItemRenderer {
 	public ColourStandardXYItemRenderer(final XYToolTipGenerator toolTipGenerator, final XYURLGenerator urlGenerator,
 			final XYPlot plot) {
 		super();
-		this.setBaseToolTipGenerator(toolTipGenerator);
+		this.setDefaultToolTipGenerator(toolTipGenerator);
 		this.setURLGenerator(urlGenerator);
 		_myPlot = plot;
 	}
@@ -223,7 +223,7 @@ public class ColourStandardXYItemRenderer extends DefaultXYItemRenderer {
 				if (tsdp instanceof ColouredDataItem) {
 					final ColouredDataItem cdi = (ColouredDataItem) tsdp;
 					// is the base renderer set to show all
-					if (this.getBaseShapesVisible() && cdi.isShapeFilled()) {
+					if (this.getDefaultShapesVisible() && cdi.isShapeFilled()) {
 						res = true;
 					} else {
 						res = false;
@@ -259,7 +259,7 @@ public class ColourStandardXYItemRenderer extends DefaultXYItemRenderer {
 				if (tsdp instanceof ColouredDataItem) {
 					final ColouredDataItem cdi = (ColouredDataItem) tsdp;
 					// is the base renderer set to show all
-					if (this.getBaseShapesVisible() && cdi.isParentSymVisible()) {
+					if (this.getDefaultShapesVisible() && cdi.isParentSymVisible()) {
 						res = true;
 					} else {
 						res = false;

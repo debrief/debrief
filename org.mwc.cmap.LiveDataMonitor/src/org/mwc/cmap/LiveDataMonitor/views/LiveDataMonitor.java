@@ -37,10 +37,10 @@ import org.jfree.chart.axis.DateAxis;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
+import org.jfree.chart.swt.ChartComposite;
 import org.jfree.data.time.Millisecond;
 import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.TimeSeriesCollection;
-import org.jfree.experimental.chart.swt.ChartComposite;
 
 import MWC.Algorithms.LiveData.DataDoublet;
 import MWC.Algorithms.LiveData.IAttribute;

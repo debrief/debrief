@@ -7,10 +7,10 @@ import java.util.Date;
 
 import org.eclipse.swt.widgets.Display;
 import org.jfree.chart.axis.DateAxis;
+import org.jfree.chart.swt.ChartComposite;
 import org.jfree.data.time.Second;
 import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.TimeSeriesCollection;
-import org.jfree.experimental.chart.swt.ChartComposite;
 import org.mwc.debrief.dis.listeners.IDISGeneralPDUListener;
 import org.mwc.debrief.dis.listeners.IDISScenarioListener;
 import org.mwc.debrief.dis.listeners.impl.PerformanceQueue;

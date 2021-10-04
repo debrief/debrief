@@ -79,7 +79,7 @@ import org.eclipse.ui.views.properties.IPropertySheetPage;
 import org.eclipse.ui.views.properties.tabbed.ITabbedPropertySheetPageContributor;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.StandardChartTheme;
-import org.jfree.experimental.chart.swt.ChartComposite;
+import org.jfree.chart.swt.ChartComposite;
 
 import info.limpet.stackedcharts.model.ChartSet;
 import info.limpet.stackedcharts.model.IndependentAxis;

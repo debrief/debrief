@@ -112,7 +112,7 @@ public class StraightLineCullingTestForm extends JFrame {
 
 	private void culling(final List<List<Coordinate>> polygons) {
 		final DefaultXYItemRenderer renderer = new DefaultXYItemRenderer();
-		renderer.setBaseShapesVisible(false);
+		renderer.setDefaultShapesVisible(false);
 		((XYPlot) chart.getPlot()).setRenderer(renderer);
 		collections.removeAllSeries();
 

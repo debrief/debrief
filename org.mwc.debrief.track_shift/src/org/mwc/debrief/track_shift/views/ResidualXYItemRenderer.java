@@ -68,7 +68,7 @@ public class ResidualXYItemRenderer extends DefaultXYItemRenderer {
 	public ResidualXYItemRenderer(final XYToolTipGenerator toolTipGenerator, final XYURLGenerator urlGenerator,
 			final TimeSeriesCollection dataset) {
 		super();
-		this.setBaseToolTipGenerator(toolTipGenerator);
+		this.setDefaultToolTipGenerator(toolTipGenerator);
 		this.setURLGenerator(urlGenerator);
 		_dataset = dataset;
 	}

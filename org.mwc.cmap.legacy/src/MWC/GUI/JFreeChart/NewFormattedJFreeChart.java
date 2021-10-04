@@ -34,8 +34,8 @@ import org.jfree.chart.plot.Plot;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.DefaultXYItemRenderer;
 import org.jfree.chart.title.LegendTitle;
-import org.jfree.ui.RectangleEdge;
-import org.jfree.ui.RectangleInsets;
+import org.jfree.chart.ui.RectangleEdge;
+import org.jfree.chart.ui.RectangleInsets;
 
 import MWC.GUI.Editable;
 import MWC.GUI.FireReformatted;
@@ -520,7 +520,7 @@ public class NewFormattedJFreeChart extends JFreeChart implements MWC.GUI.Editab
 
 	public boolean isShowSymbols() {
 		final DefaultXYItemRenderer sx = (DefaultXYItemRenderer) getXYPlot().getRenderer();
-		return sx.getBaseShapesVisible();
+		return sx.getDefaultShapesVisible();
 	}
 
 	private void notifyListenersStateChanged(final Object source, final String property, final Object oldValue,
@@ -695,9 +695,9 @@ public class NewFormattedJFreeChart extends JFreeChart implements MWC.GUI.Editab
 
 	public void setShowSymbols(final boolean showSymbols) {
 		final DefaultXYItemRenderer sx = (DefaultXYItemRenderer) getXYPlot().getRenderer();
-		final boolean oldValue = sx.getBaseShapesVisible();
+		final boolean oldValue = sx.getDefaultShapesVisible();
 		if (oldValue != showSymbols) {
-			sx.setBaseShapesVisible(showSymbols);
+			sx.setDefaultShapesVisible(showSymbols);
 
 			this.fireChartChanged();
 			notifyListenersStateChanged(this, SYMBOL_PROPERTY, oldValue, showSymbols);

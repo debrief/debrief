@@ -135,7 +135,7 @@ import org.eclipse.swt.graphics.PaletteData;
 import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.graphics.Transform;
 import org.eclipse.swt.widgets.Display;
-import org.jfree.experimental.swt.SWTGraphics2D;
+import org.jfree.swt.SWTGraphics2D;
 import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.property_support.ColorHelper;
 import org.mwc.cmap.core.property_support.FontHelper;
@@ -262,20 +262,20 @@ public class SWTCanvasAdapter implements CanvasType, Serializable, Editable, Ext
 	static synchronized public java.awt.BasicStroke getStrokeFor(final int style) {
 		if (_myLineStyles == null) {
 			_myLineStyles = new java.util.HashMap<Integer, BasicStroke>(5);
-			_myLineStyles.put(new Integer(MWC.GUI.CanvasType.SOLID), new java.awt.BasicStroke(1,
+			_myLineStyles.put(MWC.GUI.CanvasType.SOLID, new java.awt.BasicStroke(1,
 					java.awt.BasicStroke.CAP_BUTT, java.awt.BasicStroke.JOIN_MITER, 1, new float[] { 5, 0 }, 0));
-			_myLineStyles.put(new Integer(MWC.GUI.CanvasType.DOTTED), new java.awt.BasicStroke(1,
+			_myLineStyles.put(MWC.GUI.CanvasType.DOTTED, new java.awt.BasicStroke(1,
 					java.awt.BasicStroke.CAP_BUTT, java.awt.BasicStroke.JOIN_MITER, 1, new float[] { 2, 6 }, 0));
-			_myLineStyles.put(new Integer(MWC.GUI.CanvasType.DOT_DASH), new java.awt.BasicStroke(1,
+			_myLineStyles.put(MWC.GUI.CanvasType.DOT_DASH, new java.awt.BasicStroke(1,
 					java.awt.BasicStroke.CAP_BUTT, java.awt.BasicStroke.JOIN_MITER, 1, new float[] { 4, 4, 12, 4 }, 0));
-			_myLineStyles.put(new Integer(MWC.GUI.CanvasType.SHORT_DASHES), new java.awt.BasicStroke(1,
+			_myLineStyles.put(MWC.GUI.CanvasType.SHORT_DASHES, new java.awt.BasicStroke(1,
 					java.awt.BasicStroke.CAP_BUTT, java.awt.BasicStroke.JOIN_MITER, 1, new float[] { 6, 6 }, 0));
-			_myLineStyles.put(new Integer(MWC.GUI.CanvasType.LONG_DASHES), new java.awt.BasicStroke(1,
+			_myLineStyles.put(MWC.GUI.CanvasType.LONG_DASHES, new java.awt.BasicStroke(1,
 					java.awt.BasicStroke.CAP_BUTT, java.awt.BasicStroke.JOIN_MITER, 1, new float[] { 12, 6 }, 0));
-			_myLineStyles.put(new Integer(MWC.GUI.CanvasType.UNCONNECTED), new java.awt.BasicStroke(1));
+			_myLineStyles.put(MWC.GUI.CanvasType.UNCONNECTED, new java.awt.BasicStroke(1));
 		}
 
-		return _myLineStyles.get(new Integer(style));
+		return _myLineStyles.get(style);
 	}
 
 	/**

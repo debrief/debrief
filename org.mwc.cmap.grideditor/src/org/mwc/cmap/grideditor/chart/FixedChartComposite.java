@@ -59,7 +59,7 @@ import org.eclipse.swt.widgets.MessageBox;
 import org.jfree.chart.ChartMouseEvent;
 import org.jfree.chart.ChartMouseListener;
 import org.jfree.chart.ChartRenderingInfo;
-import org.jfree.chart.ChartUtilities;
+import org.jfree.chart.ChartUtils;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.entity.ChartEntity;
 import org.jfree.chart.entity.EntityCollection;
@@ -72,11 +72,11 @@ import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.plot.PlotRenderingInfo;
 import org.jfree.chart.plot.ValueAxisPlot;
 import org.jfree.chart.plot.Zoomable;
+import org.jfree.chart.swt.ChartComposite;
+import org.jfree.chart.swt.editor.SWTChartEditor;
 import org.jfree.chart.util.ResourceBundleWrapper;
-import org.jfree.experimental.chart.swt.ChartComposite;
-import org.jfree.experimental.chart.swt.editor.SWTChartEditor;
-import org.jfree.experimental.swt.SWTGraphics2D;
-import org.jfree.experimental.swt.SWTUtils;
+import org.jfree.swt.SWTGraphics2D;
+import org.jfree.swt.SWTUtils;
 
 /**
  * This is a local copy of the {@link FixedChartComposite} tweaked to allow
@@ -751,7 +751,7 @@ public class FixedChartComposite extends Composite implements ChartChangeListene
 				}
 			}
 			// TODO replace getSize by getBounds ?
-			ChartUtilities.saveChartAsPNG(new File(filename), this.chart, this.canvas.getSize().x,
+			ChartUtils.saveChartAsPNG(new File(filename), this.chart, this.canvas.getSize().x,
 					this.canvas.getSize().y);
 		}
 	}

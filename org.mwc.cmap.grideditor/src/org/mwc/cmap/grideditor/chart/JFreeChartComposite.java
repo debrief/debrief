@@ -30,7 +30,7 @@ import org.jfree.chart.entity.XYItemEntity;
 import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.TimeSeriesCollection;
 import org.jfree.data.xy.XYSeriesCollection;
-import org.jfree.experimental.swt.SWTUtils;
+import org.jfree.swt.SWTUtils;
 import org.mwc.cmap.grideditor.GridEditorActionContext;
 import org.mwc.cmap.grideditor.table.GridEditorTable;
 

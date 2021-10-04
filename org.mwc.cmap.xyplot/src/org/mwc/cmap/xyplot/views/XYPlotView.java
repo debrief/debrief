@@ -85,13 +85,13 @@ import org.jfree.chart.event.ChartProgressListener;
 import org.jfree.chart.labels.StandardXYToolTipGenerator;
 import org.jfree.chart.labels.XYToolTipGenerator;
 import org.jfree.chart.plot.PlotOrientation;
+import org.jfree.chart.swt.ChartComposite;
+import org.jfree.chart.ui.TextAnchor;
 import org.jfree.data.general.AbstractSeriesDataset;
 import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.TimeSeriesCollection;
 import org.jfree.data.time.TimeSeriesDataItem;
 import org.jfree.data.xy.XYDataset;
-import org.jfree.experimental.chart.swt.ChartComposite;
-import org.jfree.ui.TextAnchor;
 import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.preferences.SelectionHelper;
 import org.mwc.cmap.core.preferences.WMFExportPrefsPage.PreferenceConstants;
@@ -734,7 +734,7 @@ public class XYPlotView extends ViewPart {
 		final ColourStandardXYItemRenderer theRenderer = new ColourStandardXYItemRenderer(tooltipGenerator, null, null);
 		_thePlot = new StepperXYPlot(null, (RelativeDateAxis) xAxis, yAxis, _theStepper, theRenderer);
 		theRenderer.setPlot(_thePlot);
-		theRenderer.setStroke(new BasicStroke(3.0f));
+		theRenderer.setDefaultStroke(new BasicStroke(3.0f));
 
 		_thePlot.setRangeGridlineStroke(new BasicStroke(1f));
 		_thePlot.setDomainGridlineStroke(new BasicStroke(1f));

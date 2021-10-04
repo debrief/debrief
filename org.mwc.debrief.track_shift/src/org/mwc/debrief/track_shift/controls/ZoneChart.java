@@ -60,20 +60,20 @@ import org.jfree.chart.plot.IntervalMarker;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.XYItemRenderer;
 import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
+import org.jfree.chart.swt.ChartComposite;
+import org.jfree.chart.ui.Layer;
 import org.jfree.data.Range;
 import org.jfree.data.time.FixedMillisecond;
 import org.jfree.data.time.RegularTimePeriod;
 import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.TimeSeriesCollection;
 import org.jfree.data.time.TimeSeriesDataItem;
-import org.jfree.experimental.chart.swt.ChartComposite;
 import org.mwc.cmap.core.CorePlugin;
 import org.mwc.debrief.track_shift.views.WrappingResidualRenderer;
 
 import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.TrackWrapper;
 import MWC.GUI.Editable;
-import MWC.GUI.Layer;
 import MWC.GUI.Layers;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.TimePeriod;
@@ -971,7 +971,7 @@ public class ZoneChart extends Composite {
 		final IntervalMarker mrk = new IntervalMarker(zone.start, zone.end);
 		mrk.setPaint(zone.getColor());
 		mrk.setAlpha(0.2f);
-		plot.addDomainMarker(mrk, org.jfree.ui.Layer.FOREGROUND);
+		plot.addDomainMarker(mrk, Layer.FOREGROUND);
 		zoneMarkers.put(zone, mrk);
 	}
 
@@ -1571,7 +1571,7 @@ public class ZoneChart extends Composite {
 			// find the first track
 			final Enumeration<Editable> numer = layers.elements();
 			while (numer.hasMoreElements()) {
-				final Layer thisL = (Layer) numer.nextElement();
+				final MWC.GUI.Layer thisL = (MWC.GUI.Layer) numer.nextElement();
 				if (thisL instanceof TrackWrapper) {
 					// ok, go for it.
 					final TrackWrapper thisT = (TrackWrapper) thisL;
@@ -1675,7 +1675,7 @@ public class ZoneChart extends Composite {
 				for (final Zone thisZone : zones) {
 					// remove this marker
 					final IntervalMarker thisM = zoneMarkers.get(thisZone);
-					thePlot.removeDomainMarker(thisM, org.jfree.ui.Layer.FOREGROUND);
+					thePlot.removeDomainMarker(thisM, Layer.FOREGROUND);
 				}
 
 				// ok, now ditch the old zone lists
@@ -1703,7 +1703,7 @@ public class ZoneChart extends Composite {
 			public IStatus undo(final IProgressMonitor monitor, final IAdaptable info) throws ExecutionException {
 				// and ditch the intervals
 				for (final IntervalMarker marker : zoneMarkers.values()) {
-					thePlot.removeDomainMarker(marker, org.jfree.ui.Layer.FOREGROUND);
+					thePlot.removeDomainMarker(marker, Layer.FOREGROUND);
 				}
 				zones.clear();
 				zoneMarkers.clear();

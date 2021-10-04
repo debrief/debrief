@@ -20,7 +20,7 @@ import java.awt.geom.Rectangle2D;
 import java.util.List;
 
 import org.jfree.chart.axis.DateAxis;
-import org.jfree.ui.RectangleEdge;
+import org.jfree.chart.ui.RectangleEdge;
 
 public class CachedTickDateAxis extends DateAxis {
 

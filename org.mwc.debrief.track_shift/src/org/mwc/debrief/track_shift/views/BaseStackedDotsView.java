@@ -133,15 +133,15 @@ import org.jfree.chart.plot.PlotRenderingInfo;
 import org.jfree.chart.plot.ValueMarker;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.DefaultXYItemRenderer;
+import org.jfree.chart.swt.ChartComposite;
+import org.jfree.chart.ui.RectangleEdge;
+import org.jfree.chart.ui.TextAnchor;
 import org.jfree.data.Range;
 import org.jfree.data.time.FixedMillisecond;
 import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.TimeSeriesCollection;
 import org.jfree.data.time.TimeSeriesDataItem;
 import org.jfree.data.xy.XYDataset;
-import org.jfree.experimental.chart.swt.ChartComposite;
-import org.jfree.ui.RectangleEdge;
-import org.jfree.ui.TextAnchor;
 import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.property_support.EditableWrapper;
 import org.mwc.cmap.core.ui_support.PartMonitor;
@@ -1412,7 +1412,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements ErrorLogge
 		absBrgAxis.setAutoRangeIncludesZero(false);
 		_linePlot.setRangeAxisLocation(AxisLocation.TOP_OR_LEFT);
 		final DefaultXYItemRenderer lineRend = new ColourStandardXYItemRenderer(null, null, _linePlot);
-		lineRend.setPaint(Color.DARK_GRAY);
+		lineRend.setDefaultPaint(Color.DARK_GRAY);
 		_linePlot.setRenderer(lineRend);
 
 		// give it some data
@@ -1467,7 +1467,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements ErrorLogge
 		_overviewCourseRenderer.setSeriesStroke(0, new BasicStroke(2f));
 		_overviewCourseRenderer.setSeriesStroke(1, new BasicStroke(2f));
 		_overviewSpeedRenderer = new ResidualXYItemRenderer(null, null, _targetSpeedSeries);
-		_overviewSpeedRenderer.setPaint(DebriefColors.RED.darker());
+		_overviewSpeedRenderer.setDefaultPaint(DebriefColors.RED.darker());
 		_overviewSpeedRenderer.setSeriesShape(0, new Rectangle2D.Double(-4.0, -4.0, 8.0, 8.0));
 		_overviewSpeedRenderer.setSeriesStroke(0, new BasicStroke(2f));
 		_targetOverviewPlot.setRenderer(0, _overviewCourseRenderer);

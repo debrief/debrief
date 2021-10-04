@@ -24,9 +24,9 @@ import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.XYItemRendererState;
 import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
-import org.jfree.chart.util.LineUtilities;
+import org.jfree.chart.ui.RectangleEdge;
+import org.jfree.chart.util.LineUtils;
 import org.jfree.data.xy.XYDataset;
-import org.jfree.ui.RectangleEdge;
 
 public class WrappingRenderer extends XYLineAndShapeRenderer {
 
@@ -126,7 +126,7 @@ public class WrappingRenderer extends XYLineAndShapeRenderer {
 		} else if (orientation == PlotOrientation.VERTICAL) {
 			state.workingLine.setLine(transX0, transY0, transX1, transY1);
 		}
-		visible = LineUtilities.clipLine(state.workingLine, dataArea);
+		visible = LineUtils.clipLine(state.workingLine, dataArea);
 		if (visible) {
 			drawFirstPassShape(g2, pass, series, item, state.workingLine);
 		}

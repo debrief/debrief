@@ -35,9 +35,9 @@ import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.category.LineAndShapeRenderer;
 import org.jfree.chart.renderer.xy.XYItemRendererState;
 import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
+import org.jfree.chart.ui.RectangleEdge;
+import org.jfree.chart.util.ShapeUtils;
 import org.jfree.data.xy.XYDataset;
-import org.jfree.ui.RectangleEdge;
-import org.jfree.util.ShapeUtilities;
 
 /**
  * Extends {@link LineAndShapeRenderer} with ability to render additional
@@ -127,9 +127,9 @@ public class RendererWithDynamicFeedback extends XYLineAndShapeRenderer {
 		if (getItemShapeVisible(series, item)) {
 			Shape shape = getItemShape(series, item);
 			if (orientation == PlotOrientation.HORIZONTAL) {
-				shape = ShapeUtilities.createTranslatedShape(shape, transY1, transX1);
+				shape = ShapeUtils.createTranslatedShape(shape, transY1, transX1);
 			} else if (orientation == PlotOrientation.VERTICAL) {
-				shape = ShapeUtilities.createTranslatedShape(shape, transX1, transY1);
+				shape = ShapeUtils.createTranslatedShape(shape, transX1, transY1);
 			}
 			if (shape.intersects(dataArea)) {
 				g2.setPaint(getFeedbackNodePaint());
