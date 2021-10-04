@@ -55,7 +55,6 @@
 		<delete dir="${temp.folder}/cmap_legacy.jar.bin"/>
 		<mkdir dir="${temp.folder}/cmap_legacy.jar.bin"/>
 		<path id="cmap_legacy.jar.classpath">
-			<fileset dir="../org.mwc.cmap.jfreechart/libs" includes="*.jar"></fileset>
 			<fileset dir="libs" includes="*.jar"></fileset>
 		</path>
 		<!-- compile the source code -->
