@@ -1368,7 +1368,6 @@ abstract public class BaseStackedDotsView extends ViewPart implements ErrorLogge
 	 *
 	 * @return the chart, in it's own panel
 	 */
-	@SuppressWarnings("deprecation")
 	protected void createStackedPlot() {
 		// first create the x (time) axis
 		final DateAxis xAxis = new CachedTickDateAxis("");
