@@ -10,11 +10,7 @@ Require-Bundle: org.eclipse.core.runtime,
 Bundle-RequiredExecutionEnvironment: JavaSE-11
 Bundle-ActivationPolicy: lazy
 Bundle-Vendor: MWC
-Bundle-ClassPath: .,
- libs/jcommon-1.0.23.jar,
- libs/jfreechart-1.0.19-experimental.jar,
- libs/jfreechart-1.0.19-swt.jar,
- libs/jfreechart-1.0.19.jar
+Bundle-ClassPath: .
 Export-Package: org.jfree,
  org.jfree.base,
  org.jfree.base.config,
