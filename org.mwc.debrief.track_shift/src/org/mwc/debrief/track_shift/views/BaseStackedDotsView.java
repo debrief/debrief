@@ -733,6 +733,8 @@ abstract public class BaseStackedDotsView extends ViewPart implements
           outline.setFocus();
         }
       });
+    } else {
+      CorePlugin.logError(ToolParent.WARNING, "Outline view not found", null);
     }
   }
 
@@ -1886,7 +1888,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 
           final TimeSeriesCollection tsc = (TimeSeriesCollection) _linePlot
               .getDataset();
-
+          
           // do we have data on the line plot?
           if (tsc != null)
           {
@@ -1950,6 +1952,10 @@ abstract public class BaseStackedDotsView extends ViewPart implements
                     final List<EditableWrapper> items = new ArrayList<>();
                     items.add(subject);
                     showThisSelectionInOutline(items, editor);
+                  } else {
+                    CorePlugin.logError(ToolParent.WARNING,
+                        "Failed to generate subject, potentially because it's an interpolated TMA position",
+                        null);
                   }
                 }
               }
@@ -2005,7 +2011,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 
             // set minimum distance to select item, else random clicks still
             // select an item
-            double minDistance = 15; // Integer.MAX_VALUE;
+            double minDistance = 35; // Integer.MAX_VALUE;
 
             // get all the entities on the plot
             Collection<?> entities = _holder.getChartRenderingInfo()
@@ -2029,6 +2035,8 @@ abstract public class BaseStackedDotsView extends ViewPart implements
                 }
               }
             }
+            
+            CorePlugin.logError(ToolParent.INFO, "Searched for nearest, minDist:" + (int)minDistance, null);
 
             // re-calculate the series name
             seriesName = getSeriesToSelect(arg0.getChart(), arg0.getTrigger(),
@@ -2245,7 +2253,6 @@ abstract public class BaseStackedDotsView extends ViewPart implements
         else
         {
           TimeSeries t = tsc.getSeries(seriesName);
-
           if (t == null)
           {
             // ok, we may need to transform the error plot name into
