@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Pepys
 Bundle-SymbolicName: org.mwc.debrief.pepys;singleton:=true
-Bundle-Version: 1.0.12
+Bundle-Version: 1.0.14
 Automatic-Module-Name: org.mwc.debref.pepys
 Bundle-RequiredExecutionEnvironment: JavaSE-11
 Bundle-ClassPath: libs/c3p0-0.9.5.5.jar,

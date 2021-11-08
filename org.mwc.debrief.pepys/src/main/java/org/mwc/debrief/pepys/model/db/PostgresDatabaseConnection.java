@@ -40,10 +40,10 @@ import MWC.GenericData.WorldLocation;
 
 public class PostgresDatabaseConnection extends DatabaseConnection {
 
-	private static final String DB_PORT_TAG = "db_port";
-	private static final String DB_HOST_TAG = "db_host";
-	private static final String DB_PASSWORD_TAG = "db_password";
-	private static final String DB_USERNAME_TAG = "db_username";
+	private static final String DB_PORT_TAG = "database_port";
+	private static final String DB_HOST_TAG = "database_host";
+	private static final String DB_PASSWORD_TAG = "database_password";
+	private static final String DB_USERNAME_TAG = "database_username";
 	private static final String HOST_HEADER = "jdbc:postgresql://";
 
 	/**
