@@ -15,8 +15,7 @@
 
 package org.mwc.debrief.core.ContextOperations;
 
-import java.util.Collection;
-import java.util.Iterator;
+import java.util.Enumeration;
 
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.commands.operations.IUndoableOperation;
@@ -90,9 +89,9 @@ public class GenerateTUASolution implements RightClickContextItemGenerator {
 				final BaseLayer solLayer = _track.getSolutions();
 
 				if (solLayer != null) {
-					final Collection<Editable> theSols = solLayer.getData();
-					for (final Iterator<Editable> iterator = theSols.iterator(); iterator.hasNext();) {
-						final Editable editable = iterator.next();
+					final Enumeration<Editable> theSols = solLayer.elements();
+					while(theSols.hasMoreElements()) {
+						final Editable editable = theSols.nextElement();
 						final TMAWrapper sw = (TMAWrapper) editable;
 						if (sw.getName().equals(_solutionWrapper.getName())) {
 							// remember this solution

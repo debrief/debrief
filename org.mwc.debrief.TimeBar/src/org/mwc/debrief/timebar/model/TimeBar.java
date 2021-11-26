@@ -195,7 +195,7 @@ public class TimeBar implements IEventEntry {
 
 		final BaseLayer theSolutions = track.getSolutions();
 		if (theSolutions != null && theSolutions.size() > 0) {
-			_children.add(new TimeBar(theSolutions, false));
+			_children.add(new TimeBar(theSolutions,false));
 		}
 	}
 

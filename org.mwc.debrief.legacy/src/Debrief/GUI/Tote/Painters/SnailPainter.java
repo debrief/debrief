@@ -343,7 +343,7 @@ public class SnailPainter extends TotePainter {
 				res.addElement(thisLayer);
 			} else if ((thisLayer instanceof FixWrapper) || (thisLayer instanceof LightweightTrackWrapper)
 					|| (thisLayer instanceof TrackWrapper) || (thisLayer instanceof BuoyPatternWrapper)
-					|| (thisLayer instanceof SensorWrapper) || (thisLayer instanceof TMAWrapper)
+					|| (thisLayer instanceof SensorWrapper) 
 					|| (thisLayer instanceof TrackSegment) || (thisLayer instanceof SegmentList)) {
 				// ignore it - it's clearly tactical, and there's just no way
 				// it can contain non-tactical child elements

@@ -774,4 +774,8 @@ public final class TMAWrapper extends TacticalDataWrapper {
 	public final String toString() {
 		return "TMA:" + getName() + " (" + _myContacts.size() + " items)";
 	}
+
+	public boolean isEmpty() {
+		return _myContacts==null?true:this._myContacts.isEmpty();
+	}
 }
