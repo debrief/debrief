@@ -37,6 +37,13 @@ import MWC.GUI.Tools.Chart.RightClickEdit;
 
 public class RightClickPasteAdaptor implements RightClickEdit.PlottableMenuCreator {
 
+	/**
+	 * marker interface for classes that must sit at the top level, and can't be
+	 * pasted into a layer
+	 */
+	public static interface CannotBePastedIntoLayer {
+	}
+
 	public static interface NeedsTidyingOnPaste {
 		// tell the object to do any internal admin that needs
 		// looking after following a paste operation
@@ -267,14 +274,18 @@ public class RightClickPasteAdaptor implements RightClickEdit.PlottableMenuCreat
 
 								final MWC.GUI.Layer clipLayer = (MWC.GUI.Layer) theData;
 
-								// create the menu items
-								paster = new PasteLayer(clipLayer, _clipboard, (Layer) destination, theLayers, isCopy);
-							} else {
-								// just check that there isn't a null destination
-								if (destination != null) {
+								// only let item be pasted into layer if it's allowed (pasting into
+								// top level is allowed)
+								if (destination == null || (!(theData instanceof CannotBePastedIntoLayer))) {
 									// create the menu items
-									paster = new PasteItem(theData, _clipboard, (Layer) destination, theLayers, isCopy);
+									paster = new PasteLayer(clipLayer, _clipboard, (Layer) destination, theLayers,
+											isCopy);
 								}
+
+							} else if (destination != null) {
+								// just check that there isn't a null destination
+								// create the menu items
+								paster = new PasteItem(theData, _clipboard, (Layer) destination, theLayers, isCopy);
 							}
 
 							if (paster != null) {
