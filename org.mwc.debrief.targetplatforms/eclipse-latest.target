@@ -2,6 +2,46 @@
 <?pde?>
 <!-- generated with https://github.com/eclipse-cbi/targetplatform-dsl --><target name="eclipse-latest" sequenceNumber="1619512526">
   <locations>
+    <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
+      <unit id="org.eclipse.jpt.common.branding" version="1.4.1.v201902121834"/>
+      <unit id="org.eclipse.jpt.common.core" version="1.5.1.v201902121834"/>
+      <unit id="org.eclipse.jpt.common.eclipselink.branding" version="1.3.101.v201902121834"/>
+      <unit id="org.eclipse.jpt.common.eclipselink.core" version="1.3.201.v201902121834"/>
+      <unit id="org.eclipse.jpt.common.ui" version="1.4.201.v201902121834"/>
+      <unit id="org.eclipse.jpt.common.utility" version="2.4.1.v201902121834"/>
+      <unit id="org.eclipse.jpt.doc.isv" version="3.4.1.v201902121834"/>
+      <unit id="org.eclipse.jpt.doc.user" version="3.2.101.v201902121834"/>
+      <unit id="org.eclipse.jpt.jaxb.branding" version="1.4.1.v201902121834"/>
+      <unit id="org.eclipse.jpt.jaxb.core" version="1.4.101.v201902121834"/>
+      <unit id="org.eclipse.jpt.jaxb.core.schemagen" version="1.1.201.v201902121834"/>
+      <unit id="org.eclipse.jpt.jaxb.eclipselink.branding" version="1.4.101.v201902121834"/>
+      <unit id="org.eclipse.jpt.jaxb.eclipselink.core" version="1.3.201.v201902121834"/>
+      <unit id="org.eclipse.jpt.jaxb.eclipselink.core.schemagen" version="1.2.201.v201902121834"/>
+      <unit id="org.eclipse.jpt.jaxb.eclipselink.ui" version="1.4.201.v201902121834"/>
+      <unit id="org.eclipse.jpt.jaxb.ui" version="1.5.200.v202007091849"/>
+      <unit id="org.eclipse.jpt.jpa.annotate" version="1.0.101.v201902121834"/>
+      <unit id="org.eclipse.jpt.jpa.branding" version="3.4.1.v201902121834"/>
+      <unit id="org.eclipse.jpt.jpa.core" version="3.6.0.v202002052252"/>
+      <unit id="org.eclipse.jpt.jpa.db" version="2.2.201.v201902121834"/>
+      <unit id="org.eclipse.jpt.jpa.db.ui" version="2.1.201.v201902121834"/>
+      <unit id="org.eclipse.jpt.jpa.eclipselink.branding" version="3.4.1.v201902121834"/>
+      <unit id="org.eclipse.jpt.jpa.eclipselink.core" version="2.4.101.v201902121834"/>
+      <unit id="org.eclipse.jpt.jpa.eclipselink.core.ddlgen" version="2.2.201.v201902121834"/>
+      <unit id="org.eclipse.jpt.jpa.eclipselink.ui" version="2.4.101.v201902121834"/>
+      <unit id="org.eclipse.jpt.jpa.gen" version="2.3.201.v201902121834"/>
+      <unit id="org.eclipse.jpt.jpa.ui" version="3.6.1.v202102130825"/>
+      <unit id="org.eclipse.jpt.jpadiagrameditor.branding" version="1.2.102.v201902121834"/>
+      <unit id="org.eclipse.jpt.jpadiagrameditor.doc.user" version="1.2.102.v201902121834"/>
+      <unit id="org.eclipse.jpt.jpadiagrameditor.ui" version="1.2.201.v201902121834"/>
+      <unit id="org.eclipse.wtp.jee.capabilities" version="1.0.100.v201903222024"/>
+      <repository location="http://download.eclipse.org/webtools/repository/2021-03"/>
+    </location>
+      <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
+	      <unit id="org.eclipse.wst.xml_ui.feature.feature.group" version="3.21.0.v202102222242"/>
+	      <unit id="org.eclipse.jdt.feature.group" version="3.18.700.v20210303-1800"/>
+	      <unit id="org.eclipse.equinox.executable.feature.group" version="3.8.1100.v20210209-1541"/>
+	      <repository location="http://download.eclipse.org/releases/2021-03"/>
+	  </location>
 	  <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
 		  <unit id="org.eclipse.pde.source.feature.group" version="3.14.1000.v20211124-1800"/>
 		  <unit id="org.eclipse.ecf.core.feature.feature.group" version="1.6.1.v20211005-1944"/>
@@ -52,6 +92,7 @@
 	  <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
 		  <repository location="http://download.eclipse.org/nebula/releases/2.5.0/"/>
 		  <unit id="org.eclipse.nebula.widgets.xviewer.feature.feature.group" version="1.1.0.202106201019"/>
+		  <unit id="org.eclipse.nebula.visualization.feature.feature.group" version="2.1.0.202106201019"/>
 	  </location>
 	  <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
 		  <repository location="http://download.eclipse.org/webtools/repository/2021-09/"/>
