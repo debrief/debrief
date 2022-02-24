@@ -39,10 +39,11 @@
       <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
 	      <unit id="org.eclipse.wst.xml_ui.feature.feature.group" version="3.21.0.v202102222242"/>
 	      <unit id="org.eclipse.jdt.feature.group" version="3.18.700.v20210303-1800"/>
-	      <unit id="org.eclipse.equinox.executable.feature.group" version="3.8.1100.v20210209-1541"/>
 	      <repository location="http://download.eclipse.org/releases/2021-03"/>
 	  </location>
 	  <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
+		  <repository location="http://download.eclipse.org/releases/2021-12"/>
+		  <unit id="org.eclipse.equinox.executable.feature.group" version="3.8.1400.v20211117-0650"/>
 		  <unit id="org.eclipse.pde.source.feature.group" version="3.14.1000.v20211124-1800"/>
 		  <unit id="org.eclipse.ecf.core.feature.feature.group" version="1.6.1.v20211005-1944"/>
 		  <unit id="org.eclipse.emf.common.feature.group" version="2.24.0.v20210924-1718"/>
@@ -63,7 +64,6 @@
 		  <unit id="org.eclipse.rcp.feature.group" version="4.22.0.v20211124-1800"/>
 		  <unit id="org.eclipse.xsd.edit.feature.group" version="2.14.0.v20210924-1719"/>
 		  <unit id="org.eclipse.xsd.feature.group" version="2.20.0.v20210924-1719"/>
-		  <repository location="http://download.eclipse.org/releases/2021-12"/>
 	  </location>
     <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
       <unit id="org.eclipse.ease.feature.feature.group" version="0.8.0.I202105061131"/>
