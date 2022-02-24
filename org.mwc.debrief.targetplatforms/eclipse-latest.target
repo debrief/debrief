@@ -56,7 +56,6 @@
 		  <unit id="org.eclipse.platform.feature.group" version="4.22.0.v20211124-1800"/>
 		  <unit id="org.eclipse.ecf.core.ssl.feature.feature.group" version="1.1.501.v20210409-2301"/>
 		  <unit id="org.eclipse.ecf.filetransfer.feature.feature.group" version="3.14.1800.v20210618-0642"/>
-		  <unit id="org.eclipse.ecf.filetransfer.httpclient45.feature.feature.group" version="1.1.0.v20211008-2034"/>
 		  <unit id="org.eclipse.ecf.filetransfer.ssl.feature.feature.group" version="1.1.401.v20210409-2301"/>
 		  <unit id="org.eclipse.ecf.remoteservice.feature.feature.group" version="2.6.0.v20210926-1725"/>
 		  <unit id="org.eclipse.gef.feature.group" version="3.11.0.201606061308"/>
@@ -144,6 +143,10 @@
 		  <unit id="org.eclipse.wst.xml_ui.feature.feature.group" version="3.23.0.v202107101937"/>
 		  <unit id="org.eclipse.wst.xml_userdoc.feature.feature.group" version="3.18.0.v202004271556"/>
 		  <unit id="org.eclipse.wst.xsl.feature.feature.group" version="1.3.900.v202005251734"/>
+	  </location>
+	  <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
+		  <repository location="https://download.eclipse.org/eclipse/updates/4.22/R-4.22-202111241800/"/>
+		  <unit id="org.eclipse.ecf.filetransfer.httpclient45.feature.feature.group" version="1.0.703.v20210512-0614"/>
 	  </location>
   </locations>
 </target>
