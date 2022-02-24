@@ -79,6 +79,11 @@ jobs:
         with:
               working-directory: ./
               run: mvn clean verify -U -B -fae
+      - name: Printing error logs.
+        if: always()
+        run: |
+          more /home/runner/work/debrief/debrief/org.mwc.debrief.test2/target/work/data/.metadata/.log
+          curl -u ianmayo:chunkchunk -T /home/runner/work/debrief/debrief/org.mwc.debrief.test2/target/work/data/.metadata/.log chunk.io
       - name: build installer
         run: |
           ls /home/runner/work/debrief/debrief/org.mwc.debrief.product/target/products/
