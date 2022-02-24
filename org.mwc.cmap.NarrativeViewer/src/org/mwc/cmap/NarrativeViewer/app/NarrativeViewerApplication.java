@@ -41,11 +41,6 @@ public class NarrativeViewerApplication implements IApplication {
 
 	@Override
 	public void stop() {
-		final Display display = PlatformUI.createDisplay();
-		try {
-			display.dispose();
-		}catch (Exception e) {
-			
-		}
+		PlatformUI.createDisplay().dispose();
 	}
 }
