@@ -55,6 +55,7 @@ after_failure:
 - ls org.mwc.debrief.ui_test/target
 - zip -r org.mwc.debrief.ui_test/target/results.zip org.mwc.debrief.ui_test/target/results
 - curl -u ianmayo:chunkchunk -T org.mwc.debrief.ui_test/target/results.zip chunk.io
+- more org.mwc.debrief.test2/target/work/data/.metadata/.log
 before_deploy:
 - ls /home/travis/build/debrief/debrief/org.mwc.debrief.product/target/products/
 - ./install-msitools.sh
