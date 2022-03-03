@@ -42,6 +42,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.math.BigDecimal;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -192,6 +193,7 @@ import MWC.GenericData.HiResDate;
 import MWC.GenericData.TimePeriod;
 import MWC.GenericData.Watchable;
 import MWC.GenericData.WatchableList;
+import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldDistance;
 import MWC.GenericData.WorldDistance.ArrayLength;
 import MWC.GenericData.WorldLocation;
@@ -1396,9 +1398,21 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor {
 				public void gotoMarker(final IMarker marker) {
 					final String lineNum = marker.getAttribute(IMarker.LINE_NUMBER, "na");
 					if (lineNum != "na") {
-						// right, convert to DTG
-						final HiResDate tNow = new HiResDate(0, Long.parseLong(lineNum));
-						_timeManager.setTime(this, tNow, true);
+						// right, if there is a viewport in the line text, then get time and the viewport parts.
+						if(lineNum.contains(",")) {
+							final String timePart = lineNum.substring(0,lineNum.indexOf(","));
+							final String areaPart = lineNum.substring(lineNum.indexOf(",")+1);
+							//get the targetArea and restore viewport and time.s
+							final WorldArea targetArea = toWorldArea(areaPart);
+							setViewport(targetArea);
+							final HiResDate tNow = new HiResDate(0, Long.parseLong(timePart));
+							_timeManager.setTime(this, tNow, true);
+						}
+						else {
+							//restore time marker
+							final HiResDate tNow = new HiResDate(0, Long.parseLong(lineNum));
+							_timeManager.setTime(this, tNow, true);
+						}
 					}
 				}
 			};
@@ -1478,6 +1492,22 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor {
 
 		// ok, done
 		return res;
+	}
+	
+	
+	private WorldArea toWorldArea(final String areaPart) {
+		//[60.3200963,-0.2774713],[59.969762,0.3904269]
+		String[] latLongParts = areaPart.split("]");
+		String topLeftLat = latLongParts[0].substring(1,latLongParts[0].indexOf(","));
+		String topLeftLong = latLongParts[0].substring(latLongParts[0].indexOf(",")+1);
+		int totalLength = latLongParts[1].length();
+		String bottomRightLat = latLongParts[1].substring(latLongParts[1].indexOf(",")+2,latLongParts[1].lastIndexOf(","));
+		String bottomRightLong = latLongParts[1].substring(latLongParts[1].lastIndexOf(",")+1);
+		WorldLocation topLeftVal = new WorldLocation(BigDecimal.valueOf(Double.valueOf(topLeftLat)),BigDecimal.valueOf(Double.valueOf(topLeftLong)),new BigDecimal(0.0));
+		WorldLocation bottomRightVal = new WorldLocation(BigDecimal.valueOf(Double.valueOf(bottomRightLat)),BigDecimal.valueOf(Double.valueOf(bottomRightLong)),new BigDecimal(0.0));
+		WorldArea wa = new WorldArea(topLeftVal,bottomRightVal);
+		
+		return wa;
 	}
 
 	private IFile getFile(final FileRevisionEditorInput frei) {
