@@ -221,7 +221,7 @@ public class TestFileRibbon extends BaseTestCase
       }
     });
     // wait for reset to be over.
-      Thread.sleep(200);
+      Thread.sleep(500);
     
     assertEquals(tree.getModel().getChildCount(tree.getModel().getRoot()), 2);
     System.out.println("end new file test");
