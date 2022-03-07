@@ -911,8 +911,9 @@ public class TimeController extends ViewPart implements ISelectionProvider, Time
 						final IMarker marker = file.createMarker(IMarker.BOOKMARK);
 						final Map<String, Object> attributes = new HashMap<String, Object>(4);
 						attributes.put(IMarker.MESSAGE, content);
-						attributes.put(IMarker.LOCATION, currentText);
+						
 						if(viewPort!=null) {
+							attributes.put(IMarker.LOCATION, currentText+" - "+ viewPort);
 							attributes.put(IMarker.LINE_NUMBER, "" + tNow+
 									",["+viewPort.getTopLeft().getLat()+","+viewPort.getTopLeft().getLong()+"],"
 									+"["+viewPort.getBottomRight().getLat()+","+viewPort.getBottomRight().getLong()+"]");
@@ -920,7 +921,7 @@ public class TimeController extends ViewPart implements ISelectionProvider, Time
 						else {
 							attributes.put(IMarker.LINE_NUMBER, "" + tNow);
 						}
-						attributes.put(IMarker.USER_EDITABLE, Boolean.FALSE);
+						attributes.put(IMarker.USER_EDITABLE, Boolean.TRUE);
 						marker.setAttributes(attributes);
 					}
 					
