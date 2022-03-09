@@ -89,6 +89,7 @@ import org.mwc.cmap.core.interfaces.TimeControllerOperation.TimeControllerOperat
 import org.mwc.cmap.core.property_support.EditableWrapper;
 import org.mwc.cmap.core.ui_support.PartMonitor;
 import org.mwc.cmap.plotViewer.editors.CorePlotEditor;
+import org.mwc.cmap.plotViewer.editors.chart.SWTChart;
 import org.mwc.debrief.core.editors.PlotEditor;
 import org.mwc.debrief.core.editors.painters.LayerPainterManager;
 import org.mwc.debrief.core.editors.painters.TemporalLayerPainter;
@@ -102,6 +103,7 @@ import MWC.GenericData.Duration;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.TimePeriod;
 import MWC.GenericData.WatchableList;
+import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldLocation;
 import MWC.TacticalData.TrackDataProvider;
 import MWC.TacticalData.temporal.ControllablePeriod;
@@ -880,7 +882,16 @@ public class TimeController extends ViewPart implements ISelectionProvider, Time
 		}
 	}
 
-	protected void addMarker() {
+
+	private SWTChart getChart() {
+		if (_currentEditor instanceof PlotEditor) {
+			final PlotEditor plot = (PlotEditor) _currentEditor;
+			plot.getChart().update();
+			return plot.getChart();
+		}
+		return null;
+	}
+	protected void addMarker(final boolean saveViewPort) {
 		try {
 			// right, do we have an editor with a file?
 			final IEditorInput input = _currentEditor.getEditorInput();
@@ -890,6 +901,14 @@ public class TimeController extends ViewPart implements ISelectionProvider, Time
 				final IResource file = ife.getFile();
 				final String currentText = _timeLabel.getText();
 				final long tNow = _myTemporalDataset.getTime().getMicros();
+				final WorldArea viewPort;
+				if(saveViewPort) {
+					final SWTChart chart = getChart();
+					viewPort = chart.getProjectionArea();
+				}
+				else {
+					viewPort=null;
+				}
 				if (file != null) {
 					// yup, get the description
 					final InputDialog inputD = new InputDialog(getViewSite().getShell(), "Add bookmark at this DTG",
@@ -901,11 +920,21 @@ public class TimeController extends ViewPart implements ISelectionProvider, Time
 						final IMarker marker = file.createMarker(IMarker.BOOKMARK);
 						final Map<String, Object> attributes = new HashMap<String, Object>(4);
 						attributes.put(IMarker.MESSAGE, content);
-						attributes.put(IMarker.LOCATION, currentText);
-						attributes.put(IMarker.LINE_NUMBER, "" + tNow);
-						attributes.put(IMarker.USER_EDITABLE, Boolean.FALSE);
+
+						if(viewPort!=null) {
+							attributes.put(IMarker.LOCATION, currentText+" - "+ viewPort);
+							attributes.put(IMarker.LINE_NUMBER, "" + tNow+
+									",["+viewPort.getTopLeft().getLat()+","+viewPort.getTopLeft().getLong()+"],"
+									+"["+viewPort.getBottomRight().getLat()+","+viewPort.getBottomRight().getLong()+"]");
+						}
+						else {
+							attributes.put(IMarker.LOCATION, currentText);
+							attributes.put(IMarker.LINE_NUMBER, "" + tNow);
+						}
+						attributes.put(IMarker.USER_EDITABLE, Boolean.TRUE);
 						marker.setAttributes(attributes);
 					}
+
 				}
 
 			}
@@ -914,6 +943,8 @@ public class TimeController extends ViewPart implements ISelectionProvider, Time
 		}
 
 	}
+
+
 
 	@Override
 	public void addSelectionChangedListener(final ISelectionChangedListener listener) {
@@ -1514,12 +1545,11 @@ public class TimeController extends ViewPart implements ISelectionProvider, Time
 	 */
 	public void doZoom(final double zoomFactor) {
 		// ok, get the plot, and do some zooming
-		if (_currentEditor instanceof PlotEditor) {
-			final PlotEditor plot = (PlotEditor) _currentEditor;
-			plot.getChart().getCanvas().getProjection().zoom(zoomFactor);
-			plot.getChart().update();
+		final SWTChart chart = getChart();
+		if (chart != null) {
+			chart.getCanvas().getProjection().zoom(zoomFactor);
+			chart.update();
 		}
-
 	}
 
 	/**
@@ -2662,6 +2692,34 @@ public class TimeController extends ViewPart implements ISelectionProvider, Time
 		}
 
 	}
+	
+	private void addBookmarksMenu(IMenuManager menuManager) {
+		final Action _setAsDTGAction = new Action("Add DTG as bookmark", IAction.AS_PUSH_BUTTON) {
+			@Override
+			public void runWithEvent(final Event event) {
+				addMarker(false);
+			}
+		};
+
+		_setAsDTGAction.setImageDescriptor(CorePlugin.getImageDescriptor(ICON_BKMRK_NAV));
+		_setAsDTGAction.setToolTipText("Add this DTG to the list of bookmarks");
+		_setAsDTGAction.setId(OP_LIST_MARKER_ID);
+		// give it an id, so we can
+		// refer to this later on.
+		menuManager.add(_setAsDTGAction);
+		final Action _setAsDTGViewportAction = new Action("Add DTG and ViewPort as bookmark", IAction.AS_PUSH_BUTTON) {
+			@Override
+			public void runWithEvent(final Event event) {
+				addMarker(true);
+			}
+		};
+
+		_setAsDTGViewportAction.setImageDescriptor(CorePlugin.getImageDescriptor(ICON_BKMRK_NAV));
+		_setAsDTGViewportAction.setToolTipText("Add this DTG to the list of bookmarks");
+		// give it an id, so we can
+		// refer to this later on.
+		menuManager.add(_setAsDTGViewportAction);
+	}
 
 	/**
 	 * ok - put in the stepper mode buttons - and any others we think of.
@@ -2720,19 +2778,8 @@ public class TimeController extends ViewPart implements ISelectionProvider, Time
 			menuManager.add(new Separator());
 
 			// now the add-bookmark item
-			final Action _setAsBookmarkAction = new Action("Add DTG as bookmark", IAction.AS_PUSH_BUTTON) {
-				@Override
-				public void runWithEvent(final Event event) {
-					addMarker();
-				}
-			};
-			_setAsBookmarkAction.setImageDescriptor(CorePlugin.getImageDescriptor(ICON_BKMRK_NAV));
-			_setAsBookmarkAction.setToolTipText("Add this DTG to the list of bookmarks");
-			_setAsBookmarkAction.setId(OP_LIST_MARKER_ID);
-			// give it an id, so we can
-			// refer to this later on.
-			menuManager.add(_setAsBookmarkAction);
-
+			addBookmarksMenu(menuManager);
+			
 			// and another separator
 			menuManager.add(new Separator());
 
