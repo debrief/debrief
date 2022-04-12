@@ -226,7 +226,7 @@ public class MergeTracks implements RightClickContextItemGenerator {
 	
 	private static RGB rgbFrom(String color) {
 		String[] rgbs = color.split(",");
-		return new RGB(Integer.valueOf(rgbs[0].trim()),Integer.valueOf(rgbs[1].trim()),Integer.valueOf(rgbs[0].trim()));
+		return new RGB(Integer.valueOf(rgbs[0].trim()),Integer.valueOf(rgbs[1].trim()),Integer.valueOf(rgbs[2].trim()));
 	}
 
 	/**
