@@ -28,6 +28,7 @@ import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.preference.IPreferenceStore;
+import org.eclipse.jface.resource.StringConverter;
 import org.eclipse.swt.graphics.RGB;
 import org.eclipse.ui.preferences.ScopedPreferenceStore;
 import org.mwc.cmap.core.CorePlugin;
@@ -225,8 +226,7 @@ public class MergeTracks implements RightClickContextItemGenerator {
 	}
 	
 	private static RGB rgbFrom(String color) {
-		String[] rgbs = color.split(",");
-		return new RGB(Integer.valueOf(rgbs[0].trim()),Integer.valueOf(rgbs[1].trim()),Integer.valueOf(rgbs[0].trim()));
+		return StringConverter.asRGB(color);
 	}
 
 	/**
