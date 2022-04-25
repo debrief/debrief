@@ -336,7 +336,6 @@
                     </inlinemediaobject></para></entry>
 
                 <entry xml:id="project_sponsor"><para>Original Debrief project sponsor. <address>
-                      <personname>Lt Cdr David Whitehouse RN</personname>
                       <otheraddr>Maritime Warfare Centre</otheraddr>
                       <street>Marlborough Building, HMS Collingwood</street>
                       <city>Fareham, HANTS</city>
@@ -2130,7 +2129,7 @@ and so on....</programlisting></para>
           </indexterm>
           <para>
             <figure>
-              <title>Smoothing back-tracking jumps Jumps</title>
+              <title>Smoothing back-tracking jumps</title>
               <screenshot>
                 <mediaobject>
                   <imageobject>
