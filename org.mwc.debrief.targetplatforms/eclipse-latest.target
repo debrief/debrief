@@ -80,6 +80,8 @@
 	    <unit id="org.eclipse.ease.lang.scriptarchive.feature.source.feature.group" version="0.8.0.I202104061519"/>
 	    <unit id="org.eclipse.ease.lang.unittest.feature.source.feature.group" version="0.8.0.I202105030811"/>
 	    <unit id="org.eclipse.ease.ui.feature.source.feature.group" version="0.8.0.I202105111204"/>
+	    <unit id="org.eclipse.ease.lang.python.feature.feature.group" version="0.8.0.I202104091425"/>
+	    <unit id="org.eclipse.ease.lang.python.py4j.feature.feature.group" version="0.8.0.I202104091518"/>
     </location>
     <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
       <unit id="com.google.guava" version="30.1.0.v20210127-2300"/>
