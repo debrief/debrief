@@ -77,6 +77,8 @@ final class ImportVector extends AbstractPlainLineImporter {
 
 		line = line + " " + vector.getDistance().getValueIn(WorldDistance.YARDS) + " " + vector.getBearing();
 
+		line = line + " " + theWrapper.getName();
+
 		return line;
 
 	}
@@ -111,7 +113,7 @@ final class ImportVector extends AbstractPlainLineImporter {
 			start = ImportLine.extractStart(st);
 
 			final String range = st.nextToken();
-			final WorldDistance distance = new WorldDistance(new Double(range), WorldDistance.YARDS);
+			final WorldDistance distance = new WorldDistance(Double.parseDouble(range), WorldDistance.YARDS);
 			final String bearingString = st.nextToken();
 
 			String theText = "";
@@ -122,7 +124,7 @@ final class ImportVector extends AbstractPlainLineImporter {
 			}
 
 			// create the Vector object
-			final VectorShape sp = new VectorShape(start, new Double(bearingString), distance);
+			final VectorShape sp = new VectorShape(start, Double.parseDouble(bearingString), distance);
 			final Color c = ImportReplay.replayColorFor(symbology);
 			sp.setColor(c);
 
