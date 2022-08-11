@@ -172,6 +172,8 @@ final class ImportLine extends AbstractPlainLineImporter {
 
 		line = line + " " + MWC.Utilities.TextFormatting.DebriefFormatLocation.toString(Line.getLineEnd());
 
+		line = line + " " + theWrapper.getName();
+
 		return line;
 
 	}

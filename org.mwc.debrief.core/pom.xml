@@ -23,7 +23,7 @@
     <version>0.0.1-SNAPSHOT</version>
   </parent>
   <artifactId>org.mwc.debrief.core</artifactId>
-  <version>1.0.404</version>
+  <version>1.0.406</version>
   <packaging>eclipse-plugin</packaging>
   
  

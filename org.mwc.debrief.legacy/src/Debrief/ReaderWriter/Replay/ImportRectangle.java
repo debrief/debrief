@@ -186,6 +186,8 @@ public final class ImportRectangle extends AbstractPlainLineImporter {
 		line = line + " "
 				+ MWC.Utilities.TextFormatting.DebriefFormatLocation.toString(Rectangle.getCornerBottomRight());
 
+		line = line + " " + theWrapper.getName();
+
 		return line;
 
 	}
