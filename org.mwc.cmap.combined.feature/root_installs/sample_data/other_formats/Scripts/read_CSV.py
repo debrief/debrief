@@ -41,10 +41,11 @@ track = None;
 
 try:
 	with open(str(file.getPath()), 'r') as f:
+		nextLine = f.readline()
+		ctr = 1
 		print(str(file.getPath()));
 		print('reading...');
-		for ctr, nextLine in enumerate(f, start=1):
-			print(nextLine);
+		while nextLine:
 			if ctr > 2:
 				
 	 			#
@@ -54,9 +55,48 @@ try:
 				# 22.1862861,-21.6978806,19951212T050000Z,NELSON,D-112/12,OILER,UK,S2002,1.0,0.5,0.5,269.7000,2.0000,0.0,Remote,Low,UNIT_ALPHA,NELSON,19951212,For
 				# planning,PUBLIC,"Quite a content."
 				#
-				print('');
+				
+				partsOfStr = nextLine.split(',');
+				
+				if track is None:
+					# track not created yet. Go for it.
+					track = createTrack(partsOfStr[3])
+			
+				# location
+				dLat = float(partsOfStr[0]);
+				dLong = float(partsOfStr[1]);
+				location = createLocation(dLat, dLong, 0);
+				# dtg components
+				dtgStr = partsOfStr[2];
+				yrs = int(dtgStr[0: 4]);
+				mons = int(dtgStr[4: 6]) - 1;
+				days = int(dtgStr[6: 8]);
+				hrs = int(dtgStr[9: 11]);
+				mins = int(dtgStr[11: 13]);
+				secs = int(dtgStr[13: 15]);
+				
+				# date object
+				dtg = createDateCalendarFormat(yrs, mons, days, hrs, mins, secs);
+				
+				# course and speed
+				course = partsOfStr[11];
+				speed = partsOfStr[12];
+				# create the fix
+				fix = createFix(dtg, location, course, speed);
+				# store the fix
+				track.addFix(fix);
+				
+			nextLine = f.readline()
+			ctr += 1
 				
 		print('End');
+
+	if track is not None:
+		# ok get somewhere to add it to
+		plot = getActivePlot();
+		layers = plot.getLayers();
+		layers.add(track);
+		layers.fireModified()
 
 except Exception as e:
 	print("Can't read file" + str(e));
