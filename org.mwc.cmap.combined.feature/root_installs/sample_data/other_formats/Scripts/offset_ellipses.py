@@ -27,25 +27,27 @@ if plot is not None:  # did we find a Debrief plot?
 	
 		anns = layers.findLayer(choice); # try to get the selected layer
 		
-		if anns is not NoneType: # did we find it the annotations layer?
+		if anns is not None: # did we find it the annotations layer?
 			# ok, sort out the duration
 			mins = showInputDialog("How many minutes?", "10", "Set ellipse duration");
-			duration = createDuration(int(mins), DUR_MINUTES);
 			
-			# now loop through the layer
-	
-			numer = anns.elements(); # retreive the elements in this layer
-			
-			
-			while numer.hasMoreElements(): # loop through the items in this layer
-				item = numer.nextElement(); # get the next element
-				# @type java.lang.String
-				name = item.toString();  # get the string label for the element
-				if name.startswith("Ellipse"): # see if it starts with "Ellipse"
+			if mins is not None:
+				duration = createDuration(int(mins), DUR_MINUTES);
 				
-					start = item.getStartDTG();  # retrieve the start date
-					newTime = (start.getDate().getTime() + duration.getValueIn(DUR_MILLISECONDS));  # calculate the new end time
-					item.setEndDTG(createDate(newTime));  # set the new end time
+				# now loop through the layer
+		
+				numer = anns.elements(); # retreive the elements in this layer
+				
+				
+				while numer.hasMoreElements(): # loop through the items in this layer
+					item = numer.nextElement(); # get the next element
+					# @type java.lang.String
+					name = item.toString();  # get the string label for the element
+					if name.startswith("Ellipse"): # see if it starts with "Ellipse"
+					
+						start = item.getStartDTG();  # retrieve the start date
+						newTime = (start.getDate().getTime() + duration.getValueIn(DUR_MILLISECONDS));  # calculate the new end time
+						item.setEndDTG(createDate(newTime));  # set the new end time
 				
 			
 	layers.fireModified();
