@@ -500,7 +500,7 @@ public class ImportPolygon extends AbstractPlainLineImporter {
 		}
 
 		final Vector<PolygonNode> nodes = new Vector<PolygonNode>();
-		Integer counter = new Integer(1);
+		Integer counter = 1;
 		// create the Polygon object
 		final PolygonShape sp = createShape(nodes);
 		while (st.hasMoreTokens()) {
