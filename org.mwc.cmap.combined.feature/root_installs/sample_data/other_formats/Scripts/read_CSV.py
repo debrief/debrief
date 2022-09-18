@@ -24,7 +24,7 @@ project = getProject("sample_data");
 
 if not project.exists():
 	print("Can't find project");
-	exit(0);
+	sys.exit()
 
 
 # create a file within the project
@@ -33,7 +33,7 @@ file = openFile("workspace://sample_data/other_formats/CSV_EXCHANGE_SAMPLE.csv",
 
 if not file.exists():
 	print("Can't find file");
-	exit(0);
+	sys.exit()
 
 track = None;
 
@@ -43,8 +43,6 @@ try:
 	with open(str(file.getPath()), 'r') as f:
 		nextLine = f.readline()
 		ctr = 1
-		print(str(file.getPath()));
-		print('reading...');
 		while nextLine:
 			if ctr > 2:
 				
@@ -88,8 +86,6 @@ try:
 				
 			nextLine = f.readline()
 			ctr += 1
-				
-		print('End');
 
 	if track is not None:
 		# ok get somewhere to add it to
@@ -117,6 +113,6 @@ except Exception as e:
 	print("Stack trace : %s" %stack_trace)
     
     
-	exit(0);
-
-
+	
+	sys.exit()
+			
