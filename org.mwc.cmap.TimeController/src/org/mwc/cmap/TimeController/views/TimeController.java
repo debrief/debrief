@@ -181,33 +181,38 @@ public class TimeController extends ViewPart implements ISelectionProvider, Time
 					});
 				} else {
 
-					// extend the slider
-					_slideManager.resetRange(newPeriod.getStartDTG(), newPeriod.getEndDTG());
+          final TimePeriod existingRange = _dtgRangeSlider.getPeriod();
 
-					// now the slider selector bar thingy
-					Display.getDefault().asyncExec(new Runnable() {
-
-						@Override
-						public void run() {
-							// ok, double-check we're enabled
-							_wholePanel.setEnabled(true);
-
-							// and our range selector - first the outer
-							// ranges
-							_dtgRangeSlider.updateOuterRanges(newPeriod);
-
-							// ok - we no longer reset the range limits on a data change,
-							// since it's proving inconvenient to have to reset the sliders
-							// after some data is dropped in.
-
-							// hey - we're setting them again now, since they go screwy with
-							// high throughput DIS data
-
-							// ok, now the user ranges...
-							_dtgRangeSlider.updateSelectedRanges(newPeriod.getStartDTG(), newPeriod.getEndDTG());
-						}
-					});
-
+          // only trigger update if the range is actually different
+          if (!newPeriod.equals(existingRange))
+          {
+  					// extend the slider
+  					_slideManager.resetRange(newPeriod.getStartDTG(), newPeriod.getEndDTG());
+  
+  					// now the slider selector bar thingy
+  					Display.getDefault().asyncExec(new Runnable() {
+  
+  						@Override
+  						public void run() {
+  							// ok, double-check we're enabled
+  							_wholePanel.setEnabled(true);
+  
+  							// and our range selector - first the outer
+  							// ranges
+  							_dtgRangeSlider.updateOuterRanges(newPeriod);
+  
+  							// ok - we no longer reset the range limits on a data change,
+  							// since it's proving inconvenient to have to reset the sliders
+  							// after some data is dropped in.
+  
+  							// hey - we're setting them again now, since they go screwy with
+  							// high throughput DIS data
+  
+  							// ok, now the user ranges...
+  							_dtgRangeSlider.updateSelectedRanges(newPeriod.getStartDTG(), newPeriod.getEndDTG());
+  						}
+  					});
+          }
 				}
 			}
 

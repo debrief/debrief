@@ -323,7 +323,7 @@ public class NViewerView extends ViewPart implements PropertyChangeListener, ISe
 			// the properties manager is expecting the integer index of the new
 			// format, not the string value.
 			// so store it as an integer index
-			final Integer thisIndex = new Integer(i);
+			final Integer thisIndex = Integer.valueOf(i);
 
 			// and create a new action to represent the change
 			final Action newFormat = new Action(thisFormat, IAction.AS_RADIO_BUTTON) {
