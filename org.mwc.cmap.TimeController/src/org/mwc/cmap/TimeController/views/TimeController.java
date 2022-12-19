@@ -15,6 +15,20 @@
 
 package org.mwc.cmap.TimeController.views;
 
+import static org.monte.media.FormatKeys.EncodingKey;
+import static org.monte.media.FormatKeys.FrameRateKey;
+import static org.monte.media.FormatKeys.MIME_AVI;
+import static org.monte.media.FormatKeys.MediaTypeKey;
+import static org.monte.media.FormatKeys.MimeTypeKey;
+import static org.monte.media.VideoFormatKeys.COMPRESSOR_NAME_QUICKTIME_ANIMATION;
+import static org.monte.media.VideoFormatKeys.CompressorNameKey;
+import static org.monte.media.VideoFormatKeys.DepthKey;
+import static org.monte.media.VideoFormatKeys.COMPRESSOR_NAME_AVI_TECHSMITH_SCREEN_CAPTURE;
+import static org.monte.media.VideoFormatKeys.ENCODING_AVI_TECHSMITH_SCREEN_CAPTURE;
+import static org.monte.screenrecorder.ScreenRecorder.ENCODING_BLACK_CURSOR;
+
+import java.awt.GraphicsEnvironment;
+import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -56,6 +70,7 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
@@ -93,7 +108,10 @@ import org.mwc.debrief.core.editors.PlotEditor;
 import org.mwc.debrief.core.editors.painters.LayerPainterManager;
 import org.mwc.debrief.core.editors.painters.TemporalLayerPainter;
 import org.mwc.debrief.core.editors.painters.highlighters.SWTPlotHighlighter;
-
+import org.monte.media.Format;
+import org.monte.media.FormatKeys.MediaType;
+import org.monte.media.math.Rational;
+import org.monte.screenrecorder.ScreenRecorder;
 import MWC.Algorithms.PlainProjection;
 import MWC.Algorithms.PlainProjection.RelativeProjectionParent;
 import MWC.GUI.Layers;
@@ -246,6 +264,8 @@ public class TimeController extends ViewPart implements ISelectionProvider, Time
 		}
 	}
 
+	private ScreenRecorder screenRecorder = null;
+	
 	/**
 	 * SplitButton
 	 */
@@ -255,9 +275,52 @@ public class TimeController extends ViewPart implements ISelectionProvider, Time
 			final boolean isRecording = _recordButton.getSelection();
 			_playing = false;
 			if (isRecording) {
+				try {
+					screenRecorder = new ScreenRecorder(
+							GraphicsEnvironment//
+			                .getLocalGraphicsEnvironment()//
+			                .getDefaultScreenDevice()//
+			                .getDefaultConfiguration(), getDebriefScreenArea(),
+			                // the file format
+			                new Format(MediaTypeKey, MediaType.FILE,
+			                MimeTypeKey, MIME_AVI),
+			                //
+			                // the output format for screen capture
+			                new Format(MediaTypeKey, MediaType.VIDEO,
+			                EncodingKey, ENCODING_AVI_TECHSMITH_SCREEN_CAPTURE,
+			                CompressorNameKey, COMPRESSOR_NAME_AVI_TECHSMITH_SCREEN_CAPTURE,
+			                DepthKey, 24, FrameRateKey, new Rational(15, 1)),
+			                //
+			                // the output format for mouse capture 
+			                new Format(MediaTypeKey, MediaType.VIDEO,
+			                EncodingKey, ENCODING_BLACK_CURSOR,
+			                FrameRateKey, new Rational(30, 1)),
+			                //
+			                // the output format for audio capture 
+			                /*new Format(MediaTypeKey, MediaType.AUDIO,
+			                EncodingKey, ENCODING_QUICKTIME_TWOS_PCM,
+			                FrameRateKey, new Rational(48000, 1),
+			                SampleSizeInBitsKey, 16,
+			                ChannelsKey, 2, SampleRateKey, new Rational(48000, 1),
+			                SignedKey, true, ByteOrderKey, ByteOrder.BIG_ENDIAN)*/ null);
+			        screenRecorder.start();
+			        System.out.println("Starting successfully");
+				}catch (Exception ee) {
+					System.out.println("Starting error");
+					// TODO: handle exception
+					ee.printStackTrace();
+				}
 				startPlaying();
 				startRecording();
 			} else {
+				try {
+					screenRecorder.stop();
+					System.out.println("Stopped successfully");
+				}catch (Exception ee) {
+					System.out.println("Stopping error");
+					// TODO: handle exception
+					ee.printStackTrace();
+				}
 				stopPlaying();
 				stopRecording(getTimeProvider().getTime());
 			}
@@ -2779,6 +2842,13 @@ public class TimeController extends ViewPart implements ISelectionProvider, Time
 			// see our changes
 		}
 		getViewSite().getActionBars().updateActionBars();
+	}
+
+	private Rectangle getDebriefScreenArea() {
+		final Point location = getViewSite().getShell().getLocation();
+		final Point size = getViewSite().getShell().getSize();
+		Rectangle area = new Rectangle(location.x, location.y, size.x, size.y);
+		return area;
 	}
 
 }

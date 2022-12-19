@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+
+   <extension
+         point="org.eclipse.ui.commands">
+      <category
+            id="org.mwc.debrief.montemedia.commands.category"
+            name="Sample Category">
+      </category>
+      <command
+            categoryId="org.mwc.debrief.montemedia.commands.category"
+            name="Sample Command"
+            id="org.mwc.debrief.montemedia.commands.sampleCommand">
+      </command>
+   </extension>
+   <extension
+         point="org.eclipse.ui.handlers">
+      <handler
+            class="org.mwc.debrief.montemedia.handlers.MonteMedia"
+            commandId="org.mwc.debrief.montemedia.commands.sampleCommand">
+      </handler>
+   </extension>
+   <extension
+         point="org.eclipse.ui.bindings">
+      <key
+            commandId="org.mwc.debrief.montemedia.commands.sampleCommand"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+            contextId="org.eclipse.ui.contexts.window"
+            sequence="M1+6">
+      </key>
+   </extension>
+   <extension
+         point="org.eclipse.ui.menus">
+      <menuContribution
+            locationURI="menu:org.eclipse.ui.main.menu?after=additions">
+         <menu
+               id="org.mwc.debrief.montemedia.menus.sampleMenu"
+               label="Sample Menu"
+               mnemonic="M">
+            <command
+                  commandId="org.mwc.debrief.montemedia.commands.sampleCommand"
+                  id="org.mwc.debrief.montemedia.menus.sampleCommand"
+                  mnemonic="S">
+            </command>
+         </menu>
+      </menuContribution>
+      <menuContribution
+            locationURI="toolbar:org.eclipse.ui.main.toolbar?after=additions">
+         <toolbar
+               id="org.mwc.debrief.montemedia.toolbars.sampleToolbar">
+            <command
+                  id="org.mwc.debrief.montemedia.toolbars.sampleCommand"
+                  commandId="org.mwc.debrief.montemedia.commands.sampleCommand"
+                  icon="icons/sample.png"
+                  tooltip="Say hello world">
+            </command>
+         </toolbar>
+      </menuContribution>
+   </extension>
+
+</plugin>
