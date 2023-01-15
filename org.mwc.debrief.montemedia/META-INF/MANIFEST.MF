@@ -10,7 +10,8 @@ Export-Package: org.monte.media,
    javax.sound.sampled,
    javax.swing,
    org.monte.media"
-Require-Bundle: org.eclipse.ui
+Require-Bundle: org.eclipse.ui,
+ org.eclipse.core.runtime
 Automatic-Module-Name: org.mwc.debrief.montemedia
 Bundle-ClassPath: lib/jai_core.jar,
  .

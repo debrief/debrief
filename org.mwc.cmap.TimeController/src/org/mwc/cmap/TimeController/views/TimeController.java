@@ -80,6 +80,7 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Scale;
+import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IFileEditorInput;
@@ -280,7 +281,7 @@ public class TimeController extends ViewPart implements ISelectionProvider, Time
 							GraphicsEnvironment//
 			                .getLocalGraphicsEnvironment()//
 			                .getDefaultScreenDevice()//
-			                .getDefaultConfiguration(), getDebriefScreenArea(),
+			                .getDefaultConfiguration(), getScreenArea(getViewSite().getShell()), 
 			                // the file format
 			                new Format(MediaTypeKey, MediaType.FILE,
 			                MimeTypeKey, MIME_AVI),
@@ -2844,11 +2845,12 @@ public class TimeController extends ViewPart implements ISelectionProvider, Time
 		getViewSite().getActionBars().updateActionBars();
 	}
 
-	private Rectangle getDebriefScreenArea() {
-		final Point location = getViewSite().getShell().getLocation();
-		final Point size = getViewSite().getShell().getSize();
+	private Rectangle getScreenArea(final Shell shell) {
+		final Point location = shell.getLocation();
+		final Point size = shell.getSize();
 		Rectangle area = new Rectangle(location.x, location.y, size.x, size.y);
 		return area;
 	}
+	
 
 }
