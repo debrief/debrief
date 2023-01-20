@@ -74,7 +74,7 @@
       <unit id="org.eclipse.ease.modules.feature.feature.group" version="0.8.0.I202105111149"/>
       <unit id="org.eclipse.ease.modules.modeling.feature.feature.group" version="0.8.0.I202104061631"/>
       <unit id="org.eclipse.ease.ui.feature.feature.group" version="0.8.0.I202105111204"/>
-      <repository location="https://download.eclipse.org/ease/release/latest"/>
+      <repository location="https://download.eclipse.org/ease/release/0.8.0"/>
 	    <unit id="org.eclipse.ease.lang.javascript.feature.source.feature.group" version="0.8.0.I202104091054"/>
 	    <unit id="org.eclipse.ease.lang.jvm.feature.source.feature.group" version="0.8.0.I202103261223"/>
 	    <unit id="org.eclipse.ease.lang.scriptarchive.feature.source.feature.group" version="0.8.0.I202104061519"/>
