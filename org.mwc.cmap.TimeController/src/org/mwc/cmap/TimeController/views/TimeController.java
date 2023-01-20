@@ -102,6 +102,8 @@ import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.DataTypes.Temporal.TimeControlProperties;
 import org.mwc.cmap.core.interfaces.TimeControllerOperation;
 import org.mwc.cmap.core.interfaces.TimeControllerOperation.TimeControllerOperationStore;
+import org.mwc.cmap.core.preferences.CoastlineSourcePrefsPage;
+import org.mwc.cmap.core.preferences.VideoCapturePreferencePage;
 import org.mwc.cmap.core.property_support.EditableWrapper;
 import org.mwc.cmap.core.ui_support.PartMonitor;
 import org.mwc.cmap.plotViewer.editors.CorePlotEditor;
@@ -116,6 +118,7 @@ import org.monte.screenrecorder.ScreenRecorder;
 import MWC.Algorithms.PlainProjection;
 import MWC.Algorithms.PlainProjection.RelativeProjectionParent;
 import MWC.GUI.Layers;
+import MWC.GUI.ToolParent;
 import MWC.GUI.Properties.DateFormatPropertyEditor;
 import MWC.GenericData.Duration;
 import MWC.GenericData.HiResDate;
@@ -277,6 +280,10 @@ public class TimeController extends ViewPart implements ISelectionProvider, Time
 			_playing = false;
 			if (isRecording) {
 				try {
+					final ToolParent parent = CorePlugin.getToolParent();
+					final String mouseRate = parent.getProperty(VideoCapturePreferencePage.PreferenceConstants.P_MOUSE_RATE);
+					System.out.println("Mouse Rate : " + mouseRate);
+
 					screenRecorder = new ScreenRecorder(
 							GraphicsEnvironment//
 			                .getLocalGraphicsEnvironment()//
