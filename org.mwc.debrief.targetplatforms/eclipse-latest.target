@@ -67,17 +67,19 @@
 		  <unit id="org.eclipse.ui.views.log" version="1.3.100.v20210927-1100"/>
 	  </location>
     <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
-      <unit id="org.eclipse.ease.feature.feature.group" version="0.8.0.I202105061131"/>
-      <unit id="org.eclipse.ease.lang.javascript.feature.feature.group" version="0.8.0.I202104091054"/>
-      <unit id="org.eclipse.ease.lang.jvm.feature.feature.group" version="0.8.0.I202103261223"/>
-      <unit id="org.eclipse.ease.modules.charting.feature.feature.group" version="0.8.0.I202105070930"/>
-      <unit id="org.eclipse.ease.modules.feature.feature.group" version="0.8.0.I202105111149"/>
-      <unit id="org.eclipse.ease.modules.modeling.feature.feature.group" version="0.8.0.I202104061631"/>
-      <unit id="org.eclipse.ease.ui.feature.feature.group" version="0.8.0.I202105111204"/>
       <repository location="https://download.eclipse.org/ease/release/0.8.0"/>
+	    <unit id="org.eclipse.ease.feature.feature.group" version="0.8.0.I202105061131"/>
+	    <unit id="org.eclipse.ease.lang.javascript.feature.feature.group" version="0.8.0.I202104091054"/>
+	    <unit id="org.eclipse.ease.lang.jvm.feature.feature.group" version="0.8.0.I202103261223"/>
+	    <unit id="org.eclipse.ease.modules.charting.feature.feature.group" version="0.8.0.I202105070930"/>
+	    <unit id="org.eclipse.ease.modules.feature.feature.group" version="0.8.0.I202105111149"/>
+	    <unit id="org.eclipse.ease.modules.modeling.feature.feature.group" version="0.8.0.I202104061631"/>
+	    <unit id="org.eclipse.ease.ui.feature.feature.group" version="0.8.0.I202105111204"/>
 	    <unit id="org.eclipse.ease.lang.javascript.feature.source.feature.group" version="0.8.0.I202104091054"/>
 	    <unit id="org.eclipse.ease.lang.jvm.feature.source.feature.group" version="0.8.0.I202103261223"/>
+	    <unit id="org.eclipse.ease.lang.scriptarchive.feature.feature.group" version="0.8.0.I202104061519"/>
 	    <unit id="org.eclipse.ease.lang.scriptarchive.feature.source.feature.group" version="0.8.0.I202104061519"/>
+	    <unit id="org.eclipse.ease.lang.unittest.feature.feature.group" version="0.8.0.I202105030811"/>
 	    <unit id="org.eclipse.ease.lang.unittest.feature.source.feature.group" version="0.8.0.I202105030811"/>
 	    <unit id="org.eclipse.ease.ui.feature.source.feature.group" version="0.8.0.I202105111204"/>
     </location>
