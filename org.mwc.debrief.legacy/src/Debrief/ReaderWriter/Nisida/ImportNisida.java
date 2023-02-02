@@ -472,7 +472,7 @@ public class ImportNisida {
 			}
 
 			/**
-			 * Create a FixWrapper on the parent track for the “Own Lat/Long position.
+			 * Create a FixWrapper on the parent track for the "Own Lat/Long position.
 			 * Course/speed are zeroes
 			 */
 
