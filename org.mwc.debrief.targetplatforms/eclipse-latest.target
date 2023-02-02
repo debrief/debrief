@@ -34,7 +34,7 @@
       <unit id="org.eclipse.jpt.jpadiagrameditor.doc.user" version="1.2.102.v201902121834"/>
       <unit id="org.eclipse.jpt.jpadiagrameditor.ui" version="1.2.201.v201902121834"/>
       <unit id="org.eclipse.wtp.jee.capabilities" version="1.0.100.v201903222024"/>
-      <repository location="http://download.eclipse.org/webtools/repository/2021-03"/>
+      <repository location="https://download.eclipse.org/webtools/repository/2021-03"/>
     </location>
       <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
 	      <unit id="org.eclipse.wst.xml_ui.feature.feature.group" version="3.21.0.v202102222242"/>
