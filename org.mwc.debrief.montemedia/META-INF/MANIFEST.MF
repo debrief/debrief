@@ -1,8 +1,8 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: Montemedia
+Bundle-Name: MonteMedia Library for Debrief
 Bundle-SymbolicName: org.mwc.debrief.montemedia;singleton:=true
-Bundle-Version: 1.0.0.qualifier
+Bundle-Version: 1.0.0
 Export-Package: org.monte.media,
  org.monte.media.math,
  org.monte.screenrecorder;

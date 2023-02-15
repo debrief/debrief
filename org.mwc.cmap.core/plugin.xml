@@ -82,7 +82,7 @@
    <extension
          point="org.eclipse.core.runtime.preferences">
       <initializer
-            class="org.mwc.debrief.montemedia.preferences.PreferenceInitializer">
+            class="org.mwc.cmap.core.preferences.VideoCapturePreferenceInitializer">
       </initializer>
    </extension>
    
