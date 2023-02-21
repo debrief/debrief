@@ -201,38 +201,37 @@ public class TimeController extends ViewPart implements ISelectionProvider, Time
 					});
 				} else {
 
-          final TimePeriod existingRange = _dtgRangeSlider.getPeriod();
+					final TimePeriod existingRange = _dtgRangeSlider.getPeriod();
 
-          // only trigger update if the range is actually different
-          if (!newPeriod.equals(existingRange))
-          {
-  					// extend the slider
-  					_slideManager.resetRange(newPeriod.getStartDTG(), newPeriod.getEndDTG());
-  
-  					// now the slider selector bar thingy
-  					Display.getDefault().asyncExec(new Runnable() {
-  
-  						@Override
-  						public void run() {
-  							// ok, double-check we're enabled
-  							_wholePanel.setEnabled(true);
-  
-  							// and our range selector - first the outer
-  							// ranges
-  							_dtgRangeSlider.updateOuterRanges(newPeriod);
-  
-  							// ok - we no longer reset the range limits on a data change,
-  							// since it's proving inconvenient to have to reset the sliders
-  							// after some data is dropped in.
-  
-  							// hey - we're setting them again now, since they go screwy with
-  							// high throughput DIS data
-  
-  							// ok, now the user ranges...
-  							_dtgRangeSlider.updateSelectedRanges(newPeriod.getStartDTG(), newPeriod.getEndDTG());
-  						}
-  					});
-          }
+					// only trigger update if the range is actually different
+					if (!newPeriod.equals(existingRange)) {
+						// extend the slider
+						_slideManager.resetRange(newPeriod.getStartDTG(), newPeriod.getEndDTG());
+
+						// now the slider selector bar thingy
+						Display.getDefault().asyncExec(new Runnable() {
+
+							@Override
+							public void run() {
+								// ok, double-check we're enabled
+								_wholePanel.setEnabled(true);
+
+								// and our range selector - first the outer
+								// ranges
+								_dtgRangeSlider.updateOuterRanges(newPeriod);
+
+								// ok - we no longer reset the range limits on a data change,
+								// since it's proving inconvenient to have to reset the sliders
+								// after some data is dropped in.
+
+								// hey - we're setting them again now, since they go screwy with
+								// high throughput DIS data
+
+								// ok, now the user ranges...
+								_dtgRangeSlider.updateSelectedRanges(newPeriod.getStartDTG(), newPeriod.getEndDTG());
+							}
+						});
+					}
 				}
 			}
 
@@ -269,7 +268,7 @@ public class TimeController extends ViewPart implements ISelectionProvider, Time
 	}
 
 	private ScreenRecorder screenRecorder = null;
-	
+
 	/**
 	 * SplitButton
 	 */
@@ -280,40 +279,40 @@ public class TimeController extends ViewPart implements ISelectionProvider, Time
 			_playing = false;
 			if (isRecording) {
 				try {
-					final ToolParent parent = CorePlugin.getToolParent();
-					final String mouseRate = parent.getProperty(VideoCapturePreferencePage.PreferenceConstants.P_MOUSE_RATE);
-					System.out.println("Mouse Rate : " + mouseRate);
 
-					screenRecorder = new ScreenRecorder(
-							GraphicsEnvironment//
-			                .getLocalGraphicsEnvironment()//
-			                .getDefaultScreenDevice()//
-			                .getDefaultConfiguration(), getScreenArea(getViewSite().getShell()), 
-			                // the file format
-			                new Format(MediaTypeKey, MediaType.FILE,
-			                MimeTypeKey, MIME_AVI),
-			                //
-			                // the output format for screen capture
-			                new Format(MediaTypeKey, MediaType.VIDEO,
-			                EncodingKey, ENCODING_AVI_TECHSMITH_SCREEN_CAPTURE,
-			                CompressorNameKey, COMPRESSOR_NAME_AVI_TECHSMITH_SCREEN_CAPTURE,
-			                DepthKey, 24, FrameRateKey, new Rational(15, 1)),
-			                //
-			                // the output format for mouse capture 
-			                new Format(MediaTypeKey, MediaType.VIDEO,
-			                EncodingKey, ENCODING_BLACK_CURSOR,
-			                FrameRateKey, new Rational(30, 1)),
-			                //
-			                // the output format for audio capture 
-			                /*new Format(MediaTypeKey, MediaType.AUDIO,
-			                EncodingKey, ENCODING_QUICKTIME_TWOS_PCM,
-			                FrameRateKey, new Rational(48000, 1),
-			                SampleSizeInBitsKey, 16,
-			                ChannelsKey, 2, SampleRateKey, new Rational(48000, 1),
-			                SignedKey, true, ByteOrderKey, ByteOrder.BIG_ENDIAN)*/ null);
-			        screenRecorder.start();
-			        System.out.println("Starting successfully");
-				}catch (Exception ee) {
+					final String mouseRate = CorePlugin.getDefault().getPreferenceStore()
+							.getString(VideoCapturePreferencePage.PreferenceConstants.P_MOUSE_RATE);
+					System.out.println("Mouse Rate : " + mouseRate);
+					final String screenRate = CorePlugin.getDefault().getPreferenceStore()
+							.getString(VideoCapturePreferencePage.PreferenceConstants.P_SCREEN_RATE);
+					System.out.println("Screen Rate: " + screenRate);
+					screenRecorder = new ScreenRecorder(GraphicsEnvironment//
+							.getLocalGraphicsEnvironment()//
+							.getDefaultScreenDevice()//
+							.getDefaultConfiguration(), getScreenArea(getViewSite().getShell()),
+							// the file format
+							new Format(MediaTypeKey, MediaType.FILE, MimeTypeKey, MIME_AVI),
+							//
+							// the output format for screen capture
+							new Format(MediaTypeKey, MediaType.VIDEO, EncodingKey,
+									ENCODING_AVI_TECHSMITH_SCREEN_CAPTURE, CompressorNameKey,
+									COMPRESSOR_NAME_AVI_TECHSMITH_SCREEN_CAPTURE, DepthKey, 24, FrameRateKey,
+									new Rational(15, 1)),
+							//
+							// the output format for mouse capture
+							new Format(MediaTypeKey, MediaType.VIDEO, EncodingKey, ENCODING_BLACK_CURSOR, FrameRateKey,
+									new Rational(30, 1)),
+							//
+							// the output format for audio capture
+							/*
+							 * new Format(MediaTypeKey, MediaType.AUDIO, EncodingKey,
+							 * ENCODING_QUICKTIME_TWOS_PCM, FrameRateKey, new Rational(48000, 1),
+							 * SampleSizeInBitsKey, 16, ChannelsKey, 2, SampleRateKey, new Rational(48000,
+							 * 1), SignedKey, true, ByteOrderKey, ByteOrder.BIG_ENDIAN)
+							 */ null);
+					screenRecorder.start();
+					System.out.println("Starting successfully");
+				} catch (Exception ee) {
 					System.out.println("Starting error");
 					// TODO: handle exception
 					ee.printStackTrace();
@@ -324,7 +323,7 @@ public class TimeController extends ViewPart implements ISelectionProvider, Time
 				try {
 					screenRecorder.stop();
 					System.out.println("Stopped successfully");
-				}catch (Exception ee) {
+				} catch (Exception ee) {
 					System.out.println("Stopping error");
 					// TODO: handle exception
 					ee.printStackTrace();
@@ -2858,6 +2857,5 @@ public class TimeController extends ViewPart implements ISelectionProvider, Time
 		Rectangle area = new Rectangle(location.x, location.y, size.x, size.y);
 		return area;
 	}
-	
 
 }
