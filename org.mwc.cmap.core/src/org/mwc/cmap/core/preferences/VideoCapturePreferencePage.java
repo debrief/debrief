@@ -211,18 +211,6 @@ public class VideoCapturePreferencePage extends FieldEditorPreferencePage implem
 				!PreferenceConstants.NO_CURSOR.equals(preferenceStore.getString(PreferenceConstants.P_MOUSE)),
 				getFieldEditorParent());
 		addField(mouseRateEditor);
-
-		addAudioEditor = new BooleanFieldEditor(PreferenceConstants.P_AUDIO, "Add Audio", getFieldEditorParent());
-		addAudioEditor.setEnabled(recordingEnabledPref, getFieldEditorParent());
-		addField(addAudioEditor);
-
-		audioInputEditor = new RadioGroupFieldEditor(PreferenceConstants.P_AUDIO_RATE, "&Format to generate the video",
-				3, new String[][] { { "&8.000 Hz", "8000" }, { "&11.025 Hz", "11025" }, { "&22.050 Hz", "22050" },
-						{ "&44.100 Hz", "44100" } },
-				getFieldEditorParent());
-		audioInputEditor.setEnabled(recordingEnabledPref, getFieldEditorParent());
-
-		addField(audioInputEditor);
 	}
 
 	@Override

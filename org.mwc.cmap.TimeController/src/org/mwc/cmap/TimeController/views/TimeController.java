@@ -336,7 +336,6 @@ public class TimeController extends ViewPart implements ISelectionProvider, Time
 					float quality = 1.f;
 					int bitDepth = 16; // Let's make hundreds by default
 					Format mouseFormat = null;
-					Format audioFormat = null;
 
 					try {
 						// try to parse the value stored
@@ -432,21 +431,6 @@ public class TimeController extends ViewPart implements ISelectionProvider, Time
 					} else if (DEBRIEF_S_WINDOW.equals(preferenceStore.getString(P_SCREEN_AREA))) {
 						areaToRecord = getScreenArea(getViewSite().getShell());
 					}
-					
-					if (preferenceStore.getBoolean(P_AUDIO)) {
-						int audioRate = 8000; // Default Audio Frequency at 8000 hertz
-						try {
-							// try to parse the value stored
-							audioRate = Integer.parseInt(preferenceStore.getString(P_AUDIO_RATE));
-						} catch (Exception ee) {
-							// we will end using the default.
-						}
-						
-						audioFormat = new Format(MediaTypeKey, MediaType.AUDIO,
-			                    //EncodingKey, audioFormatName,
-			                    SampleRateKey, Rational.valueOf(audioRate),
-			                    SampleSizeInBitsKey, 16); // Default bits per sample
-					}
 
 					boolean recordingEnabled = preferenceStore.getBoolean(P_ENABLE);
 
@@ -463,7 +447,7 @@ public class TimeController extends ViewPart implements ISelectionProvider, Time
 					                    KeyFrameIntervalKey, (int) (screenRate * 60) // one keyframe per minute is enough
 					                    ),
 										mouseFormat,
-			                    		audioFormat, null);
+			                    		null, null);
 						screenRecorder.start();
 						System.out.println("Starting successfully");
 					}
