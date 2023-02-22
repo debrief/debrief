@@ -21,9 +21,30 @@ import org.eclipse.ui.IWorkbench;
 
 public class VideoCapturePreferencePage extends FieldEditorPreferencePage implements IWorkbenchPreferencePage {
 
-	private static final String NO_CURSOR = "no cursor";
-
 	public class PreferenceConstants {
+		public static final String WHITE_CURSOR = "white cursor";
+
+		public static final String BLACK_CURSOR = "black cursor";
+
+		public static final String JPEG50 = "jpeg50";
+
+		public static final String JPEG100 = "jpeg100";
+
+		public static final String PNG = "png";
+
+		public static final String NONE2 = "none";
+
+		public static final String ANIMATION = "animation";
+
+		public static final String SCREEN_CAPTURE = "screen capture";
+
+		public static final String ENTIRE_SCREEN = "Entire Screen";
+
+		public static final String QUICK_TIME = "QuickTime";
+
+		public static final String AVI = "avi";
+
+		public static final String NO_CURSOR = "no cursor";
 
 		public static final String P_FORMAT = "formatPreference";
 
@@ -43,7 +64,11 @@ public class VideoCapturePreferencePage extends FieldEditorPreferencePage implem
 
 		public static final String P_SCREEN_RATE_AUTO = "screenRateAuto";
 
+		public static final String P_SCREEN_AREA = "screenArea";
+
 		public static final String P_ENABLE = "enableVideoRecording";
+
+		public static final String DEBRIEF_S_WINDOW = "Debrief's Window";
 	}
 
 	public VideoCapturePreferencePage() {
@@ -74,6 +99,8 @@ public class VideoCapturePreferencePage extends FieldEditorPreferencePage implem
 
 	RadioGroupFieldEditor colourRadioEditor;
 
+	RadioGroupFieldEditor screenAreaRadioEditor;
+
 	/**
 	 * Creates the field editors. Field editors are abstractions of the common GUI
 	 * blocks needed to manipulate various types of preferences. Each field editor
@@ -84,24 +111,34 @@ public class VideoCapturePreferencePage extends FieldEditorPreferencePage implem
 				getFieldEditorParent());
 
 		addField(enableVideoRecording);
-
-		fileFormatEditor = new RadioGroupFieldEditor(PreferenceConstants.P_FORMAT, "&Format to generate the video", 3,
-				new String[][] { { "&AVI", "avi" }, { "&QuickTime", "QuickTime" } }, getFieldEditorParent());
-		addField(fileFormatEditor);
 		final IPreferenceStore preferenceStore = CorePlugin.getDefault().getPreferenceStore();
 		final boolean recordingEnabledPref = preferenceStore.getBoolean(PreferenceConstants.P_ENABLE);
+
+		screenAreaRadioEditor = new RadioGroupFieldEditor(PreferenceConstants.P_SCREEN_AREA, "&Screen Area", 3,
+				new String[][] { { "&Entire Screen", PreferenceConstants.ENTIRE_SCREEN },
+						{ "&Debrief's Window", PreferenceConstants.DEBRIEF_S_WINDOW } },
+				getFieldEditorParent());
+		addField(screenAreaRadioEditor);
+		screenAreaRadioEditor.setEnabled(recordingEnabledPref, getFieldEditorParent());
+
+		fileFormatEditor = new RadioGroupFieldEditor(
+				PreferenceConstants.P_FORMAT, "&Format to generate the video", 3, new String[][] {
+						{ "&AVI", PreferenceConstants.AVI }, { "&QuickTime", PreferenceConstants.QUICK_TIME } },
+				getFieldEditorParent());
+		addField(fileFormatEditor);
 		fileFormatEditor.setEnabled(recordingEnabledPref, getFieldEditorParent());
 
 		encodingEditor = new RadioGroupFieldEditor(PreferenceConstants.P_ENCODING, "&Encoding", 3,
-				new String[][] { { "&Screen Capture", "screen capture" }, { "&Animation", "animation" },
-						{ "&None", "none" }, { "&PNG", "png" }, { "&jpeg 100%", "jpeg100" },
-						{ "j&peg 50%", "jpeg50" } },
+				new String[][] { { "&Screen Capture", PreferenceConstants.SCREEN_CAPTURE },
+						{ "&Animation", PreferenceConstants.ANIMATION }, { "&None", PreferenceConstants.NONE2 },
+						{ "&PNG", PreferenceConstants.PNG }, { "&jpeg 100%", PreferenceConstants.JPEG100 },
+						{ "j&peg 50%", PreferenceConstants.JPEG50 } },
 				getFieldEditorParent());
 		addField(encodingEditor);
 		encodingEditor.setEnabled(recordingEnabledPref, getFieldEditorParent());
 
-		colourRadioEditor = new RadioGroupFieldEditor(PreferenceConstants.P_COLORS, "&Colors", 3, new String[][] {
-				{ "&Hundreds", "hundreds" }, { "&Thousands", "thousands" }, { "&Millions", "millions" } },
+		colourRadioEditor = new RadioGroupFieldEditor(PreferenceConstants.P_COLORS, "&Colors", 3,
+				new String[][] { { "&Hundreds", "8" }, { "&Thousands", "16" }, { "&Millions", "24" } },
 				getFieldEditorParent());
 		addField(colourRadioEditor);
 		colourRadioEditor.setEnabled(recordingEnabledPref, getFieldEditorParent());
@@ -140,9 +177,10 @@ public class VideoCapturePreferencePage extends FieldEditorPreferencePage implem
 		screenRateEditor.getScaleControl().addSelectionListener(screenRateListener);
 		addField(screenRateEditor);
 
-		cursorRadioEditor = new RadioGroupFieldEditor(
-				PreferenceConstants.P_MOUSE, "&Mouse", 3, new String[][] { { "&No Cursor", NO_CURSOR },
-						{ "&Black Cursor", "black cursor" }, { "&White Cursor", "white cursor" } },
+		cursorRadioEditor = new RadioGroupFieldEditor(PreferenceConstants.P_MOUSE, "&Mouse", 3,
+				new String[][] { { "&No Cursor", PreferenceConstants.NO_CURSOR },
+						{ "&Black Cursor", PreferenceConstants.BLACK_CURSOR },
+						{ "&White Cursor", PreferenceConstants.WHITE_CURSOR } },
 				getFieldEditorParent());
 		cursorRadioEditor.setEnabled(recordingEnabledPref, getFieldEditorParent());
 		addField(cursorRadioEditor);
@@ -169,16 +207,17 @@ public class VideoCapturePreferencePage extends FieldEditorPreferencePage implem
 			}
 		};
 		mouseRateEditor.getScaleControl().addSelectionListener(mouseRateListener);
-		mouseRateEditor.setEnabled(!NO_CURSOR.equals(preferenceStore.getString(PreferenceConstants.P_MOUSE)),
+		mouseRateEditor.setEnabled(
+				!PreferenceConstants.NO_CURSOR.equals(preferenceStore.getString(PreferenceConstants.P_MOUSE)),
 				getFieldEditorParent());
-		addField(screenRateEditor);
+		addField(mouseRateEditor);
 
 		addAudioEditor = new BooleanFieldEditor(PreferenceConstants.P_AUDIO, "Add Audio", getFieldEditorParent());
 		addAudioEditor.setEnabled(recordingEnabledPref, getFieldEditorParent());
 		addField(addAudioEditor);
 
-		audioInputEditor = new RadioGroupFieldEditor(PreferenceConstants.P_FORMAT, "&Format to generate the video", 3,
-				new String[][] { { "&8.000 Hz", "8000" }, { "&11.025 Hz", "11025" }, { "&22.050 Hz", "22050" },
+		audioInputEditor = new RadioGroupFieldEditor(PreferenceConstants.P_AUDIO_RATE, "&Format to generate the video",
+				3, new String[][] { { "&8.000 Hz", "8000" }, { "&11.025 Hz", "11025" }, { "&22.050 Hz", "22050" },
 						{ "&44.100 Hz", "44100" } },
 				getFieldEditorParent());
 		audioInputEditor.setEnabled(recordingEnabledPref, getFieldEditorParent());
@@ -199,10 +238,12 @@ public class VideoCapturePreferencePage extends FieldEditorPreferencePage implem
 		}
 		if (event.getSource().equals(cursorRadioEditor)) {
 			mouseRateEditor.setEnabled(
-					!NO_CURSOR.equals((String) event.getNewValue()) && prefEnabled,
+					!PreferenceConstants.NO_CURSOR.equals((String) event.getNewValue()) && prefEnabled,
 					getFieldEditorParent());
 		}
 		if (event.getSource().equals(enableVideoRecording)) {
+
+			screenAreaRadioEditor.setEnabled((boolean) event.getNewValue(), getFieldEditorParent());
 
 			mouseRateEditor.setEnabled((boolean) event.getNewValue(), getFieldEditorParent());
 

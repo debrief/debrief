@@ -15,20 +15,63 @@
 
 package org.mwc.cmap.TimeController.views;
 
+import static org.monte.media.AudioFormatKeys.SampleRateKey;
+import static org.monte.media.AudioFormatKeys.SampleSizeInBitsKey;
 import static org.monte.media.FormatKeys.EncodingKey;
 import static org.monte.media.FormatKeys.FrameRateKey;
+import static org.monte.media.FormatKeys.KeyFrameIntervalKey;
 import static org.monte.media.FormatKeys.MIME_AVI;
+import static org.monte.media.FormatKeys.MIME_QUICKTIME;
 import static org.monte.media.FormatKeys.MediaTypeKey;
 import static org.monte.media.FormatKeys.MimeTypeKey;
-import static org.monte.media.VideoFormatKeys.COMPRESSOR_NAME_QUICKTIME_ANIMATION;
 import static org.monte.media.VideoFormatKeys.CompressorNameKey;
 import static org.monte.media.VideoFormatKeys.DepthKey;
+import static org.monte.media.VideoFormatKeys.ENCODING_AVI_DIB;
+import static org.monte.media.VideoFormatKeys.ENCODING_AVI_MJPG;
+import static org.monte.media.VideoFormatKeys.ENCODING_AVI_PNG;
 import static org.monte.media.VideoFormatKeys.COMPRESSOR_NAME_AVI_TECHSMITH_SCREEN_CAPTURE;
+import static org.monte.media.VideoFormatKeys.COMPRESSOR_NAME_QUICKTIME_ANIMATION;
+import static org.monte.media.VideoFormatKeys.COMPRESSOR_NAME_QUICKTIME_JPEG;
+import static org.monte.media.VideoFormatKeys.COMPRESSOR_NAME_QUICKTIME_PNG;
+import static org.monte.media.VideoFormatKeys.COMPRESSOR_NAME_QUICKTIME_RAW;
 import static org.monte.media.VideoFormatKeys.ENCODING_AVI_TECHSMITH_SCREEN_CAPTURE;
+import static org.monte.media.VideoFormatKeys.ENCODING_QUICKTIME_ANIMATION;
+import static org.monte.media.VideoFormatKeys.ENCODING_QUICKTIME_JPEG;
+import static org.monte.media.VideoFormatKeys.ENCODING_QUICKTIME_PNG;
+import static org.monte.media.VideoFormatKeys.ENCODING_QUICKTIME_RAW;
+import static org.monte.media.VideoFormatKeys.HeightKey;
+import static org.monte.media.VideoFormatKeys.QualityKey;
+import static org.monte.media.VideoFormatKeys.WidthKey;
+import static org.monte.media.VideoFormatKeys.ENCODING_AVI_RLE;
 import static org.monte.screenrecorder.ScreenRecorder.ENCODING_BLACK_CURSOR;
+import static org.mwc.cmap.core.preferences.VideoCapturePreferencePage.PreferenceConstants.AVI;
+import static org.mwc.cmap.core.preferences.VideoCapturePreferencePage.PreferenceConstants.DEBRIEF_S_WINDOW;
+import static org.mwc.cmap.core.preferences.VideoCapturePreferencePage.PreferenceConstants.ENTIRE_SCREEN;
+import static org.mwc.cmap.core.preferences.VideoCapturePreferencePage.PreferenceConstants.P_AUDIO;
+import static org.mwc.cmap.core.preferences.VideoCapturePreferencePage.PreferenceConstants.P_AUDIO_RATE;
+import static org.mwc.cmap.core.preferences.VideoCapturePreferencePage.PreferenceConstants.P_COLORS;
+import static org.mwc.cmap.core.preferences.VideoCapturePreferencePage.PreferenceConstants.P_ENABLE;
+import static org.mwc.cmap.core.preferences.VideoCapturePreferencePage.PreferenceConstants.P_ENCODING;
+import static org.mwc.cmap.core.preferences.VideoCapturePreferencePage.PreferenceConstants.P_FORMAT;
+import static org.mwc.cmap.core.preferences.VideoCapturePreferencePage.PreferenceConstants.P_MOUSE;
+import static org.mwc.cmap.core.preferences.VideoCapturePreferencePage.PreferenceConstants.P_MOUSE_RATE;
+import static org.mwc.cmap.core.preferences.VideoCapturePreferencePage.PreferenceConstants.P_SCREEN_AREA;
+import static org.mwc.cmap.core.preferences.VideoCapturePreferencePage.PreferenceConstants.P_SCREEN_RATE;
+import static org.mwc.cmap.core.preferences.VideoCapturePreferencePage.PreferenceConstants.P_SCREEN_RATE_AUTO;
+import static org.mwc.cmap.core.preferences.VideoCapturePreferencePage.PreferenceConstants.QUICK_TIME;
+import static org.mwc.cmap.core.preferences.VideoCapturePreferencePage.PreferenceConstants.SCREEN_CAPTURE;
+import static org.mwc.cmap.core.preferences.VideoCapturePreferencePage.PreferenceConstants.ANIMATION;
+import static org.mwc.cmap.core.preferences.VideoCapturePreferencePage.PreferenceConstants.NONE2;
+import static org.mwc.cmap.core.preferences.VideoCapturePreferencePage.PreferenceConstants.PNG;
+import static org.mwc.cmap.core.preferences.VideoCapturePreferencePage.PreferenceConstants.JPEG100;
+import static org.mwc.cmap.core.preferences.VideoCapturePreferencePage.PreferenceConstants.JPEG50;
+import static org.mwc.cmap.core.preferences.VideoCapturePreferencePage.PreferenceConstants.WHITE_CURSOR;
+import static org.mwc.cmap.core.preferences.VideoCapturePreferencePage.PreferenceConstants.BLACK_CURSOR;
 
+import java.awt.Dimension;
 import java.awt.GraphicsEnvironment;
 import java.awt.Rectangle;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -57,6 +100,7 @@ import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.layout.GridDataFactory;
+import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
@@ -102,8 +146,8 @@ import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.DataTypes.Temporal.TimeControlProperties;
 import org.mwc.cmap.core.interfaces.TimeControllerOperation;
 import org.mwc.cmap.core.interfaces.TimeControllerOperation.TimeControllerOperationStore;
-import org.mwc.cmap.core.preferences.CoastlineSourcePrefsPage;
 import org.mwc.cmap.core.preferences.VideoCapturePreferencePage;
+import org.mwc.cmap.core.preferences.VideoCapturePreferencePage.PreferenceConstants;
 import org.mwc.cmap.core.property_support.EditableWrapper;
 import org.mwc.cmap.core.ui_support.PartMonitor;
 import org.mwc.cmap.plotViewer.editors.CorePlotEditor;
@@ -118,7 +162,6 @@ import org.monte.screenrecorder.ScreenRecorder;
 import MWC.Algorithms.PlainProjection;
 import MWC.Algorithms.PlainProjection.RelativeProjectionParent;
 import MWC.GUI.Layers;
-import MWC.GUI.ToolParent;
 import MWC.GUI.Properties.DateFormatPropertyEditor;
 import MWC.GenericData.Duration;
 import MWC.GenericData.HiResDate;
@@ -273,45 +316,158 @@ public class TimeController extends ViewPart implements ISelectionProvider, Time
 	 * SplitButton
 	 */
 	private class RecordButtonListener extends SelectionAdapter {
+		private final Format AVI_FORMAT = new Format(MediaTypeKey, MediaType.FILE, MimeTypeKey, MIME_AVI);// the file
+																											// format
+		private final Format QUICKTIME_FORMAT = new Format(MediaTypeKey, MediaType.FILE, MimeTypeKey, MIME_QUICKTIME);// the
+		// file
+		// format
+
 		@Override
 		public void widgetSelected(final SelectionEvent e) {
 			final boolean isRecording = _recordButton.getSelection();
 			_playing = false;
 			if (isRecording) {
 				try {
+					final IPreferenceStore preferenceStore = CorePlugin.getDefault().getPreferenceStore();
 
-					final String mouseRate = CorePlugin.getDefault().getPreferenceStore()
-							.getString(VideoCapturePreferencePage.PreferenceConstants.P_MOUSE_RATE);
-					System.out.println("Mouse Rate : " + mouseRate);
-					final String screenRate = CorePlugin.getDefault().getPreferenceStore()
-							.getString(VideoCapturePreferencePage.PreferenceConstants.P_SCREEN_RATE);
-					System.out.println("Screen Rate: " + screenRate);
-					screenRecorder = new ScreenRecorder(GraphicsEnvironment//
-							.getLocalGraphicsEnvironment()//
-							.getDefaultScreenDevice()//
-							.getDefaultConfiguration(), getScreenArea(getViewSite().getShell()),
-							// the file format
-							new Format(MediaTypeKey, MediaType.FILE, MimeTypeKey, MIME_AVI),
-							//
-							// the output format for screen capture
-							new Format(MediaTypeKey, MediaType.VIDEO, EncodingKey,
-									ENCODING_AVI_TECHSMITH_SCREEN_CAPTURE, CompressorNameKey,
-									COMPRESSOR_NAME_AVI_TECHSMITH_SCREEN_CAPTURE, DepthKey, 24, FrameRateKey,
-									new Rational(15, 1)),
-							//
-							// the output format for mouse capture
-							new Format(MediaTypeKey, MediaType.VIDEO, EncodingKey, ENCODING_BLACK_CURSOR, FrameRateKey,
-									new Rational(30, 1)),
-							//
-							// the output format for audio capture
-							/*
-							 * new Format(MediaTypeKey, MediaType.AUDIO, EncodingKey,
-							 * ENCODING_QUICKTIME_TWOS_PCM, FrameRateKey, new Rational(48000, 1),
-							 * SampleSizeInBitsKey, 16, ChannelsKey, 2, SampleRateKey, new Rational(48000,
-							 * 1), SignedKey, true, ByteOrderKey, ByteOrder.BIG_ENDIAN)
-							 */ null);
-					screenRecorder.start();
-					System.out.println("Starting successfully");
+					Format formatToUse = null;
+					String formatName = null;
+					String compressorName = null;
+					float quality = 1.f;
+					int bitDepth = 16; // Let's make hundreds by default
+					Format mouseFormat = null;
+					Format audioFormat = null;
+
+					try {
+						// try to parse the value stored
+						bitDepth = Integer.parseInt(preferenceStore.getString(P_COLORS));
+					} catch (Exception ee) {
+						// we will end using the default.
+					}
+
+					if (AVI.equals(preferenceStore.getString(P_FORMAT))) {
+						formatToUse = AVI_FORMAT;
+						if (SCREEN_CAPTURE.equals(preferenceStore.getString(P_ENCODING))) {
+							formatName = compressorName = ENCODING_AVI_TECHSMITH_SCREEN_CAPTURE;
+						} else if (ANIMATION.equals(preferenceStore.getString(P_ENCODING))) {
+							formatName = compressorName = ENCODING_AVI_RLE;
+							// reduce the quality to runlength
+							bitDepth = 8;
+						} else if (NONE2.equals(preferenceStore.getString(P_ENCODING))) {
+							formatName = compressorName = ENCODING_AVI_DIB;
+							if (bitDepth == 16) {
+								bitDepth = 24;
+							}
+						} else if (PNG.equals(preferenceStore.getString(P_ENCODING))) {
+							formatName = compressorName = ENCODING_AVI_PNG;
+							bitDepth = 24;
+						} else if (JPEG100.equals(preferenceStore.getString(P_ENCODING))) {
+							formatName = compressorName = ENCODING_AVI_MJPG;
+							bitDepth = 24;
+						} else if (JPEG50.equals(preferenceStore.getString(P_ENCODING))) {
+							formatName = compressorName = ENCODING_AVI_MJPG;
+							bitDepth = 24;
+							quality = .5f;
+						}
+					} else if (QUICK_TIME.equals(preferenceStore.getString(P_FORMAT))) {
+						formatToUse = QUICKTIME_FORMAT;
+						if (SCREEN_CAPTURE.equals(preferenceStore.getString(P_ENCODING))) {
+							if (bitDepth == 8) {
+								// FIXME - 8-bit Techsmith Screen Capture is broken
+								formatName = ENCODING_QUICKTIME_ANIMATION;
+								compressorName = COMPRESSOR_NAME_QUICKTIME_ANIMATION;
+							} else {
+								formatName = compressorName = ENCODING_AVI_TECHSMITH_SCREEN_CAPTURE;
+							}
+						} else if (ANIMATION.equals(preferenceStore.getString(P_ENCODING))) {
+							formatName = ENCODING_QUICKTIME_ANIMATION;
+							compressorName = COMPRESSOR_NAME_QUICKTIME_ANIMATION;
+						} else if (NONE2.equals(preferenceStore.getString(P_ENCODING))) {
+							formatName = ENCODING_QUICKTIME_RAW;
+							compressorName = COMPRESSOR_NAME_QUICKTIME_RAW;
+						} else if (PNG.equals(preferenceStore.getString(P_ENCODING))) {
+							formatName = ENCODING_QUICKTIME_PNG;
+							compressorName = COMPRESSOR_NAME_QUICKTIME_PNG;
+							bitDepth = 24;
+						} else if (JPEG100.equals(preferenceStore.getString(P_ENCODING))) {
+							formatName = ENCODING_QUICKTIME_JPEG;
+							compressorName = COMPRESSOR_NAME_QUICKTIME_JPEG;
+							bitDepth = 24;
+						} else if (JPEG50.equals(preferenceStore.getString(P_ENCODING))) {
+							formatName = ENCODING_QUICKTIME_JPEG;
+							compressorName = COMPRESSOR_NAME_QUICKTIME_JPEG;
+							bitDepth = 24;
+							quality = 0.5f;
+						}
+					}
+					
+					int screenRate = 15;
+					try {
+						screenRate = preferenceStore.getInt(P_SCREEN_RATE);
+					} catch (Exception ee) {
+						// TODO: handle exception
+					}
+
+					int mouseRate = 15;
+					try {
+						mouseRate = preferenceStore.getInt(P_MOUSE_RATE);
+					} catch (Exception ee) {
+						// TODO: handle exception
+					}
+
+					if (BLACK_CURSOR.equals(preferenceStore.getString(P_MOUSE))) {
+						mouseFormat = new Format(MediaTypeKey, MediaType.VIDEO, EncodingKey,
+								ScreenRecorder.ENCODING_BLACK_CURSOR, FrameRateKey, Rational.valueOf(mouseRate));
+					} else if (WHITE_CURSOR.equals(preferenceStore.getString(P_MOUSE))) {
+						mouseFormat = new Format(MediaTypeKey, MediaType.VIDEO, EncodingKey,
+								ScreenRecorder.ENCODING_BLACK_CURSOR, FrameRateKey, Rational.valueOf(mouseRate));
+					}
+
+					Rectangle areaToRecord = null;
+
+					if (ENTIRE_SCREEN.equals(preferenceStore.getString(P_SCREEN_AREA))) {
+						final Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+						final Rectangle fullScreenRect = new Rectangle(0, 0, screenSize.width, screenSize.height);
+						areaToRecord = fullScreenRect;
+					} else if (DEBRIEF_S_WINDOW.equals(preferenceStore.getString(P_SCREEN_AREA))) {
+						areaToRecord = getScreenArea(getViewSite().getShell());
+					}
+					
+					if (preferenceStore.getBoolean(P_AUDIO)) {
+						int audioRate = 8000; // Default Audio Frequency at 8000 hertz
+						try {
+							// try to parse the value stored
+							audioRate = Integer.parseInt(preferenceStore.getString(P_AUDIO_RATE));
+						} catch (Exception ee) {
+							// we will end using the default.
+						}
+						
+						audioFormat = new Format(MediaTypeKey, MediaType.AUDIO,
+			                    //EncodingKey, audioFormatName,
+			                    SampleRateKey, Rational.valueOf(audioRate),
+			                    SampleSizeInBitsKey, 16); // Default bits per sample
+					}
+
+					boolean recordingEnabled = preferenceStore.getBoolean(P_ENABLE);
+
+					if (recordingEnabled) {
+						screenRecorder = new ScreenRecorder(GraphicsEnvironment//
+								.getLocalGraphicsEnvironment()//
+								.getDefaultScreenDevice()//
+								.getDefaultConfiguration(), areaToRecord, formatToUse,
+								
+								new Format(MediaTypeKey, MediaType.VIDEO, EncodingKey, formatName,
+					                    CompressorNameKey, compressorName,
+					                    DepthKey, bitDepth, FrameRateKey, Rational.valueOf(screenRate),
+					                    QualityKey, quality,
+					                    KeyFrameIntervalKey, (int) (screenRate * 60) // one keyframe per minute is enough
+					                    ),
+										mouseFormat,
+			                    		audioFormat, null);
+						screenRecorder.start();
+						System.out.println("Starting successfully");
+					}
+
 				} catch (Exception ee) {
 					System.out.println("Starting error");
 					// TODO: handle exception
