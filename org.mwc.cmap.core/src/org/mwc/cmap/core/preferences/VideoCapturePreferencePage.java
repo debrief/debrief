@@ -83,10 +83,6 @@ public class VideoCapturePreferencePage extends FieldEditorPreferencePage implem
 
 	BooleanFieldEditor adaptativeMouseRateEditor;
 
-	BooleanFieldEditor addAudioEditor;
-
-	RadioGroupFieldEditor audioInputEditor;
-
 	BooleanFieldEditor enableVideoRecording;
 
 	RadioGroupFieldEditor cursorRadioEditor;
@@ -221,9 +217,6 @@ public class VideoCapturePreferencePage extends FieldEditorPreferencePage implem
 		if (event.getSource().equals(adaptativeMouseRateEditor)) {
 			screenRateEditor.setEnabled((!((boolean) event.getNewValue())) && prefEnabled, getFieldEditorParent());
 		}
-		if (event.getSource().equals(addAudioEditor)) {
-			audioInputEditor.setEnabled((((boolean) event.getNewValue())) && prefEnabled, getFieldEditorParent());
-		}
 		if (event.getSource().equals(cursorRadioEditor)) {
 			mouseRateEditor.setEnabled(
 					!PreferenceConstants.NO_CURSOR.equals((String) event.getNewValue()) && prefEnabled,
@@ -236,12 +229,6 @@ public class VideoCapturePreferencePage extends FieldEditorPreferencePage implem
 			mouseRateEditor.setEnabled((boolean) event.getNewValue(), getFieldEditorParent());
 
 			adaptativeMouseRateEditor.setEnabled((boolean) event.getNewValue(), getFieldEditorParent());
-
-			addAudioEditor.setEnabled((boolean) event.getNewValue(), getFieldEditorParent());
-
-			audioInputEditor.setEnabled(
-					(boolean) event.getNewValue() && preferenceStore.getBoolean(PreferenceConstants.P_AUDIO),
-					getFieldEditorParent());
 
 			cursorRadioEditor.setEnabled((boolean) event.getNewValue(), getFieldEditorParent());
 
