@@ -2,6 +2,7 @@ package Debrief.ReaderWriter.GeoPDF;
 
 import java.awt.Color;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -10,6 +11,7 @@ import java.util.Enumeration;
 import java.util.HashSet;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -23,6 +25,7 @@ import Debrief.ReaderWriter.GeoPDF.GeoPDF.GeoPDFLayerVector;
 import Debrief.ReaderWriter.GeoPDF.GeoPDF.GeoPDFLayerVector.LogicalStructure;
 import Debrief.ReaderWriter.GeoPDF.GeoPDF.GeoPDFLayerVectorLabel;
 import Debrief.ReaderWriter.GeoPDF.GeoPDF.GeoPDFPage;
+import Debrief.ReaderWriter.Replay.ImportReplay;
 import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.TrackWrapper;
 import MWC.GUI.Editable;
@@ -31,8 +34,107 @@ import MWC.GUI.ToolParent;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.TimePeriod;
 import MWC.Utilities.TextFormatting.FormatRNDateTime;
+import junit.framework.TestCase;
 
 public class GeoPDFSegmentedBuilder extends AbstractGeoPDFBuilder {
+
+	public static class GeoPDFSegmentedBuilderTest extends TestCase {
+		private final static String boat1rep = "../org.mwc.cmap.combined.feature/root_installs/sample_data/boat1.rep";
+		private final static String boat2rep = "../org.mwc.cmap.combined.feature/root_installs/sample_data/boat2.rep";
+
+		public void testBuild() throws IOException, InterruptedException, NoSuchFieldException, SecurityException,
+				IllegalArgumentException, IllegalAccessException, ClassNotFoundException {
+
+			final Layers layers = new Layers();
+			final ImportReplay replayImporter = new ImportReplay();
+			replayImporter.importThis("boat1.rep", new FileInputStream(boat1rep), layers);
+			replayImporter.importThis("boat2.rep", new FileInputStream(boat2rep), layers);
+
+			final GeoPDFConfiguration configuration = new GeoPDFConfiguration();
+			configuration.setDateFormat("ddMMyyyyHHmmss");
+			configuration.addBackground("../org.mwc.cmap.combined.feature/root_installs/sample_data/SP27GTIF.tif");
+
+			final AbstractGeoPDFBuilder builder = new GeoPDFSegmentedBuilder();
+			final GeoPDF geoPdf = builder.build(layers, configuration);
+
+			configuration.setPdfOutputPath(System.getProperty("java.io.tmpdir") + File.separatorChar + "test.pdf");
+			builder.generatePDF(geoPdf, configuration);
+
+			System.out.println("PDF successfully generated at " + configuration.getPdfOutputPath());
+			final GeoPDFPage page = geoPdf.getPages().get(0);
+
+			assertEquals("Correct DPI in the GeoPDF", 72, page.getDpi());
+			assertEquals("Correct height in the GeoPDF", 595.14, page.getHeight(), 1e-8);
+			assertEquals("Correct Margin", .1, page.getMargin(), 1e-8);
+			assertEquals("Correct width in the GeoPDF", 841.698, page.getWidth(), 1e-8);
+			final GeoPDFLayerBackground backgroundLayer = (GeoPDFLayerBackground) page.getLayers().get(0);
+			assertEquals("Correct Background Layer", "Background chart", backgroundLayer.getName());
+			assertEquals("Correct ID for background", "background", backgroundLayer.getId());
+			assertTrue("Correct Background tif", backgroundLayer.getRasters().get(0).endsWith("SP27GTIF.tif"));
+			final GeoPDFLayerTrack nelsonNonInteractıve = (GeoPDFLayerTrack) page.getLayers().get(1);
+			assertEquals("Correct NELSON non interactive name", "NELSON (non-interactive)",
+					nelsonNonInteractıve.getName());
+			assertEquals("Correct NELSON non interactive id", "NELSON", nelsonNonInteractıve.getId());
+			assertEquals("Correct amount of layers in the vectors in nelson", 402,
+					nelsonNonInteractıve.getVectors().size());
+			final GeoPDFLayerVector firstVectorNelsonNonInteractıve = nelsonNonInteractıve.getVectors().get(0);
+			assertTrue("Correct first data file",
+					firstVectorNelsonNonInteractıve.getData().endsWith("NELSON_LINE_818744400000.geojson"));
+			assertEquals("Correct first data name", "NELSON_LINE_818744400000",
+					firstVectorNelsonNonInteractıve.getName());
+			assertEquals("Correct first data style", "PEN(c:#e01c3e,w:5px)",
+					firstVectorNelsonNonInteractıve.getStyle());
+			final ObjectMapper mapper = new ObjectMapper();
+			final JsonNode rootVectorAsJson = mapper
+					.readTree(new FileInputStream(firstVectorNelsonNonInteractıve.getData()));
+			assertEquals("Correct type in the geojson", "FeatureCollection", rootVectorAsJson.get("type").asText());
+			assertEquals("Correct name in the geojson", "NELSON_LINE_818744400000",
+					rootVectorAsJson.get("name").asText());
+
+			final ArrayNode features = (ArrayNode) rootVectorAsJson.get("features");
+			final JsonNode feature = features.get(0);
+
+			assertEquals("Correct type in the feature geojson", "Feature", feature.get("type").asText());
+			final JsonNode properties = feature.get("properties");
+			assertEquals("Correct end property", "818744460000", properties.get("end").asText());
+			assertEquals("Correct begin property", "818744400000", properties.get("begin").asText());
+
+			final JsonNode geometry = feature.get("geometry");
+			assertEquals("Correct geometry type", "MultiLineString", geometry.get("type").asText());
+			final ArrayNode coordinates = (ArrayNode) ((ArrayNode) geometry.get("coordinates")).get(0);
+			final ArrayNode coordinatesStart = (ArrayNode) coordinates.get(0);
+			final ArrayNode coordinatesEnd = (ArrayNode) coordinates.get(1);
+			assertEquals("X coordinate of the Start", -21.697880555555557, coordinatesStart.get(0).doubleValue(), 1e-8);
+			assertEquals("Y coordinate of the Start", 22.186286111111112, coordinatesStart.get(1).doubleValue(), 1e-8);
+
+			assertEquals("X coordinate of the End", -21.70082777777778, coordinatesEnd.get(0).doubleValue(), 1e-8);
+			assertEquals("Y coordinate of the End", 22.18627222222222, coordinatesEnd.get(1).doubleValue(), 1e-8);
+
+			final GeoPDFLayerTrack collinwoodNonInteractıve = (GeoPDFLayerTrack) page.getLayers().get(2);
+			assertEquals("Correct NELSON non interactive name", "COLLINGWOOD (non-interactive)",
+					collinwoodNonInteractıve.getName());
+			assertEquals("Correct NELSON non interactive id", "COLLINGWOOD", collinwoodNonInteractıve.getId());
+			assertEquals("Correct amount of layers in the vectors in nelson", 403,
+					collinwoodNonInteractıve.getVectors().size());
+
+			final GeoPDFLayerTrack interactiveLayers = (GeoPDFLayerTrack) page.getLayers().get(3);
+			assertEquals("Correct interactive name", "Interactive Layers", interactiveLayers.getName());
+			assertEquals("Correct interactive id", "Interactive Layers", interactiveLayers.getId());
+			assertEquals("Correct amount of interactive layers", 27, interactiveLayers.getChildren().size());
+
+			final GeoPDFLayerTrack firstLayer = interactiveLayers.getChildren().get(0);
+			assertEquals("Correct id in interactive", "12121995050000", firstLayer.getId());
+			assertEquals("Correct name in interactive", "12121995050000", firstLayer.getName());
+			assertEquals("Correct amount of sublayers", 2, firstLayer.getChildren().size());
+			final GeoPDFLayerTrack firstLayerNelson = firstLayer.getChildren().get(0);
+			assertEquals("Nelson sublayer id", "NELSON 12121995050000", firstLayerNelson.getId());
+			assertEquals("Nelson sublayer name", "NELSON", firstLayerNelson.getName());
+			final GeoPDFLayerTrack firstLayerCollinwood = firstLayer.getChildren().get(1);
+			assertEquals("COLLINGWOOD sublayer id", "COLLINGWOOD 12121995050000", firstLayerCollinwood.getId());
+			assertEquals("COLLINGWOOD sublayer name", "COLLINGWOOD", firstLayerCollinwood.getName());
+
+		}
+	}
 
 	@Override
 	public GeoPDF build(final Layers layers, final GeoPDFConfiguration configuration)
@@ -152,13 +254,25 @@ public class GeoPDFSegmentedBuilder extends AbstractGeoPDFBuilder {
 		javaScriptReplacementJsTimestamps.append("var timestamps = ");
 		final ArrayNode jsonTimestamps = mapper.createArrayNode();
 
-		HiResDate currentTime = configuration.getStartTime();
+		final HiResDate startTime;
+		if (configuration.getStartTime() != null) {
+			startTime = configuration.getStartTime();
+		} else {
+			startTime = layers.getTimePeriod().getStartDTG();
+		}
+		final HiResDate endTime;
+		if (configuration.getEndTime() != null) {
+			endTime = configuration.getEndTime();
+		} else {
+			endTime = layers.getTimePeriod().getEndDTG();
+		}
+		
+		HiResDate currentTime = startTime;
 		final HashSet<String> usedNames = new HashSet<>();
 
-		while (currentTime.lessThan(configuration.getEndTime())) {
+		while (currentTime.lessThan(endTime)) {
 			final HiResDate topCurrentPeriod = HiResDate.min(
-					new HiResDate(currentTime.getMicros() / 1000 + configuration.getStepDeltaMilliSeconds()),
-					configuration.getEndTime());
+					new HiResDate(currentTime.getMicros() / 1000 + configuration.getStepDeltaMilliSeconds()), endTime);
 			final TimePeriod period = new TimePeriod.BaseTimePeriod(currentTime, topCurrentPeriod);
 
 			final GeoPDFLayerTrack periodTrack = new GeoPDFLayerTrack();
