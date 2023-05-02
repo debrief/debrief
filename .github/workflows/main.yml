@@ -7,7 +7,8 @@ on:
   [push, pull_request]
 env:
   SPATIALITE_LIBRARY_PATH: mod_spatialite
-
+  build_ref: ${GITHUB_REF##*/}
+  GITHUB_BRANCH: ${{ github.ref }}
 # Build and release debrief.  First do the required updates and installations needed for building debrief
 jobs:
   buildandrelease:
@@ -16,10 +17,15 @@ jobs:
     steps:
       - name: Update ubuntu
         run: |
+                echo "running on branch ${GITHUB_REF##*/}"
+                echo "the branch ref is ${GITHUB_BRANCH##*/}"
+                echo "The github ref from env variable ${{ env.build_ref }}"
+                echo "running on branch ${GITHUB_BASE_REF##*/}"
+                echo "running on branch ${GITHUB_HEAD_REF##*/}"
                 sudo apt-get update -y
                 sudo apt-get install -y libsqlite3-mod-spatialite
                 sudo apt-get install libspatialite-dev
-                sudo apt-get install libpq-dev python-dev
+                sudo apt-get install libpq-dev python2-dev
                 sudo add-apt-repository -y ppa:ubuntugis/ubuntugis-unstable
                 sudo apt-get install -y postgis
                 sudo apt-get install postgresql
@@ -84,6 +90,21 @@ jobs:
         with:
           files: "/home/runner/work/debrief/debrief/org.mwc.debrief.product/target/products/DebriefNG-Windows64Bit.msi"
           allow_failure: true
+      - name: Set current date as env
+        run: echo "MY_DATE=$(date +%Y%m%d)" >> $GITHUB_ENV
+      - name: Set branch name as env
+        run: echo "BRANCH_NAME=${{ env.base_ref }}" >> $GITHUB_ENV
+      - name: Build the artifact
+        if: startsWith(github.ref, 'refs/tags/')!=true
+        run: |
+             echo "My date: ${{ env.MY_DATE }} and build_ref: ${{ env.base_ref }}"
+             mv /home/runner/work/debrief/debrief/org.mwc.debrief.product/target/products/DebriefNG-Windows64Bit.zip /home/runner/work/debrief/debrief/Debrief_Win64_${{ env.MY_DATE }}_${{ env.build_ref }}.zip
+      - name: Upload the artifacts
+        uses: actions/upload-artifact@v2
+        if: startsWith(github.ref, 'refs/tags/')!=true
+        with:
+          name: Debrief_Win64_${{ env.MY_DATE }}_${{ env.BRANCH_NAME }}
+          path: /home/runner/work/debrief/debrief/Debrief_Win64_*.zip
       - name: Upload  release
         uses: softprops/action-gh-release@v1
         if: startsWith(github.ref, 'refs/tags/')
