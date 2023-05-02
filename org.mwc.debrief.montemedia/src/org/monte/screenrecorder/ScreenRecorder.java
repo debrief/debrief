@@ -29,6 +29,10 @@ import java.io.File;
 import java.io.IOException;
 import static java.lang.Math.*;
 import java.nio.ByteOrder;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -356,12 +360,37 @@ public class ScreenRecorder extends AbstractStateModel {
         }
 
     }
+    
+    public String getFileFormatExtension() {
+      return Registry.getInstance().getExtension(fileFormat);
+    }
 
+    /**
+     * internal reference to the file created.
+     * We will use this to move the file to the path chosen by the user.
+     */
+    private File fileCreated;
+    
+    /**
+     * Method that moves the file to the directory given
+     * @param path
+     */
+    public void moveFileTo(final String path) {
+        try
+        {
+            Files.move(Paths.get(fileCreated.getAbsolutePath()), Paths.get(path), StandardCopyOption.REPLACE_EXISTING);
+        }
+        catch (IOException e)
+        {
+            e.printStackTrace();
+        }
+    }
+    
     protected MovieWriter createMovieWriter() throws IOException {
-        File f = createMovieFile(fileFormat);
-        recordedFiles.add(f);
+        fileCreated = createMovieFileTemp(fileFormat);
+        recordedFiles.add(fileCreated);
 
-        MovieWriter mw = w = Registry.getInstance().getWriter(fileFormat, f);
+        MovieWriter mw = w = Registry.getInstance().getWriter(fileFormat, fileCreated);
 
         // Create the video encoder
         Rational videoRate = Rational.max(screenFormat.get(FrameRateKey), mouseFormat.get(FrameRateKey));
@@ -451,6 +480,17 @@ public class ScreenRecorder extends AbstractStateModel {
         File f = new File(movieFolder,//
                 "ScreenRecording " + dateFormat.format(new Date()) + "." + Registry.getInstance().getExtension(fileFormat));
         return f;
+    }
+    
+    /**
+     * Creates a file in a temporary folder
+     *
+     * @param fileFormat
+     * @return the file
+     * @throws IOException
+     */
+    protected File createMovieFileTemp(Format fileFormat) throws IOException {
+        return Files.createTempFile("", Registry.getInstance().getExtension(fileFormat)).toFile();
     }
 
     /**

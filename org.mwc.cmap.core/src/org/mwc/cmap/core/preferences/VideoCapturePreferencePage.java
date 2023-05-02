@@ -152,7 +152,7 @@ public class VideoCapturePreferencePage extends FieldEditorPreferencePage implem
 		screenRateEditor.setMinimum(1);
 		screenRateEditor.setMaximum(30);
 		screenRateEditor.setIncrement(1);
-		screenRateEditor.setLabelText(screenRateFieldTextDesc + " (15 fps) ");
+		screenRateEditor.setLabelText(screenRateFieldTextDesc + "               ");
 		screenRateEditor.setEnabled(
 				recordingEnabledPref && !preferenceStore.getBoolean(PreferenceConstants.P_SCREEN_RATE_AUTO),
 				getFieldEditorParent());
@@ -160,14 +160,13 @@ public class VideoCapturePreferencePage extends FieldEditorPreferencePage implem
 
 			@Override
 			public void widgetDefaultSelected(final SelectionEvent e) {
-				// TODO Auto-generated method stub
-
+				
 			}
 
 			@Override
 			public void widgetSelected(final SelectionEvent e) {
-				final int screenRate = screenRateEditor.getScaleControl().getSelection();
-				screenRateEditor.setLabelText(screenRateFieldTextDesc + " (" + screenRate + " fps)");
+				final int screenRateL = screenRateEditor.getScaleControl().getSelection();
+				screenRateEditor.setLabelText(screenRateFieldTextDesc + " (" + screenRateL + " fps)");
 			}
 		};
 		screenRateEditor.getScaleControl().addSelectionListener(screenRateListener);
@@ -186,14 +185,13 @@ public class VideoCapturePreferencePage extends FieldEditorPreferencePage implem
 		mouseRateEditor.setMinimum(1);
 		mouseRateEditor.setMaximum(30);
 		mouseRateEditor.setIncrement(1);
-		mouseRateEditor.setLabelText(mouseFieldTextDesc + " (15 fps) ");
+		mouseRateEditor.setLabelText(mouseFieldTextDesc + "               ");
 		mouseRateEditor.setEnabled(recordingEnabledPref, getFieldEditorParent());
 		SelectionListener mouseRateListener = new SelectionListener() {
 
 			@Override
 			public void widgetDefaultSelected(final SelectionEvent e) {
-				// TODO Auto-generated method stub
-
+				
 			}
 
 			@Override
