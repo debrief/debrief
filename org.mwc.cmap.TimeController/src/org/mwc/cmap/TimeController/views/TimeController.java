@@ -15,8 +15,6 @@
 
 package org.mwc.cmap.TimeController.views;
 
-import static org.monte.media.AudioFormatKeys.SampleRateKey;
-import static org.monte.media.AudioFormatKeys.SampleSizeInBitsKey;
 import static org.monte.media.FormatKeys.EncodingKey;
 import static org.monte.media.FormatKeys.FrameRateKey;
 import static org.monte.media.FormatKeys.KeyFrameIntervalKey;
@@ -24,31 +22,31 @@ import static org.monte.media.FormatKeys.MIME_AVI;
 import static org.monte.media.FormatKeys.MIME_QUICKTIME;
 import static org.monte.media.FormatKeys.MediaTypeKey;
 import static org.monte.media.FormatKeys.MimeTypeKey;
+import static org.monte.media.VideoFormatKeys.COMPRESSOR_NAME_QUICKTIME_ANIMATION;
+import static org.monte.media.VideoFormatKeys.COMPRESSOR_NAME_QUICKTIME_JPEG;
+import static org.monte.media.VideoFormatKeys.COMPRESSOR_NAME_QUICKTIME_PNG;
+import static org.monte.media.VideoFormatKeys.COMPRESSOR_NAME_QUICKTIME_RAW;
 import static org.monte.media.VideoFormatKeys.CompressorNameKey;
 import static org.monte.media.VideoFormatKeys.DepthKey;
 import static org.monte.media.VideoFormatKeys.ENCODING_AVI_DIB;
 import static org.monte.media.VideoFormatKeys.ENCODING_AVI_MJPG;
 import static org.monte.media.VideoFormatKeys.ENCODING_AVI_PNG;
-import static org.monte.media.VideoFormatKeys.COMPRESSOR_NAME_AVI_TECHSMITH_SCREEN_CAPTURE;
-import static org.monte.media.VideoFormatKeys.COMPRESSOR_NAME_QUICKTIME_ANIMATION;
-import static org.monte.media.VideoFormatKeys.COMPRESSOR_NAME_QUICKTIME_JPEG;
-import static org.monte.media.VideoFormatKeys.COMPRESSOR_NAME_QUICKTIME_PNG;
-import static org.monte.media.VideoFormatKeys.COMPRESSOR_NAME_QUICKTIME_RAW;
+import static org.monte.media.VideoFormatKeys.ENCODING_AVI_RLE;
 import static org.monte.media.VideoFormatKeys.ENCODING_AVI_TECHSMITH_SCREEN_CAPTURE;
 import static org.monte.media.VideoFormatKeys.ENCODING_QUICKTIME_ANIMATION;
 import static org.monte.media.VideoFormatKeys.ENCODING_QUICKTIME_JPEG;
 import static org.monte.media.VideoFormatKeys.ENCODING_QUICKTIME_PNG;
 import static org.monte.media.VideoFormatKeys.ENCODING_QUICKTIME_RAW;
-import static org.monte.media.VideoFormatKeys.HeightKey;
 import static org.monte.media.VideoFormatKeys.QualityKey;
-import static org.monte.media.VideoFormatKeys.WidthKey;
-import static org.monte.media.VideoFormatKeys.ENCODING_AVI_RLE;
-import static org.monte.screenrecorder.ScreenRecorder.ENCODING_BLACK_CURSOR;
+import static org.mwc.cmap.core.preferences.VideoCapturePreferencePage.PreferenceConstants.ANIMATION;
 import static org.mwc.cmap.core.preferences.VideoCapturePreferencePage.PreferenceConstants.AVI;
+import static org.mwc.cmap.core.preferences.VideoCapturePreferencePage.PreferenceConstants.BLACK_CURSOR;
 import static org.mwc.cmap.core.preferences.VideoCapturePreferencePage.PreferenceConstants.DEBRIEF_S_WINDOW;
 import static org.mwc.cmap.core.preferences.VideoCapturePreferencePage.PreferenceConstants.ENTIRE_SCREEN;
-import static org.mwc.cmap.core.preferences.VideoCapturePreferencePage.PreferenceConstants.P_AUDIO;
-import static org.mwc.cmap.core.preferences.VideoCapturePreferencePage.PreferenceConstants.P_AUDIO_RATE;
+import static org.mwc.cmap.core.preferences.VideoCapturePreferencePage.PreferenceConstants.JPEG100;
+import static org.mwc.cmap.core.preferences.VideoCapturePreferencePage.PreferenceConstants.JPEG50;
+import static org.mwc.cmap.core.preferences.VideoCapturePreferencePage.PreferenceConstants.NONE2;
+import static org.mwc.cmap.core.preferences.VideoCapturePreferencePage.PreferenceConstants.PNG;
 import static org.mwc.cmap.core.preferences.VideoCapturePreferencePage.PreferenceConstants.P_COLORS;
 import static org.mwc.cmap.core.preferences.VideoCapturePreferencePage.PreferenceConstants.P_ENABLE;
 import static org.mwc.cmap.core.preferences.VideoCapturePreferencePage.PreferenceConstants.P_ENCODING;
@@ -57,17 +55,11 @@ import static org.mwc.cmap.core.preferences.VideoCapturePreferencePage.Preferenc
 import static org.mwc.cmap.core.preferences.VideoCapturePreferencePage.PreferenceConstants.P_MOUSE_RATE;
 import static org.mwc.cmap.core.preferences.VideoCapturePreferencePage.PreferenceConstants.P_SCREEN_AREA;
 import static org.mwc.cmap.core.preferences.VideoCapturePreferencePage.PreferenceConstants.P_SCREEN_RATE;
-import static org.mwc.cmap.core.preferences.VideoCapturePreferencePage.PreferenceConstants.P_SCREEN_RATE_AUTO;
 import static org.mwc.cmap.core.preferences.VideoCapturePreferencePage.PreferenceConstants.QUICK_TIME;
 import static org.mwc.cmap.core.preferences.VideoCapturePreferencePage.PreferenceConstants.SCREEN_CAPTURE;
-import static org.mwc.cmap.core.preferences.VideoCapturePreferencePage.PreferenceConstants.ANIMATION;
-import static org.mwc.cmap.core.preferences.VideoCapturePreferencePage.PreferenceConstants.NONE2;
-import static org.mwc.cmap.core.preferences.VideoCapturePreferencePage.PreferenceConstants.PNG;
-import static org.mwc.cmap.core.preferences.VideoCapturePreferencePage.PreferenceConstants.JPEG100;
-import static org.mwc.cmap.core.preferences.VideoCapturePreferencePage.PreferenceConstants.JPEG50;
 import static org.mwc.cmap.core.preferences.VideoCapturePreferencePage.PreferenceConstants.WHITE_CURSOR;
-import static org.mwc.cmap.core.preferences.VideoCapturePreferencePage.PreferenceConstants.BLACK_CURSOR;
 
+import java.awt.AWTException;
 import java.awt.Dimension;
 import java.awt.GraphicsEnvironment;
 import java.awt.Rectangle;
@@ -76,6 +68,7 @@ import java.awt.event.ActionEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
+import java.io.IOException;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -91,10 +84,10 @@ import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.action.IContributionItem;
-import org.eclipse.jface.action.IMenuCreator;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.action.MenuManager;
@@ -104,7 +97,6 @@ import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.resource.ImageDescriptor;
-import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.ISelectionProvider;
@@ -112,7 +104,6 @@ import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.DisposeEvent;
 import org.eclipse.swt.events.DisposeListener;
-import org.eclipse.swt.events.HelpListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
@@ -144,6 +135,10 @@ import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.ViewPart;
+import org.monte.media.Format;
+import org.monte.media.FormatKeys.MediaType;
+import org.monte.media.math.Rational;
+import org.monte.screenrecorder.ScreenRecorder;
 import org.mwc.cmap.TimeController.TimeControllerPlugin;
 import org.mwc.cmap.TimeController.controls.DTGBiSlider;
 import org.mwc.cmap.TimeController.controls.DTGBiSlider.DoFineControl;
@@ -153,19 +148,15 @@ import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.DataTypes.Temporal.TimeControlProperties;
 import org.mwc.cmap.core.interfaces.TimeControllerOperation;
 import org.mwc.cmap.core.interfaces.TimeControllerOperation.TimeControllerOperationStore;
-import org.mwc.cmap.core.preferences.VideoCapturePreferencePage;
-import org.mwc.cmap.core.preferences.VideoCapturePreferencePage.PreferenceConstants;
 import org.mwc.cmap.core.property_support.EditableWrapper;
 import org.mwc.cmap.core.ui_support.PartMonitor;
 import org.mwc.cmap.plotViewer.editors.CorePlotEditor;
+import org.mwc.debrief.core.DebriefPlugin;
 import org.mwc.debrief.core.editors.PlotEditor;
 import org.mwc.debrief.core.editors.painters.LayerPainterManager;
 import org.mwc.debrief.core.editors.painters.TemporalLayerPainter;
 import org.mwc.debrief.core.editors.painters.highlighters.SWTPlotHighlighter;
-import org.monte.media.Format;
-import org.monte.media.FormatKeys.MediaType;
-import org.monte.media.math.Rational;
-import org.monte.screenrecorder.ScreenRecorder;
+
 import MWC.Algorithms.PlainProjection;
 import MWC.Algorithms.PlainProjection.RelativeProjectionParent;
 import MWC.GUI.Layers;
@@ -351,14 +342,6 @@ public class TimeController extends ViewPart implements ISelectionProvider,
       }
     }
   }
-  
-  Menu menu;
-
-  private ScreenRecorder screenRecorder = null;
-  
-  protected boolean isPptxRecording = false;
-  
-  protected boolean isVideoRecording = true;
 
   /**
    * SplitButton
@@ -372,6 +355,308 @@ public class TimeController extends ViewPart implements ISelectionProvider,
         MediaType.FILE, MimeTypeKey, MIME_QUICKTIME);// the
     // file
     // format
+
+    private void startVideoRecording()
+    {
+      try
+      {
+
+        final IPreferenceStore preferenceStore = CorePlugin.getDefault()
+            .getPreferenceStore();
+
+        final boolean recordingEnabled = preferenceStore.getBoolean(P_ENABLE);
+
+        if (!recordingEnabled)
+        {
+          return;
+        }
+
+        createScreenRecorder(preferenceStore);
+        screenRecorder.start();
+
+      }
+      catch (final Exception ee)
+      {
+        final IStatus status = new Status(IStatus.INFO,
+            DebriefPlugin.PLUGIN_NAME,
+            "Unable to start recording with the configuration given", ee);
+        DebriefPlugin.getDefault().getLog().log(status);
+        ee.printStackTrace();
+      }
+    }
+
+    private class ScreenRecorderProperties
+    {
+      Format formatToUse = null;
+      String formatName = null;
+      String compressorName = null;
+      float quality = 1.f;
+      int bitDepth = 0;
+      int screenRate;
+      Format mouseFormat;
+      Rectangle areaToRecord;
+
+      public void retrieve(final IPreferenceStore preferenceStore)
+      {
+        bitDepth = extractBitDepth(preferenceStore);
+
+        if (AVI.equals(preferenceStore.getString(P_FORMAT)))
+        {
+          retrieveAVIProperties(preferenceStore);
+        }
+        else if (QUICK_TIME.equals(preferenceStore.getString(P_FORMAT)))
+        {
+          retrieveMovieMakerProperties(preferenceStore);
+        }
+
+        screenRate = extractScreenRate(preferenceStore);
+
+        mouseFormat = extractMouseFormat(preferenceStore);
+
+        areaToRecord = extractAreaToRecord(preferenceStore);
+      }
+
+      private void retrieveMovieMakerProperties(
+          final IPreferenceStore preferenceStore)
+      {
+        formatToUse = QUICKTIME_FORMAT;
+        if (SCREEN_CAPTURE.equals(preferenceStore.getString(P_ENCODING)))
+        {
+          if (bitDepth == 8)
+          {
+            // FIXME - 8-bit Techsmith Screen Capture is broken
+            formatName = ENCODING_QUICKTIME_ANIMATION;
+            compressorName = COMPRESSOR_NAME_QUICKTIME_ANIMATION;
+          }
+          else
+          {
+            formatName = compressorName = ENCODING_AVI_TECHSMITH_SCREEN_CAPTURE;
+          }
+        }
+        else if (ANIMATION.equals(preferenceStore.getString(P_ENCODING)))
+        {
+          formatName = ENCODING_QUICKTIME_ANIMATION;
+          compressorName = COMPRESSOR_NAME_QUICKTIME_ANIMATION;
+        }
+        else if (NONE2.equals(preferenceStore.getString(P_ENCODING)))
+        {
+          formatName = ENCODING_QUICKTIME_RAW;
+          compressorName = COMPRESSOR_NAME_QUICKTIME_RAW;
+        }
+        else if (PNG.equals(preferenceStore.getString(P_ENCODING)))
+        {
+          formatName = ENCODING_QUICKTIME_PNG;
+          compressorName = COMPRESSOR_NAME_QUICKTIME_PNG;
+          bitDepth = 24;
+        }
+        else if (JPEG100.equals(preferenceStore.getString(P_ENCODING)))
+        {
+          formatName = ENCODING_QUICKTIME_JPEG;
+          compressorName = COMPRESSOR_NAME_QUICKTIME_JPEG;
+          bitDepth = 24;
+        }
+        else if (JPEG50.equals(preferenceStore.getString(P_ENCODING)))
+        {
+          formatName = ENCODING_QUICKTIME_JPEG;
+          compressorName = COMPRESSOR_NAME_QUICKTIME_JPEG;
+          bitDepth = 24;
+          quality = 0.5f;
+        }
+      }
+
+      private void retrieveAVIProperties(final IPreferenceStore preferenceStore)
+      {
+        formatToUse = AVI_FORMAT;
+        if (SCREEN_CAPTURE.equals(preferenceStore.getString(P_ENCODING)))
+        {
+          formatName = compressorName = ENCODING_AVI_TECHSMITH_SCREEN_CAPTURE;
+        }
+        else if (ANIMATION.equals(preferenceStore.getString(P_ENCODING)))
+        {
+          formatName = compressorName = ENCODING_AVI_RLE;
+          // reduce the quality to runlength
+          bitDepth = 8;
+        }
+        else if (NONE2.equals(preferenceStore.getString(P_ENCODING)))
+        {
+          formatName = compressorName = ENCODING_AVI_DIB;
+          if (bitDepth == 16)
+          {
+            bitDepth = 24;
+          }
+        }
+        else if (PNG.equals(preferenceStore.getString(P_ENCODING)))
+        {
+          formatName = compressorName = ENCODING_AVI_PNG;
+          bitDepth = 24;
+        }
+        else if (JPEG100.equals(preferenceStore.getString(P_ENCODING)))
+        {
+          formatName = compressorName = ENCODING_AVI_MJPG;
+          bitDepth = 24;
+        }
+        else if (JPEG50.equals(preferenceStore.getString(P_ENCODING)))
+        {
+          formatName = compressorName = ENCODING_AVI_MJPG;
+          bitDepth = 24;
+          quality = .5f;
+        }
+      }
+    }
+
+    private ScreenRecorder createScreenRecorder(
+        final IPreferenceStore preferenceStore) throws IOException, AWTException
+    {
+      ScreenRecorderProperties screenRecorderProperties =
+          new ScreenRecorderProperties();
+
+      screenRecorderProperties.retrieve(preferenceStore);
+
+      screenRecorder = new ScreenRecorder(GraphicsEnvironment//
+          .getLocalGraphicsEnvironment()//
+          .getDefaultScreenDevice()//
+          .getDefaultConfiguration(), screenRecorderProperties.areaToRecord,
+          screenRecorderProperties.formatToUse,
+
+          new Format(MediaTypeKey, MediaType.VIDEO, EncodingKey,
+              screenRecorderProperties.formatName, CompressorNameKey,
+              screenRecorderProperties.compressorName, DepthKey,
+              screenRecorderProperties.bitDepth, FrameRateKey, Rational.valueOf(
+                  screenRecorderProperties.screenRate), QualityKey,
+              screenRecorderProperties.quality, KeyFrameIntervalKey,
+              screenRecorderProperties.screenRate * 60),
+          screenRecorderProperties.mouseFormat, null, null);
+
+      return screenRecorder;
+    }
+
+    private int extractScreenRate(final IPreferenceStore preferenceStore)
+    {
+      int screenRate = 15;
+      try
+      {
+        screenRate = preferenceStore.getInt(P_SCREEN_RATE);
+      }
+      catch (final Exception ee)
+      {
+        final IStatus status = new Status(IStatus.INFO,
+            DebriefPlugin.PLUGIN_NAME,
+            "Unable to retrieve the screen rate from configurations", ee);
+        DebriefPlugin.getDefault().getLog().log(status);
+      }
+      return screenRate;
+    }
+
+    private Rectangle extractAreaToRecord(
+        final IPreferenceStore preferenceStore)
+    {
+      Rectangle areaToRecord = null;
+
+      if (ENTIRE_SCREEN.equals(preferenceStore.getString(P_SCREEN_AREA)))
+      {
+        final Dimension screenSize = Toolkit.getDefaultToolkit()
+            .getScreenSize();
+        final Rectangle fullScreenRect = new Rectangle(0, 0, screenSize.width,
+            screenSize.height);
+        areaToRecord = fullScreenRect;
+      }
+      else if (DEBRIEF_S_WINDOW.equals(preferenceStore.getString(
+          P_SCREEN_AREA)))
+      {
+        areaToRecord = getScreenArea(getViewSite().getShell());
+      }
+      return areaToRecord;
+    }
+
+    /**
+     * Method that given the users preferences, returns the bit depth
+     * 
+     * @param preferenceStore
+     *          Users preferences.
+     * @return
+     */
+    private int extractBitDepth(final IPreferenceStore preferenceStore)
+    {
+      int bitDepth = 16; // Let's make hundreds by default
+
+      try
+      {
+        // try to parse the value stored
+        bitDepth = Integer.parseInt(preferenceStore.getString(P_COLORS));
+      }
+      catch (final Exception ee)
+      {
+        final IStatus status = new Status(IStatus.INFO,
+            DebriefPlugin.PLUGIN_NAME,
+            "Unable to retrieve the bit depth from configurations", ee);
+        DebriefPlugin.getDefault().getLog().log(status);
+        // we will end using the default.
+      }
+      return bitDepth;
+    }
+
+    /**
+     * Method that returns the mouse format given the users preferences
+     * 
+     * @param preferenceStore
+     *          Users Preferences.
+     * @return
+     */
+    private Format extractMouseFormat(final IPreferenceStore preferenceStore)
+    {
+      int mouseRate = 15;
+      try
+      {
+        mouseRate = preferenceStore.getInt(P_MOUSE_RATE);
+      }
+      catch (final Exception ee)
+      {
+        final IStatus status = new Status(IStatus.INFO,
+            DebriefPlugin.PLUGIN_NAME,
+            "Unable to retrieve the mouse rate from configurations", ee);
+        DebriefPlugin.getDefault().getLog().log(status);
+      }
+
+      Format mouseFormat = null;
+      if (BLACK_CURSOR.equals(preferenceStore.getString(P_MOUSE)))
+      {
+        mouseFormat = new Format(MediaTypeKey, MediaType.VIDEO, EncodingKey,
+            ScreenRecorder.ENCODING_BLACK_CURSOR, FrameRateKey, Rational
+                .valueOf(mouseRate));
+      }
+      else if (WHITE_CURSOR.equals(preferenceStore.getString(P_MOUSE)))
+      {
+        mouseFormat = new Format(MediaTypeKey, MediaType.VIDEO, EncodingKey,
+            ScreenRecorder.ENCODING_BLACK_CURSOR, FrameRateKey, Rational
+                .valueOf(mouseRate));
+      }
+      return mouseFormat;
+    }
+
+    private void stopVideoRecording()
+    {
+      try
+      {
+        screenRecorder.stop();
+
+        final FileDialog fileSave = new FileDialog(getViewSite().getShell(),
+            SWT.SAVE);
+        fileSave.setFilterNames(new String[]
+        {screenRecorder.getFileFormatExtension()});
+        fileSave.setFilterExtensions(new String[]
+        {"*." + screenRecorder.getFileFormatExtension()});
+        fileSave.setFileName("your_file_name");
+        final String open = fileSave.open();
+        if (open != null)
+        {
+          screenRecorder.moveFileTo(open);
+        }
+      }
+      catch (final Exception ee)
+      {
+        ee.printStackTrace();
+      }
+    }
 
     @Override
     public void widgetSelected(final SelectionEvent e)
@@ -388,14 +673,16 @@ public class TimeController extends ViewPart implements ISelectionProvider,
         _recordButton.setToolTipText(STOP_TEXT);
         _recordButton.setImage(TimeControllerPlugin.getImage(
             ICON_MEDIA_STOP_RECORD));
-        
-        if (isVideoRecording) {
+
+        if (isVideoRecording)
+        {
           startVideoRecording();
         }
-        if (isPptxRecording) {
+        if (isPptxRecording)
+        {
           startPptxRecording();
         }
-        
+
       }
       else
       {
@@ -414,221 +701,18 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 
           }
         });
-        
-        if (isVideoRecording) {
+
+        if (isVideoRecording)
+        {
           stopVideoRecording();
         }
-        
+
         stopPlaying();
-        
-        if (isPptxRecording) {
-          stopPptxRecording(getTimeProvider().getTime());          
-        }
-      }
-    }
-    private void stopVideoRecording()
-    {
-      try
-      {
-        screenRecorder.stop();
-        
-        FileDialog fileSave = new FileDialog(getViewSite().getShell(), SWT.SAVE);
-        fileSave.setFilterNames(new String[] { screenRecorder.getFileFormatExtension() });
-        fileSave.setFilterExtensions(new String[] { "*." + screenRecorder.getFileFormatExtension() });
-        fileSave.setFileName("your_file_name");
-        String open = fileSave.open();
-        if (open != null) {
-            screenRecorder.moveFileTo(open);
-        }
-      }
-      catch (Exception ee)
-      {
-        ee.printStackTrace();
-      }
-    }
-    private void startVideoRecording()
-    {
-      try
-      {
-        final IPreferenceStore preferenceStore = CorePlugin.getDefault()
-            .getPreferenceStore();
 
-        Format formatToUse = null;
-        String formatName = null;
-        String compressorName = null;
-        float quality = 1.f;
-        int bitDepth = 16; // Let's make hundreds by default
-        Format mouseFormat = null;
-
-        try
+        if (isPptxRecording)
         {
-          // try to parse the value stored
-          bitDepth = Integer.parseInt(preferenceStore.getString(P_COLORS));
+          stopPptxRecording(getTimeProvider().getTime());
         }
-        catch (Exception ee)
-        {
-          // we will end using the default.
-        }
-
-        if (AVI.equals(preferenceStore.getString(P_FORMAT)))
-        {
-          formatToUse = AVI_FORMAT;
-          if (SCREEN_CAPTURE.equals(preferenceStore.getString(P_ENCODING)))
-          {
-            formatName = compressorName =
-                ENCODING_AVI_TECHSMITH_SCREEN_CAPTURE;
-          }
-          else if (ANIMATION.equals(preferenceStore.getString(P_ENCODING)))
-          {
-            formatName = compressorName = ENCODING_AVI_RLE;
-            // reduce the quality to runlength
-            bitDepth = 8;
-          }
-          else if (NONE2.equals(preferenceStore.getString(P_ENCODING)))
-          {
-            formatName = compressorName = ENCODING_AVI_DIB;
-            if (bitDepth == 16)
-            {
-              bitDepth = 24;
-            }
-          }
-          else if (PNG.equals(preferenceStore.getString(P_ENCODING)))
-          {
-            formatName = compressorName = ENCODING_AVI_PNG;
-            bitDepth = 24;
-          }
-          else if (JPEG100.equals(preferenceStore.getString(P_ENCODING)))
-          {
-            formatName = compressorName = ENCODING_AVI_MJPG;
-            bitDepth = 24;
-          }
-          else if (JPEG50.equals(preferenceStore.getString(P_ENCODING)))
-          {
-            formatName = compressorName = ENCODING_AVI_MJPG;
-            bitDepth = 24;
-            quality = .5f;
-          }
-        }
-        else if (QUICK_TIME.equals(preferenceStore.getString(P_FORMAT)))
-        {
-          formatToUse = QUICKTIME_FORMAT;
-          if (SCREEN_CAPTURE.equals(preferenceStore.getString(P_ENCODING)))
-          {
-            if (bitDepth == 8)
-            {
-              // FIXME - 8-bit Techsmith Screen Capture is broken
-              formatName = ENCODING_QUICKTIME_ANIMATION;
-              compressorName = COMPRESSOR_NAME_QUICKTIME_ANIMATION;
-            }
-            else
-            {
-              formatName = compressorName =
-                  ENCODING_AVI_TECHSMITH_SCREEN_CAPTURE;
-            }
-          }
-          else if (ANIMATION.equals(preferenceStore.getString(P_ENCODING)))
-          {
-            formatName = ENCODING_QUICKTIME_ANIMATION;
-            compressorName = COMPRESSOR_NAME_QUICKTIME_ANIMATION;
-          }
-          else if (NONE2.equals(preferenceStore.getString(P_ENCODING)))
-          {
-            formatName = ENCODING_QUICKTIME_RAW;
-            compressorName = COMPRESSOR_NAME_QUICKTIME_RAW;
-          }
-          else if (PNG.equals(preferenceStore.getString(P_ENCODING)))
-          {
-            formatName = ENCODING_QUICKTIME_PNG;
-            compressorName = COMPRESSOR_NAME_QUICKTIME_PNG;
-            bitDepth = 24;
-          }
-          else if (JPEG100.equals(preferenceStore.getString(P_ENCODING)))
-          {
-            formatName = ENCODING_QUICKTIME_JPEG;
-            compressorName = COMPRESSOR_NAME_QUICKTIME_JPEG;
-            bitDepth = 24;
-          }
-          else if (JPEG50.equals(preferenceStore.getString(P_ENCODING)))
-          {
-            formatName = ENCODING_QUICKTIME_JPEG;
-            compressorName = COMPRESSOR_NAME_QUICKTIME_JPEG;
-            bitDepth = 24;
-            quality = 0.5f;
-          }
-        }
-
-        int screenRate = 15;
-        try
-        {
-          screenRate = preferenceStore.getInt(P_SCREEN_RATE);
-        }
-        catch (Exception ee)
-        {
-          // TODO: handle exception
-        }
-
-        int mouseRate = 15;
-        try
-        {
-          mouseRate = preferenceStore.getInt(P_MOUSE_RATE);
-        }
-        catch (Exception ee)
-        {
-          // TODO: handle exception
-        }
-
-        if (BLACK_CURSOR.equals(preferenceStore.getString(P_MOUSE)))
-        {
-          mouseFormat = new Format(MediaTypeKey, MediaType.VIDEO, EncodingKey,
-              ScreenRecorder.ENCODING_BLACK_CURSOR, FrameRateKey, Rational
-                  .valueOf(mouseRate));
-        }
-        else if (WHITE_CURSOR.equals(preferenceStore.getString(P_MOUSE)))
-        {
-          mouseFormat = new Format(MediaTypeKey, MediaType.VIDEO, EncodingKey,
-              ScreenRecorder.ENCODING_BLACK_CURSOR, FrameRateKey, Rational
-                  .valueOf(mouseRate));
-        }
-
-        Rectangle areaToRecord = null;
-
-        if (ENTIRE_SCREEN.equals(preferenceStore.getString(P_SCREEN_AREA)))
-        {
-          final Dimension screenSize = Toolkit.getDefaultToolkit()
-              .getScreenSize();
-          final Rectangle fullScreenRect = new Rectangle(0, 0,
-              screenSize.width, screenSize.height);
-          areaToRecord = fullScreenRect;
-        }
-        else if (DEBRIEF_S_WINDOW.equals(preferenceStore.getString(
-            P_SCREEN_AREA)))
-        {
-          areaToRecord = getScreenArea(getViewSite().getShell());
-        }
-
-        boolean recordingEnabled = preferenceStore.getBoolean(P_ENABLE);
-
-        if (recordingEnabled)
-        {
-          screenRecorder = new ScreenRecorder(GraphicsEnvironment//
-              .getLocalGraphicsEnvironment()//
-              .getDefaultScreenDevice()//
-              .getDefaultConfiguration(), areaToRecord, formatToUse,
-
-              new Format(MediaTypeKey, MediaType.VIDEO, EncodingKey,
-                  formatName, CompressorNameKey, compressorName, DepthKey,
-                  bitDepth, FrameRateKey, Rational.valueOf(screenRate),
-                  QualityKey, quality, KeyFrameIntervalKey, (int) (screenRate
-                      * 60) // one keyframe per minute is enough
-              ), mouseFormat, null, null);
-          screenRecorder.start();
-        }
-
-      }
-      catch (Exception ee)
-      {
-        // TODO: handle exception
-        ee.printStackTrace();
       }
     }
   }
@@ -921,6 +1005,7 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 
   private static final String ICON_MEDIA_STOP_RECORD =
       "icons/24/media_stop.png";
+
   private static final String ICON_PULSATING_GIF = "icons/16/pulse.gif";
 
   private static final String DUFF_TIME_TEXT = "--------------------------";
@@ -928,7 +1013,6 @@ public class TimeController extends ViewPart implements ISelectionProvider,
   private static final String PAUSE_TEXT = "Pause automatically moving forward";
 
   private static final String PLAY_TEXT = "Start automatically moving forward";
-
   private static final String STOP_TEXT =
       "Stop recording, start export process";
 
@@ -944,6 +1028,7 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 
   private static final Color fColor = new Color(Display.getDefault(), 33, 255,
       22);
+
   private static final Font arialFont = new Font(Display.getDefault(), "Arial",
       16, SWT.NONE);
 
@@ -1029,6 +1114,14 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 
     return res.toString();
   }
+
+  Menu menu;
+
+  private ScreenRecorder screenRecorder = null;
+
+  protected boolean isPptxRecording = false;
+
+  protected boolean isVideoRecording = true;
 
   private PartMonitor _myPartMonitor;
 
@@ -1300,7 +1393,7 @@ public class TimeController extends ViewPart implements ISelectionProvider,
           _myStepperProperties.setPropertyValue(
               TimeControlProperties.DTG_FORMAT_ID, thisIndex);
 
-          // todo: we need to tell the plot that it's changed - fake
+          // : we need to tell the plot that it's changed - fake
           // this by
           // firing a quick formatting change
           _myLayers.fireReformatted(null);
@@ -1337,8 +1430,7 @@ public class TimeController extends ViewPart implements ISelectionProvider,
           if (content != null)
           {
             final IMarker marker = file.createMarker(IMarker.BOOKMARK);
-            final Map<String, Object> attributes = new HashMap<String, Object>(
-                4);
+            final Map<String, Object> attributes = new HashMap<>(4);
             attributes.put(IMarker.MESSAGE, content);
             attributes.put(IMarker.LOCATION, currentText);
             attributes.put(IMarker.LINE_NUMBER, "" + tNow);
@@ -1361,7 +1453,7 @@ public class TimeController extends ViewPart implements ISelectionProvider,
       final ISelectionChangedListener listener)
   {
     if (_selectionListeners == null)
-      _selectionListeners = new Vector<ISelectionChangedListener>(0, 1);
+      _selectionListeners = new Vector<>(0, 1);
 
     // see if we don't already contain it..
     if (!_selectionListeners.contains(listener))
@@ -1931,27 +2023,28 @@ public class TimeController extends ViewPart implements ISelectionProvider,
     _recordButton.addSelectionListener(new RecordButtonListener());
     _recordButton.setToolTipText(RECORD_TEXT);
 
-    Button btn = new Button(btnCntrl, SWT.FLAT | SWT.ARROW | SWT.DOWN);
+    final Button btn = new Button(btnCntrl, SWT.FLAT | SWT.ARROW | SWT.DOWN);
     btn.setLayoutData(new GridData(GridData.FILL_VERTICAL));
 
     btn.addSelectionListener(new SelectionAdapter()
     {
       @Override
-      public void widgetSelected(SelectionEvent e)
+      public void widgetSelected(final SelectionEvent e)
       {
         super.widgetSelected(e);
         menu = new Menu(getViewSite().getShell(), SWT.CASCADE);
 
-        MenuItem videoMenu = new MenuItem(menu, SWT.RADIO);
-        
+        final MenuItem videoMenu = new MenuItem(menu, SWT.RADIO);
+
         videoMenu.setText("Video");
-        MenuItem pptxMenu = new MenuItem(menu, SWT.RADIO);
+        final MenuItem pptxMenu = new MenuItem(menu, SWT.RADIO);
         pptxMenu.setText("PPTX");
         videoMenu.setSelection(isVideoRecording);
         pptxMenu.setSelection(isPptxRecording);
         videoMenu.addSelectionListener(new SelectionAdapter()
         {
-          public void widgetSelected(SelectionEvent e)
+          @Override
+          public void widgetSelected(final SelectionEvent e)
           {
             isVideoRecording = true;
             isPptxRecording = false;
@@ -1959,17 +2052,18 @@ public class TimeController extends ViewPart implements ISelectionProvider,
         });
         pptxMenu.addSelectionListener(new SelectionAdapter()
         {
-          public void widgetSelected(SelectionEvent e)
+          @Override
+          public void widgetSelected(final SelectionEvent e)
           {
             isVideoRecording = false;
             isPptxRecording = true;
           }
         });
 
-        Point loc = btnCntrl.getLocation();
-        org.eclipse.swt.graphics.Rectangle rect = btnCntrl.getBounds();
+        final Point loc = btnCntrl.getLocation();
+        final org.eclipse.swt.graphics.Rectangle rect = btnCntrl.getBounds();
 
-        Point mLoc = new Point(loc.x - 1, loc.y + rect.height);
+        final Point mLoc = new Point(loc.x - 1, loc.y + rect.height);
 
         menu.setLocation(getViewSite().getShell().getDisplay().map(btnCntrl
             .getParent(), null, mLoc));
@@ -2010,7 +2104,7 @@ public class TimeController extends ViewPart implements ISelectionProvider,
     // and apply it to the whole panel
     btnGd.applyTo(_btnPanel);
 
-    _buttonList = new HashMap<String, Button>();
+    _buttonList = new HashMap<>();
     _buttonList.put("eBwd", eBwd);
     _buttonList.put("lBwd", lBwd);
     _buttonList.put("sBwd", sBwd);
@@ -2305,6 +2399,15 @@ public class TimeController extends ViewPart implements ISelectionProvider,
     return _dtgRangeSlider;
   }
 
+  private Rectangle getScreenArea(final Shell shell)
+  {
+    final Point location = shell.getLocation();
+    final Point size = shell.getSize();
+    final Rectangle area = new Rectangle(location.x, location.y, size.x,
+        size.y);
+    return area;
+  }
+
   @Override
   public ISelection getSelection()
   {
@@ -2408,7 +2511,7 @@ public class TimeController extends ViewPart implements ISelectionProvider,
       if (_steppableTime != null)
         // see if the user has pressed 'back to start', in which case we will
         // rewind
-        if ((step == STEP_SIZE.END) && (fwd == false))
+        if ((step == STEP_SIZE.END) && !fwd)
           _steppableTime.restart(this, true);
         else
           _steppableTime.step(this, true);
@@ -2575,7 +2678,7 @@ public class TimeController extends ViewPart implements ISelectionProvider,
     // do we have any legacy time operations
     if (_legacyTimeOperations == null)
     {
-      _legacyTimeOperations = new Vector<Action>();
+      _legacyTimeOperations = new Vector<>();
     }
     else
     {
@@ -2792,14 +2895,14 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 
   }
 
+  // /////////////////////////////////////////////////////////////////
+  // AND PROPERTY EDITORS FOR THE
+  // /////////////////////////////////////////////////////////////////
+
   @Override
   public void setSelection(final ISelection selection)
   {
   }
-
-  // /////////////////////////////////////////////////////////////////
-  // AND PROPERTY EDITORS FOR THE
-  // /////////////////////////////////////////////////////////////////
 
   private void setupListeners()
   {
@@ -3394,6 +3497,10 @@ public class TimeController extends ViewPart implements ISelectionProvider,
     getTimer().stop();
   }
 
+  // /////////////////////////////////////////////////
+  // RELATIVE PROJECTION-RELATED BITS
+  // /////////////////////////////////////////////////
+
   private void stopPlayingTimer()
   {
     if (getTimer().isRunning())
@@ -3415,10 +3522,6 @@ public class TimeController extends ViewPart implements ISelectionProvider,
       });
     }
   }
-
-  // /////////////////////////////////////////////////
-  // RELATIVE PROJECTION-RELATED BITS
-  // /////////////////////////////////////////////////
 
   private void stopPptxRecording(final HiResDate timeNow)
   {
@@ -3682,14 +3785,6 @@ public class TimeController extends ViewPart implements ISelectionProvider,
       // see our changes
     }
     getViewSite().getActionBars().updateActionBars();
-  }
-
-  private Rectangle getScreenArea(final Shell shell)
-  {
-    final Point location = shell.getLocation();
-    final Point size = shell.getSize();
-    Rectangle area = new Rectangle(location.x, location.y, size.x, size.y);
-    return area;
   }
 
 }
