@@ -2518,108 +2518,128 @@ public class TimeController extends ViewPart implements ISelectionProvider,
       else
       {
 
-        // yup, time is there. work with it baby
-        long micros = tNow.getMicros();
-
-        // right, special case for when user wants to go straight to the end
-        // - in
-        // which
-        // case there is a zero in the scale
-        if (step == STEP_SIZE.END)
-        {
-          // right, fwd or bwd
-          if (fwd)
-            micros = _myTemporalDataset.getPeriod().getEndDTG().getMicros();
-          else
-            micros = _myTemporalDataset.getPeriod().getStartDTG().getMicros();
-        }
-        else
-        {
-          final long size;
-
-          // normal processing..
-          if (step == STEP_SIZE.LARGE)
-          {
-            // do large step
-            size = (long) _myStepperProperties.getLargeStep().getValueIn(
-                Duration.MICROSECONDS);
-          }
-          else if (step == STEP_SIZE.NORMAL)
-          {
-            // and the small size step
-            size = (long) _myStepperProperties.getSmallStep().getValueIn(
-                Duration.MICROSECONDS);
-          }
-          else
-          {
-            // and the small size step
-            size = (long) _myStepperProperties.getSmallStep().getValueIn(
-                Duration.MICROSECONDS) / 10;
-          }
-
-          // right, either move forwards or backwards.
-          if (fwd)
-            micros += size;
-          else
-            micros -= size;
-        }
-
-        final HiResDate newDTG = new HiResDate(0, micros);
-
-        // find the extent of the current dataset
-
-        /*
-         * RIGHT, until JAN 2007 this next line had been commented out - replaced by the line
-         * immediately after it. We've switched back to this implementation. This implementation
-         * lets the time-slider select a time for which there aren't any points visible. This makes
-         * sense because in it's successor implementation when the DTG slipped outside the visible
-         * time period, the event was rejected, and the time- controller buttons appeared to break.
-         * It remains responsive this way...
-         */
-        TimePeriod timeP = _myTemporalDataset.getPeriod();
-        if (_filterToSelectionAction != null && _filterToSelectionAction
-            .isChecked())
-        {
-          final TimePeriod filteredPeriod = _controllablePeriod.getPeriod();
-          if (filteredPeriod != null)
-          {
-            timeP = filteredPeriod;
-          }
-        }
-
-        if (timeP != null)
-        {
-          // do we represent a valid time?
-          if (timeP.contains(newDTG))
-          {
-            // yes, fire the new DTG
-            fireNewTime(newDTG);
-          }
-          else
-          {
-            final HiResDate timeToUse;
-            if (newDTG.greaterThan(timeP.getEndDTG()))
-            {
-              // ok, we've passed the end, use the last point
-              timeToUse = timeP.getEndDTG();
-            }
-            else
-            {
-              // ok, we're before the start, use the first point
-              timeToUse = timeP.getStartDTG();
-            }
-            fireNewTime(timeToUse);
-
-            // and stop recording
-            stopPptxRecording(timeToUse);
-            stopPlayingTimer();
-          }
-        }
+        processSteppableClick(step, fwd, tNow);
       }
     }
 
     // CorePlugin.logError(Status.INFO, "Step complete", null);
 
+  }
+
+  private void processSteppableClick(final STEP_SIZE step, final boolean fwd,
+      final HiResDate tNow)
+  {
+    // yup, time is there. work with it baby
+    long micros = tNow.getMicros();
+
+    // right, special case for when user wants to go straight to the end
+    // - in
+    // which
+    // case there is a zero in the scale
+    if (step == STEP_SIZE.END)
+    {
+      micros = processEndStep(fwd);
+    }
+    else
+    {
+      micros = processNonEndStep(step, fwd, micros);
+    }
+
+    final HiResDate newDTG = new HiResDate(0, micros);
+
+    // find the extent of the current dataset
+
+    /*
+     * RIGHT, until JAN 2007 this next line had been commented out - replaced by the line
+     * immediately after it. We've switched back to this implementation. This implementation
+     * lets the time-slider select a time for which there aren't any points visible. This makes
+     * sense because in it's successor implementation when the DTG slipped outside the visible
+     * time period, the event was rejected, and the time- controller buttons appeared to break.
+     * It remains responsive this way...
+     */
+    TimePeriod timeP = _myTemporalDataset.getPeriod();
+    if (_filterToSelectionAction != null && _filterToSelectionAction
+        .isChecked())
+    {
+      final TimePeriod filteredPeriod = _controllablePeriod.getPeriod();
+      if (filteredPeriod != null)
+      {
+        timeP = filteredPeriod;
+      }
+    }
+
+    if (timeP != null)
+    {
+      // do we represent a valid time?
+      if (timeP.contains(newDTG))
+      {
+        // yes, fire the new DTG
+        fireNewTime(newDTG);
+      }
+      else
+      {
+        final HiResDate timeToUse;
+        if (newDTG.greaterThan(timeP.getEndDTG()))
+        {
+          // ok, we've passed the end, use the last point
+          timeToUse = timeP.getEndDTG();
+        }
+        else
+        {
+          // ok, we're before the start, use the first point
+          timeToUse = timeP.getStartDTG();
+        }
+        fireNewTime(timeToUse);
+
+        // and stop recording
+        stopPptxRecording(timeToUse);
+        stopPlayingTimer();
+      }
+    }
+  }
+
+  private long processNonEndStep(final STEP_SIZE step, final boolean fwd,
+      long micros)
+  {
+    final long size;
+
+    // normal processing..
+    if (step == STEP_SIZE.LARGE)
+    {
+      // do large step
+      size = (long) _myStepperProperties.getLargeStep().getValueIn(
+          Duration.MICROSECONDS);
+    }
+    else if (step == STEP_SIZE.NORMAL)
+    {
+      // and the small size step
+      size = (long) _myStepperProperties.getSmallStep().getValueIn(
+          Duration.MICROSECONDS);
+    }
+    else
+    {
+      // and the small size step
+      size = (long) _myStepperProperties.getSmallStep().getValueIn(
+          Duration.MICROSECONDS) / 10;
+    }
+
+    // right, either move forwards or backwards.
+    if (fwd)
+      micros += size;
+    else
+      micros -= size;
+    return micros;
+  }
+
+  private long processEndStep(final boolean fwd)
+  {
+    long micros;
+    // right, fwd or bwd
+    if (fwd)
+      micros = _myTemporalDataset.getPeriod().getEndDTG().getMicros();
+    else
+      micros = _myTemporalDataset.getPeriod().getStartDTG().getMicros();
+    return micros;
   }
 
   /**
