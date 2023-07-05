@@ -2037,22 +2037,31 @@ public class TimeController extends ViewPart implements ISelectionProvider,
         super.widgetSelected(e);
         menu = new Menu(getViewSite().getShell(), SWT.CASCADE);
 
-        final MenuItem videoMenu = new MenuItem(menu, SWT.RADIO);
+        final IPreferenceStore preferenceStore = CorePlugin.getDefault()
+                .getPreferenceStore();
 
-        videoMenu.setText("Video");
+        final boolean recordingEnabled = preferenceStore.getBoolean(P_ENABLE);
+
+        if (recordingEnabled)
+        {
+        	final MenuItem videoMenu = new MenuItem(menu, SWT.RADIO);
+
+            videoMenu.setText("Video");
+            videoMenu.setSelection(isVideoRecording);
+            videoMenu.addSelectionListener(new SelectionAdapter()
+            {
+                @Override
+                public void widgetSelected(final SelectionEvent e)
+                {
+                  isVideoRecording = true;
+                  isPptxRecording = false;
+                }
+              });
+        }
         final MenuItem pptxMenu = new MenuItem(menu, SWT.RADIO);
         pptxMenu.setText("PPTX");
-        videoMenu.setSelection(isVideoRecording);
         pptxMenu.setSelection(isPptxRecording);
-        videoMenu.addSelectionListener(new SelectionAdapter()
-        {
-          @Override
-          public void widgetSelected(final SelectionEvent e)
-          {
-            isVideoRecording = true;
-            isPptxRecording = false;
-          }
-        });
+        
         pptxMenu.addSelectionListener(new SelectionAdapter()
         {
           @Override
