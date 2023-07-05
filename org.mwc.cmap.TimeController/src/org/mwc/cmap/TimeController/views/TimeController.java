@@ -18,7 +18,7 @@ package org.mwc.cmap.TimeController.views;
 import static org.monte.media.FormatKeys.EncodingKey;
 import static org.monte.media.FormatKeys.FrameRateKey;
 import static org.monte.media.FormatKeys.KeyFrameIntervalKey;
-import static org.monte.media.FormatKeys.MIME_MP4;
+import static org.monte.media.FormatKeys.MIME_AVI;
 import static org.monte.media.FormatKeys.MIME_QUICKTIME;
 import static org.monte.media.FormatKeys.MediaTypeKey;
 import static org.monte.media.FormatKeys.MimeTypeKey;
@@ -136,7 +136,6 @@ import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.ViewPart;
 import org.monte.media.Format;
-import org.monte.media.FormatKeys;
 import org.monte.media.FormatKeys.MediaType;
 import org.monte.media.math.Rational;
 import org.monte.screenrecorder.ScreenRecorder;
@@ -349,8 +348,8 @@ public class TimeController extends ViewPart implements ISelectionProvider,
    */
   private class RecordButtonListener extends SelectionAdapter
   {
-    private final Format MP4_FORMAT = new Format(MediaTypeKey, MediaType.FILE,
-        MimeTypeKey, MIME_MP4);// the file
+    private final Format AVI_FORMAT = new Format(MediaTypeKey, MediaType.FILE,
+        MimeTypeKey, MIME_AVI);// the file
     // format
     private final Format QUICKTIME_FORMAT = new Format(MediaTypeKey,
         MediaType.FILE, MimeTypeKey, MIME_QUICKTIME);// the
@@ -467,7 +466,7 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 
       private void retrieveAVIProperties(final IPreferenceStore preferenceStore)
       {
-        formatToUse = MP4_FORMAT;
+        formatToUse = AVI_FORMAT;
         if (SCREEN_CAPTURE.equals(preferenceStore.getString(P_ENCODING)))
         {
           formatName = compressorName = ENCODING_AVI_TECHSMITH_SCREEN_CAPTURE;
@@ -519,9 +518,7 @@ public class TimeController extends ViewPart implements ISelectionProvider,
           .getDefaultConfiguration(), screenRecorderProperties.areaToRecord,
           screenRecorderProperties.formatToUse,
 
-          new Format(MediaTypeKey, MediaType.VIDEO
-        		  ,MimeTypeKey, FormatKeys.MIME_MP4,
-        		  EncodingKey,
+          new Format(MediaTypeKey, MediaType.VIDEO, EncodingKey,
               screenRecorderProperties.formatName, CompressorNameKey,
               screenRecorderProperties.compressorName, DepthKey,
               screenRecorderProperties.bitDepth, FrameRateKey, Rational.valueOf(
