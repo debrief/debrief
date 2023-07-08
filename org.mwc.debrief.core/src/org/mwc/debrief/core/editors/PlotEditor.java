@@ -104,6 +104,7 @@ import org.eclipse.ui.IEditorDescriptor;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.IFileEditorInput;
+import org.eclipse.ui.IPageLayout;
 import org.eclipse.ui.IPersistableElement;
 import org.eclipse.ui.IPropertyListener;
 import org.eclipse.ui.IViewPart;
@@ -117,10 +118,10 @@ import org.eclipse.ui.dialogs.SaveAsDialog;
 import org.eclipse.ui.handlers.HandlerUtil;
 import org.eclipse.ui.ide.FileStoreEditorInput;
 import org.eclipse.ui.ide.IGotoMarker;
+import org.eclipse.ui.navigator.resources.ProjectExplorer;
 import org.eclipse.ui.part.FileEditorInput;
 import org.eclipse.ui.progress.WorkbenchJob;
 import org.eclipse.ui.views.contentoutline.IContentOutlinePage;
-import org.eclipse.ui.views.navigator.ResourceNavigator;
 import org.eclipse.ui.views.properties.IPropertySheetPage;
 import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.DataTypes.Temporal.TimeControlProperties;
@@ -1252,9 +1253,9 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor {
 				iff.refreshLocal(IResource.DEPTH_ONE, null);
 				// refresh navigator
 				final IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
-				final IViewPart view = page.findView("org.eclipse.ui.views.ResourceNavigator");
-				if (view instanceof ResourceNavigator) {
-					((ResourceNavigator) view).getViewer().refresh(iff);
+				final IViewPart view = page.findView(IPageLayout.ID_PROJECT_EXPLORER);
+				if (view instanceof ProjectExplorer) {
+					((ProjectExplorer) view).getCommonViewer().refresh(iff);
 				}
 
 				// ok, lastly indicate that the save worked

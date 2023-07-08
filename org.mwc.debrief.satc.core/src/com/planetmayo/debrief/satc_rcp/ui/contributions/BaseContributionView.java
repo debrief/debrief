@@ -21,14 +21,14 @@ import java.beans.PropertyChangeListener;
 
 import org.eclipse.core.databinding.DataBindingContext;
 import org.eclipse.core.databinding.UpdateValueStrategy;
-import org.eclipse.core.databinding.beans.BeansObservables;
+import org.eclipse.core.databinding.beans.typed.BeanProperties;
 import org.eclipse.core.databinding.conversion.IConverter;
 import org.eclipse.core.databinding.observable.value.DateAndTimeObservableValue;
 import org.eclipse.core.databinding.observable.value.IObservableValue;
 import org.eclipse.core.databinding.observable.value.IValueChangeListener;
 import org.eclipse.core.databinding.observable.value.ValueChangeEvent;
 import org.eclipse.core.databinding.observable.value.WritableValue;
-import org.eclipse.jface.databinding.swt.WidgetProperties;
+import org.eclipse.jface.databinding.swt.typed.WidgetProperties;
 import org.eclipse.nebula.jface.cdatetime.CDateTimeObservableValue;
 import org.eclipse.nebula.widgets.cdatetime.CDT;
 import org.eclipse.nebula.widgets.cdatetime.CDateTime;
@@ -129,19 +129,18 @@ public abstract class BaseContributionView<T extends BaseContribution> {
 	 * @param context
 	 */
 	protected final void bindCommonDates(final DataBindingContext context) {
-		final IObservableValue startDateValue = BeansObservables.observeValue(contribution,
-				BaseContribution.START_DATE);
+		final IObservableValue startDateValue = BeanProperties.value(BaseContribution.START_DATE).observe(contribution);
 		final IObservableValue startDateWidget = new CDateTimeObservableValue(startDate);
 		final IObservableValue startTimeWidget = new CDateTimeObservableValue(startTime);
 
 		context.bindValue(new DateAndTimeObservableValue(startDateWidget, startTimeWidget), startDateValue);
 
-		final IObservableValue endDateValue = BeansObservables.observeValue(contribution, BaseContribution.FINISH_DATE);
+		final IObservableValue endDateValue = BeanProperties.value(BaseContribution.FINISH_DATE).observe(contribution);
 		final IObservableValue endDateWidget = new CDateTimeObservableValue(endDate);
 		final IObservableValue endTimeWidget = new CDateTimeObservableValue(endTime);
 		context.bindValue(new DateAndTimeObservableValue(endDateWidget, endTimeWidget), endDateValue);
 
-		final IObservableValue nameValue = BeansObservables.observeValue(contribution, BaseContribution.NAME);
+		final IObservableValue nameValue = BeanProperties.value(BaseContribution.NAME).observe(contribution);
 		final IObservableValue nameText = WidgetProperties.text(SWT.Modify).observe(contributionNameText);
 		context.bindValue(nameText, nameValue);
 	}
@@ -172,8 +171,8 @@ public abstract class BaseContributionView<T extends BaseContribution> {
 	protected final void bindCommonHeaderWidgets(final DataBindingContext context, final IObservableValue hardContraint,
 			final IObservableValue estimateValue, final IConverter estimateConverter,
 			final IConverter hardConstraintsConverter) {
-		final IObservableValue activeValue = BeansObservables.observeValue(contribution, BaseContribution.ACTIVE);
-		final IObservableValue activeButton = WidgetProperties.selection().observe(activeCheckBox);
+		final IObservableValue activeValue = BeanProperties.value(BaseContribution.ACTIVE).observe(contribution);
+		final IObservableValue activeButton = WidgetProperties.buttonSelection().observe(activeCheckBox);
 		context.bindValue(activeButton, activeValue);
 
 		if (hardContraint != null) {
@@ -187,8 +186,8 @@ public abstract class BaseContributionView<T extends BaseContribution> {
 			context.bindValue(estimateLabel, estimateValue, null, UIUtils.converterStrategy(estimateConverter));
 		}
 
-		final IObservableValue weightValue = BeansObservables.observeValue(contribution, BaseContribution.WEIGHT);
-		final IObservableValue weightWidget = WidgetProperties.selection().observe(weightSpinner);
+		final IObservableValue weightValue = BeanProperties.value(BaseContribution.WEIGHT).observe(contribution);
+		final IObservableValue weightWidget = WidgetProperties.spinnerSelection().observe(weightSpinner);
 		context.bindValue(weightWidget, weightValue);
 	}
 
@@ -304,7 +303,7 @@ public abstract class BaseContributionView<T extends BaseContribution> {
 			final BooleanToNullConverter<?> checkBoxValueConverter, final UnitConverter unitConverter) {
 		final WritableValue uiProxy = new WritableValue(modelValue.getValue(), modelValue.getValueType());
 
-		final IObservableValue sliderValue = WidgetProperties.selection().observe(slider);
+		final IObservableValue sliderValue = WidgetProperties.scaleSelection().observe(slider);
 		final IObservableValue labelValue = WidgetProperties.text().observe(label);
 
 		if (unitConverter != null) {
@@ -316,7 +315,7 @@ public abstract class BaseContributionView<T extends BaseContribution> {
 		}
 		if (checkBox != null) {
 			final IObservableValue sliderEnabled = WidgetProperties.enabled().observe(slider);
-			final IObservableValue checkBoxValue = WidgetProperties.selection().observe(checkBox);
+			final IObservableValue checkBoxValue = WidgetProperties.buttonSelection().observe(checkBox);
 			context.bindValue(checkBoxValue, modelValue, UIUtils.converterStrategy(checkBoxValueConverter),
 					UIUtils.converterStrategy(new NullToBooleanConverter()));
 			context.bindValue(sliderEnabled, modelValue, null, UIUtils.converterStrategy(new NullToBooleanConverter()));

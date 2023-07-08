@@ -16,12 +16,11 @@
 package com.planetmayo.debrief.satc_rcp.ui.contributions;
 
 import org.eclipse.core.databinding.DataBindingContext;
-import org.eclipse.core.databinding.beans.BeansObservables;
+import org.eclipse.core.databinding.beans.typed.BeanProperties;
 import org.eclipse.core.databinding.observable.value.IObservableValue;
 import org.eclipse.swt.widgets.Composite;
 
 import com.planetmayo.debrief.satc.model.contributions.ATBForecastContribution;
-import com.planetmayo.debrief.satc.model.contributions.BaseContribution;
 import com.planetmayo.debrief.satc.model.generator.IContributions;
 import com.planetmayo.debrief.satc_rcp.ui.converters.BooleanToNullConverter;
 import com.planetmayo.debrief.satc_rcp.ui.converters.CompoundConverter;
@@ -43,11 +42,9 @@ public class ATBForecastContributionView extends BaseContributionView<ATBForecas
 		final PrefixSuffixLabelConverter labelConverter = new PrefixSuffixLabelConverter(Object.class, " \u00B0");
 		labelConverter.setNestedUnitConverter(UnitConverter.ANGLE_DEG.getModelToUI());
 
-		final IObservableValue minValue = BeansObservables.observeValue(contribution,
-				ATBForecastContribution.MIN_ANGLE);
-		final IObservableValue maxValue = BeansObservables.observeValue(contribution,
-				ATBForecastContribution.MAX_ANGLE);
-		final IObservableValue estimateValue = BeansObservables.observeValue(contribution, BaseContribution.ESTIMATE);
+		final IObservableValue<?> minValue = BeanProperties.value(ATBForecastContribution.MIN_ANGLE).observe(contribution);
+		final IObservableValue<?> maxValue = BeanProperties.value(ATBForecastContribution.MAX_ANGLE).observe(contribution);
+		final IObservableValue<?> estimateValue = BeanProperties.value(ATBForecastContribution.ESTIMATE).observe(contribution);
 		final MinMaxLimitObservable hardContraints = new MinMaxLimitObservable(minValue, maxValue,
 				new CompoundConverter(UnitConverter.ANGLE_DEG.getModelToUI(), new IntegerConverter()));
 		bindCommonHeaderWidgets(context, hardContraints, estimateValue, labelConverter);

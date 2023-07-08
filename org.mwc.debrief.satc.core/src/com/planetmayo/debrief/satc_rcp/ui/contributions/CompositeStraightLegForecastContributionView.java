@@ -18,14 +18,14 @@ package com.planetmayo.debrief.satc_rcp.ui.contributions;
 import java.math.BigDecimal;
 
 import org.eclipse.core.databinding.DataBindingContext;
-import org.eclipse.core.databinding.beans.BeansObservables;
+import org.eclipse.core.databinding.beans.typed.BeanProperties;
 import org.eclipse.core.databinding.conversion.IConverter;
 import org.eclipse.core.databinding.observable.value.IObservableValue;
 import org.eclipse.core.databinding.validation.MultiValidator;
 import org.eclipse.core.databinding.validation.ValidationStatus;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.jface.databinding.swt.ISWTObservableValue;
-import org.eclipse.jface.databinding.swt.WidgetProperties;
+import org.eclipse.jface.databinding.swt.typed.WidgetProperties;
 import org.eclipse.jface.fieldassist.ControlDecoration;
 import org.eclipse.jface.fieldassist.FieldDecorationRegistry;
 import org.eclipse.swt.SWT;
@@ -353,19 +353,25 @@ public class CompositeStraightLegForecastContributionView
 		bindCommonHeaderWidgets(context, null, null, null);
 		bindCommonDates(context);
 
-		final IObservableValue estimateCourseValue = BeansObservables.observeValue(contribution,
-				CompositeStraightLegForecastContribution.COURSE + "." + BaseContribution.ESTIMATE);
-		final IObservableValue minCourseValue = BeansObservables.observeValue(contribution,
-				CompositeStraightLegForecastContribution.COURSE + "." + CourseForecastContribution.MIN_COURSE);
-		final IObservableValue maxCourseValue = BeansObservables.observeValue(contribution,
-				CompositeStraightLegForecastContribution.COURSE + "." + CourseForecastContribution.MAX_COURSE);
+		final IObservableValue estimateCourseValue = BeanProperties
+				.value(CompositeStraightLegForecastContribution.COURSE + "." + BaseContribution.ESTIMATE)
+				.observe(contribution);
+		final IObservableValue minCourseValue = BeanProperties
+				.value(CompositeStraightLegForecastContribution.COURSE + "." + CourseForecastContribution.MIN_COURSE)
+				.observe(contribution);
+		final IObservableValue maxCourseValue = BeanProperties
+				.value(CompositeStraightLegForecastContribution.COURSE + "." + CourseForecastContribution.MAX_COURSE)
+				.observe(contribution);
 
-		final IObservableValue estimateSpeedValue = BeansObservables.observeValue(contribution,
-				CompositeStraightLegForecastContribution.SPEED + "." + BaseContribution.ESTIMATE);
-		final IObservableValue minSpeedValue = BeansObservables.observeValue(contribution,
-				CompositeStraightLegForecastContribution.SPEED + "." + SpeedForecastContribution.MIN_SPEED);
-		final IObservableValue maxSpeedValue = BeansObservables.observeValue(contribution,
-				CompositeStraightLegForecastContribution.SPEED + "." + SpeedForecastContribution.MAX_SPEED);
+		final IObservableValue estimateSpeedValue = BeanProperties
+				.value(CompositeStraightLegForecastContribution.SPEED + "." + BaseContribution.ESTIMATE)
+				.observe(contribution);
+		final IObservableValue minSpeedValue = BeanProperties
+				.value(CompositeStraightLegForecastContribution.SPEED + "." + SpeedForecastContribution.MIN_SPEED)
+				.observe(contribution);
+		final IObservableValue maxSpeedValue = BeanProperties
+				.value(CompositeStraightLegForecastContribution.SPEED + "." + SpeedForecastContribution.MAX_SPEED)
+				.observe(contribution);
 
 		final ISWTObservableValue minSpeedTextValue = bindSpeedValue(context, minSpeed, minSpeedValue);
 

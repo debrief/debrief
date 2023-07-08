@@ -1347,6 +1347,9 @@ public class SWTCanvasAdapter implements CanvasType, Serializable, Editable, Ext
 		_theDest = (GC) theVal;
 
 		if (!_theDest.isDisposed()) {
+			if(_sg2d != null) {
+				_sg2d.dispose();
+			}
 			_sg2d = new SWTGraphics2D(_theDest);
 			_sg2d.setFont(Defaults.getFont());
 		}
