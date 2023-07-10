@@ -63,7 +63,7 @@ jobs:
                sleep 3
                echo "root.win32.win32.x86_64 = win-64" >> org.mwc.debrief.combined.feature/build.properties
                # get a 64-bit windows JRE
-               wget -P dest https://github.com/AdoptOpenJDK/openjdk11-binaries/releases/download/jdk-11.0.5%2B10/OpenJDK11U-jre_x64_windows_hotspot_11.0.5_10.zip
+               wget -P dest https://objects.githubusercontent.com/github-production-release-asset-2e65be/372925194/94b023fd-de41-4b88-b179-c96ad68ff7fd?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAIWNJYAX4CSVEH53A%2F20230710%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20230710T024544Z&X-Amz-Expires=300&X-Amz-Signature=d8219da234dd3fb50268f6e0cbdaf48bf708d97a083f910d951c1827d643df58&X-Amz-SignedHeaders=host&actor_id=535713&key_id=0&repo_id=372925194&response-content-disposition=attachment%3B%20filename%3DOpenJDK17U-jdk_x64_windows_hotspot_17.0.7_7.zip&response-content-type=application%2Foctet-stream
                # unpack it
                cd dest
                unzip OpenJD*.zip
