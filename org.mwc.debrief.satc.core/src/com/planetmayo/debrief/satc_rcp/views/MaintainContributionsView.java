@@ -33,13 +33,13 @@ import java.util.Map;
 
 import org.eclipse.core.databinding.Binding;
 import org.eclipse.core.databinding.DataBindingContext;
-import org.eclipse.core.databinding.beans.BeansObservables;
+import org.eclipse.core.databinding.beans.typed.BeanProperties;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.action.IToolBarManager;
-import org.eclipse.jface.databinding.swt.WidgetProperties;
+import org.eclipse.jface.databinding.swt.typed.WidgetProperties;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ComboViewer;
 import org.eclipse.jface.viewers.ISelection;
@@ -1190,7 +1190,7 @@ public class MaintainContributionsView extends ViewPart {
 		}
 	}
 
-	@SuppressWarnings("unchecked")
+
 	public void setActiveSolver(final ISolver solver) {
 
 		// just double check that we aren't already looking at this solver
@@ -1237,8 +1237,8 @@ public class MaintainContributionsView extends ViewPart {
 				// .getVehicleType()));
 				precisionsCombo.setSelection(new StructuredSelection(activeSolver.getPrecision()));
 				suppressCuts.setSelection(activeSolver.getAutoSuppress());
-				liveRunningBinding = context.bindValue(WidgetProperties.selection().observe(liveConstraints),
-						BeansObservables.observeValue(activeSolver, ISolver.LIVE_RUNNING));
+				liveRunningBinding = context.bindValue(WidgetProperties.buttonSelection().observe(liveConstraints),
+						BeanProperties.value( ISolver.LIVE_RUNNING).observe(activeSolver));
 				setPartName(TITLE + " - " + activeSolver.getName());
 
 				// also update the zone chart

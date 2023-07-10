@@ -18,11 +18,11 @@ package com.planetmayo.debrief.satc_rcp.ui.contributions;
 import java.text.DecimalFormat;
 
 import org.eclipse.core.databinding.DataBindingContext;
-import org.eclipse.core.databinding.beans.BeansObservables;
+import org.eclipse.core.databinding.beans.typed.BeanProperties;
 import org.eclipse.core.databinding.conversion.IConverter;
 import org.eclipse.core.databinding.observable.value.IObservableValue;
 import org.eclipse.jface.databinding.swt.ISWTObservableValue;
-import org.eclipse.jface.databinding.swt.WidgetProperties;
+import org.eclipse.jface.databinding.swt.typed.WidgetProperties;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.VerifyEvent;
 import org.eclipse.swt.events.VerifyListener;
@@ -137,8 +137,8 @@ public class FrequencyMeasurementContributionView extends BaseContributionView<F
 	}
 
 	private void bindFNought(final DataBindingContext context) {
-		final IObservableValue fNoughtValue = BeansObservables.observeValue(contribution,
-				FrequencyMeasurementContribution.F_NOUGHT);
+		final IObservableValue fNoughtValue = BeanProperties.value(FrequencyMeasurementContribution.F_NOUGHT)
+				.observe(contribution);
 		final ISWTObservableValue fNoughtTextValue = WidgetProperties.text(SWT.FocusOut).observe(fNoughtText);
 
 		// converter rounding the value to 1 decimal place
@@ -156,8 +156,8 @@ public class FrequencyMeasurementContributionView extends BaseContributionView<F
 	}
 
 	private void bindSpeed(final DataBindingContext context) {
-		final IObservableValue soundValue = BeansObservables.observeValue(contribution,
-				FrequencyMeasurementContribution.SOUND_SPEED);
+		final IObservableValue soundValue = BeanProperties.value(FrequencyMeasurementContribution.SOUND_SPEED)
+				.observe(contribution);
 		final ISWTObservableValue soundTextValue = WidgetProperties.text(SWT.FocusOut).observe(speedSoundText);
 
 		// converter rounding the value to 1 decimal place
@@ -170,8 +170,8 @@ public class FrequencyMeasurementContributionView extends BaseContributionView<F
 
 	@Override
 	protected void bindValues(final DataBindingContext context) {
-		final IObservableValue observationNumberValue = BeansObservables.observeValue(contribution,
-				CoreMeasurementContribution.OBSERVATIONS_NUMBER);
+		final IObservableValue observationNumberValue = BeanProperties
+				.value(CoreMeasurementContribution.OBSERVATIONS_NUMBER).observe(contribution);
 		bindCommonHeaderWidgets(context, null, observationNumberValue,
 				new PrefixSuffixLabelConverter(Object.class, " Measurements"), null);
 		bindCommonDates(context);

@@ -16,8 +16,8 @@
 package com.planetmayo.debrief.satc_rcp.ui.contributions;
 
 import org.eclipse.core.databinding.DataBindingContext;
-import org.eclipse.core.databinding.beans.BeansObservables;
-import org.eclipse.core.databinding.beans.PojoObservables;
+import org.eclipse.core.databinding.beans.typed.BeanProperties;
+import org.eclipse.core.databinding.beans.typed.PojoProperties;
 import org.eclipse.core.databinding.conversion.IConverter;
 import org.eclipse.core.databinding.observable.value.IObservableValue;
 import org.eclipse.nebula.widgets.formattedtext.FormattedText;
@@ -78,20 +78,20 @@ public class LocationForecastContributionView extends BaseContributionView<Locat
 	@Override
 	protected void bindValues(final DataBindingContext context) {
 		final PrefixSuffixLabelConverter labelsConverter = new PrefixSuffixLabelConverter(Object.class, " m");
-		final IObservableValue limitValue = BeansObservables.observeValue(contribution,
-				LocationForecastContribution.LIMIT);
-		final IObservableValue locationValue = BeansObservables.observeValue(contribution,
-				LocationForecastContribution.LOCATION);
+		final IObservableValue limitValue = BeanProperties.value(LocationForecastContribution.LIMIT)
+				.observe(contribution);
+		final IObservableValue locationValue = BeanProperties.value(LocationForecastContribution.LOCATION)
+				.observe(contribution);
 		bindCommonHeaderWidgets(context, limitValue, locationValue, geoConverter, labelsConverter);
 		bindCommonDates(context);
 
 		bindSliderLabelCheckbox(context, limitValue, limitSlider, limitLabel, limitActiveButton, labelsConverter,
 				new BooleanToNullConverter<Double>(0d), null);
 
-		final IObservableValue latValue = BeansObservables.observeDetailValue(
-				BeansObservables.observeValue(contribution, LocationForecastContribution.LOCATION), GeoPoint.LAT,
-				double.class);
-		context.bindValue(PojoObservables.observeValue(latitude, "value"), latValue);
+		final IObservableValue latValue = BeanProperties.value(GeoPoint.LAT)
+				.observeDetail(BeanProperties.value(LocationForecastContribution.LOCATION).observe(contribution));
+
+		context.bindValue(PojoProperties.value("value").observe(latitude), latValue);
 		latitude.getControl().addListener(SWT.FocusOut, new Listener() {
 			@Override
 			public void handleEvent(final Event event) {
@@ -101,10 +101,10 @@ public class LocationForecastContributionView extends BaseContributionView<Locat
 			}
 		});
 
-		final IObservableValue lonValue = BeansObservables.observeDetailValue(
-				BeansObservables.observeValue(contribution, LocationForecastContribution.LOCATION), GeoPoint.LON,
-				double.class);
-		context.bindValue(PojoObservables.observeValue(longitude, "value"), lonValue);
+		final IObservableValue lonValue = BeanProperties.value(GeoPoint.LON)
+				.observeDetail(BeanProperties.value(LocationForecastContribution.LOCATION).observe(contribution));
+
+		context.bindValue(PojoProperties.value("value").observe(longitude), lonValue);
 		longitude.getControl().addListener(SWT.FocusOut, new Listener() {
 			@Override
 			public void handleEvent(final Event event) {
