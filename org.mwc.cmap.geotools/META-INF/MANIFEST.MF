@@ -5,7 +5,7 @@ Bundle-SymbolicName: org.mwc.cmap.geotools
 Bundle-Version: 1.0.13
 Require-Bundle: org.mwc.cmap.legacy;bundle-version="1.0.278",
  org.mwc.debrief.legacy;bundle-version="1.0.409"
-Bundle-RequiredExecutionEnvironment: JavaSE-11
+Bundle-RequiredExecutionEnvironment: JavaSE-17
 Bundle-Vendor: Open Source Geospatial Foundation
 Bundle-ClassPath: .,
  libs/animal-sniffer-annotations-1.17.jar,
