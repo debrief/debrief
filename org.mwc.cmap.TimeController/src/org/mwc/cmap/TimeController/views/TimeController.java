@@ -22,6 +22,7 @@ import static org.monte.media.FormatKeys.MIME_AVI;
 import static org.monte.media.FormatKeys.MIME_QUICKTIME;
 import static org.monte.media.FormatKeys.MediaTypeKey;
 import static org.monte.media.FormatKeys.MimeTypeKey;
+import static org.monte.media.FormatKeys.ConversionKey;
 import static org.monte.media.VideoFormatKeys.COMPRESSOR_NAME_QUICKTIME_ANIMATION;
 import static org.monte.media.VideoFormatKeys.COMPRESSOR_NAME_QUICKTIME_JPEG;
 import static org.monte.media.VideoFormatKeys.COMPRESSOR_NAME_QUICKTIME_PNG;
@@ -137,6 +138,7 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.ViewPart;
 import org.monte.media.Format;
 import org.monte.media.FormatKeys.MediaType;
+import org.monte.media.VideoFormatKeys.ConvertFormat;
 import org.monte.media.math.Rational;
 import org.monte.screenrecorder.ScreenRecorder;
 import org.mwc.cmap.TimeController.TimeControllerPlugin;
@@ -395,6 +397,10 @@ public class TimeController extends ViewPart implements ISelectionProvider,
       int screenRate;
       Format mouseFormat;
       Rectangle areaToRecord;
+      // used only when the user wants to convert to a format that
+      // is not supported by Monte Media natively.
+
+      ConvertFormat conversionFormat = ConvertFormat.NONE;
 
       public void retrieve(final IPreferenceStore preferenceStore)
       {
@@ -408,12 +414,25 @@ public class TimeController extends ViewPart implements ISelectionProvider,
         {
           retrieveMovieMakerProperties(preferenceStore);
         }
+        else
+        {
+          // It is neither AVI nor QuickTime, so we must convert it.
+          createConversionProperties(preferenceStore);
+        }
 
         screenRate = extractScreenRate(preferenceStore);
 
         mouseFormat = extractMouseFormat(preferenceStore);
 
         areaToRecord = extractAreaToRecord(preferenceStore);
+      }
+
+      private void createConversionProperties(IPreferenceStore preferenceStore)
+      {
+        // Let's use techsmith as default before conversion.
+        formatName = compressorName = ENCODING_AVI_TECHSMITH_SCREEN_CAPTURE;
+        conversionFormat = ConvertFormat.valueOf(preferenceStore.getString(
+            P_FORMAT));
       }
 
       private void retrieveMovieMakerProperties(
@@ -524,7 +543,9 @@ public class TimeController extends ViewPart implements ISelectionProvider,
               screenRecorderProperties.bitDepth, FrameRateKey, Rational.valueOf(
                   screenRecorderProperties.screenRate), QualityKey,
               screenRecorderProperties.quality, KeyFrameIntervalKey,
-              screenRecorderProperties.screenRate * 60),
+              screenRecorderProperties.screenRate * 60, ConversionKey,
+              screenRecorderProperties.conversionFormat),
+
           screenRecorderProperties.mouseFormat, null, null);
 
       return screenRecorder;
@@ -2035,30 +2056,30 @@ public class TimeController extends ViewPart implements ISelectionProvider,
         menu = new Menu(getViewSite().getShell(), SWT.CASCADE);
 
         final IPreferenceStore preferenceStore = CorePlugin.getDefault()
-                .getPreferenceStore();
+            .getPreferenceStore();
 
         final boolean recordingEnabled = preferenceStore.getBoolean(P_ENABLE);
 
         if (recordingEnabled)
         {
-        	final MenuItem videoMenu = new MenuItem(menu, SWT.RADIO);
+          final MenuItem videoMenu = new MenuItem(menu, SWT.RADIO);
 
-            videoMenu.setText("Video");
-            videoMenu.setSelection(isVideoRecording);
-            videoMenu.addSelectionListener(new SelectionAdapter()
+          videoMenu.setText("Video");
+          videoMenu.setSelection(isVideoRecording);
+          videoMenu.addSelectionListener(new SelectionAdapter()
+          {
+            @Override
+            public void widgetSelected(final SelectionEvent e)
             {
-                @Override
-                public void widgetSelected(final SelectionEvent e)
-                {
-                  isVideoRecording = true;
-                  isPptxRecording = false;
-                }
-              });
+              isVideoRecording = true;
+              isPptxRecording = false;
+            }
+          });
         }
         final MenuItem pptxMenu = new MenuItem(menu, SWT.RADIO);
         pptxMenu.setText("PPTX");
         pptxMenu.setSelection(isPptxRecording);
-        
+
         pptxMenu.addSelectionListener(new SelectionAdapter()
         {
           @Override
@@ -2560,11 +2581,11 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 
     /*
      * RIGHT, until JAN 2007 this next line had been commented out - replaced by the line
-     * immediately after it. We've switched back to this implementation. This implementation
-     * lets the time-slider select a time for which there aren't any points visible. This makes
-     * sense because in it's successor implementation when the DTG slipped outside the visible
-     * time period, the event was rejected, and the time- controller buttons appeared to break.
-     * It remains responsive this way...
+     * immediately after it. We've switched back to this implementation. This implementation lets
+     * the time-slider select a time for which there aren't any points visible. This makes sense
+     * because in it's successor implementation when the DTG slipped outside the visible time
+     * period, the event was rejected, and the time- controller buttons appeared to break. It
+     * remains responsive this way...
      */
     TimePeriod timeP = _myTemporalDataset.getPeriod();
     if (_filterToSelectionAction != null && _filterToSelectionAction

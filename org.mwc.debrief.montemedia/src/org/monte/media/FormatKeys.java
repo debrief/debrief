@@ -10,6 +10,7 @@
  */
 package org.monte.media;
 
+import org.monte.media.VideoFormatKeys.ConvertFormat;
 import org.monte.media.math.Rational;
 
 /**
@@ -58,4 +59,10 @@ public class FormatKeys {
      * as a hint and try to produce one key frame per second.
      */
     public final static FormatKey<Integer> KeyFrameIntervalKey = new FormatKey<Integer>("keyFrameInterval", Integer.class);
+    
+    /*
+     * If the conversion is enabled, we will indicate the final 
+     * video encoding here.
+     */
+    public final static FormatKey<ConvertFormat> ConversionKey = new FormatKey<ConvertFormat>("convertFormat", ConvertFormat.class);
 }

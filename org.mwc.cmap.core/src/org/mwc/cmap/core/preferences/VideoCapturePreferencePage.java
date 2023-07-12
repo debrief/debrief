@@ -44,6 +44,18 @@ public class VideoCapturePreferencePage extends FieldEditorPreferencePage implem
 
 		public static final String AVI = "avi";
 
+		public static final String MP4 = "mp4";
+
+		public static final String FLV = "flv";
+
+		public static final String WMA = "wma";
+
+		public static final String MKV = "mkv";
+
+		public static final String M4V = "m4v";
+
+		public static final String WEBM = "WEBM";
+
 		public static final String NO_CURSOR = "no cursor";
 
 		public static final String P_FORMAT = "formatPreference";
@@ -119,7 +131,10 @@ public class VideoCapturePreferencePage extends FieldEditorPreferencePage implem
 
 		fileFormatEditor = new RadioGroupFieldEditor(
 				PreferenceConstants.P_FORMAT, "&Format to generate the video", 3, new String[][] {
-						{ "&AVI", PreferenceConstants.AVI }, { "&QuickTime", PreferenceConstants.QUICK_TIME } },
+						{ "&AVI", PreferenceConstants.AVI }, { "&QuickTime", PreferenceConstants.QUICK_TIME }, 
+						{ "&MP4", PreferenceConstants.MP4 }, { "&FLV", PreferenceConstants.FLV },
+						{ "&WMA", PreferenceConstants.WMA }, { "&MKV", PreferenceConstants.MKV },
+						{ "&M4V", PreferenceConstants.M4V }, { "&WEBM", PreferenceConstants.WEBM },},
 				getFieldEditorParent());
 		addField(fileFormatEditor);
 		fileFormatEditor.setEnabled(recordingEnabledPref, getFieldEditorParent());

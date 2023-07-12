@@ -53,7 +53,31 @@ public class VideoFormatKeys extends FormatKeys {
     /** Interleaved planar bitmap format. */
     public static final String ENCODING_BITMAP_IMAGE = "ILBM";
 
-    //
+    // with conversion enabled.
+    
+    public static enum ConvertFormat {
+      NONE("none"), // used to indicate that we don't want to convert
+      MP4("mp4"), 
+      AVI("avi"), 
+      FLV("flv"), 
+      WMA("wma"),
+      MKV("mkv"),
+      M4V("m4v"),
+      //MOBILE("3gp"), convert failed
+      //MPEG("mpeg"), convert failed
+      WEBM("webm");
+       
+      private String type;
+   
+      ConvertFormat(String type) {
+          this.type = type;
+      }
+   
+      public String getType() {
+          return type;
+      }
+    }
+    
 
     /** The WidthKey of a video frame. */
     public final static FormatKey<Integer> WidthKey = new FormatKey<Integer>("dimX","width", Integer.class);
