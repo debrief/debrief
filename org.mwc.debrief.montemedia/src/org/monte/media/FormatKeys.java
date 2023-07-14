@@ -65,4 +65,9 @@ public class FormatKeys {
      * video encoding here.
      */
     public final static FormatKey<ConvertFormat> ConversionKey = new FormatKey<ConvertFormat>("convertFormat", ConvertFormat.class);
+
+    /**
+     * FFMPEG Path
+     */
+    public final static FormatKey<String> FfmpegKey = new FormatKey<String>("ffmpegPath", String.class);
 }

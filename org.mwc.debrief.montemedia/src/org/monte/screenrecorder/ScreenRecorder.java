@@ -25,8 +25,13 @@ import java.awt.Toolkit;
 import java.awt.event.AWTEventListener;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.MalformedURLException;
+import java.net.URL;
+
 import static java.lang.Math.*;
 import java.nio.ByteOrder;
 import java.nio.file.Files;
@@ -79,6 +84,8 @@ import org.monte.media.converter.ScaleImageCodec;
 import org.monte.media.image.Images;
 import org.monte.media.math.Rational;
 import org.monte.media.quicktime.QuickTimeWriter;
+import org.osgi.framework.Bundle;
+import org.osgi.framework.FrameworkUtil;
 
 /**
  * A screen recorder written in pure Java. <p> Captures the screen, the mouse
@@ -362,6 +369,9 @@ public class ScreenRecorder extends AbstractStateModel {
     }
     
     public String getFileFormatExtension() {
+      if (conversionEnabled()) {
+        return conversionExtension();
+      }
       return Registry.getInstance().getExtension(fileFormat);
     }
 
@@ -1259,9 +1269,6 @@ public class ScreenRecorder extends AbstractStateModel {
             if (screenCaptureTimer != null) {
                 screenGrabber.setStopTime(recordingStopTime);
             }
-            if (audioCaptureTimer != null) {
-                audioGrabber.setStopTime(recordingStopTime);
-            }
             try {
                 waitUntilMouseCaptureStopped();
                 if (screenCaptureTimer != null) {
@@ -1277,25 +1284,85 @@ public class ScreenRecorder extends AbstractStateModel {
                     screenGrabber.close();
                     screenGrabber = null;
                 }
-                if (audioCaptureTimer != null) {
-                    try {
-                        audioFuture.get();
-                    } catch (InterruptedException ex) {
-                    } catch (CancellationException ex) {
-                    } catch (ExecutionException ex) {
-                    }
-                    audioCaptureTimer.shutdown();
-                    audioCaptureTimer.awaitTermination(5000, TimeUnit.MILLISECONDS);
-                    audioCaptureTimer = null;
-                    audioGrabber.close();
-                    audioGrabber = null;
-                }
             } catch (InterruptedException ex) {
                 // nothing to do
             }
             stopWriter();
+            
+            // We must check if there is any conversion to be done.
+            
+            if (conversionEnabled()) {
+              // Ok, we need to convert it.
+              
+              File outputFile = Files.createTempFile("", "." + conversionExtension()).toFile();
+              File inputFile = fileCreated;
+              doConvert(inputFile.getAbsolutePath(), outputFile.getAbsolutePath(), fileFormat.get(ConversionKey));
+              fileCreated = outputFile; // we replace the old file.
+            }
+            
             setState(State.DONE, null);
         }
+    }
+
+    public String conversionExtension()
+    {
+      return fileFormat.get(ConversionKey).toString().toLowerCase();
+    }
+
+    public boolean conversionEnabled()
+    {
+      return fileFormat != null && !ConvertFormat.NONE.equals(fileFormat.get(ConversionKey, ConvertFormat.NONE) );
+    }
+    
+    String FFMPEG_COMMAND = "";
+    
+    void doConvert(String inputFile, String outputFile, ConvertFormat config) {
+      try {
+        // Command to create an external process
+        
+        String commandExecute = fileFormat.get(FfmpegKey)
+            +" -y" //Overwrite if file exist
+            +" -i " //Declare input file
+            + inputFile 
+            + " " 
+            + outputFile;
+
+        // Running the above command
+        Runtime run = Runtime.getRuntime();
+        Process proc = run.exec(commandExecute);
+        outputLogConvert(proc);
+        
+        while(proc.isAlive()) {
+          try {
+            Thread.sleep(1000);
+          } catch (InterruptedException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+          }
+        }
+        System.out.println("Finish converted!!!, output file at: " + outputFile);
+        
+      } catch (IOException e) {
+        e.printStackTrace();
+      }
+    }
+    
+    /**
+     * Write log result of convert
+     * @param proc
+     * @throws IOException
+     */
+    private void outputLogConvert(Process proc) throws IOException {
+        BufferedReader stdError = new BufferedReader(new 
+             InputStreamReader(proc.getErrorStream()));
+
+        // Read the output from the command
+        String s = null;
+        System.out.println("Here is the standard output of the command (if any):\n");
+        while ((s = stdError.readLine()) != null) {
+            System.out.println(s);
+        }
+      
     }
 
     private void stopWriter() throws IOException {

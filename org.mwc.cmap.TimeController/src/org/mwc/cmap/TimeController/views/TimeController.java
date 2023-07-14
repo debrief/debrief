@@ -23,6 +23,7 @@ import static org.monte.media.FormatKeys.MIME_QUICKTIME;
 import static org.monte.media.FormatKeys.MediaTypeKey;
 import static org.monte.media.FormatKeys.MimeTypeKey;
 import static org.monte.media.FormatKeys.ConversionKey;
+import static org.monte.media.FormatKeys.FfmpegKey;
 import static org.monte.media.VideoFormatKeys.COMPRESSOR_NAME_QUICKTIME_ANIMATION;
 import static org.monte.media.VideoFormatKeys.COMPRESSOR_NAME_QUICKTIME_JPEG;
 import static org.monte.media.VideoFormatKeys.COMPRESSOR_NAME_QUICKTIME_PNG;
@@ -56,6 +57,9 @@ import static org.mwc.cmap.core.preferences.VideoCapturePreferencePage.Preferenc
 import static org.mwc.cmap.core.preferences.VideoCapturePreferencePage.PreferenceConstants.P_MOUSE_RATE;
 import static org.mwc.cmap.core.preferences.VideoCapturePreferencePage.PreferenceConstants.P_SCREEN_AREA;
 import static org.mwc.cmap.core.preferences.VideoCapturePreferencePage.PreferenceConstants.P_SCREEN_RATE;
+import static org.mwc.cmap.core.preferences.VideoCapturePreferencePage.PreferenceConstants.P_FFMPEG_PATH_ENABLED;
+import static org.mwc.cmap.core.preferences.VideoCapturePreferencePage.PreferenceConstants.P_FFMPEG_PATH;
+import static org.mwc.cmap.core.preferences.VideoCapturePreferencePage.PreferenceConstants.FFMPEG;
 import static org.mwc.cmap.core.preferences.VideoCapturePreferencePage.PreferenceConstants.QUICK_TIME;
 import static org.mwc.cmap.core.preferences.VideoCapturePreferencePage.PreferenceConstants.SCREEN_CAPTURE;
 import static org.mwc.cmap.core.preferences.VideoCapturePreferencePage.PreferenceConstants.WHITE_CURSOR;
@@ -397,10 +401,6 @@ public class TimeController extends ViewPart implements ISelectionProvider,
       int screenRate;
       Format mouseFormat;
       Rectangle areaToRecord;
-      // used only when the user wants to convert to a format that
-      // is not supported by Monte Media natively.
-
-      ConvertFormat conversionFormat = ConvertFormat.NONE;
 
       public void retrieve(final IPreferenceStore preferenceStore)
       {
@@ -427,12 +427,37 @@ public class TimeController extends ViewPart implements ISelectionProvider,
         areaToRecord = extractAreaToRecord(preferenceStore);
       }
 
+      public String getFFmpegPath(IPreferenceStore preferenceStore)
+      {
+
+        final boolean ffmpegEnabled = preferenceStore.getBoolean(
+            P_FFMPEG_PATH_ENABLED);
+
+        if (ffmpegEnabled)
+        {
+          return FFMPEG;
+        }
+        
+        return preferenceStore.getString(P_FFMPEG_PATH);
+      }
+
       private void createConversionProperties(IPreferenceStore preferenceStore)
       {
+
+        // used only when the user wants to convert to a format that
+        // is not supported by Monte Media natively.
+
+        ConvertFormat conversionFormat = ConvertFormat.valueOf(preferenceStore
+            .getString(P_FORMAT).toUpperCase());
+
         // Let's use techsmith as default before conversion.
+        formatToUse = AVI_FORMAT;
+        formatToUse = formatToUse.append(new Format(ConversionKey,
+            conversionFormat));
+        formatToUse = formatToUse.append(new Format(FfmpegKey, getFFmpegPath(
+            preferenceStore)));
+
         formatName = compressorName = ENCODING_AVI_TECHSMITH_SCREEN_CAPTURE;
-        conversionFormat = ConvertFormat.valueOf(preferenceStore.getString(
-            P_FORMAT));
       }
 
       private void retrieveMovieMakerProperties(
@@ -543,8 +568,7 @@ public class TimeController extends ViewPart implements ISelectionProvider,
               screenRecorderProperties.bitDepth, FrameRateKey, Rational.valueOf(
                   screenRecorderProperties.screenRate), QualityKey,
               screenRecorderProperties.quality, KeyFrameIntervalKey,
-              screenRecorderProperties.screenRate * 60, ConversionKey,
-              screenRecorderProperties.conversionFormat),
+              screenRecorderProperties.screenRate * 60),
 
           screenRecorderProperties.mouseFormat, null, null);
 
@@ -684,7 +708,11 @@ public class TimeController extends ViewPart implements ISelectionProvider,
     {
       final boolean isRecording = _recordButton.getSelection();
       _playing = false;
-      menu.setEnabled(!isRecording);
+      if (menu != null)
+      {
+        menu.setEnabled(!isRecording);
+      }
+
       if (isRecording)
       {
         startPlaying();
