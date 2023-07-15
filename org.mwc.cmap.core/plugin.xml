@@ -70,8 +70,22 @@
         point="org.eclipse.core.runtime.preferences">
      <initializer class="org.mwc.cmap.core.preferences.ETOPOPreferenceInitializer"/>
   </extension>
-  
-  
+   <extension
+         point="org.eclipse.ui.preferencePages">
+      <page
+            category="org.mwc.cmap.core.preferences.CMAPPrefsPage"
+            class="org.mwc.cmap.core.preferences.VideoCapturePreferencePage"
+            id="org.mwc.cmap.core.preferences.VideoCapturePreferencePage"
+            name="Video Capture Preferences">
+      </page>
+   </extension>
+   <extension
+         point="org.eclipse.core.runtime.preferences">
+      <initializer
+            class="org.mwc.cmap.core.preferences.VideoCapturePreferenceInitializer">
+      </initializer>
+   </extension>
+   
   <extension
         point="org.eclipse.ui.preferencePages">
      <page
