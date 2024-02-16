@@ -369,13 +369,18 @@ public class NMEA_Radar_FileImporter {
 			return res;
 		}
 	}
+	
+	private static FixWrapper generateFix(final WorldLocation origin, final RadarEntry entry) {
+		Fix theFix = new Fix(entry.dtg, origin, );
+		return new FixWrapper(theFix);
+	}
 
 	/**
 	 * package up the action that adds the data to the layers target
 	 *
 	 */
 	private static class ImportNmeaRadarFileAction implements Action {
-		private final List<RadarEntry> _track;
+		private final List<RadarEntry> _entries;
 		private final Layers _layers;
 		private final WorldLocation _origin;
 		private boolean _trackCreated = false;
@@ -383,35 +388,30 @@ public class NMEA_Radar_FileImporter {
 		public ImportNmeaRadarFileAction(final List<RadarEntry> track, final WorldLocation origin, final Layers layers) {
 			super();
 			_origin = origin;
-			_track = track;
+			_entries = track;
 			_layers = layers;
 		}
 
 		@Override
 		public void execute() {
-			// see of we this track already exists
-//			final Layer layer = _layers.findLayer(_name);
-//			final TrackWrapper track;
-//			if (layer != null) {
-//				if (layer instanceof TrackWrapper) {
-//					track = (TrackWrapper) layer;
-//				} else {
-//					DialogFactory.showMessage("Import Log File",
-//							"Can't use this track name, it clashes with existing non-track layer");
-//					track = null;
-//				}
-//			} else {
-//				track = new TrackWrapper();
-//				track.setName(_name);
-//				track.setColor(DebriefColors.BLUE);
-//				_trackCreated = true;
-//				_layers.addThisLayer(track);
-//			}
-//			if (track != null) {
-//				for (final FixWrapper fix : _track) {
-//					track.addFix(fix);
-//				}
-//			}
+			for (RadarEntry e: _entries) {
+				// get the parent track
+				final Layer layer = _layers.findLayer("" + e.trackId);
+				final TrackWrapper track;
+				if(layer == null) {
+					track = new TrackWrapper();
+					track.setName(""+ e.trackId);
+					track.setColor(DebriefColors.GREEN);
+					_trackCreated = true;
+				} else {
+					track = (TrackWrapper) layer;
+				}
+				
+				// now generate the fix
+				
+				// add to the track
+				
+			}
 		}
 
 		@Override
