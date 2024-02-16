@@ -45,7 +45,7 @@ import MWC.Utilities.TextFormatting.GMTDateFormat;
 import junit.framework.TestCase;
 
 public class NMEA_Radar_FileImporter {
-	
+
 	private static class RadarEntry {
 		int trackId;
 		double rangeNm;
@@ -54,10 +54,10 @@ public class NMEA_Radar_FileImporter {
 		public double speedKts;
 		public double courseDegs;
 	}
-	
+
 	public static class RadarImporter_Test extends TestCase {
 		static class Logger implements ErrorLogger {
-			private final List<String> messages = new ArrayList<String>();
+			private final List<String> messages = new ArrayList<>();
 
 			private final boolean console = true;
 
@@ -99,7 +99,7 @@ public class NMEA_Radar_FileImporter {
 		}
 
 		static public final String TEST_ALL_TEST_TYPE = "UNIT";
-		
+
 		private final Logger _logger = new Logger();
 
 		@Override
@@ -110,7 +110,7 @@ public class NMEA_Radar_FileImporter {
 		public void testCanLoad() throws Exception {
 
 			final String initialString = "700101_010601:$RATTM,002,0.665,224.7,T,0.17,31.2,R,0.16,99.99,N,,T,,,A*2A";
-			
+
 			final Reader inputString = new StringReader(initialString);
 			final BufferedReader reader = new BufferedReader(inputString);
 
@@ -146,12 +146,12 @@ public class NMEA_Radar_FileImporter {
 			assertFalse(canLoad(_logger, reader));
 		}
 	}
-	
-	private static FixWrapper generateFix(final WorldLocation origin, final RadarEntry entry) {		
+
+	private static FixWrapper generateFix(final WorldLocation origin, final RadarEntry entry) {
 		// calculate the new origin
 		final WorldVector vector = new WorldVector(Conversions.Degs2Rads(entry.brgDegs), new WorldDistance(entry.rangeNm, WorldDistance.NM), null);
 		final WorldLocation newLoc = origin.add(vector);
-		
+
 		Fix theFix = new Fix(entry.dtg, newLoc, Conversions.Degs2Rads(entry.courseDegs), Conversions.Kts2Yps(entry.speedKts));
 		return new FixWrapper(theFix);
 	}
@@ -186,12 +186,12 @@ public class NMEA_Radar_FileImporter {
 				} else {
 					track = (TrackWrapper) layer;
 				}
-				
+
 				// now generate the fix
 				final FixWrapper fix = generateFix(_origin, entry);
-				
+
 				// add to the track
-				track.addFix(fix);				
+				track.addFix(fix);
 			}
     		_layers.fireExtended();
 		}
@@ -212,10 +212,10 @@ public class NMEA_Radar_FileImporter {
 	}
 
 	private static final String RADAR_STR = "$RATTM";
-	
+
 	public static boolean canLoad(final ErrorLogger logger, final BufferedReader r) throws IOException {
 		// scan through lines
-		
+
 		// does this contain NMEA radar string
 		boolean found = false;
 		String nextLine;
@@ -223,7 +223,7 @@ public class NMEA_Radar_FileImporter {
 			if(nextLine.indexOf(RADAR_STR) != -1)
 				found = true;
 		}
-		
+
 		return found;
 	}
 
@@ -273,16 +273,16 @@ public class NMEA_Radar_FileImporter {
 		final List<RadarEntry> brtData = readRadarData(is, logger);
 		return new ImportNmeaRadarFileAction(brtData, origin, layers);
 	}
-	
+
 	private static Date getDate(final String item) throws ParseException {
 		final SimpleDateFormat dateFormatter = new GMTDateFormat("yyMMdd_hhmmss");
 		return dateFormatter.parse(item);
 	}
-	
+
 	private static Optional<RadarEntry> readLine(String line, int lineNum) {
 		// split line
 		final String[] entries = line.split(",");
-		
+
 		// check it's of correct length
 		if (entries.length == 16) {
 				final RadarEntry entry = new RadarEntry();
@@ -295,15 +295,15 @@ public class NMEA_Radar_FileImporter {
 						try {
 						final Date date = getDate(headers[0]);
 						final HiResDate dtg = new HiResDate(date.getTime());
-						
+
 						entry.dtg = dtg;
-						entry.trackId = Integer.parseInt(entries[1]);	
+						entry.trackId = Integer.parseInt(entries[1]);
 						entry.rangeNm = Double.parseDouble(entries[2]);
 						entry.brgDegs = Double.parseDouble(entries[3]);
-						
+
 						entry.speedKts = Double.parseDouble(entries[5]);
 						entry.courseDegs = Double.parseDouble(entries[6]);
-						
+
 						return Optional.of(entry);
 						} catch (ParseException pe) {
 							System.out.println("Parse exception:" + pe.getMessage() );
@@ -311,13 +311,13 @@ public class NMEA_Radar_FileImporter {
 						}
 					} else {
 						System.out.println("Can only expect T (True) values for bearing for TTM messages at line:" + lineNum);
-						return Optional.empty();						
+						return Optional.empty();
 					}
 				} else {
 					System.out.println("too few headers. Expected 2 got:" + headers.length);
 					return Optional.empty();
 				}
-				
+
 		} else {
 			System.out.println("NMEA Radar Importer. Expected 16 columns, got " + entries.length);
 			return Optional.empty();
