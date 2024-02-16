@@ -15,6 +15,7 @@
 package Debrief.ReaderWriter.FlatFile;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -28,6 +29,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
+import Debrief.ReaderWriter.FlatFile.CLogFileImporter.CLog_Helper;
 import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.TrackWrapper;
 import MWC.Algorithms.Conversions;
@@ -107,6 +109,28 @@ public class NMEA_Radar_FileImporter {
 			_logger.clear();
 		}
 
+		public void testGoodLoadOnExisting() throws Exception {
+			final NMEA_Radar_FileImporter importer = new NMEA_Radar_FileImporter();
+			final Layers layers = new Layers();
+
+			final String ownship_track = "../org.mwc.cmap.combined.feature/root_installs/sample_data/700101_0106_R_Dev.txt";
+
+			assertTrue("input file exists", new File(ownship_track).exists());
+			
+			final WorldLocation origin = new WorldLocation(22.2, 33.3, 0d);
+
+
+			final InputStream is = new FileInputStream(ownship_track);
+			final Action action = importer.importThis(origin, is, layers, _logger);
+			action.execute();
+
+			assertEquals("has data", 17, layers.size());
+
+			final TrackWrapper track = (TrackWrapper) layers.elementAt(0);
+
+			assertEquals("correct fixes", 5, track.numFixes());
+		}
+		
 		public void testCanLoad() throws Exception {
 
 			final String initialString = "700101_010601:$RATTM,002,0.665,224.7,T,0.17,31.2,R,0.16,99.99,N,,T,,,A*2A";
@@ -271,6 +295,9 @@ public class NMEA_Radar_FileImporter {
 	public Action importThis(final WorldLocation origin, final InputStream is, final Layers layers,
 			final ErrorLogger logger) throws Exception {
 		final List<RadarEntry> brtData = readRadarData(is, logger);
+		if (brtData != null) {
+			System.out.println("loaded " + brtData.size() + " rows");			
+		}
 		return new ImportNmeaRadarFileAction(brtData, origin, layers);
 	}
 
@@ -279,49 +306,57 @@ public class NMEA_Radar_FileImporter {
 		return dateFormatter.parse(item);
 	}
 
-	private static Optional<RadarEntry> readLine(String line, int lineNum) {
-		// split line
-		final String[] entries = line.split(",");
+	private static Optional<RadarEntry> readLine(final String line, final int lineNum) {
+		// check if it's our type of message
+		if (line.indexOf(RADAR_STR) != -1) {
+			// split line
+			final String[] entries = line.split(",");
+			
+			// check it's of correct length
+			if (entries.length == 16) {
+					final RadarEntry entry = new RadarEntry();
+					final String header = entries[0];
+					final String[] headers = header.split(":");
+					if (headers.length == 2) {
+						final String brgIndicator = entries[4];
+						if(brgIndicator.equals("T")) {
 
-		// check it's of correct length
-		if (entries.length == 16) {
-				final RadarEntry entry = new RadarEntry();
-				final String header = entries[0];
-				final String[] headers = header.split(":");
-				if (headers.length == 2) {
-					final String brgIndicator = entries[4];
-					if(brgIndicator == "T") {
+							try {
+							final Date date = getDate(headers[0]);
+							final HiResDate dtg = new HiResDate(date.getTime());
 
-						try {
-						final Date date = getDate(headers[0]);
-						final HiResDate dtg = new HiResDate(date.getTime());
-
-						entry.dtg = dtg;
-						entry.trackId = Integer.parseInt(entries[1]);
-						entry.rangeNm = Double.parseDouble(entries[2]);
-						entry.brgDegs = Double.parseDouble(entries[3]);
-
-						entry.speedKts = Double.parseDouble(entries[5]);
-						entry.courseDegs = Double.parseDouble(entries[6]);
-
-						return Optional.of(entry);
-						} catch (ParseException pe) {
-							System.out.println("Parse exception:" + pe.getMessage() );
+							entry.dtg = dtg;
+							entry.trackId = Integer.parseInt(entries[1]);
+							entry.rangeNm = Double.parseDouble(entries[2]);
+							entry.brgDegs = Double.parseDouble(entries[3]);
+							final String speedText = entries[5];
+							entry.speedKts = speedText.equals("") ? 0 : Double.parseDouble(entries[5]);
+							final String courseText = entries[6];
+							entry.courseDegs = courseText.equals("") ? 0 : Double.parseDouble(entries[6]);
+							
+							return Optional.of(entry);
+							} catch (ParseException pe) {
+								System.out.println("Parse exception:" + pe.getMessage() );
+								return Optional.empty();
+							}
+						} else {
+							System.out.println("Can only accept T (True) value for bearing for TTM messages at line:" + lineNum + " got:" + brgIndicator);
 							return Optional.empty();
 						}
 					} else {
-						System.out.println("Can only expect T (True) values for bearing for TTM messages at line:" + lineNum);
+						System.out.println("too few headers. Expected 2 got:" + headers.length + " at line " + lineNum);
 						return Optional.empty();
 					}
-				} else {
-					System.out.println("too few headers. Expected 2 got:" + headers.length);
-					return Optional.empty();
-				}
 
+			} else {
+				System.out.println("NMEA Radar Importer. Expected 16 columns, got " + entries.length + " at line " + lineNum);
+				return Optional.empty();
+			}
 		} else {
-			System.out.println("NMEA Radar Importer. Expected 16 columns, got " + entries.length);
+			// System.out.println("Not our message type - at line " + lineNum);
 			return Optional.empty();
 		}
+
 	}
 
 	private List<RadarEntry> readRadarData(final InputStream is, final ErrorLogger logger) throws IOException {
@@ -329,7 +364,7 @@ public class NMEA_Radar_FileImporter {
 
 		String line;
 
-		List<RadarEntry> res = null;
+		List<RadarEntry> res = new ArrayList<RadarEntry>();
 
 		int ctr = 0;
 
@@ -344,7 +379,6 @@ public class NMEA_Radar_FileImporter {
 			} catch (final Exception e) {
 				logger.logError(ErrorLogger.ERROR, "Exception while reading Radar data at line:" + ctr, e);
 			}
-			ctr++;
 		}
 		return res;
 	}
