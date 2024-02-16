@@ -29,7 +29,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
-import Debrief.ReaderWriter.FlatFile.CLogFileImporter.CLog_Helper;
 import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.TrackWrapper;
 import MWC.Algorithms.Conversions;
@@ -176,8 +175,10 @@ public class NMEA_Radar_FileImporter {
 		final WorldVector vector = new WorldVector(Conversions.Degs2Rads(entry.brgDegs), new WorldDistance(entry.rangeNm, WorldDistance.NM), null);
 		final WorldLocation newLoc = origin.add(vector);
 
-		Fix theFix = new Fix(entry.dtg, newLoc, Conversions.Degs2Rads(entry.courseDegs), Conversions.Kts2Yps(entry.speedKts));
-		return new FixWrapper(theFix);
+		final Fix theFix = new Fix(entry.dtg, newLoc, Conversions.Degs2Rads(entry.courseDegs), Conversions.Kts2Yps(entry.speedKts));
+		final FixWrapper fix = new FixWrapper(theFix);
+		fix.resetName();
+		return fix;
 	}
 
 	/**
