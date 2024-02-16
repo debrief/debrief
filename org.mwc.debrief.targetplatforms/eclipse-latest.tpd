@@ -143,6 +143,7 @@ location "https://download.eclipse.org/tools/orbit/downloads/drops/R202102232326
 	com.sun.jna
 	com.sun.jna.platform
 	org.apache.commons.jxpath
-	
+	com.ibm.icu
 }
+
 
