@@ -34,6 +34,7 @@ import java.util.Optional;
 import Debrief.ReaderWriter.Replay.ImportReplay;
 import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.TrackWrapper;
+import MWC.Algorithms.Conversions;
 import MWC.GUI.ErrorLogger;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
@@ -42,8 +43,10 @@ import MWC.GUI.Properties.DebriefColors;
 import MWC.GUI.Tools.Action;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.Watchable;
+import MWC.GenericData.WorldDistance;
 import MWC.GenericData.WorldLocation;
 import MWC.GenericData.WorldSpeed;
+import MWC.GenericData.WorldVector;
 import MWC.TacticalData.Fix;
 import MWC.Utilities.Errors.Trace;
 import MWC.Utilities.TextFormatting.GMTDateFormat;
@@ -370,8 +373,12 @@ public class NMEA_Radar_FileImporter {
 		}
 	}
 	
-	private static FixWrapper generateFix(final WorldLocation origin, final RadarEntry entry) {
-		Fix theFix = new Fix(entry.dtg, origin, );
+	private static FixWrapper generateFix(final WorldLocation origin, final RadarEntry entry) {		
+		// calculate the new origin
+		final WorldVector vector = new WorldVector(Conversions.Degs2Rads(entry.brgDegs), new WorldDistance(entry.rangeNm, WorldDistance.NM), null);
+		final WorldLocation newLoc = origin.add(vector);
+		
+		Fix theFix = new Fix(entry.dtg, newLoc, Conversions.Degs2Rads(entry.courseDegs), Conversions.Kts2Yps(entry.speedKts));
 		return new FixWrapper(theFix);
 	}
 
@@ -383,7 +390,6 @@ public class NMEA_Radar_FileImporter {
 		private final List<RadarEntry> _entries;
 		private final Layers _layers;
 		private final WorldLocation _origin;
-		private boolean _trackCreated = false;
 
 		public ImportNmeaRadarFileAction(final List<RadarEntry> track, final WorldLocation origin, final Layers layers) {
 			super();
@@ -394,24 +400,26 @@ public class NMEA_Radar_FileImporter {
 
 		@Override
 		public void execute() {
-			for (RadarEntry e: _entries) {
+			for (RadarEntry entry: _entries) {
 				// get the parent track
-				final Layer layer = _layers.findLayer("" + e.trackId);
+				final Layer layer = _layers.findLayer("" + entry.trackId);
 				final TrackWrapper track;
 				if(layer == null) {
 					track = new TrackWrapper();
-					track.setName(""+ e.trackId);
+					track.setName(""+ entry.trackId);
 					track.setColor(DebriefColors.GREEN);
-					_trackCreated = true;
+					_layers.addThisLayer(track);
 				} else {
 					track = (TrackWrapper) layer;
 				}
 				
 				// now generate the fix
+				final FixWrapper fix = generateFix(_origin, entry);
 				
 				// add to the track
-				
+				track.addFix(fix);				
 			}
+    		_layers.fireExtended();
 		}
 
 		@Override
