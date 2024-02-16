@@ -208,6 +208,10 @@
         />
     </extension>
     <extension point="org.mwc.debrief.core.DebriefPlotLoader">
+        <loader class="org.mwc.debrief.core.loaders.NMEA_Radar_Loader" extensions="txt" name="NMEA Radar File"        
+        />
+    </extension>
+    <extension point="org.mwc.debrief.core.DebriefPlotLoader">
         <loader class="org.mwc.debrief.core.loaders.CSV_GZ_Loader" extensions="gz"  name="Compressed CLog File"        
         />
     </extension>
