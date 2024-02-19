@@ -124,13 +124,7 @@
          <artifactId>target-platform-configuration</artifactId>
          <version>${tycho.version}</version>
          <configuration>
-         <target>
-           <artifact>
-             <groupId>org.mwc.debrief</groupId>
-             <artifactId>eclipse-latest</artifactId>
-             <version>0.0.1-SNAPSHOT</version>
-           </artifact>
-         </target>
+       
           <environments>
 <!--
             <environment>
@@ -226,6 +220,33 @@
 
     </plugins>
   </build>
+  <repositories>
+		<repository>
+			<id>releases</id>
+			<layout>p2</layout>
+			<url>http://download.eclipse.org/releases/2023-12</url>
+		</repository>
+		<repository>
+			<id>webtools</id>
+			<layout>p2</layout>
+			<url>http://download.eclipse.org/webtools/repository/2023-12</url>
+		</repository>
+		<repository>
+			<id>ease</id>
+			<layout>p2</layout>
+			<url>https://download.eclipse.org/ease/release/latest</url>
+		</repository>
+		<repository>
+			<id>nebula</id>
+			<layout>p2</layout>
+			<url>http://download.eclipse.org/nebula/releases/2.2.0</url>
+		</repository>
+		<repository>
+			<id>orbit</id>
+			<layout>p2</layout>
+			<url>https://download.eclipse.org/tools/orbit/downloads/drops/R20210223232630/repository</url>
+		</repository>
+	</repositories>
   <profiles>
     <profile>
       <id>mac</id>

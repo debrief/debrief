@@ -126,6 +126,7 @@ location "http://download.eclipse.org/webtools/repository/2023-12" {
 			org.eclipse.wst.xsl.feature.feature.group
 			org.eclipse.wtp.capabilities.feature.feature.group
 			org.eclipse.wtp.jee.capabilities
+			jakarta.enterprise.cdi-api
 			
     
 }
@@ -144,6 +145,14 @@ location "https://download.eclipse.org/tools/orbit/downloads/drops/R202102232326
 	com.sun.jna.platform
 	org.apache.commons.jxpath
 	com.ibm.icu
+	org.w3c.dom.events
+    jakarta.activation	
+	jakarta.servlet	
+	jakarta.websocket
+	jakarta.xml.bind
+    javax.el
+	
 }
+
 
 
