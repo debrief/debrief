@@ -22,6 +22,7 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.mwc.cmap.core.CorePlugin;
 import org.mwc.debrief.core.DebriefPlugin;
+import org.mwc.debrief.core.preferences.PrefsPage;
 
 import Debrief.ReaderWriter.FlatFile.NMEA_Radar_FileImporter;
 import MWC.GUI.Layers;
@@ -39,7 +40,6 @@ public class NMEA_Radar_Loader extends CoreLoader {
 	@Override
 	public boolean canLoad(final String fileName) {
 		boolean res = false;
-		System.out.println("checking can load for " + fileName);
 		if (super.canLoad(fileName)) {
 			res = NMEA_Radar_FileImporter.canLoad(fileName, CorePlugin.getToolParent());
 		}
@@ -62,17 +62,30 @@ public class NMEA_Radar_Loader extends CoreLoader {
 				final NMEA_Radar_FileImporter importer = new NMEA_Radar_FileImporter();
 				
 				// get the origin
-				final WorldLocation origin = new WorldLocation(54, -12, 0d);
-				try {
-					// ok - get loading going
-					final Action importAction = importer.importThis(origin, inputStream, layers,
-							CorePlugin.getToolParent());
+				final String radarLat = CorePlugin.getToolParent()
+						.getProperty(PrefsPage.PreferenceConstants.NMEA_RADAR_LAT);
+				final String radarLong = CorePlugin.getToolParent()
+						.getProperty(PrefsPage.PreferenceConstants.NMEA_RADAR_LONG);
+				
+				if ((radarLat == null) || (radarLong == null)) {
+					DebriefPlugin.logError(DebriefPlugin.ERROR, "Radar origin values not set", null);
+				} else {
+					try {
+						final double latVal = Double.parseDouble(radarLat);
+						final double longVal = Double.parseDouble(radarLong);
+						final WorldLocation origin = new WorldLocation(latVal, longVal, 0d);
+						
+						// ok - get loading going
+						final Action importAction = importer.importThis(origin, inputStream, layers,
+								CorePlugin.getToolParent());
 
-					final WrapDebriefAction dAction = new WrapDebriefAction(importAction);
-					CorePlugin.run(dAction);
-				} catch (final Exception e) {
-					DebriefPlugin.logError(IStatus.ERROR, "Problem loading AIS datafile:" + fileName, e);
+						final WrapDebriefAction dAction = new WrapDebriefAction(importAction);
+						CorePlugin.run(dAction);
+					} catch (final Exception e) {
+						DebriefPlugin.logError(IStatus.ERROR, "Problem loading AIS datafile:" + fileName, e);
+					}					
 				}
+				
 			}
 		};
 	}
