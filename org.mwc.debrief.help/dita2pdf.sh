@@ -23,6 +23,6 @@ export CLASSPATH=$CLASSPATH:$DITA_HOME/lib/xercesImpl.jar
 export CLASSPATH=$CLASSPATH:$DITA_HOME/lib/xml-apis.jar
 #export CLASSPATH=$CLASSPATH:$DITA_HOME/plugins/org.dita.pdf2/lib/fo.jar
 echo $CLASSPATH
-export ANT_OPTS="-Xmx1024M -Xms256M -XX:PermSize=128M -XX:MaxPermSize=256M"
+export ANT_OPTS="-Xmx1024M -Xms256M "
 ant -f cheat_transform.xml
 ./pdftk_title.sh

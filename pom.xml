@@ -158,7 +158,7 @@
 	<configuration>
   	  <useUIHarness>true</useUIHarness>
 	  <useUIThread>true</useUIThread>
-	  <argLine>-Xms512m -Xmx1024m -XX:PermSize=256m -XX:MaxPermSize=256m -Dorg.eclipse.ui.testsDisableWorkbenchAutoSave=true -DbuildMode=true</argLine>
+	  <argLine>-Xms512m -Xmx1024m  -Dorg.eclipse.ui.testsDisableWorkbenchAutoSave=true -DbuildMode=true</argLine>
 	<!-- https://docs.sonatype.org/display/TYCHO/How+to+run+SWTBot+tests+with+Tycho -->
 	<!-- set useUIThread=true for regular ui tests -->
 	<!-- set useUIThread=false for swtbot tests -->
@@ -262,7 +262,7 @@
             <artifactId>tycho-surefire-plugin</artifactId>
             <version>${tycho.version}</version>
             <configuration>
-	      <argLine>-Xms512m -Xmx1024m -XX:PermSize=256m -XX:MaxPermSize=256m -Dorg.eclipse.ui.testsDisableWorkbenchAutoSave=true -XstartOnFirstThread</argLine>
+	      <argLine>-Xms512m -Xmx1024m  -Dorg.eclipse.ui.testsDisableWorkbenchAutoSave=true -XstartOnFirstThread</argLine>
             </configuration>
           </plugin>
         </plugins>

@@ -32,7 +32,7 @@
 	<explicit>../org.mwc.debrief.product/target/products/DebriefNG-[platform].zip/</explicit>
    <vmArgs> 
     <vmArg>-Xmx1024m</vmArg>  
-    <vmArg>-XX:MaxPermSize=512m</vmArg>
+<!--    <vmArg>-XX:MaxPermSize=512m</vmArg>-->
     
     
   </vmArgs> 
@@ -42,7 +42,7 @@
 	<version>2.5.0-SNAPSHOT</version>
 	<vmArgs>
       <vmArg>-Xmx1024m</vmArg>
-      <vmArg>-XX:MaxPermSize=256m</vmArg>
+<!--      <vmArg>-XX:MaxPermSize=256m</vmArg>-->
    </vmArgs>
    
 </runner>
