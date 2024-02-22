@@ -37,7 +37,6 @@
             <contentTypeBinding contentTypeId="org.mwc.debrief.contenttype.DebriefPlot"/>
             <contentTypeBinding contentTypeId="org.mwc.debrief.contenttype.DebriefPlotGPX"/>
             <contentTypeBinding contentTypeId="org.mwc.debrief.contenttype.OTH_G_Log"/>
-            <contentTypeBinding contentTypeId="org.mwc.debrief.contenttype.CLog"/>
         </editor>
     </extension>
 
@@ -57,6 +56,8 @@
             <contentTypeBinding contentTypeId="org.mwc.debrief.contenttype.CSV_GZ_LogFile"/>
             <contentTypeBinding contentTypeId="org.mwc.debrief.contenttype.SATCTrackFile"/>
             <contentTypeBinding contentTypeId="org.mwc.debrief.contenttype.SATCSampleTrackFile"/>
+            <contentTypeBinding contentTypeId="org.mwc.debrief.contenttype.CLog"/>
+            <contentTypeBinding contentTypeId="org.mwc.debrief.contenttype.NMEA_Radar"/>
         </editor>
     </extension>
 
@@ -105,6 +106,10 @@
         <content-type id="org.mwc.debrief.contenttype.CLog" file-extensions="txt"
             name="CLog file" priority="high"> 
             <describer class="org.mwc.debrief.core.contenttype.CLog_ContentDescriber"/>
+        </content-type>
+        <content-type id="org.mwc.debrief.contenttype.NMEA_Radar" file-extensions="txt"
+            name="CLog file" priority="high"> 
+            <describer class="org.mwc.debrief.core.contenttype.NMEA_Radar_ContentDescriber"/>
         </content-type>
         <content-type id="org.mwc.debrief.contenttype.LogTrackFile" file-extensions="csv"
             name="S2087 Context Track File (Log)" priority="normal"> </content-type>
@@ -205,6 +210,10 @@
     </extension>
     <extension point="org.mwc.debrief.core.DebriefPlotLoader">
         <loader class="org.mwc.debrief.core.loaders.CLog_Loader" extensions="txt" first_line="Unknown" name="CLog File"        
+        />
+    </extension>
+    <extension point="org.mwc.debrief.core.DebriefPlotLoader">
+        <loader class="org.mwc.debrief.core.loaders.NMEA_Radar_Loader" extensions="txt" name="NMEA Radar File"        
         />
     </extension>
     <extension point="org.mwc.debrief.core.DebriefPlotLoader">
