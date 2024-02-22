@@ -273,6 +273,7 @@ public class SplitTracksIntoLegs implements RightClickContextItemGenerator {
 			final MenuManager listing = new MenuManager(fullMsg);
 
 			final HashMap<Long, String> choices = new HashMap<Long, String>();
+			choices.put(10 * 1000L, "10 Seconds");
 			choices.put(60 * 1000L, "1 Minute");
 			choices.put(60 * 60 * 1000L, "1 Hour");
 			choices.put(24 * 60 * 60 * 1000L, "1 Day");
