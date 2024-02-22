@@ -208,7 +208,7 @@ public class NMEA_Radar_FileImporter {
 				if(layer == null) {
 					track = new TrackWrapper();
 					track.setName(""+ entry.trackId);
-					track.setColor(DebriefColors.GREEN);
+					track.setColor(DebriefColors.RandomColorProvider.getRandomColor(entry.trackId));
 					_layers.addThisLayer(track);
 					newTracks.add(track);
 				} else {
