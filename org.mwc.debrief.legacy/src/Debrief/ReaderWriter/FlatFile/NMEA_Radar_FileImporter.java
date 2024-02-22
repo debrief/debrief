@@ -31,6 +31,7 @@ import java.util.Optional;
 
 import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.TrackWrapper;
+import Debrief.Wrappers.Track.TrackWrapper_Support;
 import MWC.Algorithms.Conversions;
 import MWC.GUI.ErrorLogger;
 import MWC.GUI.Layer;
@@ -199,6 +200,7 @@ public class NMEA_Radar_FileImporter {
 
 		@Override
 		public void execute() {
+			final List<TrackWrapper> newTracks = new ArrayList<TrackWrapper>();
 			for (RadarEntry entry: _entries) {
 				// get the parent track
 				final Layer layer = _layers.findLayer("" + entry.trackId);
@@ -208,6 +210,7 @@ public class NMEA_Radar_FileImporter {
 					track.setName(""+ entry.trackId);
 					track.setColor(DebriefColors.GREEN);
 					_layers.addThisLayer(track);
+					newTracks.add(track);
 				} else {
 					track = (TrackWrapper) layer;
 				}
@@ -218,6 +221,13 @@ public class NMEA_Radar_FileImporter {
 				// add to the track
 				track.addFix(fix);
 			}
+			
+			// split the tracks
+			for (final TrackWrapper track: newTracks) {
+				TrackWrapper_Support.splitTrackAtSpatialJumps(track, 10d);				
+			}
+			
+			// update layers
     		_layers.fireExtended();
 		}
 
