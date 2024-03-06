@@ -32,8 +32,8 @@
 		</fileset>
 	</path>
 	<property name="bootclasspath" refid="path_bootclasspath"/>
-	<condition property="bundleBootClasspath" value="${JavaSE-1.7}"	>
-		<isset property="JavaSE-1.7"/>
+	<condition property="bundleBootClasspath" value="${JavaSE-11}"	>
+		<isset property="JavaSE-11"/>
 	</condition>
 	<property name="bundleBootClasspath" value="${bootclasspath}"/>
 
