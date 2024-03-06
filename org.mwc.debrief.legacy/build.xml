@@ -33,8 +33,8 @@
 		</fileset>
 	</path>
 	<property name="bootclasspath" refid="path_bootclasspath"/>
-	<condition property="bundleBootClasspath" value="${JavaSE-11}"	>
-		<isset property="JavaSE-11"/>
+	<condition property="bundleBootClasspath" value="${JavaSE-21}"	>
+		<isset property="JavaSE-21"/>
 	</condition>
 	<property name="bundleBootClasspath" value="${bootclasspath}"/>
 	<xmlproperty file="pom.xml"/>
