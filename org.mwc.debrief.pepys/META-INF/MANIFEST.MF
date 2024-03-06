@@ -4,7 +4,7 @@ Bundle-Name: Pepys
 Bundle-SymbolicName: org.mwc.debrief.pepys;singleton:=true
 Bundle-Version: 1.0.14
 Automatic-Module-Name: org.mwc.debref.pepys
-Bundle-RequiredExecutionEnvironment: JavaSE-17
+Bundle-RequiredExecutionEnvironment: JavaSE-21
 Bundle-ClassPath: libs/c3p0-0.9.5.5.jar,
  libs/gt-jdbc-spatialite-20.5.jar,
  libs/mchange-commons-java-0.2.20.jar,

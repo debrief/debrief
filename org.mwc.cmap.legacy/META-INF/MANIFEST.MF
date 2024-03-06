@@ -1357,4 +1357,4 @@ Export-Package:
  vrml.node;uses:="vrml,com.sun.j3d.loaders.vrml97.impl"
 Require-Bundle: org.junit;visibility:=reexport,
  org.mwc.cmap.jfreechart;bundle-version="1.0.16";visibility:=reexport
-Bundle-RequiredExecutionEnvironment: JavaSE-17
+Bundle-RequiredExecutionEnvironment: JavaSE-21

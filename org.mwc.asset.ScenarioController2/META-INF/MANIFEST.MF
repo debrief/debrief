@@ -17,5 +17,5 @@ Require-Bundle: org.mwc.asset.legacy,
  org.mwc.asset.NetCore,
  org.w3c.dom.events
 Bundle-ActivationPolicy: lazy
-Bundle-RequiredExecutionEnvironment: JavaSE-17
+Bundle-RequiredExecutionEnvironment: JavaSE-21
 Export-Package: org.mwc.asset.scenariocontroller2.views

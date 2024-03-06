@@ -16,6 +16,6 @@ Require-Bundle: org.eclipse.ui,
  org.mwc.debrief.core,
  org.mwc.cmap.geotools;bundle-version="1.0.7"
 Bundle-ActivationPolicy: lazy
-Bundle-RequiredExecutionEnvironment: JavaSE-17
+Bundle-RequiredExecutionEnvironment: JavaSE-21
 Bundle-ClassPath: .,
  swing2swt.jar

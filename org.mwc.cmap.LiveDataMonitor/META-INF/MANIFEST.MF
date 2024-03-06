@@ -13,5 +13,5 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
  org.mwc.cmap.legacy,
  org.mwc.cmap.jfreechart
-Bundle-RequiredExecutionEnvironment: JavaSE-17
+Bundle-RequiredExecutionEnvironment: JavaSE-21
 Bundle-ActivationPolicy: lazy

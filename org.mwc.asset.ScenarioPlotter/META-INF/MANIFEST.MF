@@ -18,4 +18,4 @@ Require-Bundle: org.mwc.asset.core,
  org.eclipse.ui.ide,
  org.eclipse.ui,
  org.mwc.cmap.geotools;bundle-version="1.0.7"
-Bundle-RequiredExecutionEnvironment: JavaSE-17
+Bundle-RequiredExecutionEnvironment: JavaSE-21

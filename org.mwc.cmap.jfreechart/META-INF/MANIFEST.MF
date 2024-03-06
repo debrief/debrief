@@ -6,7 +6,7 @@ Bundle-Version: 1.0.24
 Bundle-Activator: org.mwc.cmap.jfreechart.Activator
 Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.swt
-Bundle-RequiredExecutionEnvironment: JavaSE-17
+Bundle-RequiredExecutionEnvironment: JavaSE-21
 Bundle-ActivationPolicy: lazy
 Bundle-Vendor: MWC
 Bundle-ClassPath: .,
