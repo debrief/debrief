@@ -51,6 +51,10 @@ jobs:
                     #  pkg-config --cflags uuid
                     #  echo printing uuid libs
                     #  pkg-config --libs uuid
+      - name: Set up Maven
+             uses: stCarolas/setup-maven@v5
+             with:
+               maven-version: 3.9.6
       # Checks-out repository
       - name: Checkout
         uses: actions/checkout@v2
