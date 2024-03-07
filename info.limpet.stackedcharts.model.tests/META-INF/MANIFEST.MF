@@ -6,7 +6,7 @@ Bundle-Version: 1.0.11
 Bundle-ClassPath: .
 Bundle-Vendor: %providerName
 Bundle-Localization: plugin
-Bundle-RequiredExecutionEnvironment: JavaSE-21
+Bundle-RequiredExecutionEnvironment: JavaSE-17
 Export-Package: info.limpet.stackedcharts.model.tests
 Require-Bundle: org.eclipse.core.runtime,
  info.limpet.stackedcharts.model;visibility:=reexport,

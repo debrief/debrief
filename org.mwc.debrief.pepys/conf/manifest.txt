@@ -6,6 +6,6 @@ Bundle-Name: Pepys
 Bundle-SymbolicName: org.mwc.debrief.pepys
 Bundle-Version: 1.0.0
 Automatic-Module-Name: org.mwc.debref.pepys
-Bundle-RequiredExecutionEnvironment: JavaSE-21
+Bundle-RequiredExecutionEnvironment: JavaSE-17
 Implementation-Version: ${product.version}
 

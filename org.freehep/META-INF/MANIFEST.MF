@@ -4,7 +4,7 @@ Bundle-Name: FreeHEP 2.4
 Bundle-SymbolicName: org.freehep
 Bundle-Version: 1.0.10
 Require-Bundle: org.eclipse.core.runtime
-Bundle-RequiredExecutionEnvironment: JavaSE-21
+Bundle-RequiredExecutionEnvironment: JavaSE-17
 Bundle-ActivationPolicy: lazy
 Bundle-Vendor: MWC
 Bundle-ClassPath: .,

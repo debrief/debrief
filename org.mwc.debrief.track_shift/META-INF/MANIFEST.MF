@@ -16,7 +16,7 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.ui.views
 Bundle-ClassPath: .,
  lib/finmath-lib-3.1.9.jar
-Bundle-RequiredExecutionEnvironment: JavaSE-21
+Bundle-RequiredExecutionEnvironment: JavaSE-17
 Export-Package: org.mwc.debrief.track_shift,
  org.mwc.debrief.track_shift.ambiguity,
  org.mwc.debrief.track_shift.ambiguity.preferences,

@@ -21,7 +21,7 @@ Require-Bundle: org.mwc.cmap.jfreechart,
  org.eclipse.jface.text,
  org.eclipse.ui.editors,
  org.eclipse.ui.workbench.texteditor
-Bundle-RequiredExecutionEnvironment: JavaSE-21
+Bundle-RequiredExecutionEnvironment: JavaSE-17
 Bundle-ActivationPolicy: lazy
 Export-Package: org.mwc.debrief.dis,
  org.mwc.debrief.dis.ui.preferences,

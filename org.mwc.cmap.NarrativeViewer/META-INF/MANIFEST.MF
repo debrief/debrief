@@ -14,7 +14,7 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.ui.views;bundle-version="3.9.400"
 Bundle-Activator: org.mwc.cmap.NarrativeViewer.app.Activator
 Bundle-ActivationPolicy: lazy
-Bundle-RequiredExecutionEnvironment: JavaSE-21
+Bundle-RequiredExecutionEnvironment: JavaSE-17
 Bundle-ClassPath: .,
  libs/org.eclipse.nebula.widgets.grid_1.0.0.201605312033.jar,
  libs/ca.odell.glazedlists_1.9.0.v201303080712.jar,

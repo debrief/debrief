@@ -6,7 +6,7 @@ Bundle-Version: 1.0.4
 Bundle-ClassPath: .
 Bundle-Vendor: MWC
 Bundle-Localization: plugin
-Bundle-RequiredExecutionEnvironment: JavaSE-21
+Bundle-RequiredExecutionEnvironment: JavaSE-17
 Export-Package: info.limpet.stackedcharts.model,
  info.limpet.stackedcharts.model.impl,
  info.limpet.stackedcharts.model.util

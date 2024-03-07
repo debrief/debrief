@@ -4,7 +4,7 @@ Bundle-Name: Gridded data editor
 Bundle-SymbolicName: org.mwc.cmap.grideditor;singleton:=true
 Bundle-Version: 1.0.30
 Bundle-Vendor: MWC
-Bundle-RequiredExecutionEnvironment: JavaSE-21
+Bundle-RequiredExecutionEnvironment: JavaSE-17
 Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: .
 Require-Bundle: 

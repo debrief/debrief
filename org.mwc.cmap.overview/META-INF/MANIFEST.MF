@@ -11,4 +11,4 @@ Require-Bundle: org.eclipse.ui,
  org.mwc.cmap.plotViewer,
  org.mwc.cmap.geotools;bundle-version="1.0.7"
 Bundle-ActivationPolicy: lazy
-Bundle-RequiredExecutionEnvironment: JavaSE-21
+Bundle-RequiredExecutionEnvironment: JavaSE-17
