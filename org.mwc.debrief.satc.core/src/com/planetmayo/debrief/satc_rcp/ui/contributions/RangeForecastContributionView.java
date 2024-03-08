@@ -18,9 +18,9 @@ package com.planetmayo.debrief.satc_rcp.ui.contributions;
 import java.text.DecimalFormat;
 
 import org.eclipse.core.databinding.DataBindingContext;
-import org.eclipse.core.databinding.beans.BeansObservables;
+import org.eclipse.core.databinding.beans.typed.BeanProperties;
 import org.eclipse.core.databinding.observable.value.IObservableValue;
-import org.eclipse.jface.databinding.swt.WidgetProperties;
+import org.eclipse.jface.databinding.swt.typed.WidgetProperties;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
@@ -65,7 +65,7 @@ public class RangeForecastContributionView extends BaseContributionView<RangeFor
 
 	protected void bindSliderForRange(final DataBindingContext context, final IObservableValue modelValue,
 			final Scale slider, final Label label, final Button checkBox, final boolean maxValue) {
-		final IObservableValue sliderValue = WidgetProperties.selection().observe(slider);
+		final IObservableValue sliderValue = WidgetProperties.scaleSelection().observe(slider);
 		final IObservableValue sliderEnabled = WidgetProperties.enabled().observe(slider);
 		final IObservableValue labelValue = WidgetProperties.text().observe(label);
 
@@ -84,7 +84,7 @@ public class RangeForecastContributionView extends BaseContributionView<RangeFor
 		final double defaultValue = maxValue ? MAX_SELECTABLE_RANGE_YDS : 0;
 		context.bindValue(sliderEnabled, modelValue, null, UIUtils.converterStrategy(new NullToBooleanConverter()));
 		if (checkBox != null) {
-			final IObservableValue checkBoxValue = WidgetProperties.selection().observe(checkBox);
+			final IObservableValue checkBoxValue = WidgetProperties.buttonSelection().observe(checkBox);
 			context.bindValue(checkBoxValue, modelValue,
 					UIUtils.converterStrategy(new BooleanToNullConverter<Double>(defaultValue)),
 					UIUtils.converterStrategy(new NullToBooleanConverter()));
@@ -102,11 +102,11 @@ public class RangeForecastContributionView extends BaseContributionView<RangeFor
 				rangeFormat);
 		minMaxConverter.setNestedUnitConverter(UnitConverter.RANGE_YDS.getModelToUI());
 
-		final IObservableValue estimateValue = BeansObservables.observeValue(contribution, BaseContribution.ESTIMATE);
-		final IObservableValue minRangeValue = BeansObservables.observeValue(contribution,
-				RangeForecastContribution.MIN_RANGE);
-		final IObservableValue maxRangeValue = BeansObservables.observeValue(contribution,
-				RangeForecastContribution.MAX_RANGE);
+		final IObservableValue estimateValue = BeanProperties.value(BaseContribution.ESTIMATE).observe(contribution);
+		final IObservableValue minRangeValue = BeanProperties.value(RangeForecastContribution.MIN_RANGE)
+				.observe(contribution);
+		final IObservableValue maxRangeValue = BeanProperties.value(RangeForecastContribution.MAX_RANGE)
+				.observe(contribution);
 		final MinMaxLimitObservable hardConstraints = new MinMaxLimitObservable(minRangeValue, maxRangeValue,
 				minMaxConverter, " Yds");
 		final PrefixSuffixLabelConverter labelsConverter = new PrefixSuffixLabelConverter(Object.class, "", " Yds",

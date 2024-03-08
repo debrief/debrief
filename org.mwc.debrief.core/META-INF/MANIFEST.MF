@@ -9,7 +9,7 @@ Bundle-ClassPath: debrief_core.jar,
 Bundle-Activator: org.mwc.debrief.core.DebriefPlugin
 Bundle-Vendor: MWC
 Bundle-Localization: plugin
-Bundle-RequiredExecutionEnvironment: JavaSE-11
+Bundle-RequiredExecutionEnvironment: JavaSE-17
 Export-Package: com.topografix.gpx.v10,
  com.topografix.gpx.v11,
  org.jdom,
@@ -68,5 +68,6 @@ Require-Bundle: org.mwc.cmap.core,
  org.eclipse.nebula.widgets.cdatetime;bundle-version="0.14.0",
  org.mwc.cmap.geotools;bundle-version="1.0.7",
  org.eclipse.e4.ui.model.workbench,
- org.eclipse.ui.navigator;bundle-version="3.10.0"
+ org.eclipse.ui.navigator;bundle-version="3.10.0",
+ org.eclipse.ui.navigator.resources
 Bundle-ActivationPolicy: lazy

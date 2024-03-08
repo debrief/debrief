@@ -226,7 +226,7 @@ public class ChartEditPart extends AbstractGraphicalEditPart implements ActionLi
 	protected void refreshChildren() {
 		// remove all Childs
 		@SuppressWarnings("unchecked")
-		final List<EditPart> children = getChildren();
+		final List<EditPart> children = (List<EditPart>) getChildren();
 		for (final EditPart object : new ArrayList<EditPart>(children)) {
 			removeChild(object);
 		}

@@ -16,7 +16,7 @@
 package com.planetmayo.debrief.satc_rcp.ui.contributions;
 
 import org.eclipse.core.databinding.DataBindingContext;
-import org.eclipse.core.databinding.beans.BeansObservables;
+import org.eclipse.core.databinding.beans.typed.BeanProperties;
 import org.eclipse.core.databinding.observable.value.IObservableValue;
 import org.eclipse.nebula.widgets.cdatetime.CDT;
 import org.eclipse.nebula.widgets.cdatetime.CDateTime;
@@ -35,14 +35,13 @@ import org.eclipse.swt.widgets.Scale;
 import org.eclipse.swt.widgets.Text;
 
 import com.planetmayo.debrief.satc.model.contributions.BearingMeasurementContribution;
-import com.planetmayo.debrief.satc.model.contributions.CoreMeasurementContribution;
 import com.planetmayo.debrief.satc.model.generator.IContributions;
 import com.planetmayo.debrief.satc_rcp.ui.UIUtils;
 import com.planetmayo.debrief.satc_rcp.ui.converters.BooleanToNullConverter;
 import com.planetmayo.debrief.satc_rcp.ui.converters.PrefixSuffixLabelConverter;
 import com.planetmayo.debrief.satc_rcp.ui.converters.units.UnitConverter;
 
-@SuppressWarnings("deprecation")
+
 public class BearingMeasurementContributionView extends BaseContributionView<BearingMeasurementContribution> {
 	private Scale errorSlider;
 	private Label errorLabel;
@@ -59,10 +58,10 @@ public class BearingMeasurementContributionView extends BaseContributionView<Bea
 	protected void bindValues(final DataBindingContext context) {
 		final PrefixSuffixLabelConverter labelConverter = new PrefixSuffixLabelConverter(Object.class, "+/- ", " degs");
 		labelConverter.setNestedUnitConverter(UnitConverter.ANGLE_DEG.getModelToUI());
-		final IObservableValue<?> errorValue = BeansObservables.observeValue(contribution,
-				BearingMeasurementContribution.BEARING_ERROR);
-		final IObservableValue<?> observationNumberValue = BeansObservables.observeValue(contribution,
-				CoreMeasurementContribution.OBSERVATIONS_NUMBER);
+		final IObservableValue<?> errorValue = BeanProperties.value(BearingMeasurementContribution.BEARING_ERROR)
+				.observe(contribution);
+		final IObservableValue<?> observationNumberValue = BeanProperties
+				.value(BearingMeasurementContribution.OBSERVATIONS_NUMBER).observe(contribution);
 		bindCommonHeaderWidgets(context, errorValue, observationNumberValue,
 				new PrefixSuffixLabelConverter(Object.class, " Measurements"), labelConverter);
 		bindCommonDates(context);

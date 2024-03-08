@@ -38,7 +38,7 @@ public class ASSETPerspectiveFactory implements IPerspectiveFactory {
 
 		// Top left: Resource Navigator view and Bookmarks view placeholder
 		final IFolderLayout topLeft = layout.createFolder("topLeft", IPageLayout.LEFT, 0.4f, editorArea);
-		topLeft.addView(IPageLayout.ID_RES_NAV);
+		topLeft.addView(IPageLayout.ID_PROJECT_EXPLORER);
 
 		// split the time one - so we can insert the track tote
 		// Top left: Resource Navigator view and Bookmarks view placeholder
@@ -72,7 +72,7 @@ public class ASSETPerspectiveFactory implements IPerspectiveFactory {
 		layout.addShowViewShortcut(ASSETPlugin.VESSEL_MONITOR);
 		layout.addShowViewShortcut(ASSETPlugin.SENSOR_MONITOR);
 
-		layout.addShowViewShortcut(IPageLayout.ID_RES_NAV);
+		layout.addShowViewShortcut(IPageLayout.ID_PROJECT_EXPLORER);
 		layout.addShowViewShortcut(IPageLayout.ID_PROP_SHEET);
 		layout.addShowViewShortcut(IPageLayout.ID_BOOKMARKS);
 		layout.addShowViewShortcut(IPageLayout.ID_TASK_LIST);

@@ -19,11 +19,11 @@ import java.math.BigDecimal;
 import java.text.DecimalFormat;
 
 import org.eclipse.core.databinding.DataBindingContext;
-import org.eclipse.core.databinding.beans.BeansObservables;
+import org.eclipse.core.databinding.beans.typed.BeanProperties;
 import org.eclipse.core.databinding.conversion.IConverter;
 import org.eclipse.core.databinding.observable.value.IObservableValue;
 import org.eclipse.jface.databinding.swt.ISWTObservableValue;
-import org.eclipse.jface.databinding.swt.WidgetProperties;
+import org.eclipse.jface.databinding.swt.typed.WidgetProperties;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.VerifyEvent;
 import org.eclipse.swt.events.VerifyListener;
@@ -226,8 +226,7 @@ public class Ranging1959ContributionView extends BaseContributionView<Range1959F
 	}
 
 	private void bindFNought(final DataBindingContext context) {
-		final IObservableValue fNoughtValue = BeansObservables.observeValue(contribution,
-				Range1959ForecastContribution.F_NOUGHT);
+		final IObservableValue fNoughtValue = BeanProperties.value(Range1959ForecastContribution.F_NOUGHT).observe(contribution);
 		final ISWTObservableValue fNoughtTextValue = WidgetProperties.text(SWT.FocusOut).observe(fNoughtText);
 
 		final IConverter modelToUI = new ModelToUIFNoughtConverter();
@@ -245,8 +244,7 @@ public class Ranging1959ContributionView extends BaseContributionView<Range1959F
 	}
 
 	private void bindRange(final DataBindingContext context) {
-		final IObservableValue rangeValue = BeansObservables.observeValue(contribution,
-				Range1959ForecastContribution.RANGE);
+		final IObservableValue rangeValue = BeanProperties.value(Range1959ForecastContribution.RANGE).observe(contribution);
 		final ISWTObservableValue rangeTextValue = WidgetProperties.text(SWT.FocusOut).observe(rangeText);
 
 		final IConverter modelToUI = new ModelToUIRangeConverter();
@@ -262,10 +260,8 @@ public class Ranging1959ContributionView extends BaseContributionView<Range1959F
 				rangeFormat);
 		minMaxConverter.setNestedUnitConverter(UnitConverter.RANGE_YDS.getModelToUI());
 
-		final IObservableValue minRangeValue = BeansObservables.observeValue(contribution,
-				Range1959ForecastContribution.MIN_RANGE);
-		final IObservableValue maxRangeValue = BeansObservables.observeValue(contribution,
-				Range1959ForecastContribution.MAX_RANGE);
+		final IObservableValue minRangeValue = BeanProperties.value(Range1959ForecastContribution.MIN_RANGE).observe(contribution);
+		final IObservableValue maxRangeValue = BeanProperties.value(Range1959ForecastContribution.MAX_RANGE).observe(contribution);
 
 		final IObservableValue rangeBoundsValue = new MinMaxLimitObservable(minRangeValue, maxRangeValue,
 				minMaxConverter);
@@ -274,8 +270,7 @@ public class Ranging1959ContributionView extends BaseContributionView<Range1959F
 	}
 
 	private void bindSpeed(final DataBindingContext context) {
-		final IObservableValue soundValue = BeansObservables.observeValue(contribution,
-				Range1959ForecastContribution.SOUND_SPEED);
+		final IObservableValue soundValue = BeanProperties.value(Range1959ForecastContribution.SOUND_SPEED).observe(contribution);
 		final ISWTObservableValue soundTextValue = WidgetProperties.text(SWT.FocusOut).observe(speedSoundText);
 
 		final IConverter modelToUI = new KtsToMsConverter();
@@ -292,10 +287,8 @@ public class Ranging1959ContributionView extends BaseContributionView<Range1959F
 				rangeFormat);
 		labelConverter.setNestedUnitConverter(UnitConverter.RANGE_YDS.getModelToUI());
 
-		final IObservableValue errorValue = BeansObservables.observeValue(contribution,
-				Range1959ForecastContribution.RANGE);
-		final IObservableValue observationNumberValue = BeansObservables.observeValue(contribution,
-				Range1959ForecastContribution.OBSERVATIONS_NUMBER);
+		final IObservableValue errorValue = BeanProperties.value(Range1959ForecastContribution.RANGE).observe(contribution);
+		final IObservableValue observationNumberValue = BeanProperties.value(Range1959ForecastContribution.OBSERVATIONS_NUMBER).observe(contribution);
 		bindCommonHeaderWidgets(context, errorValue, observationNumberValue,
 				new PrefixSuffixLabelConverter(Object.class, " Measurements"), labelConverter);
 		bindCommonDates(context);

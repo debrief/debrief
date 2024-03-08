@@ -16,7 +16,7 @@
 package com.planetmayo.debrief.satc_rcp.ui.contributions;
 
 import org.eclipse.core.databinding.DataBindingContext;
-import org.eclipse.core.databinding.beans.BeansObservables;
+import org.eclipse.core.databinding.beans.typed.BeanProperties;
 import org.eclipse.core.databinding.observable.value.IObservableValue;
 import org.eclipse.swt.widgets.Composite;
 
@@ -44,11 +44,11 @@ public class CourseContributionView extends BaseContributionView<CourseForecastC
 		final PrefixSuffixLabelConverter labelConverter = new PrefixSuffixLabelConverter(Object.class, " \u00B0");
 		labelConverter.setNestedUnitConverter(UnitConverter.ANGLE_DEG.getModelToUI());
 
-		final IObservableValue estimateValue = BeansObservables.observeValue(contribution, BaseContribution.ESTIMATE);
-		final IObservableValue minCourseValue = BeansObservables.observeValue(contribution,
-				CourseForecastContribution.MIN_COURSE);
-		final IObservableValue maxCourseValue = BeansObservables.observeValue(contribution,
-				CourseForecastContribution.MAX_COURSE);
+		final IObservableValue estimateValue = BeanProperties.value(BaseContribution.ESTIMATE).observe(contribution);
+		final IObservableValue minCourseValue = BeanProperties.value(CourseForecastContribution.MIN_COURSE)
+				.observe(contribution);
+		final IObservableValue maxCourseValue = BeanProperties.value(CourseForecastContribution.MAX_COURSE)
+				.observe(contribution);
 		final MinMaxLimitObservable hardConstraints = new MinMaxLimitObservable(minCourseValue, maxCourseValue,
 				new CompoundConverter(UnitConverter.ANGLE_DEG.getModelToUI(), new IntegerConverter()));
 		bindCommonHeaderWidgets(context, hardConstraints, estimateValue, labelConverter);

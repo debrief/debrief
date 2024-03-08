@@ -3,8 +3,7 @@ target "eclipse-latest"
 with source
 
 
-location "http://download.eclipse.org/releases/2021-03" {
-	org.eclipse.wst.xml_ui.feature.feature.group
+location "http://download.eclipse.org/releases/2023-12" {
 	org.eclipse.emf.common.feature.group
 	org.eclipse.emf.common.ui.feature.group
 	org.eclipse.emf.ecore.feature.group
@@ -18,13 +17,12 @@ location "http://download.eclipse.org/releases/2021-03" {
 	org.eclipse.jdt.feature.group
 	org.eclipse.platform.feature.group
 	org.eclipse.rcp.feature.group
-	org.eclipse.wst.jsdt.feature.feature.group
 	org.eclipse.ecf.filetransfer.feature.feature.group
 	org.eclipse.equinox.core.feature.feature.group
 	org.eclipse.equinox.executable.feature.group
 	org.eclipse.ecf.remoteservice.feature.feature.group
 	org.eclipse.ecf.core.ssl.feature.feature.group
-	org.eclipse.ecf.filetransfer.httpclient45.feature.feature.group
+	org.eclipse.ecf.filetransfer.httpclient5.feature.feature.group
 	org.eclipse.ecf.filetransfer.ssl.feature.feature.group
 	org.eclipse.pde.feature.group
 	org.eclipse.xsd.edit.feature.group
@@ -38,7 +36,6 @@ location "https://download.eclipse.org/ease/release/latest" {
 	org.eclipse.ease.lang.unittest.feature.feature.group
 	org.eclipse.ease.modules.charting.feature.feature.group
 	org.eclipse.ease.modules.feature.feature.group
-	org.eclipse.ease.modules.modeling.feature.feature.group
 	org.eclipse.ease.lang.scriptarchive.feature.feature.group
 	org.eclipse.ease.ui.feature.feature.group
 }
@@ -49,7 +46,7 @@ location "http://download.eclipse.org/nebula/releases/2.2.0" {
 }
 
 
-location "http://download.eclipse.org/webtools/repository/2021-03" {
+location "http://download.eclipse.org/webtools/repository/2023-12" {
     org.eclipse.jpt.assembly.feature.feature.group
 			org.eclipse.jpt.common.branding
 			org.eclipse.jpt.common.core
@@ -129,6 +126,7 @@ location "http://download.eclipse.org/webtools/repository/2021-03" {
 			org.eclipse.wst.xsl.feature.feature.group
 			org.eclipse.wtp.capabilities.feature.feature.group
 			org.eclipse.wtp.jee.capabilities
+			jakarta.enterprise.cdi-api
 			
     
 }
@@ -139,6 +137,22 @@ location "https://download.eclipse.org/tools/orbit/downloads/drops/R202102232326
 	com.google.protobuf
 	org.objectweb.asm [5.0.1,5.1.0)
 	javax.activation
+	javax.annotation
+	javax.inject
+	org.apache.commons.io
+	org.slf4j.api
+	com.sun.jna
+	com.sun.jna.platform
+	org.apache.commons.jxpath
+	com.ibm.icu
+	org.w3c.dom.events
+    jakarta.activation	
+	jakarta.servlet	
+	jakarta.websocket
+	jakarta.xml.bind
+    javax.el
 	
 }
+
+
 

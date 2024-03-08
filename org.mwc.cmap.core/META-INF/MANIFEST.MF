@@ -12,8 +12,7 @@ Bundle-ClassPath: cmap_core.jar,
  image_libs/imageio-ext-utilities-1.1.2.jar,
  image_libs/jai_codec-1.1.3.jar,
  image_libs/jai_core-1.1.3.jar,
- image_libs/jai_imageio-1.1.jar,
- libs/commons-io-2.3.jar
+ image_libs/jai_imageio-1.1.jar
 Bundle-Activator: org.mwc.cmap.core.CorePlugin
 Bundle-Vendor: MWC
 Bundle-Localization: plugin
@@ -199,4 +198,4 @@ Require-Bundle: org.mwc.cmap.legacy,
  org.eclipse.ui.ide,
  org.mwc.cmap.jfreechart
 Bundle-ActivationPolicy: lazy
-Bundle-RequiredExecutionEnvironment: JavaSE-11
+Bundle-RequiredExecutionEnvironment: JavaSE-17

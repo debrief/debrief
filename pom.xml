@@ -9,8 +9,8 @@
   <packaging>pom</packaging>
 
   <properties>
-    <tycho.version>2.7.0</tycho.version>
-    <tycho-extras.version>2.7.0</tycho-extras.version>
+    <tycho.version>3.0.5</tycho.version>
+    <tycho-extras.version>3.0.5</tycho-extras.version>
 
     <tycho-repo.url>https://oss.sonatype.org/content/groups/public/</tycho-repo.url>
 
@@ -124,13 +124,7 @@
          <artifactId>target-platform-configuration</artifactId>
          <version>${tycho.version}</version>
          <configuration>
-         <target>
-           <artifact>
-             <groupId>org.mwc.debrief</groupId>
-             <artifactId>eclipse-latest</artifactId>
-             <version>0.0.1-SNAPSHOT</version>
-           </artifact>
-         </target>
+       
           <environments>
 <!--
             <environment>
@@ -164,7 +158,7 @@
 	<configuration>
   	  <useUIHarness>true</useUIHarness>
 	  <useUIThread>true</useUIThread>
-	  <argLine>-Xms512m -Xmx1024m -XX:PermSize=256m -XX:MaxPermSize=256m -Dorg.eclipse.ui.testsDisableWorkbenchAutoSave=true -DbuildMode=true</argLine>
+	  <argLine>-Xms512m -Xmx1024m  -Dorg.eclipse.ui.testsDisableWorkbenchAutoSave=true -DbuildMode=true</argLine>
 	<!-- https://docs.sonatype.org/display/TYCHO/How+to+run+SWTBot+tests+with+Tycho -->
 	<!-- set useUIThread=true for regular ui tests -->
 	<!-- set useUIThread=false for swtbot tests -->
@@ -203,8 +197,8 @@
 		<version>${tycho.version}</version>
 		<configuration>
 			<encoding>UTF-8</encoding>
-			<source>11</source>
-			<target>11</target>
+			<source>17</source>
+			<target>17</target>
 			<compilerArgument>-warn:+discouraged,forbidden</compilerArgument>
 		</configuration>
 	</plugin>
@@ -226,6 +220,33 @@
 
     </plugins>
   </build>
+  <repositories>
+		<repository>
+			<id>releases</id>
+			<layout>p2</layout>
+			<url>http://download.eclipse.org/releases/2023-12</url>
+		</repository>
+		<repository>
+			<id>webtools</id>
+			<layout>p2</layout>
+			<url>http://download.eclipse.org/webtools/repository/2023-12</url>
+		</repository>
+		<repository>
+			<id>ease</id>
+			<layout>p2</layout>
+			<url>https://download.eclipse.org/ease/release/latest</url>
+		</repository>
+		<repository>
+			<id>nebula</id>
+			<layout>p2</layout>
+			<url>http://download.eclipse.org/nebula/releases/2.2.0</url>
+		</repository>
+		<repository>
+			<id>orbit</id>
+			<layout>p2</layout>
+			<url>https://download.eclipse.org/tools/orbit/downloads/drops/R20210223232630/repository</url>
+		</repository>
+	</repositories>
   <profiles>
     <profile>
       <id>mac</id>
@@ -241,7 +262,7 @@
             <artifactId>tycho-surefire-plugin</artifactId>
             <version>${tycho.version}</version>
             <configuration>
-	      <argLine>-Xms512m -Xmx1024m -XX:PermSize=256m -XX:MaxPermSize=256m -Dorg.eclipse.ui.testsDisableWorkbenchAutoSave=true -XstartOnFirstThread</argLine>
+	      <argLine>-Xms512m -Xmx1024m  -Dorg.eclipse.ui.testsDisableWorkbenchAutoSave=true -XstartOnFirstThread</argLine>
             </configuration>
           </plugin>
         </plugins>

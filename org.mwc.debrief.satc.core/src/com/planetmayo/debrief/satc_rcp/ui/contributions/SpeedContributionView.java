@@ -18,7 +18,7 @@ package com.planetmayo.debrief.satc_rcp.ui.contributions;
 import java.text.DecimalFormat;
 
 import org.eclipse.core.databinding.DataBindingContext;
-import org.eclipse.core.databinding.beans.BeansObservables;
+import org.eclipse.core.databinding.beans.typed.BeanProperties;
 import org.eclipse.core.databinding.observable.value.IObservableValue;
 import org.eclipse.swt.widgets.Composite;
 
@@ -48,11 +48,11 @@ public class SpeedContributionView extends BaseContributionView<SpeedForecastCon
 		minMaxConverter.setNestedUnitConverter(UnitConverter.SPEED_KTS.getModelToUI());
 		labelsConverter.setNestedUnitConverter(UnitConverter.SPEED_KTS.getModelToUI());
 
-		final IObservableValue estimateValue = BeansObservables.observeValue(contribution, BaseContribution.ESTIMATE);
-		final IObservableValue minSpeedValue = BeansObservables.observeValue(contribution,
-				SpeedForecastContribution.MIN_SPEED);
-		final IObservableValue maxSpeedValue = BeansObservables.observeValue(contribution,
-				SpeedForecastContribution.MAX_SPEED);
+		final IObservableValue estimateValue = BeanProperties.value(BaseContribution.ESTIMATE).observe(contribution);
+		final IObservableValue minSpeedValue = BeanProperties.value(SpeedForecastContribution.MIN_SPEED)
+				.observe(contribution);
+		final IObservableValue maxSpeedValue = BeanProperties.value(SpeedForecastContribution.MAX_SPEED)
+				.observe(contribution);
 
 		bindCommonHeaderWidgets(context, new MinMaxLimitObservable(minSpeedValue, maxSpeedValue, minMaxConverter),
 				estimateValue, labelsConverter);

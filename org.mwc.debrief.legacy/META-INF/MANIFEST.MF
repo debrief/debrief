@@ -18,8 +18,6 @@ Bundle-ClassPath: debrief_legacy.jar,
  libs/jackson-annotations-2.11.2.jar,
  libs/jackson-core-2.11.2.jar,
  libs/jackson-databind-2.11.2.jar,
- libs/sf-2.0.3.jar,
- libs/sf-geojson-2.0.4.jar,
  libs/nanoxml-2.2.1.jar
 Bundle-Vendor: MWC
 Export-Package: 
@@ -282,5 +280,5 @@ Export-Package:
    org.eclipse.january.io",
  org.eclipse.january.metadata;uses:="org.eclipse.january.dataset,org.eclipse.january.io"
 Require-Bundle: org.mwc.cmap.legacy
-Bundle-RequiredExecutionEnvironment: JavaSE-11
+Bundle-RequiredExecutionEnvironment: JavaSE-17
 Import-Package: org.osgi.framework

@@ -57,13 +57,13 @@ jobs:
       - name: Checkout from repository
         uses: actions/setup-java@v1
         with:
-           java-version: 1.11
+           java-version: 1.17
       - name: install java
         run: |
                sleep 3
                echo "root.win32.win32.x86_64 = win-64" >> org.mwc.debrief.combined.feature/build.properties
                # get a 64-bit windows JRE
-               wget -P dest https://github.com/AdoptOpenJDK/openjdk11-binaries/releases/download/jdk-11.0.5%2B10/OpenJDK11U-jre_x64_windows_hotspot_11.0.5_10.zip
+               wget -P dest https://github.com/AdoptOpenJDK/openjdk17-binaries/releases/download/jdk-2021-05-07-13-31/OpenJDK-jre_x64_windows_hotspot_2021-05-06-23-30.zip
                # unpack it
                cd dest
                unzip OpenJD*.zip

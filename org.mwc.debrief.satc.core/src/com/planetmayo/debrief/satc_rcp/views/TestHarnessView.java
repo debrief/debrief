@@ -26,11 +26,11 @@ import java.util.List;
 
 import org.eclipse.core.databinding.Binding;
 import org.eclipse.core.databinding.DataBindingContext;
-import org.eclipse.core.databinding.beans.BeansObservables;
+import org.eclipse.core.databinding.beans.typed.BeanProperties;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.action.Separator;
-import org.eclipse.jface.databinding.swt.WidgetProperties;
+import org.eclipse.jface.databinding.swt.typed.WidgetProperties;
 import org.eclipse.jface.viewers.ComboViewer;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.LabelProvider;
@@ -289,20 +289,20 @@ public class TestHarnessView extends ViewPart {
 				final GAParameters parameters = gaSolutionGenerator.getParameters();
 				add(_context.bindValue(
 						WidgetProperties.text(SWT.Modify).observeDelayed(100, populationSize.getControl()),
-						BeansObservables.observeValue(parameters, GAParameters.POPULATION_SIZE)));
+						BeanProperties.value(GAParameters.POPULATION_SIZE).observe(parameters)));
 				add(_context.bindValue(WidgetProperties.text(SWT.Modify).observeDelayed(100, elitizm.getControl()),
-						BeansObservables.observeValue(parameters, GAParameters.ELITIZM)));
+						BeanProperties.value(GAParameters.ELITIZM).observe(parameters)));
 				add(_context.bindValue(WidgetProperties.text(SWT.Modify).observeDelayed(100, stagnation.getControl()),
-						BeansObservables.observeValue(parameters, GAParameters.STAGNATION_STEPS)));
+						BeanProperties.value(GAParameters.STAGNATION_STEPS).observe(parameters)));
 				add(_context.bindValue(WidgetProperties.text(SWT.Modify).observeDelayed(100, timeout.getControl()),
-						BeansObservables.observeValue(parameters, GAParameters.TIMEOUT)));
+						BeanProperties.value(GAParameters.TIMEOUT).observe(parameters)));
 				add(_context.bindValue(WidgetProperties.text(SWT.Modify).observeDelayed(100, mutation.getControl()),
-						BeansObservables.observeValue(parameters, GAParameters.MUTATION_PROBABILITY)));
+						BeanProperties.value(GAParameters.MUTATION_PROBABILITY).observe(parameters)));
 				add(_context.bindValue(
 						WidgetProperties.text(SWT.Modify).observeDelayed(100, timeoutIteration.getControl()),
-						BeansObservables.observeValue(parameters, GAParameters.TIMEOUT_BETWEEN_ITERATIONS)));
-				add(_context.bindValue(WidgetProperties.selection().observe(considerAlteringLegs),
-						BeansObservables.observeValue(parameters, GAParameters.USE_ALTERING_LEGS)));
+						BeanProperties.value(GAParameters.TIMEOUT_BETWEEN_ITERATIONS).observe(parameters)));
+				add(_context.bindValue(WidgetProperties.buttonSelection().observe(considerAlteringLegs),
+						BeanProperties.value(GAParameters.USE_ALTERING_LEGS).observe(parameters)));
 			}
 		};
 	}
@@ -373,25 +373,22 @@ public class TestHarnessView extends ViewPart {
 
 			@Override
 			protected void doBind(final SASolutionGenerator saSolutionGenerator) {
+				SAParameters parameters = saSolutionGenerator.getParameters();
 				add(_context.bindValue(
 						WidgetProperties.text(SWT.Modify).observeDelayed(100, startTemperature.getControl()),
-						BeansObservables.observeValue(saSolutionGenerator.getParameters(),
-								SAParameters.START_TEMPRATURE)));
+						BeanProperties.value(SAParameters.START_TEMPRATURE).observe(parameters)));
 				add(_context.bindValue(
 						WidgetProperties.text(SWT.Modify).observeDelayed(100, endTemperature.getControl()),
-						BeansObservables.observeValue(saSolutionGenerator.getParameters(),
-								SAParameters.END_TEMPRATURE)));
+						BeanProperties.value(SAParameters.END_TEMPRATURE).observe(parameters)));
 				add(_context.bindValue(
 						WidgetProperties.text(SWT.Modify).observeDelayed(100, parallelThreads.getControl()),
-						BeansObservables.observeValue(saSolutionGenerator.getParameters(),
-								SAParameters.PARALLEL_THREADS)));
+						BeanProperties.value(SAParameters.PARALLEL_THREADS).observe(parameters)));
 				add(_context.bindValue(WidgetProperties.text(SWT.Modify).observeDelayed(100, iterations.getControl()),
-						BeansObservables.observeValue(saSolutionGenerator.getParameters(),
-								SAParameters.ITERATIONS_IN_THREAD)));
-				add(_context.bindValue(WidgetProperties.selection().observe(startOnCenter), BeansObservables
-						.observeValue(saSolutionGenerator.getParameters(), SAParameters.START_ON_CENTER)));
-				add(_context.bindValue(WidgetProperties.selection().observe(joinedIterations), BeansObservables
-						.observeValue(saSolutionGenerator.getParameters(), SAParameters.JOINED_ITERATIONS)));
+						BeanProperties.value(SAParameters.ITERATIONS_IN_THREAD).observe(parameters)));
+				add(_context.bindValue(WidgetProperties.buttonSelection().observe(startOnCenter),
+						BeanProperties.value(SAParameters.START_ON_CENTER).observe(parameters)));
+				add(_context.bindValue(WidgetProperties.buttonSelection().observe(joinedIterations),
+						BeanProperties.value(SAParameters.JOINED_ITERATIONS).observe(parameters)));
 			}
 		};
 	}
