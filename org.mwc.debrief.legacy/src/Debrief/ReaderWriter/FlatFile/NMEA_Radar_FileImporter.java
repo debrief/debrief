@@ -14,6 +14,7 @@
  *******************************************************************************/
 package Debrief.ReaderWriter.FlatFile;
 
+import java.awt.Color;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -26,12 +27,16 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Enumeration;
 import java.util.List;
 import java.util.Optional;
 
 import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.TrackWrapper;
+import Debrief.Wrappers.Track.TrackSegment;
+import Debrief.Wrappers.Track.TrackWrapper_Support;
 import MWC.Algorithms.Conversions;
+import MWC.GUI.Editable;
 import MWC.GUI.ErrorLogger;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
@@ -199,6 +204,7 @@ public class NMEA_Radar_FileImporter {
 
 		@Override
 		public void execute() {
+			final List<TrackWrapper> newTracks = new ArrayList<TrackWrapper>();
 			for (RadarEntry entry: _entries) {
 				// get the parent track
 				final Layer layer = _layers.findLayer("" + entry.trackId);
@@ -206,8 +212,9 @@ public class NMEA_Radar_FileImporter {
 				if(layer == null) {
 					track = new TrackWrapper();
 					track.setName(""+ entry.trackId);
-					track.setColor(DebriefColors.GREEN);
+					track.setColor(DebriefColors.RandomColorProvider.getRandomColor(entry.trackId));
 					_layers.addThisLayer(track);
+					newTracks.add(track);
 				} else {
 					track = (TrackWrapper) layer;
 				}
@@ -218,6 +225,24 @@ public class NMEA_Radar_FileImporter {
 				// add to the track
 				track.addFix(fix);
 			}
+			
+			// split the tracks
+			for (final TrackWrapper track: newTracks) {
+				final List<TrackSegment> legs = TrackWrapper_Support.splitTrackAtSpatialJumps(track, 10d);
+				// shade each leg differnetly
+				if (legs.size() > 1) {
+					for (TrackSegment leg: legs) {
+						final Color col = DebriefColors.RandomColorProvider.getRandomColor((int)(Math.random() * 100));
+						final Enumeration<Editable> ele = leg.elements();
+						while(ele.hasMoreElements()) {
+							FixWrapper fix = (FixWrapper) ele.nextElement();
+							fix.setColor(col);
+						}
+					}					
+				}
+			}
+			
+			// update layers
     		_layers.fireExtended();
 		}
 
