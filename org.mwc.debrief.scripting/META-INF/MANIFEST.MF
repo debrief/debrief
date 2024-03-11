@@ -23,6 +23,7 @@ Require-Bundle: org.eclipse.help;bundle-version="[3.5.0,4.0.0)",
  org.eclipse.ease.lang.javascript.rhino;bundle-version="0.8.0",
  org.eclipse.ease.lang.javascript.ui;bundle-version="0.8.0",
  org.eclipse.ease.lang.jvm.compiled;bundle-version="0.8.0",
+ org.eclipse.ease.lang.python;bundle-version="0.8.0",
  org.eclipse.ease.lang.scriptarchive;bundle-version="0.8.0",
  org.eclipse.ease.lang.scriptarchive.ui;bundle-version="0.8.0",
  org.eclipse.ease.modules.charting;bundle-version="0.8.0",
@@ -30,7 +31,9 @@ Require-Bundle: org.eclipse.help;bundle-version="[3.5.0,4.0.0)",
  org.eclipse.ease.modules.jvm;bundle-version="0.8.0",
  org.eclipse.ease.modules.platform;bundle-version="0.8.0",
  org.eclipse.ease.ui;bundle-version="0.8.0",
- org.eclipse.ease.ui.scripts;bundle-version="0.8.0"
+ org.eclipse.ease.ui.scripts;bundle-version="0.8.0",
+ org.eclipse.ease.lang.python.py4j;bundle-version="0.8.0",
+ py4j-java;bundle-version="0.10.9"
 Bundle-ManifestVersion: 2
 Bundle-RequiredExecutionEnvironment: JavaSE-11
 Bundle-Activator: org.mwc.debrief.scripting.ScriptingActivator
