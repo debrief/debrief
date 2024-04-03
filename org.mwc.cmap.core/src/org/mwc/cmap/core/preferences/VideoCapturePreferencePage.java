@@ -57,6 +57,8 @@ public class VideoCapturePreferencePage extends FieldEditorPreferencePage
     public static final String M4V = "m4v";
 
     public static final String WEBM = "WEBM";
+    
+    public static final String WMV = "wmv";
 
     public static final String NO_CURSOR = "no cursor";
 
@@ -153,11 +155,12 @@ public class VideoCapturePreferencePage extends FieldEditorPreferencePage
         "&Format to generate the video", 3, new String[][]
         {
             {"&AVI", PreferenceConstants.AVI},
+            {"&WMV (Ideal for Windows)", PreferenceConstants.WMV},
             {"&QuickTime", PreferenceConstants.QUICK_TIME},
             {"&MP4", PreferenceConstants.MP4},
             {"&FLV", PreferenceConstants.FLV},
             {"&WMA", PreferenceConstants.WMA},
-            {"&MKV", PreferenceConstants.MKV},
+            {"MK&V", PreferenceConstants.MKV},
             {"&M4V", PreferenceConstants.M4V},
             {"&WEBM", PreferenceConstants.WEBM},}, getFieldEditorParent());
     addField(fileFormatEditor);

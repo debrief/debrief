@@ -1314,8 +1314,6 @@ public class ScreenRecorder extends AbstractStateModel {
       return fileFormat != null && !ConvertFormat.NONE.equals(fileFormat.get(ConversionKey, ConvertFormat.NONE) );
     }
     
-    String FFMPEG_COMMAND = "";
-    
     void doConvert(String inputFile, String outputFile, ConvertFormat config) {
       try {
         // Command to create an external process

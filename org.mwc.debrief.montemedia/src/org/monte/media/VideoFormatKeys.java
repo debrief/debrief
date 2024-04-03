@@ -65,6 +65,7 @@ public class VideoFormatKeys extends FormatKeys {
       M4V("m4v"),
       //MOBILE("3gp"), convert failed
       //MPEG("mpeg"), convert failed
+      WMV("wmv"),
       WEBM("webm");
        
       private String type;
