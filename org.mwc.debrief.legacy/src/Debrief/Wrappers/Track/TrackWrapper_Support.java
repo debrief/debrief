@@ -35,6 +35,7 @@ import MWC.GUI.FireReformatted;
 import MWC.GUI.Layer;
 import MWC.GUI.Plottables;
 import MWC.GUI.SupportsPropertyListeners;
+import MWC.GenericData.WorldLocation;
 
 public class TrackWrapper_Support {
 
@@ -462,4 +463,59 @@ public class TrackWrapper_Support {
 		return newSegments;
 	}
 
+	
+	public static List<TrackSegment> splitTrackAtSpatialJumps(final TrackWrapper track, final double factor) {
+		final Enumeration<Editable> segs = track.getSegments().elements();
+		final List<FixWrapper> jumps = new ArrayList<FixWrapper>();
+		final List<TrackSegment> newSegments = new ArrayList<TrackSegment>();
+
+		// find the jumps
+		while (segs.hasMoreElements()) {
+			final TrackSegment segment = (TrackSegment) segs.nextElement();
+			final Enumeration<Editable> posits = segment.elements();
+			WorldLocation lastLoc = null;
+			double lastDistDegs = Double.MIN_NORMAL;
+			while (posits.hasMoreElements()) {
+				final FixWrapper next = (FixWrapper) posits.nextElement();
+				final WorldLocation loc = next.getLocation();
+				if (lastLoc != null) {
+					// get this distance
+					final double dist = loc.subtract(lastLoc).getRange();
+					
+					// do we have a previous distance?
+					if (lastDistDegs != Double.MIN_NORMAL && lastDistDegs != 0d) {
+						final double ratio = dist / lastDistDegs;						
+						if (Math.abs(ratio) > factor) {
+							jumps.add(next);
+							lastLoc = null;
+							lastDistDegs = Double.MIN_NORMAL;
+									
+						}
+					}
+					
+					lastDistDegs = dist;
+				}
+				lastLoc = loc;				
+			}
+		}
+
+		// now split on the jumps
+		for (final FixWrapper jump : jumps) {
+			// what's the old segment for this fix
+			final TrackSegment oldSegment = jump.getSegment();
+			final Vector<TrackSegment> newSegs = track.splitTrack(jump, true);
+
+			// the old segment has been replaced by two new ones, so delete it
+			newSegments.remove(oldSegment);
+
+			// now put in the two new segments
+			for (final TrackSegment seg : newSegs) {
+				if (!newSegments.contains(seg)) {
+					newSegments.add(seg);
+				}
+			}
+		}
+
+		return newSegments;
+	}
 }

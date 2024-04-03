@@ -203,6 +203,7 @@ import MWC.GUI.Layer;
 import MWC.GUI.Layers;
 import MWC.GUI.PlainChart;
 import MWC.GUI.Plottable;
+import MWC.GUI.ToolParent;
 import MWC.GUI.Canvas.MetafileCanvas;
 import MWC.GUI.Tools.Chart.HitTester;
 import MWC.GUI.Tools.Chart.RightClickEdit;
@@ -919,11 +920,15 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider 
 						// we start plotting the images
 						proj.toScreen(proj.getDataArea().getCentre());
 
-						final BufferedImage img = GeoToolsPainter.drawAwtImage(width, height, gp,
-								dest.getBackgroundColor());
-						if (img != null) {
-							final ImageData swtImage = awtToSwt(img, width + 1, height + 1);
-							_swtImage = new Image(Display.getCurrent(), swtImage);
+						try {
+							final BufferedImage img = GeoToolsPainter.drawAwtImage(width, height, gp,
+									dest.getBackgroundColor());
+							if (img != null) {
+								final ImageData swtImage = awtToSwt(img, width + 1, height + 1);
+								_swtImage = new Image(Display.getCurrent(), swtImage);
+							}							
+						} catch (Exception ee) {
+							CorePlugin.logError(ToolParent.ERROR, "Error creating image", ee);
 						}
 					}
 				}

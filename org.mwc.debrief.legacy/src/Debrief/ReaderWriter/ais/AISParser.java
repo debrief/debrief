@@ -31,6 +31,7 @@
 
 package Debrief.ReaderWriter.ais;
 
+import java.util.Optional;
 import java.util.regex.Pattern;
 
 /**
@@ -188,7 +189,7 @@ public class AISParser {
 	 * @return decoded object of a type IAISMessage
 	 * @throws AISParseException
 	 */
-	public IAISMessage parse(final String encodedMsg) throws AISParseException {
+	public Optional<IAISMessage> parse(final String encodedMsg, final int lineCtr) {
 
 		if (isValidAIS(encodedMsg)) {
 
@@ -235,13 +236,26 @@ public class AISParser {
 			}
 			if (isWholeMsg) {
 				initMsgParams();
-				final IAISMessage aisMessage = AISDecoder.decode(currMsg);
-				return aisMessage;
+				try {
+					final IAISMessage aisMessage = AISDecoder.decode(currMsg);
+					if (aisMessage != null) {
+						return Optional.of(aisMessage);						
+					} else {
+						MWC.Utilities.Errors.Trace.trace("AIS decoder returned null, line:" + lineCtr);
+						return Optional.empty();						
+					}
+				} catch(AISParseException e) {
+					MWC.Utilities.Errors.Trace.trace(e, "Cannot decode AIS line, line:" + lineCtr);
+   			        return Optional.empty();						
+				}
+			} else {
+				MWC.Utilities.Errors.Trace.trace("AIS line incomplete, line:" + lineCtr);
+				return Optional.empty();							
 			}
-			return null;
+		} else {
+			MWC.Utilities.Errors.Trace.trace("AIS line fails CRC, line:" + lineCtr);
+			return Optional.empty();			
 		}
-		throw new AISParseException(AISParseException.NO_AIS_MESSAGE);
-
 	}
 
 }

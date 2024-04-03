@@ -12,6 +12,7 @@ import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Optional;
 
 import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.Track.LightweightTrackWrapper;
@@ -83,9 +84,10 @@ public class ImportAIS {
 		public void testKnownImport() throws AISParseException {
 			final String test = "!AIVDM,1,1,,A,15RTgt0PAso;90TKcjM8h6g208CQ,0*4A";
 			final AISParser parser = new AISParser();
-			final IAISMessage res = parser.parse(test);
-			@SuppressWarnings("unused")
-			final IPositionMessage posA = (IPositionMessage) res;
+			final Optional<IAISMessage> oRes = parser.parse(test, 1);
+			if (!oRes.isPresent()) {
+				throw new AISParseException();
+			}
 		}
 
 		@SuppressWarnings("deprecation")
@@ -292,45 +294,48 @@ public class ImportAIS {
 		final BufferedReader br = new BufferedReader(new InputStreamReader(is));
 
 		String nmea_sentence;
+		
+		int lineCtr = 1;
 
 		// loop through the lines
 		while ((nmea_sentence = br.readLine()) != null) {
-
 			// parse this message. Note that fortunately this library consumes any
 			// leading text.
-			final IAISMessage res = parser.parse(nmea_sentence);
+			final Optional<IAISMessage> oRes = parser.parse(nmea_sentence, lineCtr++);
+			if (oRes.isPresent()){
+				IAISMessage res = oRes.get();
+				if (res instanceof IPositionMessage) {
+					// ok, cast it
+					final IPositionMessage ar = (IPositionMessage) res;
 
-			if (res instanceof IPositionMessage) {
-				// ok, cast it
-				final IPositionMessage ar = (IPositionMessage) res;
+					// and now store it.
+					storeThis(ar.getLatitude(), ar.getLongitude(), ar.getCog(), ar.getSog(), ar.getMmsi(),
+							ar.getMsgTimestamp().getSeconds(), lastTime);
+				} else if (res instanceof AISBaseStation) {
+					final AISBaseStation base = (AISBaseStation) res;
 
-				// and now store it.
-				storeThis(ar.getLatitude(), ar.getLongitude(), ar.getCog(), ar.getSog(), ar.getMmsi(),
-						ar.getMsgTimestamp().getSeconds(), lastTime);
-			} else if (res instanceof AISBaseStation) {
-				final AISBaseStation base = (AISBaseStation) res;
+					// ok, extract the time stamp - so we can use it to offset positions
+					lastTime = base.getTimestamp();
 
-				// ok, extract the time stamp - so we can use it to offset positions
-				lastTime = base.getTimestamp();
+					// hey, we may have stacked up some positions while
+					// they are waiting for the first data item
+					if (_queuedFixes.size() > 0)
+						processQueuedPositions(lastTime);
 
-				// hey, we may have stacked up some positions while
-				// they are waiting for the first data item
-				if (_queuedFixes.size() > 0)
-					processQueuedPositions(lastTime);
+				} else if (res instanceof AISVessel) {
+					final AISVessel vess = (AISVessel) res;
 
-			} else if (res instanceof AISVessel) {
-				final AISVessel vess = (AISVessel) res;
+					if (_nameLookups == null)
+						_nameLookups = new HashMap<Integer, String>();
 
-				if (_nameLookups == null)
-					_nameLookups = new HashMap<Integer, String>();
+					// ok, store the id against the name
+					_nameLookups.put(vess.getMmsi(), vess.getName());
 
-				// ok, store the id against the name
-				_nameLookups.put(vess.getMmsi(), vess.getName());
-
-				// ok, see if we can name this vessel
-				final Layer thisLayer = _layers.findLayer("" + vess.getMmsi());
-				if (thisLayer != null) {
-					thisLayer.setName(vess.getName());
+					// ok, see if we can name this vessel
+					final Layer thisLayer = _layers.findLayer("" + vess.getMmsi());
+					if (thisLayer != null) {
+						thisLayer.setName(vess.getName());
+					}
 				}
 			}
 		}

@@ -26,6 +26,7 @@ import org.eclipse.jface.preference.ColorFieldEditor;
 import org.eclipse.jface.preference.FieldEditor;
 import org.eclipse.jface.preference.FieldEditorPreferencePage;
 import org.eclipse.jface.preference.FileFieldEditor;
+import org.eclipse.jface.preference.StringFieldEditor;
 import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
@@ -64,6 +65,8 @@ public class PrefsPage extends FieldEditorPreferencePage implements IWorkbenchPr
 		public static final String DEFAULT_PLOT_COLOR = SWTCanvasAdapter.BACKGROUND_COLOR_PROPERTY;
 		public static final String PPT_TEMPLATE = "pptTemplate";
 		public static final String PEPYS_USE_STORED_FUNCTIONS = "PEPYS_USE_STORED_FUNCTIONS";
+		public static final String NMEA_RADAR_LAT = "54.4";
+		public static final String NMEA_RADAR_LONG = "-12.3";
 	}
 
 	private Label slideDims;
@@ -121,6 +124,19 @@ public class PrefsPage extends FieldEditorPreferencePage implements IWorkbenchPr
 		slideDims = new Label(getFieldEditorParent(), SWT.HORIZONTAL);
 		slideDims.setText("Width: (pending) Height: (pending)");
 		slideDims.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 1, 1));
+		
+		// separator
+		final Label label4 = new Label(getFieldEditorParent(), SWT.SEPARATOR | SWT.HORIZONTAL);
+		label4.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 3, 1));
+		
+		// origin for NNEA Radar Data
+		final Label lbl2 = new Label(getFieldEditorParent(), SWT.WRAP);
+		lbl2.setText("Origin for NMEA Radar Import:");
+		lbl2.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 3, 1));
+		addField(new  StringFieldEditor(PreferenceConstants.NMEA_RADAR_LAT,
+				"Lat (55.3)", getFieldEditorParent()));
+		addField(new StringFieldEditor(PreferenceConstants.NMEA_RADAR_LONG,
+				"Long (-3.9)", getFieldEditorParent()));
 
 		// ok, get the current path
 		final String templatePath = getPreferenceStore().getString(PreferenceConstants.PPT_TEMPLATE);

@@ -150,10 +150,112 @@ public class SplitTracksIntoLegs implements RightClickContextItemGenerator {
 		}
 	}
 
+
+	private static class SpatialSplitTracksOperation extends CMAPOperation {
+
+		/**
+		 * the parent to update on completion
+		 */
+		private final Layers _layers;
+		private final List<TrackWrapper> _tracks;
+		private final double _factor;
+		private final HashMap<TrackWrapper, List<TrackSegment>> _trackChanges;
+
+		public SpatialSplitTracksOperation(final String title, final Layers theLayers, final List<TrackWrapper> tracks,
+				final double factor) {
+			super(title);
+			_layers = theLayers;
+			_tracks = tracks;
+			_factor = factor;
+			_trackChanges = new HashMap<TrackWrapper, List<TrackSegment>>();
+		}
+
+		@Override
+		public boolean canRedo() {
+			return true;
+		}
+
+		@Override
+		public boolean canUndo() {
+			return true;
+		}
+
+		@Override
+		public IStatus execute(final IProgressMonitor monitor, final IAdaptable info) throws ExecutionException {
+			boolean modified = false;
+			_trackChanges.clear();
+
+			// loop through the tracks
+			for (final TrackWrapper track : _tracks) {
+				final List<TrackSegment> newSegments = TrackWrapper_Support.splitTrackAtSpatialJumps(track, _factor);
+				modified = modified || !newSegments.isEmpty();
+				_trackChanges.put(track, newSegments);
+			}
+
+			// did anything get changed
+			if (modified) {
+				fireModified();
+			}
+			return Status.OK_STATUS;
+		}
+
+		private void fireModified() {
+			_layers.fireExtended();
+		}
+
+		@Override
+		public IStatus undo(final IProgressMonitor monitor, final IAdaptable info) throws ExecutionException {
+			int numChanges = 0;
+
+			// ok, merge the segments
+			for (final TrackWrapper track : _trackChanges.keySet()) {
+				final List<TrackSegment> splits = _trackChanges.get(track);
+
+				final TrackSegment target = splits.get(0);
+
+				final SegmentList existingSegments = track.getSegments();
+
+				int ctr = 0;
+				for (final TrackSegment segment : splits) {
+					if (segment != target) {
+						// check this is an existing segment for this track
+						// if we've performed several split/merge operations
+						// the list may now be out of sync
+						if (existingSegments.contains(segment)) {
+							// remove the segment
+							track.removeElement(segment);
+
+							final Enumeration<Editable> fixes = segment.elements();
+							while (fixes.hasMoreElements()) {
+								final FixWrapper fix = (FixWrapper) fixes.nextElement();
+								target.addFix(fix);
+							}
+							ctr++;
+						}
+					}
+				}
+
+				numChanges += ctr;
+			}
+
+			final boolean modified = numChanges > 0;
+
+			// did anything get changed
+			if (modified) {
+				fireModified();
+			}
+			return Status.OK_STATUS;
+		}
+	}
 	public static class TestSplittingTracks extends TestCase {
 		private static FixWrapper getFix(final long dtg, final double course, final double speed) {
 			final Fix theFix = new Fix(new HiResDate(dtg), new WorldLocation(2, 2, 2), course,
 					Conversions.Kts2Yps(speed));
+			final FixWrapper res = new FixWrapper(theFix);
+			return res;
+		}
+		private static FixWrapper getFix2(final long dtg, final double lat, final double lng) {
+			final Fix theFix = new Fix(new HiResDate(dtg), new WorldLocation(lat, lng, 0), 0d,0d);
 			final FixWrapper res = new FixWrapper(theFix);
 			return res;
 		}
@@ -196,6 +298,24 @@ public class SplitTracksIntoLegs implements RightClickContextItemGenerator {
 			return tTwo;
 		}
 
+		private static TrackWrapper getThree() {
+			final TrackWrapper tThree = new TrackWrapper();
+			tThree.setName("t-3");
+			tThree.addFix(getFix2(1000, 22, 33));
+			tThree.addFix(getFix2(2000, 22, 34));
+			tThree.addFix(getFix2(2100, 22, 35));
+			tThree.addFix(getFix2(4000, 22, 36));
+			tThree.addFix(getFix2(5000, 22, 30));
+			tThree.addFix(getFix2(8000, 22, 31));
+			tThree.addFix(getFix2(9000, 22, 32));
+			tThree.addFix(getFix2(10000, 22, 38));
+			tThree.addFix(getFix2(11100, 22, 39));
+			tThree.addFix(getFix2(12000, 22, 38));
+			tThree.addFix(getFix2(13000, 22, 37));
+			tThree.addFix(getFix2(14000, 22, 36));
+			return tThree;
+		}
+		
 		public void testSplitOperation() throws ExecutionException {
 
 			final TrackWrapper tOne = getOne();
@@ -234,6 +354,24 @@ public class SplitTracksIntoLegs implements RightClickContextItemGenerator {
 			assertEquals("correct positions", 14, tOne.numFixes());
 			assertEquals("correct positions", 12, tTwo.numFixes());
 		}
+		
+
+		public void testSpatialSplitOperation1() throws ExecutionException {
+
+			final TrackWrapper tThree = getThree();
+			final List<TrackWrapper> tracks = new ArrayList<TrackWrapper>();
+			tracks.add(tThree);
+			List<TrackSegment> segments = TrackWrapper_Support.splitTrackAtSpatialJumps(tThree, 3d);
+			assertEquals("three legs", 3, segments.size());
+		}
+		public void testSpatialSplitOperation2() throws ExecutionException {
+
+			final TrackWrapper tTwo = getTwo();
+			final List<TrackWrapper> tracks = new ArrayList<TrackWrapper>();
+			tracks.add(tTwo);
+			List<TrackSegment> segments = TrackWrapper_Support.splitTrackAtSpatialJumps(tTwo, 3d);
+			assertEquals("three legs", 0, segments.size());
+		}
 	}
 
 	@Override
@@ -268,11 +406,12 @@ public class SplitTracksIntoLegs implements RightClickContextItemGenerator {
 
 			final String msg = tracks.size() > 1 ? "tracks" : "track";
 
-			final String fullMsg = "Split " + msg + " into segments on gaps over...";
+			final String fullMsg1 = "Split " + msg + " into segments on gaps over...";
 
-			final MenuManager listing = new MenuManager(fullMsg);
+			final MenuManager listing1 = new MenuManager(fullMsg1);
 
 			final HashMap<Long, String> choices = new HashMap<Long, String>();
+			choices.put(10 * 1000L, "10 Seconds");
 			choices.put(60 * 1000L, "1 Minute");
 			choices.put(60 * 60 * 1000L, "1 Hour");
 			choices.put(24 * 60 * 60 * 1000L, "1 Day");
@@ -291,9 +430,30 @@ public class SplitTracksIntoLegs implements RightClickContextItemGenerator {
 						CorePlugin.run(theAction);
 					}
 				};
-				listing.add(doMerge);
+				listing1.add(doMerge);
 			}
-			parent.add(listing);
+			parent.add(listing1);
+			
+			// now the spatial distance factor
+			final String fullMsg2 = "Split " + msg + " into segments where distance increases by factor of ...";
+
+			final MenuManager listing2 = new MenuManager(fullMsg2);
+
+			final long factors[] = {2, 3, 5, 10, 20};
+			for (final Long factor : factors) {
+
+				// create this operation
+				final Action doMerge = new Action("" + factor) {
+					@Override
+					public void run() {
+						final IUndoableOperation theAction = new SpatialSplitTracksOperation(
+								"Split tracks where distance increases by factor of " + factor, theLayers, tracks, factor);
+						CorePlugin.run(theAction);
+					}
+				};
+				listing2.add(doMerge);
+			}
+			parent.add(listing2);
 		}
 	}
 }
