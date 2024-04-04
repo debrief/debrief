@@ -90,6 +90,8 @@ public class VideoCapturePreferencePage extends FieldEditorPreferencePage
     public static final String P_ENABLE = "enableVideoRecording";
 
     public static final String DEBRIEF_S_WINDOW = "Debrief's Window";
+
+    public static final String DEBRIEF_PLOT_WINDOW = "Plot Window";
     
     public static final String FFMPEG = "ffmpeg.exe";
   }
@@ -145,7 +147,8 @@ public class VideoCapturePreferencePage extends FieldEditorPreferencePage
         PreferenceConstants.P_SCREEN_AREA, "&Screen Area", 3, new String[][]
         {
             {"&Entire Screen", PreferenceConstants.ENTIRE_SCREEN},
-            {"&Debrief's Window", PreferenceConstants.DEBRIEF_S_WINDOW}},
+            {"&Debrief's Window", PreferenceConstants.DEBRIEF_S_WINDOW},
+            {"Debrief's &Plot Window", PreferenceConstants.DEBRIEF_PLOT_WINDOW}},
         getFieldEditorParent());
     addField(screenAreaRadioEditor);
     screenAreaRadioEditor.setEnabled(recordingEnabledPref,

@@ -45,6 +45,7 @@ import static org.mwc.cmap.core.preferences.VideoCapturePreferencePage.Preferenc
 import static org.mwc.cmap.core.preferences.VideoCapturePreferencePage.PreferenceConstants.BLACK_CURSOR;
 import static org.mwc.cmap.core.preferences.VideoCapturePreferencePage.PreferenceConstants.DEBRIEF_S_WINDOW;
 import static org.mwc.cmap.core.preferences.VideoCapturePreferencePage.PreferenceConstants.ENTIRE_SCREEN;
+import static org.mwc.cmap.core.preferences.VideoCapturePreferencePage.PreferenceConstants.DEBRIEF_PLOT_WINDOW;
 import static org.mwc.cmap.core.preferences.VideoCapturePreferencePage.PreferenceConstants.JPEG100;
 import static org.mwc.cmap.core.preferences.VideoCapturePreferencePage.PreferenceConstants.JPEG50;
 import static org.mwc.cmap.core.preferences.VideoCapturePreferencePage.PreferenceConstants.NONE2;
@@ -437,7 +438,7 @@ public class TimeController extends ViewPart implements ISelectionProvider,
         {
           return FFMPEG;
         }
-        
+
         return preferenceStore.getString(P_FFMPEG_PATH);
       }
 
@@ -610,7 +611,13 @@ public class TimeController extends ViewPart implements ISelectionProvider,
       {
         areaToRecord = getScreenArea(getViewSite().getShell());
       }
-      return areaToRecord;
+      else if (DEBRIEF_PLOT_WINDOW.equals(preferenceStore.getString(
+          P_SCREEN_AREA)))
+      {
+        
+      }
+        
+        return areaToRecord;
     }
 
     /**
@@ -751,12 +758,12 @@ public class TimeController extends ViewPart implements ISelectionProvider,
           }
         });
 
+        stopPlaying();
+        
         if (isVideoRecording)
         {
           stopVideoRecording();
         }
-
-        stopPlaying();
 
         if (isPptxRecording)
         {
