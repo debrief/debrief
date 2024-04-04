@@ -759,7 +759,7 @@ public class TimeController extends ViewPart implements ISelectionProvider,
           {
             throw new Exception(
                 "FFMPEG seems missing. Please go to the Preferences section,"
-                    + " inside Video Capture Preference, and Specify the path"
+                    + " inside Video Capture Preference, and specify the path"
                     + " to where the FFMPEG executable is located.");
           }
         }
