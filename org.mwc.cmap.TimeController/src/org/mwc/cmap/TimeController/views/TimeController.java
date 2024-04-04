@@ -127,6 +127,7 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
+import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Scale;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IEditorInput;
@@ -367,19 +368,10 @@ public class TimeController extends ViewPart implements ISelectionProvider,
     {
       try
       {
-
-        final IPreferenceStore preferenceStore = CorePlugin.getDefault()
-            .getPreferenceStore();
-
-        final boolean recordingEnabled = preferenceStore.getBoolean(P_ENABLE);
-
-        if (!recordingEnabled)
+        if (screenRecorder != null)
         {
-          return;
+          screenRecorder.start();
         }
-
-        createScreenRecorder(preferenceStore);
-        screenRecorder.start();
 
       }
       catch (final Exception ee)
@@ -614,10 +606,10 @@ public class TimeController extends ViewPart implements ISelectionProvider,
       else if (DEBRIEF_PLOT_WINDOW.equals(preferenceStore.getString(
           P_SCREEN_AREA)))
       {
-        
+
       }
-        
-        return areaToRecord;
+
+      return areaToRecord;
     }
 
     /**
@@ -710,10 +702,80 @@ public class TimeController extends ViewPart implements ISelectionProvider,
       }
     }
 
+    /**
+     * Creates the screen recorder, or makes sure to set it as null if the screen recording option
+     * is disabled.
+     * 
+     * @throws IOException
+     * @throws AWTException
+     */
+    public void createVideoRecorder() throws IOException, AWTException
+    {
+      final IPreferenceStore preferenceStore = CorePlugin.getDefault()
+          .getPreferenceStore();
+
+      final boolean recordingEnabled = preferenceStore.getBoolean(P_ENABLE);
+
+      if (!recordingEnabled)
+      {
+        screenRecorder = null;
+        return;
+      }
+
+      createScreenRecorder(preferenceStore);
+    }
+
+    public boolean validateFFMPEG()
+    {
+      if (screenRecorder == null)
+      {
+        // if the video recording is enabled, we don't need to check it
+        return true;
+      }
+
+      if (screenRecorder.conversionEnabled() && !screenRecorder
+          .validateFfmpeg())
+      {
+        // ffpmeg seems to be missing.
+        return false;
+      }
+
+      // We don't need a conversion.
+      return true;
+    }
+
+    private boolean isRecording = true;
+
     @Override
     public void widgetSelected(final SelectionEvent e)
     {
-      final boolean isRecording = _recordButton.getSelection();
+      if (isRecording)
+      {
+        try
+        {
+          createVideoRecorder();
+
+          if (!validateFFMPEG())
+          {
+            throw new Exception(
+                "FFMPEG seems missing. Please go to the Preferences section,"
+                    + " inside Video Capture Preference, and Specify the path"
+                    + " to where the FFMPEG executable is located.");
+          }
+        }
+        catch (Exception e1)
+        {
+          final MessageBox messageBox = new MessageBox(getViewSite().getShell(),
+              SWT.ERROR | SWT.OK);
+          messageBox.setMessage(e1.getMessage());
+          messageBox.setText("Video Recording Exception");
+          messageBox.open();
+
+          e1.printStackTrace();
+          return;
+        }
+      }
+
       _playing = false;
       if (menu != null)
       {
@@ -722,6 +784,7 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 
       if (isRecording)
       {
+
         startPlaying();
 
         setVCREnabled(false);
@@ -759,7 +822,7 @@ public class TimeController extends ViewPart implements ISelectionProvider,
         });
 
         stopPlaying();
-        
+
         if (isVideoRecording)
         {
           stopVideoRecording();
@@ -770,6 +833,9 @@ public class TimeController extends ViewPart implements ISelectionProvider,
           stopPptxRecording(getTimeProvider().getTime());
         }
       }
+
+      // We change the state only if we ended successfully.
+      isRecording = !isRecording;
     }
   }
 
