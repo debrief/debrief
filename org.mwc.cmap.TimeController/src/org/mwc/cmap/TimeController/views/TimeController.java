@@ -120,6 +120,7 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.FileDialog;
@@ -141,6 +142,7 @@ import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.part.EditorPart;
 import org.eclipse.ui.part.ViewPart;
 import org.monte.media.Format;
 import org.monte.media.FormatKeys.MediaType;
@@ -606,7 +608,31 @@ public class TimeController extends ViewPart implements ISelectionProvider,
       else if (DEBRIEF_PLOT_WINDOW.equals(preferenceStore.getString(
           P_SCREEN_AREA)))
       {
+        final IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
+        final IEditorPart editor = page.getActiveEditor();
+        if (editor != null) {
+          if (editor instanceof PlotEditor) {
+            final PlotEditor plot = (PlotEditor) editor;
+            Control control = plot.getChart().getCanvasControl();
+            if (control != null && !control.isDisposed()) {
+              Point origin = control.toDisplay(0, 0);
+              org.eclipse.swt.graphics.Rectangle bounds = control.getBounds();
+              Rectangle screenBounds = new Rectangle(origin.x, origin.y, bounds.width, bounds.height);
 
+              int top = screenBounds.y;
+              int left = screenBounds.x;
+              int width = screenBounds.width;
+              int height = screenBounds.height;
+
+              areaToRecord = new Rectangle(left, top, width, height);
+            } else {
+              System.out.println("Error: Control is null or disposed.");
+            }       
+          }
+
+        } else {
+          System.out.println("Error: No active editor found.");
+        }
       }
 
       return areaToRecord;
