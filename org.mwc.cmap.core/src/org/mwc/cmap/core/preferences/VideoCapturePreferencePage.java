@@ -277,6 +277,8 @@ public class VideoCapturePreferencePage extends FieldEditorPreferencePage
 
     ffmpegPathEditor = new FileFieldEditor(PreferenceConstants.P_FFMPEG_PATH,
         "&FFMPEG Path Location", getFieldEditorParent());
+    ffmpegPathEditor.setEnabled(preferenceStore.getBoolean(
+        PreferenceConstants.P_FFMPEG_PATH), getFieldEditorParent());
     addField(ffmpegPathEditor);
   }
 
