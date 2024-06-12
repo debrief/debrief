@@ -8,6 +8,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -323,16 +324,23 @@ public class ImportAIS {
 
 					final Timestamp timestamp = base.getTimestamp();
 					final Date date = new Date(timestamp.getTime());
-					// check the date is less than one year in the future
-					
-					// ok, extract the time stamp - so we can use it to offset positions
-					lastTime = base.getTimestamp();
-					
-					// hey, we may have stacked up some positions while
-					// they are waiting for the first data item
-					if (_queuedFixes.size() > 0)
-						processQueuedPositions(lastTime);
 
+					// calculate the date one year in the future from today
+					final Calendar yearInTheFuture = Calendar.getInstance();
+					yearInTheFuture.add(Calendar.YEAR, 1);
+					final Date futureDate = yearInTheFuture.getTime();
+
+					if (date.before(futureDate)) {
+						// ok, extract the time stamp - so we can use it to offset positions
+						lastTime = base.getTimestamp();
+						
+						// hey, we may have stacked up some positions while
+						// they are waiting for the first data item
+						if (_queuedFixes.size() > 0)
+							processQueuedPositions(lastTime);
+					} else {
+						System.err.println("Timestamp is in the future:" + date);
+					}
 				} else if (res instanceof AISVessel) {
 					final AISVessel vess = (AISVessel) res;
 
