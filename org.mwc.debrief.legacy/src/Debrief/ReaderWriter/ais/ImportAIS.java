@@ -308,15 +308,22 @@ public class ImportAIS {
 					// ok, cast it
 					final IPositionMessage ar = (IPositionMessage) res;
 
-					// check the timestamp is less than 1000
+					final Timestamp timestamp = ar.getMsgTimestamp();
 					
-					// and now store it.
-					storeThis(ar.getLatitude(), ar.getLongitude(), ar.getCog(), ar.getSog(), ar.getMmsi(),
-							ar.getMsgTimestamp().getSeconds(), lastTime);
+					// check the timestamp is less than 1000
+					if (timestamp.getSeconds() > 1000) {
+						System.err.println("Seconds value is too high:" + timestamp.getYear());
+					} else {
+						// and now store it.
+						storeThis(ar.getLatitude(), ar.getLongitude(), ar.getCog(), ar.getSog(), ar.getMmsi(),
+								ar.getMsgTimestamp().getSeconds(), lastTime);
+					}
 				} else if (res instanceof AISBaseStation) {
 					final AISBaseStation base = (AISBaseStation) res;
 
-					// check the timestamp is less than one year in the future
+					final Timestamp timestamp = base.getTimestamp();
+					final Date date = new Date(timestamp.getTime());
+					// check the date is less than one year in the future
 					
 					// ok, extract the time stamp - so we can use it to offset positions
 					lastTime = base.getTimestamp();
