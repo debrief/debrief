@@ -8,6 +8,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -308,20 +309,38 @@ public class ImportAIS {
 					// ok, cast it
 					final IPositionMessage ar = (IPositionMessage) res;
 
-					// and now store it.
-					storeThis(ar.getLatitude(), ar.getLongitude(), ar.getCog(), ar.getSog(), ar.getMmsi(),
-							ar.getMsgTimestamp().getSeconds(), lastTime);
+					final Timestamp timestamp = ar.getMsgTimestamp();
+					
+					// check the timestamp is less than 1000
+					if (timestamp.getSeconds() > 1000) {
+						System.err.println("Seconds value is too high:" + timestamp.getYear());
+					} else {
+						// and now store it.
+						storeThis(ar.getLatitude(), ar.getLongitude(), ar.getCog(), ar.getSog(), ar.getMmsi(),
+								ar.getMsgTimestamp().getSeconds(), lastTime);
+					}
 				} else if (res instanceof AISBaseStation) {
 					final AISBaseStation base = (AISBaseStation) res;
 
-					// ok, extract the time stamp - so we can use it to offset positions
-					lastTime = base.getTimestamp();
+					final Timestamp timestamp = base.getTimestamp();
+					final Date date = new Date(timestamp.getTime());
 
-					// hey, we may have stacked up some positions while
-					// they are waiting for the first data item
-					if (_queuedFixes.size() > 0)
-						processQueuedPositions(lastTime);
+					// calculate the date one year in the future from today
+					final Calendar yearInTheFuture = Calendar.getInstance();
+					yearInTheFuture.add(Calendar.YEAR, 1);
+					final Date futureDate = yearInTheFuture.getTime();
 
+					if (date.before(futureDate)) {
+						// ok, extract the time stamp - so we can use it to offset positions
+						lastTime = base.getTimestamp();
+						
+						// hey, we may have stacked up some positions while
+						// they are waiting for the first data item
+						if (_queuedFixes.size() > 0)
+							processQueuedPositions(lastTime);
+					} else {
+						System.err.println("Timestamp is in the future:" + date);
+					}
 				} else if (res instanceof AISVessel) {
 					final AISVessel vess = (AISVessel) res;
 
