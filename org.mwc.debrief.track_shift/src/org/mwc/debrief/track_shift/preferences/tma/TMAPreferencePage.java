@@ -130,7 +130,7 @@ public class TMAPreferencePage extends FieldEditorPreferencePage implements IWor
 		_trackModeTags[0][1] = DynamicInfillSegment.DARKER_INFILL;
 		_trackModeTags[1][0] = "Random color";
 		_trackModeTags[1][1] = DynamicInfillSegment.RANDOM_INFILL;
-		_trackModeTags[2][0] = "Single shade (green)";
+		_trackModeTags[2][0] = "Single shade (purple)";
 		_trackModeTags[2][1] = DynamicInfillSegment.GREEN_INFILL;
 
 		addField(new RadioGroupFieldEditor(PreferenceConstants.INFILL_COLOR_STRATEGY,
