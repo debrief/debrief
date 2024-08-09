@@ -35,6 +35,7 @@ import MWC.GUI.ErrorLogger;
 import MWC.GUI.PlainWrapper;
 import MWC.GUI.Plottables.DeleteWithCare;
 import MWC.GUI.ToolParent;
+import MWC.GUI.Properties.DebriefColors;
 import MWC.GenericData.ColoredWatchable;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.WorldDistance;
@@ -86,8 +87,6 @@ public class DynamicInfillSegment extends TrackSegment implements ColoredWatchab
 	 */
 	private static final long serialVersionUID = 1L;
 
-	final static private Color DEFAULT_GREEN = new Color(0, 128, 0);
-
 	private static Color getColorStrategy(final Color trackColor) {
 		String colorStrategy = Application.getThisProperty(INFILL_COLOR_STRATEGY);
 		if (colorStrategy == null) {
@@ -100,7 +99,7 @@ public class DynamicInfillSegment extends TrackSegment implements ColoredWatchab
 			res = Color.getHSBColor((float) (Math.random() * 360f), 0.8f, 0.8f);
 			break;
 		case GREEN_INFILL:
-			res = DEFAULT_GREEN;
+			res = DebriefColors.PURPLE;
 			break;
 		case DARKER_INFILL:
 		default:
@@ -734,7 +733,7 @@ public class DynamicInfillSegment extends TrackSegment implements ColoredWatchab
 		}
 
 		// also make it dotted, since it's artificially generated
-		this.setLineStyle(CanvasType.DOTTED);
+		this.setLineStyle(CanvasType.LONG_DASHES);
 
 		// ok, also try to fire track shifted, if we know our parent
 		// (we may not know it when we're first generated)
