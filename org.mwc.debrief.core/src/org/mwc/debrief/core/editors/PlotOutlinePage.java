@@ -578,7 +578,7 @@ public class PlotOutlinePage extends Page implements IContentOutlinePage {
 					// check if this is all of the children of the element
 					final SelectionContext selectionContext = SelectionContext.create(sel);
 			
-					Editable[] selection = selectionContext.eList;
+				Editable[] selection = selectionContext.eList;
 					HasEditables[] parents = selectionContext.parentLayers;
 					
 					// if it's a single parent, check we're not trying to delete
@@ -588,11 +588,11 @@ public class PlotOutlinePage extends Page implements IContentOutlinePage {
 						if (parent instanceof CoreTMASegment) {
 							CoreTMASegment segment = (CoreTMASegment) parent;
 							if (segment.size() == selection.length ) {
-								// create a dialog with ok and cancel buttons and a question icon
+								// create a dialog with ok and cancel buttons and a warning icon
 								MessageBox dialog = 
 								    new MessageBox(getShell(), SWT.ICON_WARNING | SWT.OK| SWT.CANCEL);
 								dialog.setText("Delete Cut");
-								dialog.setMessage("You cannot delete the last cut in a TMA segment. Please delete " + 
+								dialog.setMessage("You cannot delete the last point in a TMA segment. Please delete " + 
 								" the whole segment.");
 
 								// open dialog and await user selection
