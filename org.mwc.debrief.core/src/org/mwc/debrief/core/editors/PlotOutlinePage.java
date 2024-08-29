@@ -37,6 +37,7 @@ import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.commands.ActionHandler;
 import org.eclipse.jface.dialogs.InputDialog;
+import org.eclipse.jface.dialogs.PopupDialog;
 import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IDoubleClickListener;
 import org.eclipse.jface.viewers.IElementComparer;
@@ -52,6 +53,7 @@ import org.eclipse.jface.viewers.ViewerCell;
 import org.eclipse.jface.viewers.ViewerComparator;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.dnd.Clipboard;
 import org.eclipse.swt.dnd.DND;
 import org.eclipse.swt.dnd.TextTransfer;
@@ -60,18 +62,25 @@ import org.eclipse.swt.events.FocusEvent;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Menu;
+import org.eclipse.swt.widgets.MessageBox;
+import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeColumn;
 import org.eclipse.swt.widgets.TreeItem;
 import org.eclipse.swt.widgets.Widget;
 import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.IPageLayout;
+import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchActionConstants;
 import org.eclipse.ui.IWorkbenchCommandConstants;
+import org.eclipse.ui.IWorkbenchPage;
+import org.eclipse.ui.IWorkbenchWindow;
+import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.actions.ActionFactory;
 import org.eclipse.ui.handlers.CollapseAllHandler;
 import org.eclipse.ui.handlers.IHandlerService;
@@ -95,6 +104,7 @@ import org.mwc.debrief.core.DebriefPlugin;
 import org.mwc.debrief.core.ContextOperations.GeneratePasteRepClipboard;
 
 import Debrief.ReaderWriter.Replay.ImportReplay;
+import Debrief.Wrappers.Track.CoreTMASegment;
 import MWC.GUI.BaseLayer;
 import MWC.GUI.Editable;
 import MWC.GUI.Editable.EditorType;
@@ -545,6 +555,19 @@ public class PlotOutlinePage extends Page implements IContentOutlinePage {
 				final int count = control.getSelectionCount();
 				return count > 0;
 			}
+			
+			public Shell getShell() {
+				Shell shell = null;
+
+				final IWorkbench wb = PlatformUI.getWorkbench();
+				final IWorkbenchWindow[] windows = wb.getWorkbenchWindows();
+				if (windows.length > 0) {
+					final IWorkbenchWindow win = windows[0];
+					shell = win.getShell();
+				}
+
+				return shell;
+			};
 
 			@Override
 			public void run() {
@@ -552,8 +575,37 @@ public class PlotOutlinePage extends Page implements IContentOutlinePage {
 				final StructuredSelection sel = (StructuredSelection) _treeViewer.getSelection();
 
 				if (!sel.isEmpty()) {
+					// check if this is all of the children of the element
 					final SelectionContext selectionContext = SelectionContext.create(sel);
-					final DeleteItem deleteItem = new DeleteItem(selectionContext.eList, selectionContext.parentLayers,
+			
+					Editable[] selection = selectionContext.eList;
+					HasEditables[] parents = selectionContext.parentLayers;
+					
+					// if it's a single parent, check we're not trying to delete
+					// all children
+					if(parents.length == 1) {
+						HasEditables parent = parents[0];
+						if (parent instanceof CoreTMASegment) {
+							CoreTMASegment segment = (CoreTMASegment) parent;
+							if (segment.size() == selection.length ) {
+								// create a dialog with ok and cancel buttons and a question icon
+								MessageBox dialog = 
+								    new MessageBox(getShell(), SWT.ICON_WARNING | SWT.OK| SWT.CANCEL);
+								dialog.setText("Delete Cut");
+								dialog.setMessage("You cannot delete the last cut in a TMA segment. Please delete " + 
+								" the whole segment.");
+
+								// open dialog and await user selection
+								dialog.open();
+					
+								
+								
+								return;
+							}
+						}
+					}
+					
+					final DeleteItem deleteItem = new DeleteItem(selection, parents,
 							_myLayers, selectionContext.updateLayers);
 					deleteItem.run();
 				}
@@ -1709,5 +1761,4 @@ public class PlotOutlinePage extends Page implements IContentOutlinePage {
 			_treeViewer.setSelection(selection);
 		}
 	}
-
 }
