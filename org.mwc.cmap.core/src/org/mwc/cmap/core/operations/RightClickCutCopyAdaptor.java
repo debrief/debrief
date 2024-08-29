@@ -1015,6 +1015,34 @@ public class RightClickCutCopyAdaptor {
 		return false;
 	}
 	
+	static boolean isTryingToDeleteAllLegItems(final Editable[] selection, final HasEditables[] parents) {
+		boolean sameParent = true;
+		HasEditables firstParent = parents[0];
+		for (int i = 1; i < parents.length; i++) {
+			if (parents[i] != firstParent) {
+				sameParent = false;
+				break;
+			}
+		}
+
+		final HasEditables[] firstArray = {firstParent};
+		final HasEditables[] safeParents = (sameParent) ? firstArray : parents;		
+		
+		// if it's a single parent, check we're not trying to delete
+		// all children
+		if(safeParents.length == 1) {
+			HasEditables parent = safeParents[0];
+			if (parent instanceof CoreTMASegment) {
+				CoreTMASegment segment = (CoreTMASegment) parent;
+				if (segment.size() == selection.length ) {
+					System.err.println("Cannot delete all items from TMA Leg");
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+	
 	static public void getDropdownListFor(final IMenuManager manager, final Editable[] editables,
 			final Layer[] updateLayers, final HasEditables[] parentLayers, final Layers theLayers,
 			final Clipboard _clipboard) {
@@ -1045,17 +1073,19 @@ public class RightClickCutCopyAdaptor {
 			deleter = new DeleteItem(editables, parentLayers, theLayers, updateLayers);
 
 			// create the menu items
+			final boolean skipIt = isTryingToDeleteAllLegItems(editables, parentLayers);	
 
 			// add to the menu
 			manager.add(new Separator());
-			manager.add(cutter);
+			
+			if (!skipIt) {
+				manager.add(cutter);
+			}
 
 			// try the copier
 			if (copier != null) {
 				manager.add(copier);
 			}
-
-			final boolean skipIt = isTryingToDeleteAllLegItems(editables, parentLayers);	
 			
 			if (!skipIt) {
 				manager.add(deleter);				
