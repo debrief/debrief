@@ -300,7 +300,11 @@ public class SelectAllChildren implements RightClickContextItemGenerator {
 		TimePeriod res;
 		if (selected instanceof TrackSegment) {
 			final TrackSegment track = (TrackSegment) selected;
-			res = new TimePeriod.BaseTimePeriod(track.startDTG(), track.endDTG());
+			if (track.isEmpty()) {
+				res = null;
+			} else {
+				res = new TimePeriod.BaseTimePeriod(track.startDTG(), track.endDTG());
+			}
 		} else {
 			res = null;
 		}

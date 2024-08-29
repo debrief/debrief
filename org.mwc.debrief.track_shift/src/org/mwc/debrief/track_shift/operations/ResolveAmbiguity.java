@@ -172,7 +172,11 @@ public class ResolveAmbiguity implements RightClickContextItemGenerator {
 
 		for (final Editable item : subjects) {
 			if (item instanceof RelativeTMASegment) {
-				allSegments.add((RelativeTMASegment) item);
+				if ((RelativeTMASegment)item).isEmpty() {
+					return;
+				} else {
+					allSegments.add((RelativeTMASegment) item);
+				}
 			} else {
 				// not all TMA segments, drop out
 				return;
