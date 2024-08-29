@@ -579,35 +579,48 @@ public class PlotOutlinePage extends Page implements IContentOutlinePage {
 					final SelectionContext selectionContext = SelectionContext.create(sel);
 			
 				Editable[] selection = selectionContext.eList;
-					HasEditables[] parents = selectionContext.parentLayers;
-					
-					// if it's a single parent, check we're not trying to delete
-					// all children
-					if(parents.length == 1) {
-						HasEditables parent = parents[0];
-						if (parent instanceof CoreTMASegment) {
-							CoreTMASegment segment = (CoreTMASegment) parent;
-							if (segment.size() == selection.length ) {
-								// create a dialog with ok and cancel buttons and a warning icon
-								MessageBox dialog = 
-								    new MessageBox(getShell(), SWT.ICON_WARNING | SWT.OK| SWT.CANCEL);
-								dialog.setText("Delete Cut");
-								dialog.setMessage("You cannot delete the last point in a TMA segment. Please delete " + 
-								" the whole segment.");
+				HasEditables[] parents = selectionContext.parentLayers;
 
-								// open dialog and await user selection
-								dialog.open();
-					
-								
-								
-								return;
-							}
+				// check if all items in the parents array are the same
+				boolean sameParent = true;
+				HasEditables firstParent = parents[0];
+				for (int i = 1; i < parents.length; i++) {
+					if (parents[i] != firstParent) {
+						sameParent = false;
+						break;
+					}
+				}
+
+				final HasEditables[] firstArray = {firstParent};
+				final HasEditables[] safeParents = (sameParent) ? firstArray : parents;
+				
+				// if it's a single parent, check we're not trying to delete
+				// all children
+				if(safeParents.length == 1) {
+					HasEditables parent = safeParents[0];
+					if (parent instanceof CoreTMASegment) {
+						CoreTMASegment segment = (CoreTMASegment) parent;
+						if (segment.size() == selection.length ) {
+							// create a dialog with ok and cancel buttons and a warning icon
+							MessageBox dialog = 
+							    new MessageBox(getShell(), SWT.ICON_WARNING | SWT.OK| SWT.CANCEL);
+							dialog.setText("Delete Cut");
+							dialog.setMessage("You cannot delete the last point in a TMA segment. Please delete " + 
+							" the whole segment.");
+
+							// open dialog and await user selection
+							dialog.open();
+				
+							
+							
+							return;
 						}
 					}
-					
-					final DeleteItem deleteItem = new DeleteItem(selection, parents,
-							_myLayers, selectionContext.updateLayers);
-					deleteItem.run();
+				}
+				
+				final DeleteItem deleteItem = new DeleteItem(selection, parents,
+						_myLayers, selectionContext.updateLayers);
+				deleteItem.run();
 				}
 
 			}
