@@ -126,7 +126,7 @@ public class RotateDragMode extends DragMode {
 			while (numer.hasMoreElements()) {
 				final TrackSegment seg = (TrackSegment) numer.nextElement();
 
-				if (seg.getVisible() && isAcceptable(seg)) {
+				if (seg.getVisible() && !seg.isEmpty() && isAcceptable(seg)) {
 					final FixWrapper first = (FixWrapper) seg.first();
 					final FixWrapper last = (FixWrapper) seg.last();
 					final WorldLocation firstLoc = first.getFixLocation();

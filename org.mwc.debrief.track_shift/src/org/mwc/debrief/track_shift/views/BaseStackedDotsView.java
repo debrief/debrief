@@ -2739,7 +2739,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
           while (iter.hasMoreElements())
           {
             final TrackSegment thisSeg = (TrackSegment) iter.nextElement();
-            if (thisSeg instanceof RelativeTMASegment)
+            if (thisSeg instanceof RelativeTMASegment && !thisSeg.isEmpty())
             {
               // do we have a first color?
               final Editable firstElement = thisSeg.elements().nextElement();

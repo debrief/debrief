@@ -1034,7 +1034,9 @@ public class GenerateInfillSegment implements RightClickContextItemGenerator {
 					boolean canDo = true;
 					for (int i = 0; i < subjects.length; i++) {
 						final Editable editable = subjects[i];
-						if (!(editable instanceof TrackSegment)) {
+						if (editable instanceof TrackSegment) {
+							canDo = !((TrackSegment)editable).isEmpty();
+						} else {
 							canDo = false;
 						}
 					}
