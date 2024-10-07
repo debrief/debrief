@@ -23,6 +23,7 @@ openFile
 -Xmx2048m
 -Duser.timezone=GMT
 -Djava.net.preferIPv4Stack=true
+-Djava.util.Arrays.useLegacyMergeSort=true
       </vmArgs>
       <vmArgsMac>-XstartOnFirstThread -Dorg.eclipse.swt.internal.carbon.smallFonts
       </vmArgsMac>
