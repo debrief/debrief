@@ -327,10 +327,12 @@ public class NELayer extends GeoToolsLayer implements BaseLayer.ProvidesRange, L
 				final FeatureTypeStyle[] typeStyles = sld.featureTypeStyles().toArray(new FeatureTypeStyle[0]);
 				if (typeStyles.length > 0) {
 					final double maxScale = SLD.maxScale(typeStyles[0]);
+					System.out.println(fileName + " max:" + maxScale);
 					if (maxScale > _maxBathyScale) {
-						_maxBathyScale = maxScale;
+				//		_maxBathyScale = maxScale;
 					}
 					final double minScale = SLD.minScale(typeStyles[0]);
+					System.out.println(fileName + " min:" + minScale);
 					if (minScale < _minBathyScale) {
 						_minBathyScale = minScale;
 					}
