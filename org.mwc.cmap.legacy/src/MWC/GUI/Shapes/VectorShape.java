@@ -115,7 +115,8 @@ public class VectorShape extends LineShape {
 		// ok, sort out the offset
 		final WorldVector vec = super._end.subtract(super._start);
 		_bearingDegs = Conversions.Rads2Degs(vec.getBearing());
-		_distance = new WorldDistance(vec.getRange(), WorldDistance.DEGS);
+		final WorldDistance newDist = new WorldDistance(vec.getRange(), WorldDistance.DEGS);
+		_distance = new WorldDistance(newDist.getValueIn(_distance.getUnits()), _distance.getUnits());
 		calculateEnd();
 	}
 
@@ -138,7 +139,9 @@ public class VectorShape extends LineShape {
 
 			// and store the components
 			_bearingDegs = Conversions.Rads2Degs(newV.getBearing());
-			_distance = new WorldDistance(newV.getRange(), WorldDistance.DEGS);
+			
+			final WorldDistance newDist = new WorldDistance(newV.getRange(), WorldDistance.DEGS);
+			_distance = new WorldDistance(newDist.getValueIn(_distance.getUnits()), _distance.getUnits());
 
 			firePropertyChange(PlainWrapper.LOCATION_CHANGED, null, null);
 		}
