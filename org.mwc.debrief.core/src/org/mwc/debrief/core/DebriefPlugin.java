@@ -100,7 +100,6 @@ public class DebriefPlugin extends AbstractUIPlugin implements MessageProvider {
 	public static final String MULTI_PATH = "org.mwc.debrief.MultiPath2";
 	public static final String MULTI_PATH_TEST = "org.mwc.debrief.MultiPath2Test";
 	public static final String TIME_BAR = "org.mwc.debrief.TimeBar";
-	public static final String SATC_MAINTAIN_CONTRIBUTIONS = "com.planetmayo.debrief.satc_rcp.views.MaintainContributionsView";
 
 	public static final String RESET_PERSPECTIVE = "resetPerspective";
 	public static final long RESET_PERSPECTIVE_DEFAULT_VALUE = 0;

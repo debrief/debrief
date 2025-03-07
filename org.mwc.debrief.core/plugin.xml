@@ -54,8 +54,6 @@
             <contentTypeBinding contentTypeId="org.mwc.debrief.contenttype.NisidaLogFile"/>
             <contentTypeBinding contentTypeId="org.mwc.debrief.contenttype.AntaresFile"/>
             <contentTypeBinding contentTypeId="org.mwc.debrief.contenttype.CSV_GZ_LogFile"/>
-            <contentTypeBinding contentTypeId="org.mwc.debrief.contenttype.SATCTrackFile"/>
-            <contentTypeBinding contentTypeId="org.mwc.debrief.contenttype.SATCSampleTrackFile"/>
             <contentTypeBinding contentTypeId="org.mwc.debrief.contenttype.CLog"/>
             <contentTypeBinding contentTypeId="org.mwc.debrief.contenttype.NMEA_Radar"/>
         </editor>
@@ -138,16 +136,6 @@
             name="Compressed CSV C-Log file" priority="high">
             <describer class="org.mwc.debrief.core.contenttype.CSV_GZ_ContentDescriber"/>
         </content-type>
-        <content-type id="org.mwc.debrief.contenttype.SATCTrackFile"
-            file-extensions="txt"
-            name="SATC export file" priority="high">
-            <describer class="org.mwc.debrief.core.contenttype.SATCContentDescriber"/>
-        </content-type>
-        <content-type id="org.mwc.debrief.contenttype.SATCSampleTrackFile"
-            file-extensions="cs2"
-            name="SATC Sample file" priority="high">
-            <describer class="org.mwc.debrief.core.contenttype.SATCSampleContentDescriber"/>
-        </content-type>
         <content-type base-type="org.eclipse.core.runtime.text"
             id="org.mwc.debrief.contenttype.BRTSensorFile" file-extensions="brt"
             name="Third Party Relative Bearing File" priority="normal"> </content-type>
@@ -222,14 +210,6 @@
     </extension>
     <extension point="org.mwc.debrief.core.DebriefPlotLoader">
         <loader class="org.mwc.debrief.core.loaders.AISLoader" extensions="txt" first_line="!AIVDM" name="AIS Track File"        
-        />
-    </extension>
-    <extension point="org.mwc.debrief.core.DebriefPlotLoader">
-        <loader class="org.mwc.debrief.core.loaders.SATCLoader" extensions="txt" first_line="//X, Y, Time"  name="SATC Track File"        
-        />
-    </extension>
-    <extension point="org.mwc.debrief.core.DebriefPlotLoader">
-        <loader class="org.mwc.debrief.core.loaders.SATCSampleLoader" extensions="cs2" first_line="#Time of Validity,"  name="SATC Sample Track File"        
         />
     </extension>
     <extension point="org.mwc.debrief.core.DebriefPlotLoader">

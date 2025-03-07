@@ -110,7 +110,6 @@ import Debrief.ReaderWriter.Nisida.ImportNisida;
 import Debrief.ReaderWriter.Replay.ImportReplay;
 import Debrief.ReaderWriter.XML.DebriefXMLReaderWriter;
 import Debrief.ReaderWriter.XML.SessionHandler;
-import Debrief.ReaderWriter.XML.dummy.SATCHandler_Mock;
 import Debrief.ReaderWriter.XML.dynamic.DynamicLayerHandler;
 import Debrief.ReaderWriter.XML.dynamic.DynamicShapeLayerHandler;
 import Debrief.Wrappers.SensorContactWrapper;
@@ -814,7 +813,6 @@ public class DebriefLiteApp implements FileDropListener {
 		// tell the Session handler about the optional dynamic layer handlers
 		SessionHandler.addAdditionalHandler(new DynamicLayerHandler());
 		SessionHandler.addAdditionalHandler(new DynamicShapeLayerHandler());
-		SessionHandler.addAdditionalHandler(new SATCHandler_Mock());
 
 		_theLayers.addDataExtendedListener(_listenForMods);
 		_theLayers.addDataModifiedListener(_listenForMods);

@@ -23,9 +23,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.TimeZone;
 
-import org.mwc.debrief.satc_interface.data.SATC_Solution;
-import org.mwc.debrief.satc_interface.data.wrappers.ContributionWrapper;
-
 import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.TacticalDataWrapper;
 import Debrief.Wrappers.TrackWrapper;
@@ -85,13 +82,6 @@ public class TimeBar implements IEventEntry {
 
 	}
 
-	public TimeBar(final ContributionWrapper contribution) {
-		_eventName = contribution.getName();
-		_start.setTime(contribution.get_Start().getDate());
-		_end.setTime(contribution.getEnd().getDate());
-		_source = contribution;
-	}
-
 	public TimeBar(final NarrativeWrapper narrative) {
 		_eventName = "Narratives";
 		_start.setTime(narrative.getTimePeriod().getStartDTG().getDate());
@@ -103,25 +93,6 @@ public class TimeBar implements IEventEntry {
 			final Editable next = numer.nextElement();
 			if (next instanceof NarrativeEntry) {
 				_children.add(new TimeSpot((NarrativeEntry) next));
-			}
-		}
-	}
-
-	public TimeBar(final SATC_Solution solution) {
-		_eventName = "Solution";
-		_start.setTime(solution.getStartDTG().getDate());
-		_end.setTime(solution.getEndDTG().getDate());
-		_source = solution;
-
-		final Enumeration<Editable> numer = solution.elements();
-		while (numer.hasMoreElements()) {
-			final Editable next = numer.nextElement();
-			if (next instanceof ContributionWrapper) {
-				// does it have a date component?
-				final ContributionWrapper cw = (ContributionWrapper) next;
-				if (cw.get_Start() != null) {
-					_children.add(new TimeBar(cw));
-				}
 			}
 		}
 	}
