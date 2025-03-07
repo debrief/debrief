@@ -237,10 +237,6 @@ Library.
          version="0.0.0"/>
 
    <plugin
-         id="org.mwc.debrief.limpet_integration"
-         version="0.0.0"/>
-
-   <plugin
          id="org.eclipse.emf.ecore"
          version="0.0.0"/>
 
