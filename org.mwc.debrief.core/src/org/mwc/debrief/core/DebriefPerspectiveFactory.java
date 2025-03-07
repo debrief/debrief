@@ -68,7 +68,6 @@ public class DebriefPerspectiveFactory implements IPerspectiveFactory {
 		// RIGHT: SATC contributions
 		final IPlaceholderFolderLayout right = layout.createPlaceholderFolder("right", IPageLayout.RIGHT, 0.6f,
 				editorArea);
-		right.addPlaceholder(DebriefPlugin.SATC_MAINTAIN_CONTRIBUTIONS);
 		right.addPlaceholder(CorePlugin.GRID_EDITOR);
 		right.addPlaceholder(CorePlugin.STACKED_DOTS);
 		right.addPlaceholder(CorePlugin.FREQ_RESIDUALS);
@@ -88,7 +87,6 @@ public class DebriefPerspectiveFactory implements IPerspectiveFactory {
 		layout.addShowViewShortcut(DebriefPlugin.SENSOR_FUSION);
 		layout.addShowViewShortcut(DebriefPlugin.MULTI_PATH);
 		layout.addShowViewShortcut(DebriefPlugin.TIME_BAR);
-		layout.addShowViewShortcut(DebriefPlugin.SATC_MAINTAIN_CONTRIBUTIONS);
 		layout.addShowViewShortcut(CorePlugin.VIDEO_PLAYER_VIEW);
 		layout.addShowViewShortcut(CorePlugin.IMAGE_VIEWER_VIEW);
 		layout.addShowViewShortcut(CorePlugin.UNIT_CENTRIC);
