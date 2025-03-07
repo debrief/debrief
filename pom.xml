@@ -33,10 +33,10 @@
     <module>org.freehep</module>
     <!--
     <module>info.limpet</module>
-    -->
     <module>info.limpet.libs</module>
     <module>info.limpet.stackedcharts.model</module>
     <module>info.limpet.stackedcharts.ui</module>
+    -->
 
     <module>org.mwc.asset.NetAsset2</module>
     <module>org.mwc.asset.NetCore</module>
@@ -98,9 +98,11 @@
     <module>org.mwc.debrief.site</module>
 -->
     <module>org.mwc.debrief.product</module>
+    <!--
     <module>org.mwc.debrief.satc.core</module>
     <module>org.mwc.debrief.satc.integration</module>
     <module>org.mwc.debrief.limpet_integration</module>
+    -->
 <!--
     <module>org.mwc.debrief.ui_test</module>
 -->
