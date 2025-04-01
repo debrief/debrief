@@ -443,7 +443,7 @@ public class TrackWrapper extends LightweightTrackWrapper implements WatchableLi
 	 *
 	 * @param target    whose going to receive it
 	 * @param theLayers the top level layers object
-	 * @param parents   the track wrapppers containing the children
+	 * @param parents   the track wrappers containing the children
 	 * @param subjects  the items to insert.
 	 */
 	public static void groupTracks(final TrackWrapper target, final Layers theLayers, final Layer[] parents,

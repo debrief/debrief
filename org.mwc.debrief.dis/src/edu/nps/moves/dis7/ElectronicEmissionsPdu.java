@@ -74,7 +74,7 @@ public class ElectronicEmissionsPdu extends DistributedEmissionsFamilyPdu implem
 	protected Vector3Float location = new Vector3Float();
 
 	/**
-	 * Electronic emmissions systems THIS IS WRONG. It has the WRONG class type and
+	 * Electronic emissions systems THIS IS WRONG. It has the WRONG class type and
 	 * will cause problems in any marshalling.
 	 */
 	protected List<Vector3Float> systems = new ArrayList<Vector3Float>();

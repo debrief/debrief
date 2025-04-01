@@ -46,7 +46,7 @@ public class ElectronicEmissionsPdu extends DistributedEmissionsFamilyPdu implem
 	/** padding */
 	protected int paddingForEmissionsPdu;
 
-	/** Electronic emmissions systems */
+	/** Electronic emissions systems */
 	protected List<ElectronicEmissionSystemData> systems = new ArrayList<ElectronicEmissionSystemData>();
 
 	/** Constructor */

@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Information about underwater acoustic emmissions. This requires manual
+ * Information about underwater acoustic emissions. This requires manual
  * cleanup. The beam data records should ALL be a the finish, rather than
  * attached to each emitter system. Section 7.6.4. UNFINISHED
  *
@@ -69,7 +69,7 @@ public class UaPdu extends DistributedEmissionsFamilyPdu implements Serializable
 
 	/** shaft RPM values. THIS IS WRONG. It has the wrong class in the list. */
 	protected List<Vector3Float> shaftRPMs = new ArrayList<Vector3Float>();
-	/** apaData. THIS IS WRONG. It has the worng class in the list. */
+	/** apaData. THIS IS WRONG. It has the wrong class in the list. */
 	protected List<Vector3Float> apaData = new ArrayList<Vector3Float>();
 	/** THIS IS WRONG. It has the wrong class in the list. */
 	protected List<Vector3Float> emitterSystems = new ArrayList<Vector3Float>();
