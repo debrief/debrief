@@ -11,7 +11,7 @@
 * Nov 2014 - Introduce automated [Track Jump Removal](http://www.debrief.info/tutorial/GroomingTrackData.html#RemoveJumpsUser), plus [Dynamic Infill Segments](http://www.debrief.info/tutorial/GroomingTrackData.html#GenerateInfill)
 * Sep 2014 - Formally replace Layer Manager with standard Eclipse [Outline View](http://www.debrief.info/tutorial/layer_mgr.html#layer_mgr_intro)
 * Apr 2014 - Integrate [Semi Automated Track Construction (TMA)](http://www.debrief.info/tutorial/satc.html)
-* Dec 2013 - Intregration of time-synced audio, video, stills players (beta)
+* Dec 2013 - Integration of time-synced audio, video, stills players (beta)
 * Oct 2013 - [Rotated labels](http://www.debrief.info/tutorial/satc_ga.html#consistent_legs) on legs
 * Aug 2013 - Support for [auto-calculated range/brg labels](http://www.debrief.info/tutorial/drawing_features.html#ShowRangeCalc)
 * Jul 2013 - Dragging mouse from BR to TL performs zoom-out, instead of zoom-in
