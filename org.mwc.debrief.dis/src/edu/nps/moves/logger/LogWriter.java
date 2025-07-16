@@ -3,7 +3,7 @@ package edu.nps.moves.logger;
 import java.io.*;
 import java.util.*;
 import java.util.concurrent.*;
-import javax.xml.bind.*;
+import jakarta.xml.bind.*;
 
 import edu.nps.moves.dis.*;
 

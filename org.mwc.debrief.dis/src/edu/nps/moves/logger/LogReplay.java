@@ -4,7 +4,7 @@ package edu.nps.moves.logger;
 import java.io.*;
 import java.net.*;
 import java.util.*;
-import javax.xml.bind.*;
+import jakarta.xml.bind.*;
 
 import edu.nps.moves.dis.*;
 import edu.nps.moves.disutil.*;

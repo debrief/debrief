@@ -5,5 +5,5 @@
 // Generated on: 2012.10.11 at 08:48:34 PM EDT 
 //
 
-@javax.xml.bind.annotation.XmlSchema(namespace = "http://www.topografix.com/GPX/1/0", elementFormDefault = javax.xml.bind.annotation.XmlNsForm.QUALIFIED)
+@jakarta.xml.bind.annotation.XmlSchema(namespace = "http://www.topografix.com/GPX/1/0", elementFormDefault = jakarta.xml.bind.annotation.XmlNsForm.QUALIFIED)
 package com.topografix.gpx.v10;

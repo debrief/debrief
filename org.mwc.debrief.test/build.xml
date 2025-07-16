@@ -12,16 +12,6 @@
 	</path>
 	
 	<path id="classpathsuite.path">
-		<pathelement location="../org.mwc.asset.comms/bin"/>
-		<pathelement location="../org.mwc.asset.core/bin"/>
-		<pathelement location="../org.mwc.asset.help/bin"/>
-		<pathelement location="..org.mwc.asset.legacy/bin"/>
-		<pathelement location="../org.mwc.asset.NetAsset2/bin"/>
-		<pathelement location="../org.mwc.asset.NetCore/bin"/>
-		<pathelement location="../org.mwc.asset.ScenarioController2/bin"/>
-		<pathelement location="../org.mwc.asset.ScenarioPlotter/bin"/>
-		<pathelement location="../org.mwc.asset.SensorMonitor/bin"/>
-		<pathelement location="../org.mwc.asset.VesselMonitor/bin"/>
 		<pathelement location="../org.mwc.cmap.core/bin"/>
 		<pathelement location="../org.mwc.cmap.grideditor/bin"/>
 		<pathelement location="../org.mwc.cmap.gt2Plot/bin"/>
@@ -44,7 +34,6 @@
 		<pathelement location="../org.mwc.debrief.multipath2/bin"/>
 		<pathelement location="../org.mwc.debrief.SensorFusion/bin"/>
 		<pathelement location="../org.mwc.debrief.track_shift/bin"/>
-		<pathelement location="../org.mwc.gnd.demonstrator/bin"/>
 		<pathelement location="../org.qinetiq.data_feed/bin"/>
 		<pathelement location="../org.mwc.debrief.legacy/bin"/>
 	</path>

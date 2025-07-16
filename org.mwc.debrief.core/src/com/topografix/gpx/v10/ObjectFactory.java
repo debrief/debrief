@@ -21,7 +21,7 @@
 
 package com.topografix.gpx.v10;
 
-import javax.xml.bind.annotation.XmlRegistry;
+import jakarta.xml.bind.annotation.XmlRegistry;
 
 
 /**

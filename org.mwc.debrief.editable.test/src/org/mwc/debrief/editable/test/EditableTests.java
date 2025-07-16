@@ -55,18 +55,8 @@ import org.jfree.chart.renderer.xy.DefaultXYItemRenderer;
 import org.mwc.cmap.core.ui_support.swt.SWTCanvasAdapter;
 import org.mwc.cmap.naturalearth.Activator;
 import org.mwc.cmap.naturalearth.wrapper.NELayer;
-import org.mwc.debrief.satc_interface.data.SATC_Solution;
-import org.mwc.debrief.satc_interface.data.wrappers.BMC_Wrapper;
-import org.mwc.debrief.satc_interface.data.wrappers.FMC_Wrapper;
 import org.osgi.framework.Bundle;
 
-import ASSET.GUI.SuperSearch.Plotters.SSGuiSupport;
-import ASSET.GUI.Workbench.Plotters.ScenarioParticipantWrapper;
-import ASSET.Models.Decision.Movement.RectangleWander;
-import ASSET.Models.Vessels.SSN;
-import ASSET.Participants.CoreParticipant;
-import ASSET.Scenario.MultiForceScenario;
-import ASSET.Util.SupportTesting;
 import Debrief.GUI.Tote.StepControl;
 import Debrief.GUI.Tote.Painters.PainterManager;
 import Debrief.Wrappers.FixWrapper;
@@ -106,12 +96,6 @@ import MWC.GenericData.WorldVector;
 import MWC.TacticalData.Fix;
 
 import com.bbn.openmap.layer.vpf.LibrarySelectionTable;
-import com.planetmayo.debrief.satc.model.contributions.BearingMeasurementContribution;
-import com.planetmayo.debrief.satc.model.contributions.CoreMeasurementContribution.CoreMeasurement;
-import com.planetmayo.debrief.satc.model.contributions.FrequencyMeasurementContribution;
-import com.planetmayo.debrief.satc.model.generator.ISolver;
-import com.planetmayo.debrief.satc.model.manager.ISolversManager;
-import com.planetmayo.debrief.satc_rcp.SATC_Activator;
 
 public class EditableTests extends TestCase
 {
@@ -404,25 +388,8 @@ public class EditableTests extends TestCase
 		case "Debrief.Wrappers.Track.SplittableLayer":
 			editable = new SplittableLayer(true);
 			break;
-		case "org.mwc.debrief.satc_interface.data.SATC_Solution":
-			final ISolversManager solvMgr = SATC_Activator.getDefault().getService(
-					ISolversManager.class, true);
-			final ISolver newSolution = solvMgr.createSolver("test");
-			editable = new SATC_Solution(newSolution);
-			break;
 		case "MWC.GUI.Shapes.PolygonShape":
 			editable = new PolygonShape(null);
-			break;
-		case "ASSET.GUI.Painters.NoiseSourcePainter":
-			editable = new ASSET.GUI.Painters.NoiseSourcePainter.PainterTest()
-					.getEditable();
-			break;
-		case "ASSET.GUI.Painters.ScenarioNoiseLevelPainter":
-			editable = new ASSET.GUI.Painters.ScenarioNoiseLevelPainter.NoiseLevelTest()
-					.getEditable();
-			break;
-		case "ASSET.GUI.Workbench.Plotters.ScenarioParticipantWrapper":
-			editable = new ScenarioParticipantWrapper(new SSN(12), null);
 			break;
 		case "Debrief.Wrappers.PolygonWrapper":
 			// get centre of area
@@ -460,17 +427,6 @@ public class EditableTests extends TestCase
 					WorldDistance.MINUTES);
 			editable = new PlanningSegment("test", course, speed, worldDistance,
 					Color.WHITE);
-			break;
-		case "org.mwc.debrief.satc_interface.data.wrappers.BMC_Wrapper":
-			BearingMeasurementContribution bmc = new BearingMeasurementContribution();
-			bmc.setName("Measured bearing");
-			bmc.setAutoDetect(false);
-			editable = new BMC_Wrapper(bmc);
-			break;
-		case "org.mwc.debrief.satc_interface.data.wrappers.FMC_Wrapper":
-			FrequencyMeasurementContribution fmc = new FrequencyMeasurementContribution();
-			fmc.setName("Measured frequence");
-			editable = new FMC_Wrapper(fmc);
 			break;
 		case "Debrief.Wrappers.SensorContactWrapper":
 			origin = new WorldLocation(0, 0, 0);
@@ -531,32 +487,6 @@ public class EditableTests extends TestCase
 		case "ASSET.Models.Decision.Conditions.OrCondition":
 			System.out.println(type.getFullyQualifiedName() + " hasn't public constructor.");
 			return null;
-		case "ASSET.Models.Decision.Movement.RectangleWander":
-			final WorldLocation topLeft = SupportTesting.createLocation(0, 10000);
-      final WorldLocation bottomRight = SupportTesting.createLocation(10000, 0);
-      final WorldArea theArea = new WorldArea(topLeft, bottomRight);
-      editable = new RectangleWander(theArea, "rect wander");
-			break;
-		case "org.mwc.debrief.satc_interface.data.wrappers.BMC_Wrapper$BearingMeasurementWrapper":
-			bmc = new BearingMeasurementContribution();
-			bmc.setName("Measured bearing");
-			bmc.setAutoDetect(false);
-			CoreMeasurement cm = new CoreMeasurement(new Date());
-			BMC_Wrapper bmcw = new BMC_Wrapper(bmc);
-			editable = bmcw.new BearingMeasurementWrapper(cm);
-			break;
-		case "org.mwc.debrief.satc_interface.data.wrappers.FMC_Wrapper$FrequencyMeasurementEditable":
-			fmc = new FrequencyMeasurementContribution();
-			fmc.setName("Measured frequence");
-			FMC_Wrapper fmcw = new FMC_Wrapper(fmc);
-			cm = new CoreMeasurement(new Date());
-			editable = fmcw.new FrequencyMeasurementEditable(cm);
-			break;
-		case "ASSET.GUI.SuperSearch.Plotters.SSGuiSupport$ParticipantListener":
-			SSGuiSupport ssgs = new SSGuiSupport();
-      ssgs.setScenario(new MultiForceScenario());
-      editable = new SSGuiSupport.ParticipantListener(new CoreParticipant(12), ssgs);
-			break;
 		case "ASSET.GUI.Workbench.Plotters.BasePlottable":
 			// skip it
 			return null;

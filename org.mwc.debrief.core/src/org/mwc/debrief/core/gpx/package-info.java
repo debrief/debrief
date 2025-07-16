@@ -5,5 +5,5 @@
 // Generated on: 2012.08.30 at 10:32:43 PM EDT 
 //
 
-@javax.xml.bind.annotation.XmlSchema(namespace = "org.mwc.debrief.core", elementFormDefault = javax.xml.bind.annotation.XmlNsForm.QUALIFIED)
+@jakarta.xml.bind.annotation.XmlSchema(namespace = "org.mwc.debrief.core", elementFormDefault = jakarta.xml.bind.annotation.XmlNsForm.QUALIFIED)
 package org.mwc.debrief.core.gpx;

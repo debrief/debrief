@@ -5,7 +5,7 @@ package edu.nps.moves.disutil;
 import java.io.*;
 import java.nio.*;
 import java.util.*;
-import javax.xml.bind.*;
+import jakarta.xml.bind.*;
 
 import edu.nps.moves.dis.*;
 

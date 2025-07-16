@@ -3,7 +3,7 @@ package edu.nps.moves.examples;
 import edu.nps.moves.dis.*;
 
 import java.io.*;
-import javax.xml.bind.*;
+import jakarta.xml.bind.*;
 import java.util.*;
 
 /**

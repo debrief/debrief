@@ -14,7 +14,7 @@
  */
 package org.mwc.debrief.core.loaders;
 
-import javax.xml.bind.JAXBContext;
+import jakarta.xml.bind.JAXBContext;
 
 public interface DebriefJaxbContextAware
 {
