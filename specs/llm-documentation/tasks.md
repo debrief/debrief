@@ -1,11 +1,19 @@
 # Tasks: LLM Documentation for Legacy Debrief
 
 **Input**: Design documents from `/specs/llm-documentation/`
-**Prerequisites**: plan.md (required), research.md, data-model.md, quickstart.md
+**Prerequisites**: plan.md, research.md, data-model.md, quickstart.md, clarifications from docs/LLM_DOCUMENTATION_PLAN.md
 
 **Tests**: No automated tests. Validation via fresh LLM sessions on synthetic hotfix tasks.
 
 **Organization**: Tasks organized by documentation phase (Root → Core Plugins → Packages → Secondary).
+
+**Quality Standard**: Complete, thorough content—all template sections filled with substantive content. Goal is knowledge preservation for Future Debrief.
+
+**Diagram Requirements**:
+- Mermaid for complex visualizations (flowcharts, class diagrams, sequence diagrams)
+- ASCII for simple directory trees
+- Diagrams at all levels (root, plugin, package)
+- Pseudocode for complex algorithms
 
 ## Format: `[ID] [P?] [Phase] Description`
 
@@ -17,179 +25,282 @@
 
 ## Phase 1: Setup
 
-**Purpose**: Establish documentation infrastructure and templates
+**Purpose**: Establish documentation infrastructure and templates with Mermaid support
 
 - [ ] T001 Create documentation templates directory at docs/templates/
-- [ ] T002 [P] Create plugin README template at docs/templates/plugin-readme-template.md
-- [ ] T003 [P] Create package README template at docs/templates/package-readme-template.md
-- [ ] T004 [P] Create algorithm section template at docs/templates/algorithm-section-template.md
+- [ ] T002 [P] Create plugin README template with Mermaid diagram placeholders at docs/templates/plugin-readme-template.md
+- [ ] T003 [P] Create package README template with Mermaid diagram placeholders at docs/templates/package-readme-template.md
+- [ ] T004 [P] Create algorithm section template with pseudocode block at docs/templates/algorithm-section-template.md
 - [ ] T005 [P] Create spatial rendering section template at docs/templates/spatial-rendering-template.md
+- [ ] T006 [P] Create Mermaid diagram examples file at docs/templates/mermaid-examples.md
 
 ---
 
-## Phase 2: Foundational (Blocking Prerequisites)
+## Phase 2: Foundational - ROOT Documentation (Blocking Prerequisites)
 
-**Purpose**: Core reference documents that all other docs depend on
+**Purpose**: Core reference documents that all other docs depend on. Must include Mermaid diagrams.
 
 **CRITICAL**: ROOT docs must be complete before plugin/package READMEs can reference them
 
-- [ ] T006 [ROOT] Expand CLAUDE.md with navigation guidance to companion docs at CLAUDE.md
-- [ ] T007 [ROOT] Draft DOMAIN_GLOSSARY.md with maritime analysis terminology at DOMAIN_GLOSSARY.md
-- [ ] T008 [ROOT] Draft ARCHITECTURE.md with module dependency map at ARCHITECTURE.md
-- [ ] T009 [ROOT] Draft KEY_CLASSES.md with 20-30 critical classes at KEY_CLASSES.md
+### CLAUDE.md Entry Point
 
-**Checkpoint**: Root documentation complete—plugin READMEs can now reference these
+- [ ] T007 [ROOT] Inspect existing CLAUDE.md structure and content
+- [ ] T008 [ROOT] Expand CLAUDE.md with navigation guidance to companion docs at CLAUDE.md
+- [ ] T009 [ROOT] Add Mermaid flowchart showing documentation hierarchy to CLAUDE.md
+- [ ] T010 [ROOT] Add quick reference table for common LLM queries to CLAUDE.md
+
+### DOMAIN_GLOSSARY.md
+
+- [ ] T011 [P] [ROOT] Research maritime analysis terminology from codebase (TMA, fixes, bearings, tracks, sensors, contributions, legs)
+- [ ] T012 [ROOT] Draft DOMAIN_GLOSSARY.md with all maritime terms at DOMAIN_GLOSSARY.md
+- [ ] T013 [ROOT] Add Mermaid class diagram showing domain concept relationships to DOMAIN_GLOSSARY.md
+- [ ] T014 [ROOT] Add historical context and lessons learned for key concepts to DOMAIN_GLOSSARY.md
+- [ ] T015 [ROOT] Mark confidence levels and log UNCERTAIN items for interview
+
+### ARCHITECTURE.md
+
+- [ ] T016 [P] [ROOT] Inspect plugin dependencies and data flow across codebase
+- [ ] T017 [ROOT] Draft ARCHITECTURE.md skeleton with module sections at ARCHITECTURE.md
+- [ ] T018 [ROOT] Add Mermaid flowchart showing data flow between major modules to ARCHITECTURE.md
+- [ ] T019 [ROOT] Add Mermaid flowchart showing plugin dependency graph to ARCHITECTURE.md
+- [ ] T020 [ROOT] Add Mermaid sequence diagram showing typical track loading flow to ARCHITECTURE.md
+- [ ] T021 [ROOT] Document two-layer architecture (Eclipse RCP vs Legacy) with rationale to ARCHITECTURE.md
+- [ ] T022 [ROOT] Add lessons learned and design rationale sections to ARCHITECTURE.md
+- [ ] T023 [ROOT] Mark confidence levels and log UNCERTAIN items for interview
+
+### KEY_CLASSES.md
+
+- [ ] T024 [P] [ROOT] Identify 20-30 critical classes from research.md and code inspection
+- [ ] T025 [ROOT] Draft KEY_CLASSES.md with class inventory table at KEY_CLASSES.md
+- [ ] T026 [ROOT] Add Mermaid class diagram showing wrapper hierarchy (TrackWrapper→FixWrapper→SensorWrapper) to KEY_CLASSES.md
+- [ ] T027 [ROOT] Add Mermaid class diagram showing data type relationships (WorldLocation, WorldSpeed, etc.) to KEY_CLASSES.md
+- [ ] T028 [ROOT] Add Mermaid class diagram showing canvas/rendering class relationships to KEY_CLASSES.md
+- [ ] T029 [ROOT] Document each class with purpose, key methods, and usage patterns to KEY_CLASSES.md
+- [ ] T030 [ROOT] Add design rationale and historical context for key architectural decisions to KEY_CLASSES.md
+- [ ] T031 [ROOT] Mark confidence levels and log UNCERTAIN items for interview
+
+**Checkpoint**: Root documentation complete—plugin READMEs can now reference these diagrams and terminology
 
 ---
 
 ## Phase 3: Core Plugin READMEs (Priority: P1)
 
-**Goal**: Document the 5 core plugins enabling LLM navigation to primary codebase areas
+**Goal**: Document the 5 core plugins with thorough content, Mermaid diagrams, and knowledge preservation focus
 
 **Independent Test**: LLM can locate track handling, rendering, or algorithm code within 2 queries
 
 ### org.mwc.cmap.legacy (HIGH - algorithms + rendering)
 
-- [ ] T010 [P] [CORE] Inspect org.mwc.cmap.legacy/src/MWC/ package structure
-- [ ] T011 [CORE] Draft org.mwc.cmap.legacy/README.md with Purpose, Entry Points, Key Packages
-- [ ] T012 [CORE] Add Algorithms section to org.mwc.cmap.legacy/README.md (geodetic calculations)
-- [ ] T013 [CORE] Add Spatial Rendering section to org.mwc.cmap.legacy/README.md (canvas, shapes)
-- [ ] T014 [CORE] Mark confidence levels and log UNCERTAIN items for interview
+- [ ] T032 [P] [CORE] Inspect org.mwc.cmap.legacy/src/MWC/ package structure thoroughly
+- [ ] T033 [CORE] Draft org.mwc.cmap.legacy/README.md with Purpose, Entry Points, Key Packages
+- [ ] T034 [CORE] Add Mermaid flowchart showing MWC package relationships to org.mwc.cmap.legacy/README.md
+- [ ] T035 [CORE] Add Algorithms section with prose + pseudocode for geodetic calculations to org.mwc.cmap.legacy/README.md
+- [ ] T036 [CORE] Add Mermaid sequence diagram for coordinate transformation flow to org.mwc.cmap.legacy/README.md
+- [ ] T037 [CORE] Add Spatial Rendering section (canvas, shapes, projection) to org.mwc.cmap.legacy/README.md
+- [ ] T038 [CORE] Add Mermaid class diagram for canvas hierarchy to org.mwc.cmap.legacy/README.md
+- [ ] T039 [CORE] Add design rationale and lessons learned section to org.mwc.cmap.legacy/README.md
+- [ ] T040 [CORE] Mark confidence levels and log UNCERTAIN items for interview
 
 ### org.mwc.debrief.legacy (HIGH - domain model)
 
-- [ ] T015 [P] [CORE] Inspect org.mwc.debrief.legacy/src/Debrief/ package structure
-- [ ] T016 [CORE] Draft org.mwc.debrief.legacy/README.md with Purpose, Entry Points, Key Packages
-- [ ] T017 [CORE] Document wrapper pattern (TrackWrapper, FixWrapper, SensorWrapper)
-- [ ] T018 [CORE] Document file format handlers (REP, DPF/XML)
-- [ ] T019 [CORE] Mark confidence levels and log UNCERTAIN items for interview
+- [ ] T041 [P] [CORE] Inspect org.mwc.debrief.legacy/src/Debrief/ package structure thoroughly
+- [ ] T042 [CORE] Draft org.mwc.debrief.legacy/README.md with Purpose, Entry Points, Key Packages
+- [ ] T043 [CORE] Add Mermaid class diagram showing wrapper relationships to org.mwc.debrief.legacy/README.md
+- [ ] T044 [CORE] Document wrapper pattern (TrackWrapper, FixWrapper, SensorWrapper) with rationale to org.mwc.debrief.legacy/README.md
+- [ ] T045 [CORE] Add Mermaid sequence diagram for REP file parsing flow to org.mwc.debrief.legacy/README.md
+- [ ] T046 [CORE] Document file format handlers (REP, DPF/XML) with format details to org.mwc.debrief.legacy/README.md
+- [ ] T047 [CORE] Add design rationale and lessons learned section to org.mwc.debrief.legacy/README.md
+- [ ] T048 [CORE] Mark confidence levels and log UNCERTAIN items for interview
 
 ### org.mwc.debrief.core (MEDIUM - entry points)
 
-- [ ] T020 [P] [CORE] Inspect org.mwc.debrief.core/src/ context operations
-- [ ] T021 [CORE] Draft org.mwc.debrief.core/README.md with Purpose, Entry Points
-- [ ] T022 [CORE] Document ContextOperations as analysis entry points
-- [ ] T023 [CORE] Mark out-of-scope Eclipse RCP patterns per constitution
+- [ ] T049 [P] [CORE] Inspect org.mwc.debrief.core/src/ context operations thoroughly
+- [ ] T050 [CORE] Draft org.mwc.debrief.core/README.md with Purpose, Entry Points
+- [ ] T051 [CORE] Add Mermaid flowchart showing context operation categories to org.mwc.debrief.core/README.md
+- [ ] T052 [CORE] Document ContextOperations as analysis entry points with usage examples to org.mwc.debrief.core/README.md
+- [ ] T053 [CORE] Mark out-of-scope Eclipse RCP patterns per constitution to org.mwc.debrief.core/README.md
+- [ ] T054 [CORE] Add design rationale for context operation architecture to org.mwc.debrief.core/README.md
+- [ ] T055 [CORE] Mark confidence levels and log UNCERTAIN items for interview
 
 ### org.mwc.cmap.plotViewer (HIGH - spatial rendering)
 
-- [ ] T024 [P] [CORE] Inspect org.mwc.cmap.plotViewer/src/ rendering code
-- [ ] T025 [CORE] Draft org.mwc.cmap.plotViewer/README.md with Purpose, Entry Points
-- [ ] T026 [CORE] Add detailed Spatial Rendering section (projection, draw order, shape rendering)
-- [ ] T027 [CORE] Mark confidence levels and log UNCERTAIN items for interview
+- [ ] T056 [P] [CORE] Inspect org.mwc.cmap.plotViewer/src/ rendering code thoroughly
+- [ ] T057 [CORE] Draft org.mwc.cmap.plotViewer/README.md with Purpose, Entry Points
+- [ ] T058 [CORE] Add detailed Spatial Rendering section (projection, draw order, shape rendering) to org.mwc.cmap.plotViewer/README.md
+- [ ] T059 [CORE] Add Mermaid sequence diagram for plot rendering pipeline to org.mwc.cmap.plotViewer/README.md
+- [ ] T060 [CORE] Add Mermaid flowchart showing coordinate system transformations to org.mwc.cmap.plotViewer/README.md
+- [ ] T061 [CORE] Document rendering fidelity requirements for Future Debrief to org.mwc.cmap.plotViewer/README.md
+- [ ] T062 [CORE] Add design rationale and lessons learned for rendering decisions to org.mwc.cmap.plotViewer/README.md
+- [ ] T063 [CORE] Mark confidence levels and log UNCERTAIN items for interview
 
 ### org.mwc.debrief.track_shift (HIGH - algorithms)
 
-- [ ] T028 [P] [CORE] Inspect org.mwc.debrief.track_shift/src/ TMA/bearing code
-- [ ] T029 [CORE] Draft org.mwc.debrief.track_shift/README.md with Purpose, Entry Points
-- [ ] T030 [CORE] Add Algorithms section (TMA generation, bearing analysis)
-- [ ] T031 [CORE] Mark confidence levels and log UNCERTAIN items for interview
+- [ ] T064 [P] [CORE] Inspect org.mwc.debrief.track_shift/src/ TMA/bearing code thoroughly
+- [ ] T065 [CORE] Draft org.mwc.debrief.track_shift/README.md with Purpose, Entry Points
+- [ ] T066 [CORE] Add Algorithms section with TMA generation prose + pseudocode to org.mwc.debrief.track_shift/README.md
+- [ ] T067 [CORE] Add Mermaid sequence diagram for TMA solution generation flow to org.mwc.debrief.track_shift/README.md
+- [ ] T068 [CORE] Add bearing analysis algorithms with pseudocode to org.mwc.debrief.track_shift/README.md
+- [ ] T069 [CORE] Add Mermaid flowchart showing track shift workflow to org.mwc.debrief.track_shift/README.md
+- [ ] T070 [CORE] Add design rationale and lessons learned for TMA algorithms to org.mwc.debrief.track_shift/README.md
+- [ ] T071 [CORE] Mark confidence levels and log UNCERTAIN items for interview
 
-**Checkpoint**: Core plugin READMEs complete—LLM can navigate to major codebase areas
+**Checkpoint**: Core plugin READMEs complete—LLM can navigate to major codebase areas with full context
 
 ---
 
 ## Phase 4: Key Sub-Package READMEs (Priority: P2)
 
-**Goal**: Document critical packages for domain model, data types, and rendering internals
+**Goal**: Document critical packages with thorough content, diagrams, and pseudocode for algorithms
 
-**Independent Test**: LLM can understand TrackWrapper structure or projection algorithm
+**Independent Test**: LLM can understand TrackWrapper structure or projection algorithm in detail
 
 ### MWC.GenericData (data types)
 
-- [ ] T032 [P] [PKG] Inspect org.mwc.cmap.legacy/src/MWC/GenericData/*.java classes
-- [ ] T033 [PKG] Draft org.mwc.cmap.legacy/src/MWC/GenericData/README.md
-- [ ] T034 [PKG] Document WorldLocation, WorldSpeed, WorldDistance, WorldVector, HiResDate
-- [ ] T035 [PKG] Document usage patterns and edge cases
+- [ ] T072 [P] [PKG] Inspect org.mwc.cmap.legacy/src/MWC/GenericData/*.java classes thoroughly
+- [ ] T073 [PKG] Draft org.mwc.cmap.legacy/src/MWC/GenericData/README.md with all sections
+- [ ] T074 [PKG] Add Mermaid class diagram showing data type hierarchy to MWC/GenericData/README.md
+- [ ] T075 [PKG] Document WorldLocation, WorldSpeed, WorldDistance, WorldVector, HiResDate in detail to MWC/GenericData/README.md
+- [ ] T076 [PKG] Document usage patterns, edge cases, and conversion gotchas to MWC/GenericData/README.md
+- [ ] T077 [PKG] Add design rationale for data type decisions to MWC/GenericData/README.md
+- [ ] T078 [PKG] Mark confidence levels and log UNCERTAIN items for interview
 
 ### MWC.Algorithms (geodetic calculations)
 
-- [ ] T036 [P] [PKG] Inspect org.mwc.cmap.legacy/src/MWC/Algorithms/*.java classes
-- [ ] T037 [PKG] Draft org.mwc.cmap.legacy/src/MWC/Algorithms/README.md
-- [ ] T038 [PKG] Document Conversions, EarthModel, PlainProjection
-- [ ] T039 [PKG] Document Projections/ subpackage (FlatProjection, Mercator2/3)
-- [ ] T040 [PKG] Add Algorithm sections for each geodetic calculation
+- [ ] T079 [P] [PKG] Inspect org.mwc.cmap.legacy/src/MWC/Algorithms/*.java classes thoroughly
+- [ ] T080 [PKG] Draft org.mwc.cmap.legacy/src/MWC/Algorithms/README.md with all sections
+- [ ] T081 [PKG] Add Mermaid class diagram showing algorithm class relationships to MWC/Algorithms/README.md
+- [ ] T082 [PKG] Document Conversions with pseudocode for key conversions to MWC/Algorithms/README.md
+- [ ] T083 [PKG] Document EarthModel, PlainProjection with pseudocode to MWC/Algorithms/README.md
+- [ ] T084 [PKG] Document Projections/ subpackage (FlatProjection, Mercator2/3) with pseudocode to MWC/Algorithms/README.md
+- [ ] T085 [PKG] Add Mermaid sequence diagram for projection calculation flow to MWC/Algorithms/README.md
+- [ ] T086 [PKG] Add design rationale and lessons learned for geodetic decisions to MWC/Algorithms/README.md
+- [ ] T087 [PKG] Mark confidence levels and log UNCERTAIN items for interview
 
 ### MWC.GUI.Canvas (canvas abstraction)
 
-- [ ] T041 [P] [PKG] Inspect org.mwc.cmap.legacy/src/MWC/GUI/Canvas/*.java classes
-- [ ] T042 [PKG] Draft org.mwc.cmap.legacy/src/MWC/GUI/Canvas/README.md
-- [ ] T043 [PKG] Document CanvasAdaptor, SwingCanvas, MetafileCanvas
-- [ ] T044 [PKG] Add Spatial Rendering section (coordinate transform, projection integration)
+- [ ] T088 [P] [PKG] Inspect org.mwc.cmap.legacy/src/MWC/GUI/Canvas/*.java classes thoroughly
+- [ ] T089 [PKG] Draft org.mwc.cmap.legacy/src/MWC/GUI/Canvas/README.md with all sections
+- [ ] T090 [PKG] Add Mermaid class diagram showing canvas hierarchy to MWC/GUI/Canvas/README.md
+- [ ] T091 [PKG] Document CanvasAdaptor, SwingCanvas, MetafileCanvas in detail to MWC/GUI/Canvas/README.md
+- [ ] T092 [PKG] Add Spatial Rendering section (coordinate transform, projection integration) to MWC/GUI/Canvas/README.md
+- [ ] T093 [PKG] Add Mermaid sequence diagram for canvas drawing operations to MWC/GUI/Canvas/README.md
+- [ ] T094 [PKG] Add design rationale and rendering lessons learned to MWC/GUI/Canvas/README.md
+- [ ] T095 [PKG] Mark confidence levels and log UNCERTAIN items for interview
 
 ### MWC.GUI.Shapes (shape rendering)
 
-- [ ] T045 [P] [PKG] Inspect org.mwc.cmap.legacy/src/MWC/GUI/Shapes/*.java classes
-- [ ] T046 [PKG] Draft org.mwc.cmap.legacy/src/MWC/GUI/Shapes/README.md
-- [ ] T047 [PKG] Document PlainShape, CircleShape, VectorShape, TextLabel
-- [ ] T048 [PKG] Add Spatial Rendering section (shape-to-screen translation)
+- [ ] T096 [P] [PKG] Inspect org.mwc.cmap.legacy/src/MWC/GUI/Shapes/*.java classes thoroughly
+- [ ] T097 [PKG] Draft org.mwc.cmap.legacy/src/MWC/GUI/Shapes/README.md with all sections
+- [ ] T098 [PKG] Add Mermaid class diagram showing shape hierarchy to MWC/GUI/Shapes/README.md
+- [ ] T099 [PKG] Document PlainShape, CircleShape, VectorShape, TextLabel in detail to MWC/GUI/Shapes/README.md
+- [ ] T100 [PKG] Add Spatial Rendering section (shape-to-screen translation) to MWC/GUI/Shapes/README.md
+- [ ] T101 [PKG] Add Mermaid sequence diagram for shape rendering pipeline to MWC/GUI/Shapes/README.md
+- [ ] T102 [PKG] Add design rationale and shape rendering lessons to MWC/GUI/Shapes/README.md
+- [ ] T103 [PKG] Mark confidence levels and log UNCERTAIN items for interview
 
 ### Debrief.Wrappers (domain model)
 
-- [ ] T049 [P] [PKG] Inspect org.mwc.debrief.legacy/src/Debrief/Wrappers/*.java classes
-- [ ] T050 [PKG] Draft org.mwc.debrief.legacy/src/Debrief/Wrappers/README.md
-- [ ] T051 [PKG] Document TrackWrapper (120KB core class) in detail
-- [ ] T052 [PKG] Document FixWrapper, SensorWrapper, SensorContactWrapper
-- [ ] T053 [PKG] Document TMAWrapper, CompositeTrackWrapper
-- [ ] T054 [PKG] Document wrapper relationships and usage patterns
+- [ ] T104 [P] [PKG] Inspect org.mwc.debrief.legacy/src/Debrief/Wrappers/*.java classes thoroughly
+- [ ] T105 [PKG] Draft org.mwc.debrief.legacy/src/Debrief/Wrappers/README.md with all sections
+- [ ] T106 [PKG] Add Mermaid class diagram showing wrapper inheritance hierarchy to Debrief/Wrappers/README.md
+- [ ] T107 [PKG] Document TrackWrapper (120KB core class) comprehensively to Debrief/Wrappers/README.md
+- [ ] T108 [PKG] Document FixWrapper, SensorWrapper, SensorContactWrapper in detail to Debrief/Wrappers/README.md
+- [ ] T109 [PKG] Document TMAWrapper, CompositeTrackWrapper in detail to Debrief/Wrappers/README.md
+- [ ] T110 [PKG] Add Mermaid sequence diagram for track data manipulation to Debrief/Wrappers/README.md
+- [ ] T111 [PKG] Document wrapper relationships, usage patterns, and edge cases to Debrief/Wrappers/README.md
+- [ ] T112 [PKG] Add design rationale for wrapper pattern and lessons learned to Debrief/Wrappers/README.md
+- [ ] T113 [PKG] Mark confidence levels and log UNCERTAIN items for interview
 
 ### Debrief.ReaderWriter (file formats)
 
-- [ ] T055 [P] [PKG] Inspect org.mwc.debrief.legacy/src/Debrief/ReaderWriter/ subpackages
-- [ ] T056 [PKG] Draft org.mwc.debrief.legacy/src/Debrief/ReaderWriter/README.md
-- [ ] T057 [PKG] Document Replay/ (REP format: ImportReplay, FormatTracks)
-- [ ] T058 [PKG] Document XML/ (DPF format: DebriefXMLReaderWriter)
-- [ ] T059 [PKG] Document other formats (NMEA, AIS) briefly
+- [ ] T114 [P] [PKG] Inspect org.mwc.debrief.legacy/src/Debrief/ReaderWriter/ subpackages thoroughly
+- [ ] T115 [PKG] Draft org.mwc.debrief.legacy/src/Debrief/ReaderWriter/README.md with all sections
+- [ ] T116 [PKG] Add Mermaid flowchart showing file format handler architecture to Debrief/ReaderWriter/README.md
+- [ ] T117 [PKG] Document Replay/ (REP format: ImportReplay, FormatTracks) with format spec to Debrief/ReaderWriter/README.md
+- [ ] T118 [PKG] Add Mermaid sequence diagram for REP parsing flow to Debrief/ReaderWriter/README.md
+- [ ] T119 [PKG] Document XML/ (DPF format: DebriefXMLReaderWriter) with format spec to Debrief/ReaderWriter/README.md
+- [ ] T120 [PKG] Document other formats (NMEA, AIS) with format details to Debrief/ReaderWriter/README.md
+- [ ] T121 [PKG] Add design rationale and file format lessons learned to Debrief/ReaderWriter/README.md
+- [ ] T122 [PKG] Mark confidence levels and log UNCERTAIN items for interview
 
-**Checkpoint**: Key package READMEs complete—LLM understands domain model and algorithms
+**Checkpoint**: Key package READMEs complete—LLM understands domain model, algorithms, and rendering in depth
 
 ---
 
 ## Phase 5: Secondary Module READMEs (Priority: P3)
 
-**Goal**: Document secondary modules for completeness
+**Goal**: Document secondary modules with focus on SATC genetic algorithm
 
-**Independent Test**: LLM can navigate to ASSET or SATC genetic algorithm code
+**Independent Test**: LLM can navigate to ASSET or SATC genetic algorithm code and understand it
 
 ### ASSET modules
 
-- [ ] T060 [P] [SEC] Inspect org.mwc.asset.core/src/ structure
-- [ ] T061 [P] [SEC] Inspect org.mwc.asset.legacy/src/ structure
-- [ ] T062 [SEC] Draft org.mwc.asset.core/README.md
-- [ ] T063 [SEC] Draft org.mwc.asset.legacy/README.md
+- [ ] T123 [P] [SEC] Inspect org.mwc.asset.core/src/ structure thoroughly
+- [ ] T124 [P] [SEC] Inspect org.mwc.asset.legacy/src/ structure thoroughly
+- [ ] T125 [SEC] Draft org.mwc.asset.core/README.md with all sections
+- [ ] T126 [SEC] Draft org.mwc.asset.legacy/README.md with all sections
+- [ ] T127 [SEC] Add Mermaid class diagram for ASSET domain model to org.mwc.asset.legacy/README.md
+- [ ] T128 [SEC] Add design rationale and lessons learned to ASSET READMEs
 
-### SATC (genetic algorithm)
+### SATC (genetic algorithm - HIGH PRIORITY)
 
-- [ ] T064 [P] [SEC] Inspect org.mwc.debrief.satc.core/src/ genetic algorithm
-- [ ] T065 [SEC] Draft org.mwc.debrief.satc.core/README.md with Algorithm section
-- [ ] T066 [SEC] Document genetic algorithm in detail (inputs, outputs, parameters)
+- [ ] T129 [P] [SEC] Inspect org.mwc.debrief.satc.core/src/ genetic algorithm thoroughly
+- [ ] T130 [SEC] Draft org.mwc.debrief.satc.core/README.md with comprehensive Algorithm section
+- [ ] T131 [SEC] Add Mermaid flowchart showing genetic algorithm workflow to org.mwc.debrief.satc.core/README.md
+- [ ] T132 [SEC] Document genetic algorithm with detailed pseudocode (fitness, selection, crossover, mutation) to org.mwc.debrief.satc.core/README.md
+- [ ] T133 [SEC] Add Mermaid sequence diagram for SATC solution generation to org.mwc.debrief.satc.core/README.md
+- [ ] T134 [SEC] Document algorithm parameters, tuning history, and lessons learned to org.mwc.debrief.satc.core/README.md
+- [ ] T135 [SEC] Mark confidence levels and log UNCERTAIN items for interview
 
 ### GeoTools integration
 
-- [ ] T067 [P] [SEC] Inspect org.mwc.cmap.gt2Plot/src/ GeoTools code
-- [ ] T068 [SEC] Draft org.mwc.cmap.gt2Plot/README.md
+- [ ] T136 [P] [SEC] Inspect org.mwc.cmap.gt2Plot/src/ GeoTools code thoroughly
+- [ ] T137 [SEC] Draft org.mwc.cmap.gt2Plot/README.md with all sections
+- [ ] T138 [SEC] Add Mermaid diagram showing GeoTools integration points to org.mwc.cmap.gt2Plot/README.md
+- [ ] T139 [SEC] Document integration lessons learned to org.mwc.cmap.gt2Plot/README.md
 
 ### Natural Earth
 
-- [ ] T069 [P] [SEC] Inspect org.mwc.cmap.naturalearth/src/ map data
-- [ ] T070 [SEC] Draft org.mwc.cmap.naturalearth/README.md
+- [ ] T140 [P] [SEC] Inspect org.mwc.cmap.naturalearth/src/ map data thoroughly
+- [ ] T141 [SEC] Draft org.mwc.cmap.naturalearth/README.md with all sections
+- [ ] T142 [SEC] Document map data integration and usage patterns to org.mwc.cmap.naturalearth/README.md
 
-**Checkpoint**: Secondary modules documented—full codebase navigation possible
+**Checkpoint**: Secondary modules documented—full codebase navigation and knowledge preservation complete
 
 ---
 
 ## Phase 6: Polish & Cross-Cutting Concerns
 
-**Purpose**: Review, validation, and interview resolution
+**Purpose**: Review, validation, interview resolution, and cross-referencing
 
-- [ ] T071 [P] Conduct interview session for all UNCERTAIN items logged
-- [ ] T072 [P] Update all docs with interview answers
-- [ ] T073 [P] Cross-reference check: verify all doc links work
-- [ ] T074 Validate with fresh LLM session: synthetic hotfix task for track handling
-- [ ] T075 Validate with fresh LLM session: synthetic hotfix task for rendering
-- [ ] T076 Validate with fresh LLM session: synthetic hotfix task for algorithm
-- [ ] T077 Update docs/LLM_DOCUMENTATION_PLAN.md progress checkboxes
-- [ ] T078 Final review: ensure all confidence markers present
+### Interview Resolution
+
+- [ ] T143 [P] Compile all UNCERTAIN items from all READMEs into interview agenda
+- [ ] T144 Conduct interview session with Doc for all UNCERTAIN items
+- [ ] T145 [P] Update all docs with interview answers and historical context
+- [ ] T146 [P] Convert remaining UNCERTAIN markers to VERIFIED or INFERRED with notes
+
+### Cross-Reference Verification
+
+- [ ] T147 [P] Verify all internal doc links work correctly
+- [ ] T148 [P] Verify all Mermaid diagrams render correctly in GitHub
+- [ ] T149 [P] Verify terminology consistency across all documents against DOMAIN_GLOSSARY.md
+- [ ] T150 [P] Verify all algorithm sections have pseudocode where appropriate
+
+### LLM Validation
+
+- [ ] T151 Validate with fresh LLM session: synthetic hotfix task for track handling
+- [ ] T152 Validate with fresh LLM session: synthetic hotfix task for rendering
+- [ ] T153 Validate with fresh LLM session: synthetic hotfix task for algorithm (e.g., TMA)
+- [ ] T154 Validate with fresh LLM session: knowledge extraction task (e.g., port projection algorithm)
+- [ ] T155 Document validation results and any navigation improvements needed
+
+### Final Cleanup
+
+- [ ] T156 Update docs/LLM_DOCUMENTATION_PLAN.md progress checkboxes to complete
+- [ ] T157 Final review: ensure all confidence markers present
+- [ ] T158 Final review: ensure all lessons learned sections are substantive
+- [ ] T159 Create documentation changelog summarizing what was captured
 
 ---
 
@@ -198,15 +309,15 @@
 ### Phase Dependencies
 
 ```
-Phase 1: Setup
+Phase 1: Setup (templates)
     ↓
-Phase 2: Foundational (ROOT docs) ← BLOCKS all subsequent phases
+Phase 2: ROOT docs ← BLOCKS all subsequent phases
     ↓
-Phase 3: Core Plugin READMEs ← Can proceed after ROOT complete
+Phase 3: Core Plugins ← Can proceed after ROOT complete
     ↓
-Phase 4: Key Package READMEs ← Can proceed after parent plugin README complete
+Phase 4: Packages ← Can proceed after parent plugin README complete
     ↓
-Phase 5: Secondary Modules ← Can proceed after Core complete
+Phase 5: Secondary ← Can proceed after Core complete
     ↓
 Phase 6: Polish ← Depends on all content phases
 ```
@@ -215,44 +326,50 @@ Phase 6: Polish ← Depends on all content phases
 
 - Inspection tasks [P] can run in parallel
 - Draft tasks depend on inspection
-- Section additions depend on draft
+- Mermaid diagram tasks depend on draft
+- Design rationale tasks depend on content being written
 - Confidence marking is final step per doc
 
 ### Parallel Opportunities
 
-**Phase 1**: All template tasks (T002-T005) can run in parallel
-**Phase 3**: Plugin inspections (T010, T015, T020, T024, T028) can run in parallel
-**Phase 4**: Package inspections (T032, T036, T041, T045, T049, T055) can run in parallel
-**Phase 5**: Secondary inspections (T060, T061, T064, T067, T069) can run in parallel
-**Phase 6**: Interview updates and validations can run in parallel
+**Phase 1**: All template tasks (T002-T006) can run in parallel
+**Phase 2**: Research tasks (T011, T016, T024) can run in parallel
+**Phase 3**: Plugin inspections (T032, T041, T049, T056, T064) can run in parallel
+**Phase 4**: Package inspections (T072, T079, T088, T096, T104, T114) can run in parallel
+**Phase 5**: Secondary inspections (T123, T124, T129, T136, T140) can run in parallel
+**Phase 6**: Cross-reference and validation tasks can run in parallel
 
 ---
 
 ## Implementation Strategy
 
-### MVP First (ROOT docs only)
+### Knowledge Preservation First
 
-1. Complete Phase 1: Setup
-2. Complete Phase 2: ROOT docs (CLAUDE.md, DOMAIN_GLOSSARY.md, ARCHITECTURE.md, KEY_CLASSES.md)
-3. **STOP and VALIDATE**: Test LLM navigation with ROOT docs only
-4. Delivers: Basic codebase orientation for emergency hotfixes
+Execute with focus on capturing institutional knowledge:
+1. Complete ROOT docs with full architectural context and rationale
+2. Interview early and often to capture lessons learned
+3. Prioritize "why" alongside "what" in all documentation
+4. Don't rush—thoroughness over speed
 
 ### Incremental Delivery
 
 1. ROOT docs → Validate → Deploy
-2. Add Core Plugin READMEs → Validate → Deploy
-3. Add Package READMEs → Validate → Deploy
-4. Add Secondary modules → Validate → Deploy
-5. Each phase improves LLM navigation depth
+2. Add Core Plugin READMEs with diagrams → Validate → Deploy
+3. Add Package READMEs with pseudocode → Validate → Deploy
+4. Add Secondary modules (especially SATC) → Validate → Deploy
+5. Each phase preserves more institutional knowledge
 
 ### Single Documenter Strategy
 
-Execute phases sequentially:
-1. Complete Setup
-2. Complete ROOT docs
-3. Work through plugins in priority order (cmap.legacy → debrief.legacy → debrief.core → plotViewer → track_shift)
-4. Work through packages in dependency order
-5. Secondary modules last
+Execute phases sequentially with interview batching:
+1. Complete Setup and ROOT docs
+2. Batch interview for ROOT uncertainties
+3. Work through plugins in priority order with diagrams
+4. Batch interview for plugin uncertainties
+5. Work through packages with pseudocode
+6. Batch interview for package uncertainties
+7. Secondary modules last (SATC is priority)
+8. Final validation pass
 
 ---
 
@@ -260,8 +377,10 @@ Execute phases sequentially:
 
 - [P] tasks can run in parallel when targeting different files
 - [Phase] label maps task to documentation phase for traceability
-- Follow quickstart.md workflow for each documentation target
-- Use confidence markers: VERIFIED, INFERRED, UNCERTAIN
-- Log all UNCERTAIN items in docs/LLM_DOCUMENTATION_PLAN.md Interview Log
+- **Quality over speed**: Every README must be complete and thorough
+- **Knowledge preservation**: Capture lessons learned and design rationale throughout
+- **Mermaid diagrams**: Required at all levels for GitHub rendering
+- **Pseudocode**: Required for all complex algorithms
 - Constitution compliance: exclude UI widgets, Eclipse RCP patterns
 - Validate frequently with fresh LLM sessions
+- Log all UNCERTAIN items for batched interviews
