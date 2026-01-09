@@ -3,7 +3,6 @@
     "allow": [
       "Skill(speckit.plan)",
       "Bash(.specify/scripts/bash/setup-plan.sh:*)",
-      "Bash(/Users/ian/git/debrief/.specify/scripts/bash/update-agent-context.sh:*)",
       "Bash(echo:*)",
       "Bash(curl:*)",
       "Bash(.specify/scripts/bash/check-prerequisites.sh:*)",
@@ -11,7 +10,8 @@
       "Bash(find:*)",
       "Bash(ls:*)",
       "Bash(grep:*)",
-      "Bash(tree:*)"
+      "Bash(tree:*)",
+      "Bash(test:*)"
     ]
   }
 }
