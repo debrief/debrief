@@ -241,7 +241,7 @@ The module includes a genetic algorithm framework for parameter optimization:
 | `XMLRange` | Bounded numeric allele |
 | `ScenarioRunner` | Fitness evaluation interface |
 
-See [SATC documentation](#) for TMA-specific usage.
+See [org.mwc.debrief.satc.core README](../org.mwc.debrief.satc.core/README.md) for TMA-specific usage.
 
 **[VERIFIED]**
 
