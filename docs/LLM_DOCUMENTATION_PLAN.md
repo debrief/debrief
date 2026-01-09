@@ -2,10 +2,11 @@
 
 ## Purpose
 
-Make the legacy Debrief codebase navigable by LLMs (e.g., Claude Code) for two purposes:
+Make the legacy Debrief codebase navigable by LLMs (e.g., Claude Code) for three purposes:
 
 1. **Emergency hotfixes** — Enable an LLM to understand, locate, and safely modify code during the transition period before DebriefNG delivery
 2. **Knowledge extraction** — Support algorithm porting, golden test data generation, and domain knowledge capture for the modernisation effort
+3. **Knowledge preservation** — Capture lessons learned, design rationale, and institutional knowledge from 25 years of development to inform Future Debrief architecture decisions
 
 ## Content Focus
 
@@ -100,6 +101,14 @@ Each relevant README should include:
 - **Key Classes**: Entry points and core logic
 - **Edge Cases**: Known special handling
 - **Performance Notes**: Constraints, optimisation history
+
+#### Pseudocode (for complex algorithms)
+```text
+// Simplified logic for porting reference
+1. Initialize...
+2. For each item...
+3. Calculate...
+```
 ```
 
 ## Progress Tracking
@@ -140,8 +149,22 @@ Track questions asked and answers received during documentation:
 |------|-------|----------|--------|
 | | | | |
 
+## Clarifications
+
+### Session 2026-01-09
+
+- Q: What visualization format for architecture documentation? → A: Mermaid for complex diagrams, ASCII for simple trees
+- Q: Which Mermaid diagram types for ARCHITECTURE.md? → A: Flowchart + Class + Sequence diagrams (full coverage)
+- Q: How detailed should algorithm documentation be? → A: Prose + pseudocode for complex algorithms
+- Q: Where should Mermaid diagrams appear? → A: All levels (root, plugin, and package READMEs)
+- Q: README completion criteria? → A: Complete, thorough content—all template sections filled with quality content; goal is preserving legacy knowledge and lessons learned for Future Debrief, not minimum viable
+
 ## Notes
 
 - Legacy codebase uses Eclipse RCP but we're not documenting RCP patterns (not needed for hotfixes or algorithm extraction)
 - Future Debrief replaces UI entirely, so UI documentation is out of scope
 - SATC (Semi-Automated Track Construction) contains the genetic algorithm implementation — high priority for algorithm documentation
+- **Diagram format**: Use Mermaid diagrams for complex visualizations (module dependencies, data flow, class relationships); use ASCII for simple directory trees and linear hierarchies
+- **Mermaid diagram types**: Use flowcharts for data flow between modules, class diagrams for domain model relationships (wrappers, data types), sequence diagrams for algorithm call flows and file parsing sequences
+- **Diagram placement**: Include Mermaid diagrams at all documentation levels—root docs, plugin READMEs, and package READMEs where they aid comprehension
+- **Quality standard**: Documentation must be complete and thorough, not minimum viable. Every README should have all template sections filled with substantive content. The goal is knowledge preservation for Future Debrief, capturing lessons learned and design rationale alongside technical details
