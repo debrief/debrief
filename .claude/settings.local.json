@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Skill(speckit.plan)",
+      "Bash(.specify/scripts/bash/setup-plan.sh:*)",
+      "Bash(/Users/ian/git/debrief/.specify/scripts/bash/update-agent-context.sh:*)",
+      "Bash(echo:*)",
+      "Bash(curl:*)"
+    ]
+  }
+}
