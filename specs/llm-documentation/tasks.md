@@ -27,12 +27,12 @@
 
 **Purpose**: Establish documentation infrastructure and templates with Mermaid support
 
-- [ ] T001 Create documentation templates directory at docs/templates/
-- [ ] T002 [P] Create plugin README template with Mermaid diagram placeholders at docs/templates/plugin-readme-template.md
-- [ ] T003 [P] Create package README template with Mermaid diagram placeholders at docs/templates/package-readme-template.md
-- [ ] T004 [P] Create algorithm section template with pseudocode block at docs/templates/algorithm-section-template.md
-- [ ] T005 [P] Create spatial rendering section template at docs/templates/spatial-rendering-template.md
-- [ ] T006 [P] Create Mermaid diagram examples file at docs/templates/mermaid-examples.md
+- [X] T001 Create documentation templates directory at docs/templates/
+- [X] T002 [P] Create plugin README template with Mermaid diagram placeholders at docs/templates/plugin-readme-template.md
+- [X] T003 [P] Create package README template with Mermaid diagram placeholders at docs/templates/package-readme-template.md
+- [X] T004 [P] Create algorithm section template with pseudocode block at docs/templates/algorithm-section-template.md
+- [X] T005 [P] Create spatial rendering section template at docs/templates/spatial-rendering-template.md
+- [X] T006 [P] Create Mermaid diagram examples file at docs/templates/mermaid-examples.md
 
 ---
 
@@ -44,40 +44,40 @@
 
 ### CLAUDE.md Entry Point
 
-- [ ] T007 [ROOT] Inspect existing CLAUDE.md structure and content
-- [ ] T008 [ROOT] Expand CLAUDE.md with navigation guidance to companion docs at CLAUDE.md
-- [ ] T009 [ROOT] Add Mermaid flowchart showing documentation hierarchy to CLAUDE.md
-- [ ] T010 [ROOT] Add quick reference table for common LLM queries to CLAUDE.md
+- [X] T007 [ROOT] Inspect existing CLAUDE.md structure and content
+- [X] T008 [ROOT] Expand CLAUDE.md with navigation guidance to companion docs at CLAUDE.md
+- [X] T009 [ROOT] Add Mermaid flowchart showing documentation hierarchy to CLAUDE.md
+- [X] T010 [ROOT] Add quick reference table for common LLM queries to CLAUDE.md
 
 ### DOMAIN_GLOSSARY.md
 
-- [ ] T011 [P] [ROOT] Research maritime analysis terminology from codebase (TMA, fixes, bearings, tracks, sensors, contributions, legs)
-- [ ] T012 [ROOT] Draft DOMAIN_GLOSSARY.md with all maritime terms at DOMAIN_GLOSSARY.md
-- [ ] T013 [ROOT] Add Mermaid class diagram showing domain concept relationships to DOMAIN_GLOSSARY.md
-- [ ] T014 [ROOT] Add historical context and lessons learned for key concepts to DOMAIN_GLOSSARY.md
-- [ ] T015 [ROOT] Mark confidence levels and log UNCERTAIN items for interview
+- [X] T011 [P] [ROOT] Research maritime analysis terminology from codebase (TMA, fixes, bearings, tracks, sensors, contributions, legs)
+- [X] T012 [ROOT] Draft DOMAIN_GLOSSARY.md with all maritime terms at DOMAIN_GLOSSARY.md
+- [X] T013 [ROOT] Add Mermaid class diagram showing domain concept relationships to DOMAIN_GLOSSARY.md
+- [X] T014 [ROOT] Add historical context and lessons learned for key concepts to DOMAIN_GLOSSARY.md
+- [X] T015 [ROOT] Mark confidence levels and log UNCERTAIN items for interview
 
 ### ARCHITECTURE.md
 
-- [ ] T016 [P] [ROOT] Inspect plugin dependencies and data flow across codebase
-- [ ] T017 [ROOT] Draft ARCHITECTURE.md skeleton with module sections at ARCHITECTURE.md
-- [ ] T018 [ROOT] Add Mermaid flowchart showing data flow between major modules to ARCHITECTURE.md
-- [ ] T019 [ROOT] Add Mermaid flowchart showing plugin dependency graph to ARCHITECTURE.md
-- [ ] T020 [ROOT] Add Mermaid sequence diagram showing typical track loading flow to ARCHITECTURE.md
-- [ ] T021 [ROOT] Document two-layer architecture (Eclipse RCP vs Legacy) with rationale to ARCHITECTURE.md
-- [ ] T022 [ROOT] Add lessons learned and design rationale sections to ARCHITECTURE.md
-- [ ] T023 [ROOT] Mark confidence levels and log UNCERTAIN items for interview
+- [X] T016 [P] [ROOT] Inspect plugin dependencies and data flow across codebase
+- [X] T017 [ROOT] Draft ARCHITECTURE.md skeleton with module sections at ARCHITECTURE.md
+- [X] T018 [ROOT] Add Mermaid flowchart showing data flow between major modules to ARCHITECTURE.md
+- [X] T019 [ROOT] Add Mermaid flowchart showing plugin dependency graph to ARCHITECTURE.md
+- [X] T020 [ROOT] Add Mermaid sequence diagram showing typical track loading flow to ARCHITECTURE.md
+- [X] T021 [ROOT] Document two-layer architecture (Eclipse RCP vs Legacy) with rationale to ARCHITECTURE.md
+- [X] T022 [ROOT] Add lessons learned and design rationale sections to ARCHITECTURE.md
+- [X] T023 [ROOT] Mark confidence levels and log UNCERTAIN items for interview
 
 ### KEY_CLASSES.md
 
-- [ ] T024 [P] [ROOT] Identify 20-30 critical classes from research.md and code inspection
-- [ ] T025 [ROOT] Draft KEY_CLASSES.md with class inventory table at KEY_CLASSES.md
-- [ ] T026 [ROOT] Add Mermaid class diagram showing wrapper hierarchy (TrackWrapper→FixWrapper→SensorWrapper) to KEY_CLASSES.md
-- [ ] T027 [ROOT] Add Mermaid class diagram showing data type relationships (WorldLocation, WorldSpeed, etc.) to KEY_CLASSES.md
-- [ ] T028 [ROOT] Add Mermaid class diagram showing canvas/rendering class relationships to KEY_CLASSES.md
-- [ ] T029 [ROOT] Document each class with purpose, key methods, and usage patterns to KEY_CLASSES.md
-- [ ] T030 [ROOT] Add design rationale and historical context for key architectural decisions to KEY_CLASSES.md
-- [ ] T031 [ROOT] Mark confidence levels and log UNCERTAIN items for interview
+- [X] T024 [P] [ROOT] Identify 20-30 critical classes from research.md and code inspection
+- [X] T025 [ROOT] Draft KEY_CLASSES.md with class inventory table at KEY_CLASSES.md
+- [X] T026 [ROOT] Add Mermaid class diagram showing wrapper hierarchy (TrackWrapper→FixWrapper→SensorWrapper) to KEY_CLASSES.md
+- [X] T027 [ROOT] Add Mermaid class diagram showing data type relationships (WorldLocation, WorldSpeed, etc.) to KEY_CLASSES.md
+- [X] T028 [ROOT] Add Mermaid class diagram showing canvas/rendering class relationships to KEY_CLASSES.md
+- [X] T029 [ROOT] Document each class with purpose, key methods, and usage patterns to KEY_CLASSES.md
+- [X] T030 [ROOT] Add design rationale and historical context for key architectural decisions to KEY_CLASSES.md
+- [X] T031 [ROOT] Mark confidence levels and log UNCERTAIN items for interview
 
 **Checkpoint**: Root documentation complete—plugin READMEs can now reference these diagrams and terminology
 
