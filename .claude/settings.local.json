@@ -1,0 +1,17 @@
+{
+  "permissions": {
+    "allow": [
+      "Skill(speckit.plan)",
+      "Bash(.specify/scripts/bash/setup-plan.sh:*)",
+      "Bash(echo:*)",
+      "Bash(curl:*)",
+      "Bash(.specify/scripts/bash/check-prerequisites.sh:*)",
+      "Bash(wc:*)",
+      "Bash(find:*)",
+      "Bash(ls:*)",
+      "Bash(grep:*)",
+      "Bash(tree:*)",
+      "Bash(test:*)"
+    ]
+  }
+}
