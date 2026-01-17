@@ -1884,6 +1884,53 @@ public class TrackWrapper_Test extends TestCase {
 		assertEquals("one less now", 4, _tw.numFixes());
 	}
 
+	/**
+	 * Test that track time bounds update correctly after removing fixes from the
+	 * start of a track. This addresses a bug where deleting points from the start
+	 * of the track left the overall time bounds unchanged.
+	 */
+	public void testTimeBoundsUpdateAfterRemoveFromStart() {
+		// Create a fresh track for this test
+		final TrackWrapper track = new TrackWrapper();
+		track.setName("time bounds test");
+
+		// Add fixes with known times
+		final FixWrapper fix1 = createFix3(100000, 1, 1);
+		final FixWrapper fix2 = createFix3(200000, 2, 2);
+		final FixWrapper fix3 = createFix3(300000, 3, 3);
+		final FixWrapper fix4 = createFix3(400000, 4, 4);
+
+		track.addFix(fix1);
+		track.addFix(fix2);
+		track.addFix(fix3);
+		track.addFix(fix4);
+
+		// Verify initial time bounds
+		assertEquals("initial start time", 100000, track.getStartDTG().getDate().getTime());
+		assertEquals("initial end time", 400000, track.getEndDTG().getDate().getTime());
+
+		// Remove the first fix
+		track.removeElement(fix1);
+
+		// Time bounds should now reflect the removal - start should be 200000
+		assertEquals("start time after removing first fix", 200000, track.getStartDTG().getDate().getTime());
+		assertEquals("end time unchanged", 400000, track.getEndDTG().getDate().getTime());
+
+		// Remove another fix from the start
+		track.removeElement(fix2);
+
+		// Start time should now be 300000
+		assertEquals("start time after removing second fix", 300000, track.getStartDTG().getDate().getTime());
+		assertEquals("end time still unchanged", 400000, track.getEndDTG().getDate().getTime());
+
+		// Also test removing from the end
+		track.removeElement(fix4);
+
+		// Only fix3 remains
+		assertEquals("start time is fix3", 300000, track.getStartDTG().getDate().getTime());
+		assertEquals("end time is also fix3", 300000, track.getEndDTG().getDate().getTime());
+	}
+
 	public void testSegmentList() {
 
 		final TrackWrapper tw = new TrackWrapper();
