@@ -21,7 +21,18 @@ These documents guide the creation of documentation that enables LLMs to:
 
 ## How to Download These Files
 
-### Option 1: Using the Download Script
+### Option 1: Download Pre-built Archive (Easiest!)
+
+Simply download the pre-built archive file from this folder:
+- **[llm-documentation.tar.gz](llm-documentation.tar.gz)** (14 KB) - Contains all documentation files
+
+Then extract it:
+```bash
+tar -xzf llm-documentation.tar.gz
+cd llm-documentation
+```
+
+### Option 2: Using the Download Script
 
 ```bash
 # Make the script executable
@@ -34,7 +45,7 @@ chmod +x download-docs.sh
 ./download-docs.sh /path/to/output/directory
 ```
 
-### Option 2: Manual Download via Git
+### Option 3: Manual Download via Git
 
 ```bash
 # Clone the repository
@@ -47,14 +58,14 @@ cd debrief/specs/llm-documentation
 cp *.md /your/destination/path/
 ```
 
-### Option 3: Download Individual Files from GitHub
+### Option 4: Download Individual Files from GitHub
 
 Navigate to this folder on GitHub:
 `https://github.com/debrief/debrief/tree/main/specs/llm-documentation`
 
 Click on each file and use the "Download raw file" button.
 
-### Option 4: Using wget or curl
+### Option 5: Using wget or curl
 
 ```bash
 # Create a directory for the files
@@ -78,7 +89,7 @@ curl -O $BASE_URL/quickstart.md
 curl -O $BASE_URL/tasks.md
 ```
 
-### Option 5: Using GitHub CLI
+### Option 6: Using GitHub CLI
 
 ```bash
 # Install GitHub CLI if not already installed: https://cli.github.com/
