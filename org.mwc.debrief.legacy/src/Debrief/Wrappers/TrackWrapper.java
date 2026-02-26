@@ -339,6 +339,12 @@ public class TrackWrapper extends LightweightTrackWrapper implements WatchableLi
 
 	}
 
+	/**
+	 * Minimum pixel distance squared between drawn position symbols. Symbols closer
+	 * than sqrt(this) pixels apart are skipped to prevent overlap when zoomed in.
+	 */
+	private static final int MIN_SYMBOL_SPACING_SQ = 8 * 8;
+
 	private static final String SOLUTIONS_LAYER_NAME = "Solutions";
 
 	public static final String SENSORS_LAYER_NAME = "Sensors";
@@ -2565,6 +2571,15 @@ public class TrackWrapper extends LightweightTrackWrapper implements WatchableLi
 	}
 
 	/**
+	 * Squared pixel distance between two screen points.
+	 */
+	private static int distanceSq(final java.awt.Point a, final java.awt.Point b) {
+		final int dx = a.x - b.x;
+		final int dy = a.y - b.y;
+		return dx * dx + dy * dy;
+	}
+
+	/**
 	 * paint the fixes for this track
 	 *
 	 * @param dest
@@ -2587,6 +2602,9 @@ public class TrackWrapper extends LightweightTrackWrapper implements WatchableLi
 		final int defaultlineStyle = getLineStyle();
 
 		FixWrapper lastFix = null;
+
+		// track the screen position of the last drawn symbol for decimation
+		java.awt.Point lastDrawnScreenPoint = null;
 
 		// update DR positions (if necessary)
 		if (_relativeUpdatePending) {
@@ -2650,7 +2668,18 @@ public class TrackWrapper extends LightweightTrackWrapper implements WatchableLi
 						newLastFix.setSymbolShowing(true);
 					}
 
-					paintIt(dest, newLastFix, getEndTimeLabels() && isFirstVisibleFix, false);
+					// decimation: skip symbols that overlap with the last drawn one
+					final java.awt.Point fixScreen = dest.toScreen(newLastFix.getLocation());
+					final boolean tooClose = fixScreen != null && lastDrawnScreenPoint != null
+							&& !isFirstVisibleFix && !singlePointSegment
+							&& distanceSq(fixScreen, lastDrawnScreenPoint) < MIN_SYMBOL_SPACING_SQ;
+
+					if (!tooClose) {
+						paintIt(dest, newLastFix, getEndTimeLabels() && isFirstVisibleFix, false);
+						if (fixScreen != null) {
+							lastDrawnScreenPoint = fixScreen;
+						}
+					}
 
 					if (singlePointSegment) {
 						newLastFix.setSymbolShowing(symWasVisible);
@@ -2788,8 +2817,13 @@ public class TrackWrapper extends LightweightTrackWrapper implements WatchableLi
 					// more legs to come
 					final boolean forceHideLabel = isPlanningTrack && hasMoreLegs;
 
-					// ok, get painting
+					// ok, get painting - always paint the last fix (endpoint)
 					paintIt(dest, endPoints.get(1), getEndTimeLabels(), forceHideLabel);
+					// update decimation tracking for cross-segment consistency
+					final java.awt.Point endScreen = dest.toScreen(endPoints.get(1).getLocation());
+					if (endScreen != null) {
+						lastDrawnScreenPoint = endScreen;
+					}
 				}
 			}
 
