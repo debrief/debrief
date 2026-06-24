@@ -35,6 +35,7 @@ import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.operations.RightClickCutCopyAdaptor.EditableTransfer;
 
 import Debrief.Wrappers.LabelWrapper;
+import Debrief.Wrappers.TacticalDataWrapper;
 import Debrief.Wrappers.DynamicTrackShapes.DynamicTrackShapeSetWrapper;
 import MWC.GUI.BaseLayer;
 import MWC.GUI.CanEnumerate;
@@ -45,6 +46,7 @@ import MWC.GUI.HasEditables;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
 import MWC.GUI.Renamable;
+import MWC.GUI.RestrictedBaseLayer;
 import MWC.GUI.Tools.Operations.RightClickPasteAdaptor.NeedsTidyingOnPaste;
 import MWC.GenericData.WorldLocation;
 import junit.framework.TestCase;
@@ -364,8 +366,13 @@ public class RightClickPasteAdaptor {
 		PasteItem paster = null;
 		// see if all of the selected items are layers - or not
 		boolean allLayers = true;
+		boolean restrictedLayer = false;
 		for (int i = 0; i < theDataList.length; i++) {
 			final Editable editable = theDataList[i];
+			if(editable instanceof RestrictedBaseLayer<?>){
+				restrictedLayer = true;
+				continue;
+			}
 			if (!(editable instanceof Layer)) {
 				allLayers = false;
 				continue;
@@ -378,19 +385,28 @@ public class RightClickPasteAdaptor {
 			}
 
 		}
+		//if we are trying to paste sensors or solutions then it is a restricted layer object,
+		// we dont allow it to be added to layers object
 
+		if(restrictedLayer && (destination == null || destination instanceof BaseLayer)) {
+			paster = null;
+		}
 		// so, are we just dealing with layers?
-		if (allLayers) {
+		else  if (allLayers) {
 			// create the menu items
 			paster = new PasteLayer(theDataList, _clipboard, (Layer) destination, theLayers);
 		} else {
 			// just check that there isn't a null destination
 			if (destination != null) {
+				//we dont allow pasting a sensorwrapper or a contactwrapper onto a baselayer
+				if(theDataList[0] instanceof TacticalDataWrapper && destination instanceof BaseLayer) {
+					paster = null;
+				}
 				// just check that the layers are compliant (that we're not trying to paste a
 				// dynamic
 				// plottable
 				// into a non-compliant layer
-				if (!(destination instanceof DynamicLayer) || theDataList[0] instanceof DynamicPlottable) {
+				else if (!(destination instanceof DynamicLayer) || theDataList[0] instanceof DynamicPlottable) {
 					// create the menu items
 					paster = new PasteItem(theDataList, (Layer) destination, theLayers);
 
