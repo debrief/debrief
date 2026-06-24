@@ -24,7 +24,6 @@ import org.eclipse.swt.events.PaintEvent;
 import org.eclipse.swt.events.PaintListener;
 import org.eclipse.swt.graphics.Cursor;
 import org.eclipse.swt.graphics.GC;
-import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IViewPart;
@@ -440,11 +439,6 @@ public class DragFeature extends CoreDragAction {
 					private static final long serialVersionUID = 1L;
 
 					@Override
-					public void drawImage(final Image image, final int x, final int y, final int width,
-							final int height) {
-					}
-
-					@Override
 					public void drawText(final Font theFont, final String theStr, final int x, final int y) {
 					}
 
@@ -472,6 +466,7 @@ public class DragFeature extends CoreDragAction {
 				graphics.setBackground(fc);
 				graphics.setLineWidth(2);
 				ca.startDraw(graphics);
+				ca.initializeBuffer();
 
 				// see if it's a painter that also wants to know the error score
 
@@ -486,6 +481,8 @@ public class DragFeature extends CoreDragAction {
 						if (errorProvider != null) {
 							final CoreTMASegment coreSeg = (CoreTMASegment) segment;
 							coreSeg.paint(ca, errorProvider);
+							ca.flushBuffer();
+							coreSeg.writeMessage(ca);
 							painted = true;
 						}
 					}
