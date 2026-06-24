@@ -733,6 +733,8 @@ abstract public class BaseStackedDotsView extends ViewPart implements
           outline.setFocus();
         }
       });
+    } else {
+      CorePlugin.logError(ToolParent.WARNING, "Outline view not found", null);
     }
   }
 
@@ -1808,6 +1810,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 
     _myChart.addProgressListener(new ChartProgressListener()
     {
+      @SuppressWarnings("deprecation")
       @Override
       public void chartProgress(final ChartProgressEvent cpe)
       {
@@ -1886,7 +1889,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 
           final TimeSeriesCollection tsc = (TimeSeriesCollection) _linePlot
               .getDataset();
-
+          
           // do we have data on the line plot?
           if (tsc != null)
           {
@@ -1897,6 +1900,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
             if (t != null)
             {
               // get the data point nearest our target time
+              CorePlugin.logError(IStatus.WARNING, "Looking for data item at time:" + newDate.toGMTString(), null);
               nearest = t.getDataItem(new FixedMillisecond(newDate.getTime()));
             }
             else
@@ -1950,6 +1954,10 @@ abstract public class BaseStackedDotsView extends ViewPart implements
                     final List<EditableWrapper> items = new ArrayList<>();
                     items.add(subject);
                     showThisSelectionInOutline(items, editor);
+                  } else {
+                    CorePlugin.logError(ToolParent.WARNING,
+                        "Failed to generate subject, potentially because it's an interpolated TMA position",
+                        null);
                   }
                 }
               }
@@ -1976,7 +1984,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 
         ChartEntity ent = arg0.getEntity();
 
-        // ok, clear the hightlight
+        // ok, clear the highlight
         _linePlot.setDomainCrosshairVisible(false);
         _linePlot.setRangeCrosshairVisible(false);
 
@@ -1998,6 +2006,8 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 
           if (findNearest)
           {
+            CorePlugin.logError(IStatus.INFO, "Search cut 1, ent:" + ent + ",  Series name:" + seriesName, null);
+            
             // the mouse click wasn't directly on an entity, so locate the nearest one
             final Point screenClick = arg0.getTrigger().getPoint();
             final Point2D point2d = _holder.translateScreenToJava2D(
@@ -2005,7 +2015,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 
             // set minimum distance to select item, else random clicks still
             // select an item
-            double minDistance = 15; // Integer.MAX_VALUE;
+            double minDistance = 55; // Integer.MAX_VALUE;
 
             // get all the entities on the plot
             Collection<?> entities = _holder.getChartRenderingInfo()
@@ -2029,6 +2039,8 @@ abstract public class BaseStackedDotsView extends ViewPart implements
                 }
               }
             }
+            
+            CorePlugin.logError(IStatus.INFO, "Search cut 2, ent:" + ent + ",  min dist:" + (int)minDistance, null);
 
             // re-calculate the series name
             seriesName = getSeriesToSelect(arg0.getChart(), arg0.getTrigger(),
@@ -2233,6 +2245,8 @@ abstract public class BaseStackedDotsView extends ViewPart implements
       {
         // clear the nearest on
         _seriesToSearch = null;
+        
+        CorePlugin.logError(IStatus.INFO, "Highlight data nearest. Series:" + seriesName, null);
 
         final TimeSeriesCollection tsc = (TimeSeriesCollection) _linePlot
             .getDataset();
@@ -2245,7 +2259,6 @@ abstract public class BaseStackedDotsView extends ViewPart implements
         else
         {
           TimeSeries t = tsc.getSeries(seriesName);
-
           if (t == null)
           {
             // ok, we may need to transform the error plot name into
