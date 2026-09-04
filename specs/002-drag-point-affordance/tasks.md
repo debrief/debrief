@@ -23,8 +23,8 @@ description: "Task list for implementing draggable planning-track point affordan
 **Purpose**: Prepare feature-local implementation and validation scaffolding.
 
 - [ ] T001 Capture implementation checkpoints and acceptance traceability notes in `specs/002-drag-point-affordance/plan.md`
-- [ ] T002 Confirm validation scenarios and expected outcomes are current in `specs/002-drag-point-affordance/quickstart.md`
-- [ ] T003 [P] Create RCPTT placeholder scenario file `org.mwc.debrief.ui_test/test-cases/toolbar/drag_component_affordance_visibility.test` aligned to `specs/002-drag-point-affordance/quickstart.md`
+- [ ] T002 Confirm validation scenarios, endpoint rules, and usability measurements in `specs/002-drag-point-affordance/quickstart.md`
+- [ ] T003 [P] Add an RCPTT chart-level scenario for Drag Component mode transitions in `org.mwc.debrief.ui_test/test-cases/toolbar/drag_component_affordance_visibility.test`
 
 ---
 
@@ -34,29 +34,29 @@ description: "Task list for implementing draggable planning-track point affordan
 
 **CRITICAL**: Complete this phase before starting any user story tasks.
 
-- [ ] T004 Add runtime affordance state fields and lifecycle reset hooks in `org.mwc.debrief.core/src/org/mwc/debrief/core/actions/DragComponent.java`
-- [ ] T005 [P] Add planning-endpoint collection helper(s) for affordance rendering in `org.mwc.debrief.legacy/src/Debrief/Wrappers/CompositeTrackWrapper.java`
-- [ ] T006 [P] Add Drag Component helper methods that derive eligible affordance candidates from layers and mode state in `org.mwc.debrief.core/src/org/mwc/debrief/core/actions/DragComponent.java`
-- [ ] T007 Wire repaint invalidation for affordance updates on mode entry/exit and pointer movement in `org.mwc.debrief.core/src/org/mwc/debrief/core/actions/DragComponent.java`
+- [ ] T004 Define per-chart affordance state and disposal ownership in `org.mwc.debrief.core/src/org/mwc/debrief/core/actions/DragComponent.java` and `org.mwc.cmap.plotViewer/src/org/mwc/cmap/plotViewer/actions/CoreDragAction.java`
+- [ ] T005 [P] Add a non-cursor-dependent planning-endpoint enumeration helper in `org.mwc.debrief.legacy/src/Debrief/Wrappers/CompositeTrackWrapper.java` for visible segments with valid last fixes
+- [ ] T006 [P] Refactor or share endpoint eligibility between enumeration and nearest-hit logic in `org.mwc.debrief.legacy/src/Debrief/Wrappers/CompositeTrackWrapper.java`
+- [ ] T007 Wire per-chart repaint invalidation and cleanup for mode, visibility, geometry, zoom, pan, and canvas disposal in `org.mwc.debrief.core/src/org/mwc/debrief/core/actions/DragComponent.java`, `org.mwc.cmap.plotViewer/src/org/mwc/cmap/plotViewer/editors/chart/SWTChart.java`, and `org.mwc.cmap.plotViewer/src/org/mwc/cmap/plotViewer/actions/CoreDragAction.java`
 
 **Checkpoint**: Foundation complete; user stories can now be implemented.
 
 ---
 
-## Phase 3: User Story 1 - Recognize Draggable Points Quickly (Priority: P1) MVP
+## Phase 3: User Story 1 - Recognize Draggable Leg Ends Quickly (Priority: P1) MVP
 
-**Goal**: Users can immediately identify draggable planning-track points when Drag Component mode is active.
+**Goal**: Users can immediately identify eligible planning-segment ends when Drag Component mode is active.
 
-**Independent Test**: Load a planning track, activate Drag Component, and verify draggable endpoints are visibly marked before any drag starts.
+**Independent Test**: Load a planning track, activate Drag Component, and verify every eligible visible segment end has a high-contrast endpoint handle before any drag starts.
 
 ### Implementation for User Story 1
 
-- [ ] T008 [US1] Render default draggable-point affordance markers for eligible planning endpoints in `org.mwc.debrief.core/src/org/mwc/debrief/core/actions/DragComponent.java`
-- [ ] T009 [US1] Add hover-state marker emphasis synchronized with `_hoverComponent` updates in `org.mwc.debrief.core/src/org/mwc/debrief/core/actions/DragComponent.java`
-- [ ] T010 [US1] Preserve visible affordance feedback during active drag preview/commit flow in `org.mwc.debrief.core/src/org/mwc/debrief/core/actions/DragComponent.java`
-- [ ] T011 [US1] Guard marker rendering for off-screen/invalid coordinate conversions in `org.mwc.debrief.core/src/org/mwc/debrief/core/actions/DragComponent.java`
+- [ ] T008 [US1] Render an outlined endpoint handle with contrasting center and minimum 8-pixel screen size for each eligible endpoint in `org.mwc.debrief.core/src/org/mwc/debrief/core/actions/DragComponent.java`
+- [ ] T009 [US1] Add stronger hovered and actively dragged handle states synchronized with existing `_hoverComponent` and drag state in `org.mwc.debrief.core/src/org/mwc/debrief/core/actions/DragComponent.java`
+- [ ] T010 [US1] Preserve endpoint handle visibility and existing drag semantics during preview, commit, undo, and redo in `org.mwc.debrief.core/src/org/mwc/debrief/core/actions/DragComponent.java`
+- [ ] T011 [US1] Guard marker rendering for off-screen/invalid coordinate conversions and avoid color-only communication in `org.mwc.debrief.core/src/org/mwc/debrief/core/actions/DragComponent.java`
 - [ ] T012 [P] [US1] Update user-facing Drag Component guidance to describe draggable-point affordances in `org.mwc.debrief.help/docbook/ng_help.xml`
-- [ ] T013 [US1] Execute US1 scenario validation and record pass/fail notes in `specs/002-drag-point-affordance/quickstart.md`
+- [ ] T013 [US1] Execute US1 sample-data validation, count eligible versus rendered endpoints, and record evidence in `specs/002-drag-point-affordance/quickstart.md`
 
 **Checkpoint**: User Story 1 is complete and independently verifiable.
 
@@ -64,17 +64,17 @@ description: "Task list for implementing draggable planning-track point affordan
 
 ## Phase 4: User Story 2 - Avoid Confusion With Non-Draggable Elements (Priority: P2)
 
-**Goal**: Users can distinguish draggable planning points from non-draggable points and unrelated chart elements.
+**Goal**: Users can distinguish eligible planning-segment ends from ordinary track points and unrelated chart elements.
 
-**Independent Test**: With mixed visible content, verify only truly draggable planning points show affordances and non-draggable targets never appear draggable.
+**Independent Test**: With planning and ordinary tracks visible together, verify only eligible planning-segment ends show handles and hidden/invalid endpoints do not.
 
 ### Implementation for User Story 2
 
-- [ ] T014 [US2] Restrict affordance candidate enumeration to planning-track draggable endpoints only in `org.mwc.debrief.core/src/org/mwc/debrief/core/actions/DragComponent.java`
-- [ ] T015 [US2] Exclude hidden or non-editable planning segments from affordance output in `org.mwc.debrief.legacy/src/Debrief/Wrappers/CompositeTrackWrapper.java` and `org.mwc.debrief.core/src/org/mwc/debrief/core/actions/DragComponent.java`
-- [ ] T016 [US2] Ensure non-planning `TrackWrapper` content and other plottables do not receive affordance markers in `org.mwc.debrief.core/src/org/mwc/debrief/core/actions/DragComponent.java`
-- [ ] T017 [US2] Align hit-cursor transitions with affordance eligibility so false targets never show point-hit cursor in `org.mwc.debrief.core/src/org/mwc/debrief/core/actions/DragComponent.java`
-- [ ] T018 [US2] Execute US2 scenario validation and record false-positive checks in `specs/002-drag-point-affordance/quickstart.md`
+- [ ] T014 [US2] Restrict marker candidate enumeration to `CompositeTrackWrapper` planning endpoints in `org.mwc.debrief.core/src/org/mwc/debrief/core/actions/DragComponent.java`
+- [ ] T015 [US2] Exclude hidden segments, empty segments, and invalid screen locations without adding a new endpoint-visibility rule in `org.mwc.debrief.legacy/src/Debrief/Wrappers/CompositeTrackWrapper.java` and `org.mwc.debrief.core/src/org/mwc/debrief/core/actions/DragComponent.java`
+- [ ] T016 [US2] Ensure ordinary `TrackWrapper` content and other plottables do not receive endpoint handles in `org.mwc.debrief.core/src/org/mwc/debrief/core/actions/DragComponent.java`
+- [ ] T017 [US2] Preserve existing nearest-hit and cursor behavior for overlapping candidates without introducing a new hit target in `org.mwc.debrief.core/src/org/mwc/debrief/core/actions/DragComponent.java`
+- [ ] T018 [US2] Execute US2 visibility, closing-segment, overlap, and false-positive validation and record evidence in `specs/002-drag-point-affordance/quickstart.md`
 
 **Checkpoint**: User Story 2 is complete and independently verifiable.
 
@@ -88,11 +88,11 @@ description: "Task list for implementing draggable planning-track point affordan
 
 ### Implementation for User Story 3
 
-- [ ] T019 [US3] Recompute affordance screen geometry on each repaint so markers stay aligned through zoom/pan in `org.mwc.debrief.core/src/org/mwc/debrief/core/actions/DragComponent.java`
-- [ ] T020 [US3] Clear affordance state on mode switch by extending drag-mode lifecycle cleanup in `org.mwc.debrief.core/src/org/mwc/debrief/core/actions/DragComponent.java`
-- [ ] T021 [US3] Harden drag affordance redraw paths for rapid tool switching and null/disposing editor states in `org.mwc.debrief.core/src/org/mwc/debrief/core/actions/DragComponent.java`
-- [ ] T022 [US3] Verify cross-editor consistency of Drag Component affordance behavior with shared mode switching flow in `org.mwc.cmap.plotViewer/src/org/mwc/cmap/plotViewer/actions/CoreDragAction.java` and `org.mwc.debrief.core/src/org/mwc/debrief/core/actions/DragComponent.java`
-- [ ] T023 [US3] Execute US3 scenario validation and record zoom/pan and mode-transition outcomes in `specs/002-drag-point-affordance/quickstart.md`
+- [ ] T019 [US3] Recompute handle screen geometry from current projection on repaint so markers stay aligned through zoom/pan in `org.mwc.debrief.core/src/org/mwc/debrief/core/actions/DragComponent.java`
+- [ ] T020 [US3] Clear per-chart handle state and listeners on mode switch by extending drag-mode lifecycle cleanup in `org.mwc.debrief.core/src/org/mwc/debrief/core/actions/DragComponent.java` and `org.mwc.cmap.plotViewer/src/org/mwc/cmap/plotViewer/actions/CoreDragAction.java`
+- [ ] T021 [US3] Harden redraw and disposal paths for rapid tool switching, null editors, and disposed canvases in `org.mwc.debrief.core/src/org/mwc/debrief/core/actions/DragComponent.java` and `org.mwc.cmap.plotViewer/src/org/mwc/cmap/plotViewer/editors/chart/SWTChart.java`
+- [ ] T022 [US3] Verify that shared mode switching creates or maintains independent chart-local handle state across open editors in `org.mwc.cmap.plotViewer/src/org/mwc/cmap/plotViewer/actions/CoreDragAction.java`
+- [ ] T023 [US3] Execute US3 zoom, pan, rapid-switch, disposal, and multiple-editor validation and record evidence in `specs/002-drag-point-affordance/quickstart.md`
 
 **Checkpoint**: User Story 3 is complete and independently verifiable.
 
@@ -102,9 +102,9 @@ description: "Task list for implementing draggable planning-track point affordan
 
 **Purpose**: Final hardening, regression coverage, and release-readiness evidence.
 
-- [ ] T024 [P] Add RCPTT assertions for affordance visibility lifecycle in `org.mwc.debrief.ui_test/test-cases/toolbar/drag_component_affordance_visibility.test`
-- [ ] T025 [P] Add or extend planning-track drag regression coverage in `org.mwc.debrief.legacy/src/Debrief/Wrappers/Track/TrackWrapper_Test.java`
-- [ ] T026 Run full quickstart validation pass and update final evidence links in `specs/002-drag-point-affordance/quickstart.md` and `specs/002-drag-point-affordance/contracts/drag-component-affordance.md`
+- [ ] T024 [P] Add RCPTT assertions for Drag Component mode transitions and chart lifecycle in `org.mwc.debrief.ui_test/test-cases/toolbar/drag_component_affordance_visibility.test`
+- [ ] T025 [P] Add or extend planning-endpoint eligibility regression coverage in `org.mwc.debrief.legacy/src/Debrief/Wrappers/Track/TrackWrapper_Test.java`
+- [ ] T026 Run the full quickstart validation protocol, including usability measurements, and update evidence links in `specs/002-drag-point-affordance/quickstart.md` and `specs/002-drag-point-affordance/contracts/drag-component-affordance.md`
 
 ---
 
@@ -149,14 +149,14 @@ Recommended delivery order: US1 -> US2 -> US3
 ## Parallel Example: User Story 1
 
 ```bash
-Task: "T008 [US1] Render default draggable-point affordance markers in org.mwc.debrief.core/src/org/mwc/debrief/core/actions/DragComponent.java"
+Task: "T008 [US1] Render concrete endpoint handles in org.mwc.debrief.core/src/org/mwc/debrief/core/actions/DragComponent.java"
 Task: "T012 [US1] Update Drag Component guidance in org.mwc.debrief.help/docbook/ng_help.xml"
 ```
 
 ## Parallel Example: User Story 2
 
 ```bash
-Task: "T015 [US2] Exclude hidden or non-editable planning segments in org.mwc.debrief.legacy/src/Debrief/Wrappers/CompositeTrackWrapper.java"
+Task: "T015 [US2] Exclude hidden or invalid planning endpoints in org.mwc.debrief.legacy/src/Debrief/Wrappers/CompositeTrackWrapper.java"
 Task: "T016 [US2] Exclude non-planning plottables in org.mwc.debrief.core/src/org/mwc/debrief/core/actions/DragComponent.java"
 ```
 

@@ -14,13 +14,13 @@
 ## Requirement Completeness
 
 - [x] No [NEEDS CLARIFICATION] markers remain
-- [x] Requirements are testable and unambiguous
+- [x] Requirements are testable and unambiguous, including endpoint eligibility and marker appearance
 - [x] Success criteria are measurable
 - [x] Success criteria are technology-agnostic (no implementation details)
 - [x] All acceptance scenarios are defined
-- [x] Edge cases are identified
+- [x] Edge cases are identified, including hidden endpoints, closing segments, overlap, disposal, and multiple charts
 - [x] Scope is clearly bounded
-- [x] Dependencies and assumptions identified
+- [x] Dependencies and assumptions identified, including the absence of a separate lock state
 
 ## Feature Readiness
 
@@ -31,5 +31,8 @@
 
 ## Notes
 
-- Validation completed in 1 iteration; no outstanding quality issues.
+- Validation completed after resolving endpoint eligibility, marker visual treatment, per-chart lifecycle, and usability measurement gaps.
+- Marker definition: high-contrast outlined handle with contrasting center, minimum 8 screen pixels, with stronger hovered/dragging states.
+- Editability definition: existing Drag Component eligibility based on visible planning track, visible segment, and valid visible endpoint; no new lock state.
+- Measurement protocol is documented in `quickstart.md` for the quantitative success criteria.
 - Items marked incomplete require spec updates before `/speckit.clarify` or `/speckit.plan`
