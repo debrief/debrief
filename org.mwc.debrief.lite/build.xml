@@ -102,7 +102,10 @@
 		<delete dir="${temp.folder}/debrief_lite.jar.bin"/>
 	</target>
 	
-	<target name="unitTests" depends="init">
+	<!-- skipped when the build is run with -DskipTests, which maven-antrun
+	     passes through as an Ant property. The Ant junit task below is not
+	     covered by surefire's own skipTests handling. -->
+	<target name="unitTests" depends="init" unless="skipTests">
 		<mkdir dir="${temp.folder}/reports"/>
 		<property name="report.dir" value="${temp.folder}/reports"/>
 				<path id="debrief_lite.test.classpath">
