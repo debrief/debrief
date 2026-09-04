@@ -325,7 +325,21 @@
 		    -->
 	</target>
 	
-	<target name="ease_javadoc">
+	<target name="check_os">
+		<condition property="isUnixLike">
+			<or>
+				<os family="unix" />
+				<os family="mac" />
+			</or>
+		</condition>
+	</target>
+
+	<!-- The doclet call below relies on a hard-coded Linux classpath (/usr/share/ant/lib,
+	     /usr/lib/jvm), so it only works on unix-like hosts. Elsewhere it would delete
+	     org.mwc.debrief.scripting/help and then fail to regenerate it, leaving the
+	     scripting plugin unpackageable (its build.properties lists help/ in bin.includes).
+	     On those hosts we keep the committed help content instead. -->
+	<target name="ease_javadoc" depends="check_os" if="isUnixLike">
 		<delete dir="../org.mwc.debrief.scripting/help" />
         <exec executable="javadoc">
             <arg value="-classpath"/>
