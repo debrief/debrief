@@ -42,6 +42,7 @@ import Debrief.GUI.Frames.Application;
 import MWC.Algorithms.PlainProjection;
 import MWC.GUI.ExternallyManagedDataLayer;
 import MWC.GUI.GeoToolsHandler;
+import MWC.GUI.ToolParent;
 import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldLocation;
 import junit.framework.TestCase;
@@ -268,8 +269,17 @@ public class GtProjection extends PlainProjection implements GeoToolsHandler {
 	 * @return
 	 */
 	public boolean layersOverlapWith(final WorldArea area) {
-		final WorldLocation tl = area.getTopLeft();
-		final WorldLocation br = area.getBottomRight();
+		// take our own copy of the area, since we're about to trim the
+		// coordinates - and the caller may be handing us a cached object
+		final WorldArea trimmed = new WorldArea(area);
+
+		// trim the coordinates. Without this, an area that reaches the poles
+		// makes the transform below throw a ProjectionException - which we'd
+		// swallow, and end up not painting the layers at all
+		gtTrim(trimmed);
+
+		final WorldLocation tl = trimmed.getTopLeft();
+		final WorldLocation br = trimmed.getBottomRight();
 
 		final DirectPosition2D tlDegs = new DirectPosition2D(tl.getLong(), tl.getLat());
 		final DirectPosition2D brDegs = new DirectPosition2D(br.getLong(), br.getLat());
@@ -303,7 +313,14 @@ public class GtProjection extends PlainProjection implements GeoToolsHandler {
 						if (newBounds.intersects(other))
 							return true;
 					} else {
-						Application.logError2(1, "GtProjection overlap. Layer has no bounds:" + layer.getTitle(), null);
+						// we can't tell where this layer is. Assume it's in view - if we
+						// carried on we'd decide nothing overlaps, and silently skip
+						// painting the GeoTools layers altogether
+						Application.logError2(ToolParent.INFO,
+								"GtProjection overlap. Layer has no bounds, so assuming it's visible:"
+										+ layer.getTitle(),
+								null);
+						return true;
 					}
 				}
 			}
