@@ -609,7 +609,11 @@ public class ImportReplay extends PlainImporterBase {
 			ImportReplay.initialise(new ImportReplay.testImport.TestParent(ImportReplay.IMPORT_AS_OTG, 0L));
 			trackImporter.importThis(shape_file, bs, tLayers);
 
-			assertEquals("read in track", 15, tLayers.size());
+			assertEquals("read in track", 16, tLayers.size());
+
+			final TrackWrapper airTrack = (TrackWrapper) tLayers.findLayer("FRIENDLY_AIR");
+			assertEquals("indexed svg symbol used", SymbolFactory.SVG_FORMAT_PREFIX + ":friend_air",
+					airTrack.getSymbolType());
 
 			final TrackWrapper track = (TrackWrapper) tLayers.findLayer("NEL STYLE");
 			assertNotNull("found track", track);
@@ -744,6 +748,27 @@ public class ImportReplay extends PlainImporterBase {
 		 * assertEquals("Amount of segment in new segment test", 3, legList.size()); } }
 		 * }
 		 */
+
+		public void testTrackSvgSymbol() throws IOException, ParseException {
+			final String text = "951212 112700.000 FRIEND_AIR_INDEXED   yC   22  7  0.63 N 21 45 14.91 W 334.9   2.0      0 \n"
+					+ "951212 112700.000 FRIEND_AIR_NAMED   @C[SYMBOL=friend_air]   22  7  0.63 N 21 45 14.91 W 334.9   2.0      0 ";
+
+			final ImportReplay importReplay = new ImportReplay();
+			final Layers dummyLayers = new Layers();
+			importReplay.setLayers(dummyLayers);
+			for (final String line : text.split("\n")) {
+				importReplay.readLine(line);
+			}
+
+			final String friendAir = SymbolFactory.SVG_FORMAT_PREFIX + ":friend_air";
+			final TrackWrapper indexed = (TrackWrapper) dummyLayers.findLayer("FRIEND_AIR_INDEXED");
+			assertEquals("indexed symbol applied to track", friendAir, indexed.getSymbolType());
+			final TrackWrapper named = (TrackWrapper) dummyLayers.findLayer("FRIEND_AIR_NAMED");
+			assertEquals("named symbol applied to track", friendAir, named.getSymbolType());
+
+			// and check it's written back out using the index
+			assertEquals("exported with index", "yC", replaySymbolFor(DebriefColors.RED, friendAir));
+		}
 
 		public void testTrailingComment() {
 			final String test1 = " LABEL // COMMENT";

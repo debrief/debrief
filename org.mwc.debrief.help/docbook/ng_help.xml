@@ -6927,8 +6927,12 @@ YYYYMMDD HHMMSS.SSS "XYX XYX XYX" SY DD MM SS.SS H DDD MM SS.SS H CCC.C SS.S DDD
                     <entry>
                       <para>LOFAR Buoy</para>
                     </entry>
-                    <entry/>
-                    <entry/>
+                    <entry>
+                      <para>y</para>
+                    </entry>
+                    <entry>
+                      <para>Friend_air</para>
+                    </entry>
                   </row>
                   <row>
                     <entry>
