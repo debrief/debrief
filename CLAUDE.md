@@ -191,5 +191,6 @@ Eclipse target platform defined in `org.mwc.debrief.targetplatforms/eclipse-late
 | [DOMAIN_GLOSSARY.md](DOMAIN_GLOSSARY.md) | Maritime analysis terminology (TMA, fixes, bearings, tracks, sensors) |
 | [ARCHITECTURE.md](ARCHITECTURE.md) | Module dependencies, data flow, plugin relationships |
 | [KEY_CLASSES.md](KEY_CLASSES.md) | The 25 critical classes with roles and relationships |
+| [RELEASING.md](RELEASING.md) | How to cut a release: version bumping, the release tag, recovery |
 
 Each core plugin and key package also has a README.md with detailed documentation.
