@@ -120,5 +120,5 @@ previous script got the case wrong — for example it incremented `0.14.1` to
 | When | What to do |
 |---|---|
 | Before the tag | Close the PR, `git checkout -- .`. Nothing is published. |
-| Tag pushed, build still running | `git push origin :refs/tags/$TAG` and delete the release. Racy but usually works. |
+| Tag pushed, build still running | `git push origin :refs/tags/$TAG`. GitHub turns the release into a draft, which drops it out of `releases/latest` straight away, so the next release picks the right baseline even before you delete the draft itself. |
 | Release published | Leave it. People may already have downloaded it — cut a new patch release instead. |

@@ -158,6 +158,8 @@ Report the release URL.
 
 - **Before the tag**: close the PR, `git checkout -- .`, nothing is published.
 - **After the tag, before the build finishes**: delete the tag
-  (`git push origin :refs/tags/$TAG`) and the draft release. Fast, but racy.
+  (`git push origin :refs/tags/$TAG`). GitHub converts the release to a draft,
+  and `releases/latest` ignores drafts - so step 2's baseline is correct again
+  immediately. Delete the draft too, or it sits on a few GB of assets.
 - **After the release is published**: do not delete it. People may already have
   downloaded it. Cut a new patch release instead.
