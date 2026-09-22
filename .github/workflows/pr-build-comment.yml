@@ -1,0 +1,172 @@
+# Posts the "Debrief CI" build artifacts back to the pull request that produced
+# them, as a single comment that is updated in place on every push.
+#
+# This is deliberately a separate, workflow_run-triggered workflow. A
+# `pull_request` run from a fork gets a read-only GITHUB_TOKEN and cannot
+# comment. A `workflow_run` workflow always executes the copy of this file on
+# the base branch - never the pull request's copy - so it can hold write
+# permissions safely. It never checks out or executes pull request code.
+#
+# `pull_request_target` would be the wrong tool here: it grants a read-write
+# token and secret access while building attacker-supplied code, and any PR to
+# this repository can add an arbitrary maven-antrun-plugin execution to any of
+# the ~45 poms.
+
+name: PR build comment
+
+on:
+  workflow_run:
+    workflows: ["Debrief CI"]
+    types: [completed]
+
+permissions:
+  actions: read          # list and download artifacts from the triggering run
+  pull-requests: write   # post / update the comment
+  contents: read
+
+concurrency:
+  group: pr-build-comment-${{ github.event.workflow_run.id }}
+  cancel-in-progress: false
+
+jobs:
+  comment:
+    if: github.event.workflow_run.event == 'pull_request'
+    runs-on: ubuntu-24.04
+    steps:
+      # Tolerated failure: the build job is skipped on documentation-only pull
+      # requests, and a run cancelled by the concurrency group never gets far
+      # enough to upload metadata. In both cases there is nothing to say, so
+      # exit quietly rather than leaving a red run in the Actions tab.
+      - name: Download PR metadata
+        id: meta
+        continue-on-error: true
+        uses: actions/download-artifact@v4
+        with:
+          name: pr-meta
+          path: pr-meta
+          run-id: ${{ github.event.workflow_run.id }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Post or update the review-builds comment
+        if: steps.meta.outcome == 'success'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const MARKER = '<!-- debrief-review-builds -->';
+            const { owner, repo } = context.repo;
+            const run = context.payload.workflow_run;
+
+            // meta.env is written by a job that ran untrusted pull request code,
+            // so validate before using any of it. Without the guard on `pr`, a
+            // crafted value would steer this write-token comment onto an
+            // arbitrary issue in the repository.
+            const meta = Object.fromEntries(
+              fs.readFileSync('pr-meta/meta.env', 'utf8')
+                .split('\n')
+                .filter(Boolean)
+                .map(line => {
+                  const i = line.indexOf('=');
+                  return [line.slice(0, i), line.slice(i + 1)];
+                })
+            );
+
+            const prNumber = Number(meta.pr);
+            if (!Number.isInteger(prNumber) || prNumber <= 0) {
+              core.setFailed(`Refusing to comment: unusable PR number ${JSON.stringify(meta.pr)}`);
+              return;
+            }
+            const sha = /^[0-9a-f]{40}$/.test(meta.sha) ? meta.sha.slice(0, 7) : 'unknown';
+            const built = meta.build === 'success';
+
+            const { data } = await github.rest.actions.listWorkflowRunArtifacts({
+              owner, repo, run_id: run.id, per_page: 100,
+            });
+
+            const row = (prefix, notes) => {
+              const a = data.artifacts.find(x => x.name.startsWith(prefix) && !x.expired);
+              if (!a) return null;
+              const mb = Math.round(a.size_in_bytes / 1048576);
+              return `| ${notes.platform} | [Download](${run.html_url}/artifacts/${a.id}) (${mb} MB) | ${notes.note} |`;
+            };
+
+            const rows = [
+              row('DebriefNG-Windows-x64', {
+                platform: 'Windows x64',
+                note: 'Java 11 bundled — unzip and run `DebriefNG.exe`',
+              }),
+              row('DebriefNG-macOS-x64', {
+                platform: 'macOS x64',
+                note: '**Requires Java 11 on the PATH**; Intel build, runs under Rosetta 2',
+              }),
+              row('DebriefNG-Linux-x64', {
+                platform: 'Linux x64',
+                note: '**Requires Java 11 on the PATH**',
+              }),
+            ].filter(Boolean);
+
+            let body;
+            if (rows.length === 0) {
+              body = [
+                MARKER,
+                '## Review builds',
+                '',
+                built
+                  ? `No installers were produced for \`${sha}\`. See [run #${run.run_number}](${run.html_url}).`
+                  : `:x: The build of \`${sha}\` failed, so no installers were produced. See [run #${run.run_number}](${run.html_url}) for the logs.`,
+              ].join('\n');
+            } else {
+              const warning = built
+                ? ''
+                : '\n> :warning: The build of this commit **failed**. The downloads below were produced before the failure and may not reflect the whole change — check [run #' + run.run_number + '](' + run.html_url + ').\n';
+              body = [
+                MARKER,
+                '## Review builds',
+                '',
+                `Built from \`${sha}\` — [run #${run.run_number}](${run.html_url})`,
+                warning,
+                '| Platform | Download | Notes |',
+                '|---|---|---|',
+                ...rows,
+                '',
+                '<details><summary>How to download and run</summary>',
+                '',
+                'Downloading requires a signed-in GitHub account — GitHub serves workflow',
+                'artifacts only to authenticated users. Each download is a zip containing the',
+                'platform zip, so you need to unzip twice.',
+                '',
+                '**macOS** — the app is not signed or notarised, so Gatekeeper will refuse to',
+                'open it. After unzipping:',
+                '',
+                '```bash',
+                'xattr -dr com.apple.quarantine DebriefNG.app',
+                'open DebriefNG.app',
+                '```',
+                '',
+                '**Windows** — the executable is not code-signed. SmartScreen will show',
+                '"Windows protected your PC": choose **More info**, then **Run anyway**.',
+                '',
+                '**Linux** — run `chmod +x DebriefNG` if the executable bit did not survive',
+                'the round trip.',
+                '',
+                'These are throwaway review builds and are deleted after 14 days. Please do',
+                'not redistribute them.',
+                '</details>',
+              ].join('\n');
+            }
+
+            body += `\n\n---\n_Posted by \`.github/workflows/pr-build-comment.yml\` · run #${run.run_number}_`;
+
+            // Sticky comment: update in place rather than posting one per push.
+            const comments = await github.paginate(github.rest.issues.listComments, {
+              owner, repo, issue_number: prNumber, per_page: 100,
+            });
+            const existing = comments.find(
+              c => c.user && c.user.login === 'github-actions[bot]' && c.body && c.body.includes(MARKER)
+            );
+
+            if (existing) {
+              await github.rest.issues.updateComment({ owner, repo, comment_id: existing.id, body });
+            } else {
+              await github.rest.issues.createComment({ owner, repo, issue_number: prNumber, body });
+            }
