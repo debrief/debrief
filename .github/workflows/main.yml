@@ -1,99 +1,293 @@
 # This is a workflow for debrief for continuous integration
+#
+# On a pull request it builds the Windows / macOS / Linux products and attaches
+# them to the run as artifacts, so reviewers can download and run the change.
+# The companion workflow .github/workflows/pr-build-comment.yml posts the
+# download links back to the pull request.
 
 name: Debrief CI
 
-# Controls when the action will run.
 on:
-  [push, pull_request]
+  push:
+    branches:
+      - develop
+      - master
+    tags:
+      - '*'
+  pull_request:
+  workflow_dispatch:
+
+# One build per PR: a new push cancels the superseded run. Never cancel a
+# push/tag build, which may be publishing a release.
+concurrency:
+  group: ci-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+permissions:
+  contents: read
+
 env:
   SPATIALITE_LIBRARY_PATH: mod_spatialite
-  build_ref: ${GITHUB_REF##*/}
-  GITHUB_BRANCH: ${{ github.ref }}
-# Build and release debrief.  First do the required updates and installations needed for building debrief
+
+defaults:
+  run:
+    shell: bash
+
 jobs:
+  # Decide whether this PR contains software changes. A docs-only PR does not
+  # need a 40-minute Tycho build. Note this is a job-level gate rather than a
+  # top-level `paths-ignore:` - a job skipped by `if:` reports as "skipped",
+  # which satisfies a required status check, whereas a workflow skipped by a
+  # path filter reports nothing at all and sits pending forever.
+  changes:
+    name: Detect software changes
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+      pull-requests: read
+    outputs:
+      # Empty (non-PR events) falls back to 'true' so push/tag builds always run.
+      software: ${{ steps.filter.outputs.software || 'true' }}
+    steps:
+      - name: Filter changed paths
+        id: filter
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            // True as soon as the diff contains one file that is not
+            // documentation. Note .github/** is deliberately NOT treated as
+            // documentation - a change to CI itself should build.
+            const DOCS = [
+              /\.md$/,
+              /^docs\//,
+              /^specs\//,
+              /^\.specify\//,
+              /^\.claude\//,
+              /^LICENSE\.txt$/,
+              /(^|\/)\.gitignore$/,
+            ];
+            const files = await github.paginate(github.rest.pulls.listFiles, {
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: context.payload.pull_request.number,
+              per_page: 100,
+            });
+            // Fail safe towards building: an empty or truncated file list
+            // (the API caps out at 3000 files) must not skip a real change.
+            const software =
+              files.length === 0 || files.some(f => !DOCS.some(re => re.test(f.filename)));
+            core.info(`${files.length} changed file(s); software=${software}`);
+            core.setOutput('software', String(software));
+
   buildandrelease:
     name: Build and release Debrief
-    runs-on: ubuntu-latest
+    needs: changes
+    if: needs.changes.outputs.software == 'true'
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: write   # the tag build publishes a GitHub release
     steps:
-      - name: Update ubuntu
+      # apt is retried because ubuntugis is a third-party PPA that returns 503s
+      # often enough to destroy a build outright - it took out run #951 in 38
+      # seconds while Ubuntu's own mirrors were serving fine. Acquire::Retries
+      # covers fetches within a single apt invocation; the loop additionally
+      # covers add-apt-repository, which runs its own apt-get update that the
+      # flag does not reach. Failure after the retries is loud: continuing
+      # without postgis/gdal would resurface later as a baffling test failure.
+      - name: Install build and test dependencies
         run: |
-                echo "running on branch ${GITHUB_REF##*/}"
-                echo "the branch ref is ${GITHUB_BRANCH##*/}"
-                echo "The github ref from env variable ${{ env.build_ref }}"
-                echo "running on branch ${GITHUB_BASE_REF##*/}"
-                echo "running on branch ${GITHUB_HEAD_REF##*/}"
-                sudo apt-get update -y
-                sudo apt-get install -y libsqlite3-mod-spatialite
-                sudo apt-get install libspatialite-dev
-                sudo apt-get install libpq-dev
-                sudo add-apt-repository -y ppa:ubuntugis/ubuntugis-unstable
-                sudo apt-get install -y postgis
-                sudo apt-get install postgresql
-      - name: The actual installation
-        run: |
-                    mvn --version
-                    sudo apt-get install intltool
-                    sudo apt-get install -y libgsf-1-dev
-                    sudo apt-get install uuid-runtime
-                    sudo apt-get install uuid
-                    sudo apt-get install uuid-dev
-                    sudo apt-get install libglib2.0-dev
-                    sudo apt-get install libxml2-dev
-                    sudo apt-get install unzip
-                    sudo apt-get install spatialite-bin
-                    sudo apt-get install gcab
-                    sudo apt-get install libgcab-1.0-0
-                    sudo apt-get install libgcab-dev
-                    # sudo apt-get install libgconf-2-4
-                    sudo apt-get install xvfb
-                    #  sudo find / -name uuid.pc
-                    #  echo printing uuid cflags
-                    #  pkg-config --cflags uuid
-                    #  echo printing uuid libs
-                    #  pkg-config --libs uuid
+          retry() {
+            local n
+            for n in 1 2 3; do
+              "$@" && return 0
+              echo "::warning::[attempt ${n}/3] failed: $*"
+              sleep 15
+            done
+            echo "::error::failed after 3 attempts: $*"
+            return 1
+          }
+          APT="sudo apt-get -y -o Acquire::Retries=3"
+
+          retry $APT update
+          retry $APT install libsqlite3-mod-spatialite libspatialite-dev libpq-dev
+          retry sudo add-apt-repository -y ppa:ubuntugis/ubuntugis-unstable
+          retry $APT update
+          retry $APT install postgis postgresql
+          retry $APT install unzip spatialite-bin xvfb
+          mvn --version
       # Checks-out repository
       - name: Checkout
-        uses: actions/checkout@v2
-      - name: Checkout from repository
-        uses: actions/setup-java@v1
+        uses: actions/checkout@v4
+      - name: Set up Java
+        uses: actions/setup-java@v4
         with:
-           java-version: 1.11
-      - name: install java
+          distribution: temurin
+          java-version: '11'
+
+      # Tycho otherwise re-resolves the whole Eclipse target platform from
+      # remote P2 sites on every run. Restore only: Actions caches are
+      # branch-scoped under a 10GB repo-wide LRU limit, so a multi-GB cache
+      # written by every PR branch would evict itself. The single writer is the
+      # `develop` push below, and every PR restores from that.
+      # The key covers the target definition as well as the poms, because
+      # changing eclipse-latest.target is what actually invalidates P2 resolution.
+      - name: Restore Maven / Tycho cache
+        uses: actions/cache/restore@v4
+        with:
+          path: |
+            ~/.m2/repository
+            ~/.p2
+          key: m2-tycho-${{ hashFiles('org.mwc.debrief.targetplatforms/eclipse-latest.target', '**/pom.xml') }}
+          restore-keys: |
+            m2-tycho-
+
+      - name: Cache Windows JRE
+        id: win-jre
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/debrief-win-jre
+          key: win-jre-11.0.5-10
+
+      - name: Download Windows JRE
+        if: steps.win-jre.outputs.cache-hit != 'true'
         run: |
-               sleep 3
-               echo "root.win32.win32.x86_64 = win-64" >> org.mwc.debrief.combined.feature/build.properties
-               # get a 64-bit windows JRE
-               wget -P dest https://github.com/AdoptOpenJDK/openjdk11-binaries/releases/download/jdk-11.0.5%2B10/OpenJDK11U-jre_x64_windows_hotspot_11.0.5_10.zip
-               # unpack it
-               cd dest
-               unzip OpenJD*.zip
-               # rename and move it
-               mv *-jre jre
-               mkdir ../org.mwc.debrief.combined.feature/win-64
-               # move it to the target folder
-               mv jre ../org.mwc.debrief.combined.feature/win-64/jre
-               # move back to top level
-               cd ../
+          mkdir -p ~/.cache/debrief-win-jre
+          wget -q -O ~/.cache/debrief-win-jre/win-jre.zip \
+            https://github.com/AdoptOpenJDK/openjdk11-binaries/releases/download/jdk-11.0.5%2B10/OpenJDK11U-jre_x64_windows_hotspot_11.0.5_10.zip
+
+      # Bundle the Windows JRE into the product, so the Windows build runs
+      # without a separate Java install. (macOS and Linux products still
+      # require Java 11 on the PATH - see the PR comment workflow.)
+      - name: Stage Windows JRE into the product feature
+        run: |
+          echo "root.win32.win32.x86_64 = win-64" >> org.mwc.debrief.combined.feature/build.properties
+          rm -rf dest && mkdir -p dest
+          unzip -q ~/.cache/debrief-win-jre/win-jre.zip -d dest
+          mv dest/*-jre dest/jre
+          mkdir -p org.mwc.debrief.combined.feature/win-64
+          mv dest/jre org.mwc.debrief.combined.feature/win-64/jre
+
+      # `verify` (not `package`) is required: the antrun execution in
+      # org.mwc.debrief.product/pom.xml that renames the Tycho output zips to
+      # DebriefNG-{Linux,Windows,MacOSX}64Bit.zip is bound to the verify phase.
       - name: run build with test
+        id: build
         uses: GabrielBB/xvfb-action@v1
         with:
               working-directory: ./
               run: mvn clean verify -U -B -fae
+
+      - name: Save Maven / Tycho cache
+        # Single writer, so PRs have one warm cache to restore from.
+        if: always() && github.ref == 'refs/heads/develop'
+        uses: actions/cache/save@v4
+        with:
+          path: |
+            ~/.m2/repository
+            ~/.p2
+          key: m2-tycho-${{ hashFiles('org.mwc.debrief.targetplatforms/eclipse-latest.target', '**/pom.xml') }}
+
+      # msitools is compiled from source (several minutes) and the MSI is only
+      # published on tag releases, so skip it elsewhere.
+      # These packages exist solely to compile msitools from source, so they
+      # follow the MSI step onto the tag-only path rather than being installed
+      # on every PR build.
       - name: build installer
+        if: startsWith(github.ref, 'refs/tags/')
         run: |
-          ls /home/runner/work/debrief/debrief/org.mwc.debrief.product/target/products/
-          sudo apt-cache search libuuid
+          retry() {
+            local n
+            for n in 1 2 3; do
+              "$@" && return 0
+              echo "::warning::[attempt ${n}/3] failed: $*"
+              sleep 15
+            done
+            echo "::error::failed after 3 attempts: $*"
+            return 1
+          }
+          retry sudo apt-get -y -o Acquire::Retries=3 install \
+            intltool libgsf-1-dev uuid-runtime uuid uuid-dev \
+            libglib2.0-dev libxml2-dev gcab libgcab-1.0-0 libgcab-dev
+
+          ls org.mwc.debrief.product/target/products/
           ./install-msitools.sh
           ./contribs/msi/make_x64msi.sh
       - name: Check whether installer succeeded
+        if: startsWith(github.ref, 'refs/tags/')
         uses: andstor/file-existence-action@v1
         with:
-          files: "/home/runner/work/debrief/debrief/org.mwc.debrief.product/target/products/DebriefNG-Windows64Bit.msi"
+          files: "org.mwc.debrief.product/target/products/DebriefNG-Windows64Bit.msi"
           allow_failure: true
-      - name: Set current date as env
-        run: echo "MY_DATE=$(date +%Y%m%d)" >> $GITHUB_ENV
+
+      - name: Derive artifact suffix
+        id: meta
+        if: always() && !startsWith(github.ref, 'refs/tags/')
+        env:
+          HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: echo "sha=${HEAD_SHA:0:7}" >> "$GITHUB_OUTPUT"
+
+      # One artifact per platform, so a reviewer downloads ~250MB rather than
+      # ~750MB. Uploaded even when the build step failed, because a failing test
+      # should not deny a reviewer the binaries that were nonetheless produced.
+      #
+      # The product zips are uploaded as-is rather than unpacked first:
+      # upload-artifact does not preserve the POSIX executable bit and flattens
+      # symlinks, so an unpacked macOS .app or Linux tree would download broken.
+      # compression-level 0 because these are already-compressed zips.
+      - name: Upload Windows build
+        uses: actions/upload-artifact@v4
+        if: always() && !startsWith(github.ref, 'refs/tags/')
+        with:
+          name: DebriefNG-Windows-x64-${{ steps.meta.outputs.sha }}
+          path: org.mwc.debrief.product/target/products/DebriefNG-Windows64Bit.zip
+          retention-days: 7
+          compression-level: 0
+          if-no-files-found: warn
+      - name: Upload macOS build
+        uses: actions/upload-artifact@v4
+        if: always() && !startsWith(github.ref, 'refs/tags/')
+        with:
+          name: DebriefNG-macOS-x64-${{ steps.meta.outputs.sha }}
+          path: org.mwc.debrief.product/target/products/DebriefNG-MacOSX64Bit.zip
+          retention-days: 7
+          compression-level: 0
+          if-no-files-found: warn
+      - name: Upload Linux build
+        uses: actions/upload-artifact@v4
+        if: always() && !startsWith(github.ref, 'refs/tags/')
+        with:
+          name: DebriefNG-Linux-x64-${{ steps.meta.outputs.sha }}
+          path: org.mwc.debrief.product/target/products/DebriefNG-Linux64Bit.zip
+          retention-days: 7
+          compression-level: 0
+          if-no-files-found: warn
+
+      # Handoff to pr-build-comment.yml. github.event.workflow_run.pull_requests
+      # is empty for fork PRs, so the PR number has to travel via an artifact.
+      # Values go through `env:` rather than being interpolated into the script
+      # body - on a fork PR these are attacker-influenced.
+      - name: Record PR metadata
+        if: always() && github.event_name == 'pull_request'
+        env:
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          BUILD_OUTCOME: ${{ steps.build.outcome }}
+        run: |
+          mkdir -p pr-meta
+          printf 'pr=%s\nsha=%s\nbuild=%s\n' "$PR_NUMBER" "$HEAD_SHA" "$BUILD_OUTCOME" > pr-meta/meta.env
+      - name: Upload PR metadata
+        uses: actions/upload-artifact@v4
+        if: always() && github.event_name == 'pull_request'
+        with:
+          name: pr-meta
+          path: pr-meta/
+          retention-days: 14
+          if-no-files-found: error
+
       # Only a release-shaped tag (e.g. 20250307_3_1_44) publishes a release.
-      # Scratch tags used to trigger a build must not ship one.
+      # Scratch tags used to trigger a build must not ship one. Expressions have
+      # no regex, so the match is made here and read back via the env context.
       - name: Identify release tags
         run: |
           if [[ "${GITHUB_REF}" =~ ^refs/tags/[0-9]{8}_[0-9]+(_[0-9]+)+$ ]]; then
@@ -101,35 +295,21 @@ jobs:
           else
             echo "IS_RELEASE_TAG=false" >> $GITHUB_ENV
           fi
-      - name: Set branch name as env
-        run: echo "BRANCH_NAME=${{ env.base_ref }}" >> $GITHUB_ENV
-      - name: Build the artifact
-        if: startsWith(github.ref, 'refs/tags/')!=true
-        run: |
-             echo "My date: ${{ env.MY_DATE }} and build_ref: ${{ env.base_ref }}"
-             mv /home/runner/work/debrief/debrief/org.mwc.debrief.product/target/products/DebriefNG-Windows64Bit.zip /home/runner/work/debrief/debrief/Debrief_Win64_${{ env.MY_DATE }}_${{ env.build_ref }}.zip
-      - name: Upload the artifacts
-        uses: actions/upload-artifact@v4
-        if: startsWith(github.ref, 'refs/tags/')!=true
-        with:
-          name: Debrief_Win64_${{ env.MY_DATE }}_${{ env.BRANCH_NAME }}
-          path: /home/runner/work/debrief/debrief/Debrief_Win64_*.zip
       - name: Upload  release
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@v2
         if: env.IS_RELEASE_TAG == 'true'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           body_path: RELEASE_NOTES.md
           files: |
-                 /home/runner/work/debrief/debrief/org.mwc.debrief.product/target/products/DebriefNG-Linux64Bit.zip
-                 /home/runner/work/debrief/debrief/org.mwc.debrief.product/target/products/DebriefNG-MacOSX64Bit.zip
-                 /home/runner/work/debrief/debrief/org.mwc.debrief.product/target/products/DebriefNG-Windows32Bit.zip
-                 /home/runner/work/debrief/debrief/org.mwc.debrief.product/target/products/DebriefNG-Windows64Bit.zip
-                 /home/runner/work/debrief/debrief/org.mwc.debrief.product/target/products/P2_Repository.zip
-                 /home/runner/work/debrief/debrief/org.mwc.debrief.legacy/dist/DebriefLegacy*.jar
-                 /home/runner/work/debrief/debrief/org.mwc.debrief.lite/dist/debrief-lite*.zip
-                 /home/runner/work/debrief/debrief/org.mwc.debrief.product/target/products/DebriefNG-Windows64Bit.msi
+                 org.mwc.debrief.product/target/products/DebriefNG-Linux64Bit.zip
+                 org.mwc.debrief.product/target/products/DebriefNG-MacOSX64Bit.zip
+                 org.mwc.debrief.product/target/products/DebriefNG-Windows64Bit.zip
+                 org.mwc.debrief.product/target/products/P2_Repository.zip
+                 org.mwc.debrief.legacy/dist/DebriefLegacy*.jar
+                 org.mwc.debrief.lite/dist/debrief-lite*.zip
+                 org.mwc.debrief.product/target/products/DebriefNG-Windows64Bit.msi
       #make sure the xvfb windows that was opened is closed in the end
       - name: Cleanup xvfb pidx
         uses: bcomnes/cleanup-xvfb@v1
