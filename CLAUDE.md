@@ -65,6 +65,10 @@ Debrief is an Eclipse RCP (Rich Client Platform) maritime analysis application. 
 └─────────────────────────────────────────────────────────────┘
 ```
 
+## Branches
+
+Branch from `develop` and open pull requests against `develop` (the default branch). `master` is not a PR target; it only receives merges from `develop` and release branches.
+
 ## Build Commands
 
 ```bash

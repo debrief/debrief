@@ -234,33 +234,45 @@ jobs:
       # The product zips are uploaded as-is rather than unpacked first:
       # upload-artifact does not preserve the POSIX executable bit and flattens
       # symlinks, so an unpacked macOS .app or Linux tree would download broken.
-      # compression-level 0 because these are already-compressed zips.
+      # archive: false stops upload-artifact wrapping each zip in a second zip,
+      # so the reviewer downloads the platform zip itself. In that mode the
+      # artifact takes the file's name (the `name` input is ignored), so the
+      # zips are first linked under the short-SHA name the PR comment expects.
+      - name: Stage review builds
+        if: always() && !startsWith(github.ref, 'refs/tags/')
+        env:
+          SHA: ${{ steps.meta.outputs.sha }}
+        run: |
+          mkdir -p review-builds
+          products=org.mwc.debrief.product/target/products
+          for pair in Windows64Bit:Windows-x64 MacOSX64Bit:macOS-x64 Linux64Bit:Linux-x64; do
+            src="${products}/DebriefNG-${pair%%:*}.zip"
+            [ -f "$src" ] && ln -f "$src" "review-builds/DebriefNG-${pair##*:}-${SHA}.zip"
+          done
+          ls -l review-builds
       - name: Upload Windows build
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         if: always() && !startsWith(github.ref, 'refs/tags/')
         with:
-          name: DebriefNG-Windows-x64-${{ steps.meta.outputs.sha }}
-          path: org.mwc.debrief.product/target/products/DebriefNG-Windows64Bit.zip
+          path: review-builds/DebriefNG-Windows-x64-${{ steps.meta.outputs.sha }}.zip
+          archive: false
           retention-days: 7
-          compression-level: 0
           if-no-files-found: warn
       - name: Upload macOS build
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         if: always() && !startsWith(github.ref, 'refs/tags/')
         with:
-          name: DebriefNG-macOS-x64-${{ steps.meta.outputs.sha }}
-          path: org.mwc.debrief.product/target/products/DebriefNG-MacOSX64Bit.zip
+          path: review-builds/DebriefNG-macOS-x64-${{ steps.meta.outputs.sha }}.zip
+          archive: false
           retention-days: 7
-          compression-level: 0
           if-no-files-found: warn
       - name: Upload Linux build
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         if: always() && !startsWith(github.ref, 'refs/tags/')
         with:
-          name: DebriefNG-Linux-x64-${{ steps.meta.outputs.sha }}
-          path: org.mwc.debrief.product/target/products/DebriefNG-Linux64Bit.zip
+          path: review-builds/DebriefNG-Linux-x64-${{ steps.meta.outputs.sha }}.zip
+          archive: false
           retention-days: 7
-          compression-level: 0
           if-no-files-found: warn
 
       # Handoff to pr-build-comment.yml. github.event.workflow_run.pull_requests
