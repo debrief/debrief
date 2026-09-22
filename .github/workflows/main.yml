@@ -285,12 +285,23 @@ jobs:
           retention-days: 14
           if-no-files-found: error
 
+      # Only a release-shaped tag (e.g. 20250307_3_1_44) publishes a release.
+      # Scratch tags used to trigger a build must not ship one. Expressions have
+      # no regex, so the match is made here and read back via the env context.
+      - name: Identify release tags
+        run: |
+          if [[ "${GITHUB_REF}" =~ ^refs/tags/[0-9]{8}_[0-9]+(_[0-9]+)+$ ]]; then
+            echo "IS_RELEASE_TAG=true" >> $GITHUB_ENV
+          else
+            echo "IS_RELEASE_TAG=false" >> $GITHUB_ENV
+          fi
       - name: Upload  release
         uses: softprops/action-gh-release@v2
-        if: startsWith(github.ref, 'refs/tags/')
+        if: env.IS_RELEASE_TAG == 'true'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
+          body_path: RELEASE_NOTES.md
           files: |
                  org.mwc.debrief.product/target/products/DebriefNG-Linux64Bit.zip
                  org.mwc.debrief.product/target/products/DebriefNG-MacOSX64Bit.zip
