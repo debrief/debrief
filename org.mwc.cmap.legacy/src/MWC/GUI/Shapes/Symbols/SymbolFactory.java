@@ -170,6 +170,18 @@ public final class SymbolFactory {
 			assertEquals("correct symbol found", torpedoCharacter, torpedoCharacterGenerated);
 		}
 
+		/**
+		 * friend_air is indexed as 'y', but must still be available by name
+		 */
+		public void testFriendAirFromChar() {
+			final String expectedSymbol = SVG_FORMAT_PREFIX + ":friend_air";
+			assertEquals("Friend air symbol returned", expectedSymbol, SymbolFactory.createSymbolFromId("y"));
+			assertEquals("correct symbol found", "y", SymbolFactory.findIdForSymbolType(expectedSymbol));
+			assertNotNull("still available by name", SymbolFactory.createSymbol(expectedSymbol));
+			// characters after the indexed range are not mapped
+			assertNull("z not indexed", SymbolFactory.createSymbolFromId("z"));
+		}
+
 	}
 
 	public static final String KINGPIN = "Kingpin";
@@ -258,11 +270,16 @@ public final class SymbolFactory {
 			+ "coastguard_law_enforcement,friend_surface,friend_subsurface,neutral_air,"
 			+ "neutral_surface,neutral_subsurface,enemy_air,enemy_surface,enemy_subsurface,"
 			+ "unknown_air,unknown_surface,unknown_subsurface,missile," + BUOY_1 + "," + BUOY_2 + ","
-			+ "torpedo,generic_arrow,drop_point,splash_point,vector_1,vector_2,"
+			+ "torpedo,generic_arrow,drop_point,splash_point,vector_1,vector_2,friend_air,"
 			+ "anomaly,bottomed_mine,cleared,countermeasure,decoy,decoy_aw," + "decoy_uw,enemy_subsurface"
 			+ ",flagged_marker,floating_mine,friend_air,"
 			+ "highlights_1,highlights_2,jammer,mine_like_object,moored_mine,"
 			+ "tagged_marker,torpedo,uav_1,uav_2,usv_1," + "usv_2,usv_3,usv_4,usv_5,wreck,xxx_contact";
+	/**
+	 * the last character that has an indexed SVG symbol (the first is 'a')
+	 */
+	private static final char LAST_SVG_INDEX = 'y';
+
 	/**
 	 */
 	private static SymbolFactory _theFactory;
@@ -356,7 +373,7 @@ public final class SymbolFactory {
 			final String[] svgIconsName = SVG_INDEX.split(",");
 			// Since we have the SVG Icons properly ordered,
 			// we can just add the reserved character
-			for (char c = 'a'; c <= 'x'; c++) {
+			for (char c = 'a'; c <= LAST_SVG_INDEX; c++) {
 				final String completeName = SVG_FORMAT_PREFIX + ":" + svgIconsName[c - 'a'];
 				_theVesselIds.put(completeName, c + "");
 			}
