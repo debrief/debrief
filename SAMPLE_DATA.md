@@ -277,7 +277,7 @@ sample_data/                          86 MB total
 
 | File | Size | Description |
 |------|-----:|-------------|
-| `shapes.rep` | 18 KB | Rectangles, lines, circles, vectors, text labels, SVG symbols |
+| `shapes.rep` | 18 KB | Rectangles, lines, circles, vectors, text labels, SVG symbols (incl. `FRIENDLY_AIR` track using indexed SVG symbol `y`) |
 | `boat_1_2_arcs.rep` | 3.9 KB | Sensor arc definitions for NELSON/COLLINGWOOD |
 | `formatter.rep` | 240 B | Display formatting directives (symbol/label/arrow intervals) |
 
