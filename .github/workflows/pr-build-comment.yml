@@ -30,14 +30,13 @@ concurrency:
 
 jobs:
   comment:
-    if: >-
-      github.event.workflow_run.event == 'pull_request' &&
-      github.event.workflow_run.conclusion != 'cancelled'
+    if: github.event.workflow_run.event == 'pull_request'
     runs-on: ubuntu-24.04
     steps:
       # Tolerated failure: the build job is skipped on documentation-only pull
-      # requests, so there is no metadata to download and nothing to say. Exit
-      # quietly rather than leaving a red run in the Actions tab.
+      # requests, and a run cancelled by the concurrency group never gets far
+      # enough to upload metadata. In both cases there is nothing to say, so
+      # exit quietly rather than leaving a red run in the Actions tab.
       - name: Download PR metadata
         id: meta
         continue-on-error: true
@@ -78,16 +77,6 @@ jobs:
               return;
             }
             const sha = /^[0-9a-f]{40}$/.test(meta.sha) ? meta.sha.slice(0, 7) : 'unknown';
-
-            // A cancelled build has not failed - the concurrency group killed it
-            // because a newer push superseded it, and the build job uploads its
-            // metadata under if: always(), so we do get here. Saying "the build
-            // failed" would be wrong, and would replace a good comment with a red
-            // one until the newer run catches up. Leave the comment alone.
-            if (meta.build === 'cancelled') {
-              core.info('Build was cancelled (superseded); leaving the comment as it is.');
-              return;
-            }
             const built = meta.build === 'success';
 
             const { data } = await github.rest.actions.listWorkflowRunArtifacts({
