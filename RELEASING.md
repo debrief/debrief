@@ -84,9 +84,9 @@ git tag -a "$TAG" -m "Debrief $TAG"
 git push origin "$TAG"
 ```
 
-The build then publishes a release carrying the four platform zips,
-`P2_Repository.zip`, the DebriefLegacy jar, the Debrief Lite zip and the Windows
-MSI, with `RELEASE_NOTES.md` as its body.
+The build then publishes a release carrying seven assets — the Linux, macOS and
+Windows 64-bit product zips, `P2_Repository.zip`, the DebriefLegacy jar, the
+Debrief Lite zip and the Windows MSI — with `RELEASE_NOTES.md` as its body.
 
 Only release-shaped tags publish — `YYYYMMDD_N_N_N`, e.g. `20250307_3_1_44`. A
 scratch tag pushed to trigger a build will not ship a release.
