@@ -30,8 +30,11 @@ import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.data.simple.SimpleFeatureIterator;
 import org.geotools.data.simple.SimpleFeatureSource;
 import org.geotools.feature.simple.SimpleFeatureImpl;
+import org.geotools.gce.geotiff.GeoTiffReader;
+import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.map.GridReaderLayer;
 import org.geotools.map.Layer;
+import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.geotools.styling.RasterSymbolizer;
 import org.geotools.styling.SLD;
 import org.geotools.styling.Style;
@@ -43,11 +46,14 @@ import org.locationtech.jts.geom.MultiPolygon;
 import org.opengis.feature.Property;
 import org.opengis.parameter.GeneralParameterValue;
 import org.opengis.referencing.FactoryException;
+import org.opengis.referencing.operation.TransformException;
 
+import Debrief.GUI.Frames.Application;
 import MWC.GUI.Layers;
 import MWC.GUI.Properties.LocationPropertyEditor;
 import MWC.GUI.Shapes.ChartBoundsWrapper;
 import MWC.GUI.Shapes.ChartFolio;
+import MWC.GUI.ToolParent;
 import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldLocation;
 
@@ -158,6 +164,11 @@ public class WorldImageLayer extends GeoToolsLayer {
 	public final static String RASTER_FILE = "rasterExtents_ARCS_Export";
 
 	/**
+	 * the world file suffixes we accept alongside a plain (non-GeoTiff) image
+	 */
+	private final static String[] WORLD_FILE_EXTENSIONS = { ".tfw", ".tifw", ".wld" };
+
+	/**
 	 *
 	 */
 	private static final long serialVersionUID = 1L;
@@ -168,11 +179,88 @@ public class WorldImageLayer extends GeoToolsLayer {
 	 */
 	private final boolean _fileExists;
 
+	/**
+	 * the outer bounds of this image, in degrees. Cached, since working it out
+	 * involves a coordinate transform, and we get asked for it on each repaint.
+	 * Cleared when we drop our GeoTools layer.
+	 */
+	private transient WorldArea _cachedBounds;
+
+	/**
+	 * whether the image we loaded is actually positioned on the earth. If it
+	 * isn't, we mustn't offer any bounds - GeoTools will have fallen back to the
+	 * identity transform, and those coordinates would drag the whole plot off to
+	 * an arbitrary spot near (0,0).
+	 */
+	private transient boolean _isGeoReferenced;
+
 	public WorldImageLayer(final String layerName, final String fileName) {
 		super(ChartBoundsWrapper.WORLDIMAGE_TYPE, layerName, fileName);
 
 		final File testIfExists = new File(fileName);
 		_fileExists = testIfExists.exists();
+	}
+
+	@Override
+	public void clearMap() {
+		// we're losing our GeoTools layer, so ditch what we learned from it
+		_cachedBounds = null;
+		_isGeoReferenced = false;
+
+		super.clearMap();
+	}
+
+	/**
+	 * provide the outer bounds of this image, in degrees.
+	 *
+	 * Note: without this, a GeoTiff contributes no bounds to the plot (the parent
+	 * implementation works through our child plottables, and we don't have any).
+	 * That leaves Debrief unable to navigate to the image - so "fit to window",
+	 * and the rescale that runs after a file is dropped onto the plot, both
+	 * ignore it, and the image ends up off-screen and unpainted.
+	 */
+	@Override
+	public WorldArea getBounds() {
+		// do we already know the answer?
+		if (_cachedBounds != null) {
+			return _cachedBounds;
+		}
+
+		// have we been loaded into a map yet?
+		if (_myLayer == null) {
+			return null;
+		}
+
+		// do we know where the image belongs? If not, the coordinates GeoTools
+		// gives us are pixel counts, not a position - so they're no use here
+		if (!_isGeoReferenced) {
+			return null;
+		}
+
+		final ReferencedEnvelope bounds = _myLayer.getBounds();
+
+		// is it any use to us?
+		if (bounds == null || bounds.isEmpty() || bounds.getCoordinateReferenceSystem() == null) {
+			return null;
+		}
+
+		try {
+			// the image will be in its own projection, get it into degrees. Note:
+			// we use WGS84 rather than decoding EPSG:4326, since WGS84 is always
+			// longitude-first - whatever the axis-order setting happens to be.
+			final ReferencedEnvelope degs = bounds.transform(DefaultGeographicCRS.WGS84, true);
+
+			final WorldLocation tl = new WorldLocation(degs.getMaxY(), degs.getMinX(), 0d);
+			final WorldLocation br = new WorldLocation(degs.getMinY(), degs.getMaxX(), 0d);
+
+			_cachedBounds = new WorldArea(tl, br);
+		} catch (final TransformException e) {
+			Application.logError2(ToolParent.WARNING, "Failed to convert bounds for GeoTiff:" + getFilename(), e);
+		} catch (final FactoryException e) {
+			Application.logError2(ToolParent.WARNING, "Failed to convert bounds for GeoTiff:" + getFilename(), e);
+		}
+
+		return _cachedBounds;
 	}
 
 	// public static MWC.GUI.Layer read(String fileName)
@@ -208,7 +296,15 @@ public class WorldImageLayer extends GeoToolsLayer {
 		final Hints hints = new Hints(Hints.FORCE_LONGITUDE_FIRST_AXIS_ORDER, Boolean.TRUE);
 
 		GeoToolsLayer.registerTifUrlServiceProvider();
-		tiffReader = format.getReader(openFile, hints);
+
+		try {
+			tiffReader = format.getReader(openFile, hints);
+		} catch (final RuntimeException e) {
+			// GeoTools throws if the file isn't a grid format at all, and also if it
+			// can't make sense of the georeferencing. Don't let that escape - it
+			// would take down the whole file-drop, with just a stack trace to go on.
+			Application.logError2(ToolParent.ERROR, "Unable to read image file:" + openFile.getAbsolutePath(), e);
+		}
 
 		/*
 		 * try {
@@ -225,6 +321,18 @@ public class WorldImageLayer extends GeoToolsLayer {
 		// AbstractGridFormat format = GridFormatFinder.findFormat(openFile);
 		// AbstractGridCoverage2DReader tiffReader = format.getReader(openFile);
 		if (tiffReader != null) {
+			// is the image actually positioned on the earth?
+			_isGeoReferenced = isGeoReferenced(openFile, tiffReader);
+
+			if (!_isGeoReferenced) {
+				// GeoTools falls back to the identity transform for an image with no
+				// georeferencing - which silently drops it near (0,0), sized in
+				// degrees-per-pixel. Say so, rather than leave the user guessing.
+				Application.logError2(ToolParent.WARNING, "Image has no georeferencing, so Debrief can't"
+						+ " position it. Expected a GeoTiff, or an image with a world file:"
+						+ openFile.getAbsolutePath(), null);
+			}
+
 			final StyleFactoryImpl sf = new StyleFactoryImpl();
 			final RasterSymbolizer symbolizer = sf.getDefaultRasterSymbolizer();
 			final Style defaultStyle = SLD.wrapSymbolizers(symbolizer);
@@ -232,9 +340,38 @@ public class WorldImageLayer extends GeoToolsLayer {
 			final GeneralParameterValue[] params = null;
 
 			res = new GridReaderLayer(tiffReader, defaultStyle, params);
-			System.out.println("proj on read:" + res.getBounds().getCoordinateReferenceSystem().getName());
 		}
 		return res;
+	}
+
+	/**
+	 * is this image positioned on the earth?
+	 *
+	 * There are two ways for it to be: a GeoTiff carries its coordinates and
+	 * projection inside the file, otherwise we're looking at a plain image that
+	 * relies on an accompanying world file.
+	 */
+	private static boolean isGeoReferenced(final File openFile, final AbstractGridCoverage2DReader reader) {
+		// a GeoTiff has the georeferencing written inside it
+		if (reader instanceof GeoTiffReader) {
+			return true;
+		}
+
+		// nope, so we need a world file sitting next to the image
+		final String name = openFile.getName();
+		final int lastDot = name.lastIndexOf('.');
+		final String stem = lastDot > 0 ? name.substring(0, lastDot) : name;
+		final File parent = openFile.getParentFile();
+
+		for (final String extension : WORLD_FILE_EXTENSIONS) {
+			// check both cases, since we also accept images with an upper-case suffix
+			if (new File(parent, stem + extension).exists()
+					|| new File(parent, stem + extension.toUpperCase()).exists()) {
+				return true;
+			}
+		}
+
+		return false;
 	}
 
 	@Override
