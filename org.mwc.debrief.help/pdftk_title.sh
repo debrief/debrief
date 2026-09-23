@@ -12,6 +12,13 @@
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
 #*******************************************************************************
+# Fail loudly: the pom runs this with failonerror, so a missing pdftk
+# breaks the build instead of shipping a User Guide without its cover.
+set -e
+if ! command -v pdftk >/dev/null 2>&1; then
+  echo "pdftk not found - install it (e.g. apt install pdftk-java) to add the User Guide cover" >&2
+  exit 1
+fi
 echo "exec pdftk"
 cd ../org.mwc.cmap.combined.feature/root_installs
 pdftk A=../../org.mwc.debrief.help/front_covers/UserGuide_FlattenedForViewing.pdf B=DebriefNG.pdf cat A1 B2-end output out.pdf

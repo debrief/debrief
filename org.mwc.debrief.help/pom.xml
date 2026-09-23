@@ -48,7 +48,7 @@
             <arg value="0775"/>
             <arg value="pdftk_title.sh"/>
         </exec>
-        <exec dir="${basedir}" executable="./pdftk_title.sh" osfamily="unix"/> 
+        <exec dir="${basedir}" executable="./pdftk_title.sh" osfamily="unix" failonerror="true"/>
 <!--                   <exec dir="${basedir}" executable="./dita2pdf.sh" osfamily="unix"/> -->
 <!-- 		  <exec dir="${basedir}" executable="chmod" osfamily="mac"> -->
 <!--                     <arg value="0775"/> -->
@@ -58,7 +58,7 @@
             <arg value="0775"/>
             <arg value="pdftk_title.sh"/>
         </exec>
-        <exec dir="${basedir}" executable="./pdftk_title.sh" osfamily="mac"/> 
+        <exec dir="${basedir}" executable="./pdftk_title.sh" osfamily="mac" failonerror="true"/>
 <!--                   <exec dir="${basedir}" executable="./dita2pdf.sh" osfamily="mac"/> -->
                 </target>
             </configuration>
