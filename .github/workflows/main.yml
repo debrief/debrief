@@ -115,8 +115,6 @@ jobs:
           retry $APT update
           retry $APT install postgis postgresql
           retry $APT install unzip spatialite-bin xvfb
-          # pdftk puts the cover page on the User Guide PDF (pdftk_title.sh)
-          retry $APT install pdftk-java
           mvn --version
       # Checks-out repository
       - name: Checkout

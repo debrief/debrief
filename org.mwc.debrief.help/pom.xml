@@ -28,6 +28,33 @@
   <packaging>eclipse-plugin</packaging>
   <build>
     <plugins>
+      <!-- fetch PDFBox for the User Guide cover step below. Declared before
+           antrun so it runs first within generate-resources. -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <version>3.8.1</version>
+        <executions>
+          <execution>
+            <id>fetch-pdfbox</id>
+            <phase>generate-resources</phase>
+            <goals>
+              <goal>copy</goal>
+            </goals>
+            <configuration>
+              <artifactItems>
+                <artifactItem>
+                  <groupId>org.apache.pdfbox</groupId>
+                  <artifactId>pdfbox-app</artifactId>
+                  <version>3.0.8</version>
+                  <destFileName>pdfbox-app.jar</destFileName>
+                </artifactItem>
+              </artifactItems>
+              <outputDirectory>${project.build.directory}/pdfbox</outputDirectory>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-antrun-plugin</artifactId>
@@ -40,26 +67,41 @@
                   <ant target="docbook_to_eclipse" antfile="collate_docbook.xml" />
                   <ant target="javadoc" antfile="collate_docbook.xml" />
 <!-- See https://github.com/debrief/debrief/issues/1343 -->
-<!-- 		  <exec dir="${basedir}" executable="chmod" osfamily="unix"> -->
-<!--                     <arg value="0775"/> -->
-<!--                     <arg value="dita2pdf.sh"/> -->
-<!--                   </exec> -->
-        <exec dir="${basedir}" executable="chmod" osfamily="unix">
-            <arg value="0775"/>
-            <arg value="pdftk_title.sh"/>
-        </exec>
-        <exec dir="${basedir}" executable="./pdftk_title.sh" osfamily="unix" failonerror="true"/>
 <!--                   <exec dir="${basedir}" executable="./dita2pdf.sh" osfamily="unix"/> -->
-<!-- 		  <exec dir="${basedir}" executable="chmod" osfamily="mac"> -->
-<!--                     <arg value="0775"/> -->
-<!--                     <arg value="dita2pdf.sh"/> -->
-<!--                   </exec> -->
-        <exec dir="${basedir}" executable="chmod" osfamily="mac">
-            <arg value="0775"/>
-            <arg value="pdftk_title.sh"/>
-        </exec>
-        <exec dir="${basedir}" executable="./pdftk_title.sh" osfamily="mac" failonerror="true"/>
-<!--                   <exec dir="${basedir}" executable="./dita2pdf.sh" osfamily="mac"/> -->
+
+                  <!-- put the cover page on the User Guide: cover page 1, then
+                       DebriefNG.pdf from page 2. The PDFBox CLI exits 0 even
+                       when it fails, so check the result exists. -->
+                  <property name="pdfbox.jar" value="${project.build.directory}/pdfbox/pdfbox-app.jar" />
+                  <property name="cover.work" value="${project.build.directory}/cover" />
+                  <property name="userguide.pdf" value="${basedir}/../org.mwc.cmap.combined.feature/root_installs/DebriefNG.pdf" />
+                  <delete dir="${cover.work}" />
+                  <mkdir dir="${cover.work}" />
+                  <java jar="${pdfbox.jar}" fork="true" failonerror="true">
+                    <arg value="split" />
+                    <arg value="-i=${basedir}/front_covers/UserGuide_FlattenedForViewing.pdf" />
+                    <arg value="-startPage=1" />
+                    <arg value="-endPage=1" />
+                    <arg value="-outputPrefix=${cover.work}/cover" />
+                  </java>
+                  <java jar="${pdfbox.jar}" fork="true" failonerror="true">
+                    <arg value="split" />
+                    <arg value="-i=${userguide.pdf}" />
+                    <arg value="-startPage=2" />
+                    <arg value="-outputPrefix=${cover.work}/body" />
+                  </java>
+                  <java jar="${pdfbox.jar}" fork="true" failonerror="true">
+                    <arg value="merge" />
+                    <arg value="-i=${cover.work}/cover-1.pdf" />
+                    <arg value="-i=${cover.work}/body-1.pdf" />
+                    <arg value="-o=${cover.work}/DebriefNG.pdf" />
+                  </java>
+                  <fail message="Failed to add the cover page to ${userguide.pdf}">
+                    <condition>
+                      <not><available file="${cover.work}/DebriefNG.pdf" /></not>
+                    </condition>
+                  </fail>
+                  <move file="${cover.work}/DebriefNG.pdf" tofile="${userguide.pdf}" overwrite="true" />
                 </target>
             </configuration>
             <goals>
