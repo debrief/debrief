@@ -98,6 +98,7 @@ import org.junit.runners.Suite;
 		org.mwc.cmap.core.operations.RightClickCutCopyAdaptor.testCutPaste.class,
 		org.mwc.cmap.core.property_support.RightClickSupport.testMe.class,
 		org.mwc.cmap.core.ui_support.PartMonitor.TestNarrativeViewer.class,
+		org.mwc.cmap.core.ui_support.OutlineNameSorter.TestSorter.class,
 		org.mwc.debrief.core.ContextOperations.tests.TMASegment_Test.class,
 		org.mwc.debrief.core.ContextOperations.GenerateInfillSegment.TestGenInfill.class,
 		org.mwc.debrief.track_shift.ambiguity.AmbiguityResolver.TestResolveAmbig.class,

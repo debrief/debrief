@@ -21,7 +21,10 @@ import java.beans.IntrospectionException;
 import java.beans.MethodDescriptor;
 import java.beans.PropertyDescriptor;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
@@ -150,6 +153,63 @@ public class TrackSegment extends BaseItemLayer
 			final FixWrapper res = new FixWrapper(theFix);
 
 			return res;
+		}
+
+		/**
+		 * check that the supplied comparator obeys the Comparator contract (sign
+		 * symmetry and transitivity) for every triple of the supplied items. A breach
+		 * is what makes the JDK sort throw
+		 * "Comparison method violates its general contract!" (see issue #5199).
+		 */
+		private static <T> void assertComparatorContract(final Comparator<T> comp, final List<T> items) {
+			for (final T a : items) {
+				for (final T b : items) {
+					final int ab = Integer.signum(comp.compare(a, b));
+					final int ba = Integer.signum(comp.compare(b, a));
+					assertEquals("sign symmetry broken for " + a + " / " + b, -ba, ab);
+					for (final T c : items) {
+						final int bc = Integer.signum(comp.compare(b, c));
+						final int ac = Integer.signum(comp.compare(a, c));
+						if (ab > 0 && bc > 0) {
+							assertTrue("transitivity broken: " + a + " > " + b + " > " + c + ", but " + a + " > " + c
+									+ " is false", ac > 0);
+						}
+						if (ab == 0) {
+							assertEquals("equal items " + a + " / " + b + " compare differently against " + c, bc, ac);
+						}
+					}
+				}
+			}
+		}
+
+		private static TrackSegment segmentStarting(final long dtg, final String name) {
+			final TrackSegment seg = new TrackSegment(false);
+			seg.addFix(new FixWrapper(new Fix(new HiResDate(dtg), new WorldLocation(1, 1, 0), 0, 0)));
+			// name it last, since adding the first fix relabels the segment with its date
+			seg.setName(name);
+			return seg;
+		}
+
+		public void testCompareToWithEmptySegment() {
+			// segments named so that name order contradicts time order
+			final TrackSegment early = segmentStarting(10000, "leg_b");
+			final TrackSegment late = segmentStarting(20000, "leg_a");
+
+			// an empty segment (such as an infill that couldn't be generated) has no
+			// start time, so it can only be compared by name
+			final TrackSegment empty = new TrackSegment(false);
+			empty.setName("leg_aa");
+			assertNull("empty segment has no start time", empty.startDTG());
+
+			final Comparator<TrackSegment> comp = (a, b) -> a.compareTo(b);
+			assertComparatorContract(comp, Arrays.asList(early, late, empty));
+
+			// timed segments come first, in time order, then the untimed ones
+			final List<TrackSegment> segs = new ArrayList<>(Arrays.asList(empty, late, early));
+			Collections.sort(segs, comp);
+			assertEquals("early first", early, segs.get(0));
+			assertEquals("late second", late, segs.get(1));
+			assertEquals("empty last", empty, segs.get(2));
 		}
 
 		public void testDeleteNotVisible() {
@@ -574,10 +634,20 @@ public class TrackSegment extends BaseItemLayer
 	public int compareTo(final Plottable arg0) {
 		int res = 0;
 		if (arg0 instanceof TrackSegment) {
-			// sort them in dtg order
+			// sort them in dtg order. Segments without a start time (empty ones)
+			// go after those with one, and are ordered by name among themselves.
+			// Note: we must not compare an empty segment by name against a timed one,
+			// since the name order can contradict the time order, which breaks the
+			// Comparator contract (transitivity) and makes the JDK sort throw.
 			final TrackSegment other = (TrackSegment) arg0;
-			if ((startDTG() != null) && (other.startDTG() != null)) {
-				res = startDTG().compareTo(other.startDTG());
+			final HiResDate myStart = startDTG();
+			final HiResDate otherStart = other.startDTG();
+			if ((myStart != null) && (otherStart != null)) {
+				res = myStart.compareTo(otherStart);
+			} else if (myStart != null) {
+				res = -1;
+			} else if (otherStart != null) {
+				res = 1;
 			} else {
 				res = getName().compareTo(arg0.getName());
 			}
