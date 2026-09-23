@@ -19,6 +19,13 @@
 --launcher.defaultAction
 openFile
       </programArgs>
+      <!-- useLegacyMergeSort is a JDK safety net, not a fix: it suppresses the
+           "Comparison method violates its general contract!" check that TimSort
+           applies to inconsistent comparators. The JDK documents the property as
+           temporary and may remove it. The Outline sort order (OutlineNameSorter,
+           TrackSegment.compareTo) was made contract-safe under issue #5199, so if
+           this flag is removed and the exception reappears, it points at another
+           comparator that needs the same treatment. -->
       <vmArgs>-Xms128m
 -Xmx2048m
 -Duser.timezone=GMT

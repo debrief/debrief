@@ -58,6 +58,11 @@ public class OutlineNameSorter extends ViewerComparator {
 	 * view from populating (issue #5199). The breaches all came from the same
 	 * pattern: comparing two items by time when both have one, but by name
 	 * otherwise, so the name order can contradict the time order.
+	 *
+	 * Note that the product file (debriefng.product) still sets
+	 * -Djava.util.Arrays.useLegacyMergeSort=true, which suppresses the JDK's
+	 * check. That flag is a safety net that the JDK may withdraw; these tests are
+	 * what keeps the sort order correct without it.
 	 */
 	public static class TestSorter extends TestCase {
 
