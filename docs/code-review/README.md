@@ -1,21 +1,25 @@
 # Code review findings register
 
-`findings.csv` is the output of an LLM-assisted, read-only review of the whole Debrief repository (branch `develop`, commit `4af8b988`, September 2026). Focus: algorithmic correctness, security, and general bug-finding. It is a triage register, not a list of confirmed bugs: every row is a *candidate* until someone reproduces it with a failing test or proof-of-concept input.
+`findings.csv` and `findings-legacy.csv` are the output of an LLM-assisted, read-only review of the whole Debrief repository (branch `develop`, commit `4af8b988`, September 2026). Focus: algorithmic correctness, security, and general bug-finding. It is a triage register, not a list of confirmed bugs: every row is a *candidate* until someone reproduces it with a failing test or proof-of-concept input.
 
-Open the CSV in a spreadsheet, sort and filter on the metadata columns, edit descriptions, and transfer accepted rows to GitHub issues (see the last section).
+The register is split in two files with the same columns and a shared id sequence:
+
+- `findings.csv`: rows in actively maintained code (Debrief and CMAP plugins, track_shift, Lite, build and CI). These are candidates for logic fixes.
+- `findings-legacy.csv`: rows in packages kept for reference only and not scheduled for logic fixes: ASSET (`org.mwc.asset.*`), Pepys (`org.mwc.debrief.pepys`), DIS (`org.mwc.debrief.dis`) and GND (`org.mwc.debrief.GNDManager`, `org.mwc.gnd.demonstrator`). They are kept because supply-chain and security rows there still matter if the plugin ships, and because some rows explain behaviour analysts may see.
+
+Open either CSV in a spreadsheet, sort and filter on the metadata columns, edit descriptions, and transfer accepted rows to GitHub issues (see the last section).
 
 ## Summary
 
-| | Count |
-|---|---|
-| Rows | 264 |
-| Critical | 2 |
-| High | 47 |
-| Medium | 130 |
-| Low | 85 |
+| | findings.csv | findings-legacy.csv | Total |
+|---|---|---|---|
+| Rows | 209 | 55 | 264 |
+| Critical | 0 | 2 | 2 |
+| High | 39 | 8 | 47 |
+| Medium | 101 | 29 | 130 |
+| Low | 69 | 16 | 85 |
 
-By category: security 33, algorithm-correctness 64, bug 124, supply-chain 38, ci-workflow 5.
-By status: candidate 224, verified 37, unverified-needs-runtime 3.
+Across both files: security 33, algorithm-correctness 64, bug 124, supply-chain 38, ci-workflow 5; status candidate 224, verified 37, unverified-needs-runtime 3. Both Critical rows are in ASSET (legacy file).
 
 Themes that recur across slices, each worth one fix rather than many:
 
