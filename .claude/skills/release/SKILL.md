@@ -148,8 +148,9 @@ and confirm:
 
 - all seven assets are attached: `DebriefNG-{Linux64Bit,MacOSX64Bit,Windows64Bit}.zip`,
   `P2_Repository.zip`, `DebriefLegacy*.jar`, `debrief-lite*.zip` and
-  `DebriefNG-Windows64Bit.msi`. There is no 32-bit Windows build — the
-  win32/x86 environment is commented out in the root `pom.xml`.
+  `DebriefNG-Windows64Bit.msi`. There is no 32-bit build for any platform: the
+  root `pom.xml` lists only x86_64 environments (its one 32-bit entry,
+  linux/gtk/x86, is commented out).
 - the body contains the approved release notes
 
 Report the release URL.

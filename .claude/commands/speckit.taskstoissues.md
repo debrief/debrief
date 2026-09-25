@@ -9,7 +9,7 @@ tools: ['github/github-mcp-server/issue_write']
 $ARGUMENTS
 ```
 
-You **MUST** consider the user input before proceeding (if not empty).
+The user input above, when present, is part of the request.
 
 ## Outline
 
@@ -22,9 +22,9 @@ git config --get remote.origin.url
 ```
 
 > [!CAUTION]
-> ONLY PROCEED TO NEXT STEPS IF THE REMOTE IS A GITHUB URL
+> Continue only if the remote is a GitHub URL; there is nowhere else to create the issues.
 
 1. For each task in the list, use the GitHub MCP server to create a new issue in the repository that is representative of the Git remote.
 
 > [!CAUTION]
-> UNDER NO CIRCUMSTANCES EVER CREATE ISSUES IN REPOSITORIES THAT DO NOT MATCH THE REMOTE URL
+> Create issues only in the repository the remote points at. Issues are public and cannot be un-created, so an issue filed in the wrong repository is visible to strangers until someone closes it.
