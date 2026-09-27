@@ -120,13 +120,13 @@ Key module namespaces:
 
 ### Domain Model (Wrappers)
 
-| Class | Lines | Purpose |
-|-------|-------|---------|
-| `TrackWrapper` | 3,941 | Main track container - fixes, sensors, TMA segments |
-| `FixWrapper` | 1,833 | Single position fix with time, location, course, speed |
-| `SensorWrapper` | 1,639 | Sensor observations container |
-| `SensorContactWrapper` | 1,152 | Individual sensor bearing/range observation |
-| `TMAWrapper` | 777 | TMA solution container |
+| Class | Purpose |
+|-------|---------|
+| `TrackWrapper` | Main track container - fixes, sensors, TMA segments (by far the largest wrapper) |
+| `FixWrapper` | Single position fix with time, location, course, speed |
+| `SensorWrapper` | Sensor observations container |
+| `SensorContactWrapper` | Individual sensor bearing/range observation |
+| `TMAWrapper` | TMA solution container |
 
 Location: `org.mwc.debrief.legacy/src/Debrief/Wrappers/`
 

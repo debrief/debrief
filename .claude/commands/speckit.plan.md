@@ -16,7 +16,7 @@ handoffs:
 $ARGUMENTS
 ```
 
-You **MUST** consider the user input before proceeding (if not empty).
+The user input above, when present, is part of the request.
 
 ## Outline
 

@@ -17,7 +17,7 @@ handoffs:
 $ARGUMENTS
 ```
 
-You **MUST** consider the user input before proceeding (if not empty).
+The user input above, when present, is part of the request.
 
 ## Outline
 
@@ -66,13 +66,13 @@ The tasks.md should be immediately executable - each task must be specific enoug
 
 ## Task Generation Rules
 
-**CRITICAL**: Tasks MUST be organized by user story to enable independent implementation and testing.
+Organize tasks by user story so each story can be implemented and tested independently.
 
 **Tests are OPTIONAL**: Only generate test tasks if explicitly requested in the feature specification or if user requests TDD approach.
 
-### Checklist Format (REQUIRED)
+### Checklist Format
 
-Every task MUST strictly follow this format:
+Every task follows this format (the examples below are the contract; downstream commands parse it):
 
 ```text
 - [ ] [TaskID] [P?] [Story?] Description with file path
@@ -80,7 +80,7 @@ Every task MUST strictly follow this format:
 
 **Format Components**:
 
-1. **Checkbox**: ALWAYS start with `- [ ]` (markdown checkbox)
+1. **Checkbox**: start with `- [ ]` (markdown checkbox)
 2. **Task ID**: Sequential number (T001, T002, T003...) in execution order
 3. **[P] marker**: Include ONLY if task is parallelizable (different files, no dependencies on incomplete tasks)
 4. **[Story] label**: REQUIRED for user story phase tasks only

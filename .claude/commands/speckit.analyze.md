@@ -8,7 +8,7 @@ description: Perform a non-destructive cross-artifact consistency and quality an
 $ARGUMENTS
 ```
 
-You **MUST** consider the user input before proceeding (if not empty).
+The user input above, when present, is part of the request.
 
 ## Goal
 
@@ -173,7 +173,6 @@ Ask the user: "Would you like me to suggest concrete remediation edits for the t
 
 ### Analysis Guidelines
 
-- **NEVER modify files** (this is read-only analysis)
 - **NEVER hallucinate missing sections** (if absent, report them accurately)
 - **Prioritize constitution violations** (these are always CRITICAL)
 - **Use examples over exhaustive rules** (cite specific instances, not generic patterns)
