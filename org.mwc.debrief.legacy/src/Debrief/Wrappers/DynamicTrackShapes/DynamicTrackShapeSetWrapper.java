@@ -87,6 +87,48 @@ public class DynamicTrackShapeSetWrapper extends BaseLayer implements Cloneable,
 
 		}
 
+		/**
+		 * several shapes starting at the same DTG must all be stored, and each one
+		 * must be removable
+		 */
+		public final void testEqualTimeShapes() {
+			final DynamicTrackShapeSetWrapper set = new DynamicTrackShapeSetWrapper("shapes");
+			final java.util.List<DynamicTrackCoverageWrapper> items = new java.util.ArrayList<DynamicTrackCoverageWrapper>();
+			items.add(new DynamicTrackCoverageWrapper("trk", new HiResDate(5000), new HiResDate(6000),
+					new java.util.ArrayList<DynamicTrackShapeWrapper.DynamicShape>(), Color.RED, 0, "a"));
+			for (int i = 0; i < 5; i++) {
+				items.add(new DynamicTrackCoverageWrapper("trk", new HiResDate(10000), new HiResDate(11000 + i),
+						new java.util.ArrayList<DynamicTrackShapeWrapper.DynamicShape>(), Color.RED, 0, "b" + i));
+			}
+			items.add(new DynamicTrackCoverageWrapper("trk", new HiResDate(20000), new HiResDate(21000),
+					new java.util.ArrayList<DynamicTrackShapeWrapper.DynamicShape>(), Color.RED, 0, "c"));
+			for (final DynamicTrackCoverageWrapper item : items) {
+				set.add(item);
+			}
+			assertEquals("all stored", items.size(), set.size());
+
+			for (final DynamicTrackCoverageWrapper a : items) {
+				for (final DynamicTrackCoverageWrapper b : items) {
+					if (a != b) {
+						assertTrue("distinct", a.compareTo(b) != 0);
+						assertEquals("antisymmetric", Integer.signum(a.compareTo(b)), -Integer.signum(b.compareTo(a)));
+					}
+				}
+			}
+
+			int expected = items.size();
+			for (final int i : new int[] { 3, 1, 5, 2, 4, 0, 6 }) {
+				final DynamicTrackCoverageWrapper item = items.get(i);
+				set.removeElement(item);
+				expected--;
+				assertEquals("removed item " + i, expected, set.size());
+				final Enumeration<Editable> iter = set.elements();
+				while (iter.hasMoreElements()) {
+					assertNotSame("item " + i + " gone", item, iter.nextElement());
+				}
+			}
+		}
+
 	}
 
 	/**

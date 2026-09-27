@@ -21,6 +21,7 @@ import java.beans.PropertyDescriptor;
 import java.util.ArrayList;
 import java.util.List;
 
+import Debrief.Wrappers.CreationOrder;
 import MWC.GUI.CanvasType;
 import MWC.GUI.Editable;
 import MWC.GUI.ExcludeFromRightClickEdit;
@@ -123,6 +124,12 @@ abstract public class DynamicTrackShapeWrapper extends PlainWrapper
 	 */
 	private static final long serialVersionUID = 1L;
 
+	/**
+	 * our position in the creation sequence, used to give a stable order to items
+	 * with the same time (see {@link CreationOrder})
+	 */
+	private final long _creationSeq = CreationOrder.next();
+
 	// ///////////////////////////////////////////
 	// member variables
 	/**
@@ -198,8 +205,17 @@ abstract public class DynamicTrackShapeWrapper extends PlainWrapper
 	@Override
 	public final int compareTo(final Plottable o) {
 		final DynamicTrackShapeWrapper other = (DynamicTrackShapeWrapper) o;
-		if (_startDTG == null || other == null || other._startDTG == null) {
+		if (other == null) {
 			return 1;
+		}
+		if (_startDTG == null || other._startDTG == null) {
+			// items without a DTG go last
+			if (_startDTG != null) {
+				return -1;
+			} else if (other._startDTG != null) {
+				return 1;
+			}
+			return CreationOrder.compare(this, _creationSeq, other, other._creationSeq);
 		}
 		int res = 0;
 		if (_startDTG.lessThan(other._startDTG))
@@ -207,20 +223,10 @@ abstract public class DynamicTrackShapeWrapper extends PlainWrapper
 		else if (_startDTG.greaterThan(other._startDTG))
 			res = 1;
 		else {
-			// just check if this is actually the same object (in which case return 0)
-			if (o == this) {
-				// we need a correct implementation of compare to for when we're finding
-				// the position
-				// of an item which is actually in the list - otherwise it won't get
-				// found and we can't
-				// delete it.
-				res = 0;
-			} else {
-				// same times, make the newer item appear later. This is to overcome the
-				// problem we experience where only the first contact at a particular
-				// DTG gets recorded for a sensor
-				res = 1;
-			}
+			// same times. Return 0 only for the same object, otherwise make the newer
+			// item appear later. This gives a consistent (total) order, so we don't
+			// lose items at the same DTG, and we can find them to delete them.
+			res = CreationOrder.compare(this, _creationSeq, other, other._creationSeq);
 		}
 
 		return res;

@@ -1131,7 +1131,13 @@ public class TrackWrapper extends LightweightTrackWrapper implements WatchableLi
 
 		// add fix to last track segment
 		final TrackSegment last = (TrackSegment) _theSegments.last();
+		final HiResDate oldStart = last.startDTG();
 		last.addFix(theFix);
+
+		// the start time is the sort key for segments. If it's changed, re-sort
+		if (_theSegments.size() > 1 && !java.util.Objects.equals(oldStart, last.startDTG())) {
+			_theSegments.resort();
+		}
 
 		// tell the fix about it's daddy
 		theFix.setTrackWrapper(this);
@@ -1349,7 +1355,15 @@ public class TrackWrapper extends LightweightTrackWrapper implements WatchableLi
 	 *
 	 * @param res the previously split track sections
 	 */
-	public void combineSections(final Vector<TrackSegment> res) {
+	public void combineSections(final Vector<TrackSegment> sections) {
+		// the sections may be stale. For example, when undoing nested splits, a
+		// section may since have been replaced by a new segment that starts at the
+		// same time. Use the replacement in that case.
+		final Vector<TrackSegment> res = new Vector<TrackSegment>();
+		for (final TrackSegment section : sections) {
+			res.add(liveSegmentFor(section));
+		}
+
 		// ok, remember the first
 		final TrackSegment keeper = res.firstElement();
 
@@ -1369,6 +1383,29 @@ public class TrackWrapper extends LightweightTrackWrapper implements WatchableLi
 
 		// and remember we need an update
 		setRelativePending();
+	}
+
+	/**
+	 * find the segment in our list that corresponds to the supplied one. If it
+	 * isn't in our list, look for one that starts at the same time (which has
+	 * replaced it)
+	 *
+	 * @param segment the segment to look for
+	 * @return the matching segment, or the supplied one if there isn't a match
+	 */
+	private TrackSegment liveSegmentFor(final TrackSegment segment) {
+		final HiResDate start = segment.startDTG();
+		TrackSegment sameStart = null;
+		final Enumeration<Editable> segments = _theSegments.elements();
+		while (segments.hasMoreElements()) {
+			final TrackSegment seg = (TrackSegment) segments.nextElement();
+			if (seg == segment) {
+				return segment;
+			} else if (sameStart == null && start != null && start.equals(seg.startDTG())) {
+				sameStart = seg;
+			}
+		}
+		return sameStart != null ? sameStart : segment;
 	}
 
 	@Override
@@ -3828,6 +3865,9 @@ public class TrackWrapper extends LightweightTrackWrapper implements WatchableLi
 				final TrackSegment seg = (TrackSegment) segments.nextElement();
 				seg.trimTo(period);
 			}
+
+			// trimming may have changed the start times, which we sort by
+			_theSegments.resort();
 		}
 	}
 

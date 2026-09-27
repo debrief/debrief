@@ -296,6 +296,11 @@ public class TrackWrapper_Support {
 
 			super.add(segment);
 
+			// check it got stored
+			if (!getData().contains(segment)) {
+				MWC.Utilities.Errors.Trace.trace("Failed to add leg " + segment.getName() + " to " + getName(), false);
+			}
+
 			// if we've just got the one, set it's name to positions
 			if (this.size() == 1) {
 				final TrackSegment first = (TrackSegment) getData().iterator().next();
@@ -371,6 +376,10 @@ public class TrackWrapper_Support {
 
 		@Override
 		public void removeElement(final Editable p) {
+			// segment start times can change after they're stored, so make sure the
+			// list is sorted before we search it
+			resort();
+
 			super.removeElement(p);
 
 			// if it's a dynamic infill, we've got to clear it
@@ -382,6 +391,20 @@ public class TrackWrapper_Support {
 			final TrackSegment seg = (TrackSegment) p;
 			seg.setWrapper(null);
 
+		}
+
+		/**
+		 * re-sort the segments. The sort key (start time) of a segment can change
+		 * after it has been stored (e.g. adding an earlier fix, or trimming it), so
+		 * call this after doing so.
+		 */
+		public void resort() {
+			final Collection<Editable> data = getData();
+			if (data.size() > 1) {
+				final List<Editable> items = new ArrayList<Editable>(data);
+				data.clear();
+				data.addAll(items);
+			}
 		}
 
 		/**

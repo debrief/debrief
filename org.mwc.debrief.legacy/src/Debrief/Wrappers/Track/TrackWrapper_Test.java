@@ -2257,6 +2257,9 @@ public class TrackWrapper_Test extends TestCase {
 		assertEquals("correct layer name:", "010001.40", s1.getName());
 		assertEquals("correct layer name:", "010005.00", s2.getName());
 
+		// note: the second split replaced the last leg in 'segs' with a new one
+		// (which starts at the same time). This is what happens when undoing
+		// nested splits.
 		_tw.combineSections(segs);
 		assertEquals("has 1 segment1", 1, numSegments());
 		assertEquals("first is of correct length", 6, segs.firstElement().size());

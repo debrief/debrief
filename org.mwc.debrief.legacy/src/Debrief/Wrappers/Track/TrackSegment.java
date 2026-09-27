@@ -33,6 +33,7 @@ import java.util.SortedSet;
 import java.util.Vector;
 
 import Debrief.GUI.Frames.Application;
+import Debrief.Wrappers.CreationOrder;
 import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.TrackWrapper;
 import Debrief.Wrappers.Track.TrackWrapper_Support.BaseItemLayer;
@@ -212,6 +213,61 @@ public class TrackSegment extends BaseItemLayer
 			assertEquals("empty last", empty, segs.get(2));
 		}
 
+		/**
+		 * two legs that start at the same time must both be stored, and each must be
+		 * removable
+		 */
+		public void testEqualStartSegments() {
+			final TrackWrapper tw = new TrackWrapper();
+			tw.setName("track");
+			final TrackSegment early = segmentStarting(5000, "early");
+			final TrackSegment first = segmentStarting(10000, "first");
+			final TrackSegment second = segmentStarting(10000, "second");
+			tw.add(early);
+			tw.add(first);
+			tw.add(second);
+
+			final TrackWrapper_Support.SegmentList segs = tw.getSegments();
+			assertEquals("all legs stored", 3, segs.size());
+
+			final Comparator<TrackSegment> comp = (a, b) -> a.compareTo(b);
+			assertComparatorContract(comp, Arrays.asList(early, first, second));
+			assertTrue("equal start legs distinct", first.compareTo(second) != 0);
+
+			segs.removeElement(first);
+			assertEquals("one removed", 2, segs.size());
+			assertFalse("right one removed", segs.getData().stream().anyMatch(s -> s == first));
+			segs.removeElement(second);
+			assertEquals("two removed", 1, segs.size());
+			assertSame("early remains", early, segs.first());
+		}
+
+		/**
+		 * a leg whose start time changes after it has been stored is re-sorted
+		 */
+		public void testSegmentStartChanges() {
+			final TrackWrapper tw = new TrackWrapper();
+			tw.setName("track");
+			final TrackSegment early = segmentStarting(5000, "early");
+			final TrackSegment late = segmentStarting(10000, "late");
+			tw.add(early);
+			tw.add(late);
+			assertSame("late is last", late, tw.getSegments().last());
+
+			// the track appends new fixes to its last leg. Give it one that's
+			// earlier than the first leg
+			tw.addFix(new FixWrapper(new Fix(new HiResDate(1000), new WorldLocation(1, 1, 0), 0, 0)));
+			assertEquals("late now starts first", 1000, late.startDTG().getDate().getTime());
+
+			final TrackWrapper_Support.SegmentList segs = tw.getSegments();
+			assertSame("re-sorted: late now first", late, segs.first());
+			assertSame("re-sorted: early now last", early, segs.last());
+
+			segs.removeElement(early);
+			assertEquals("removed", 1, segs.size());
+			assertSame("right one left", late, segs.first());
+		}
+
 		public void testDeleteNotVisible() {
 			final TrackSegment ts = getDummyList();
 
@@ -365,6 +421,12 @@ public class TrackSegment extends BaseItemLayer
 		 *
 		 */
 	private static final long serialVersionUID = 1L;
+
+	/**
+	 * our position in the creation sequence, used to give a stable order to
+	 * segments that start at the same time (see {@link CreationOrder})
+	 */
+	private final long _creationSeq = CreationOrder.next();
 
 	public static final String TMA_LEADER = "TMA_";
 
@@ -633,7 +695,9 @@ public class TrackSegment extends BaseItemLayer
 	@Override
 	public int compareTo(final Plottable arg0) {
 		int res = 0;
-		if (arg0 instanceof TrackSegment) {
+		if (arg0 == this) {
+			res = 0;
+		} else if (arg0 instanceof TrackSegment) {
 			// sort them in dtg order. Segments without a start time (empty ones)
 			// go after those with one, and are ordered by name among themselves.
 			// Note: we must not compare an empty segment by name against a timed one,
@@ -650,6 +714,12 @@ public class TrackSegment extends BaseItemLayer
 				res = 1;
 			} else {
 				res = getName().compareTo(arg0.getName());
+			}
+
+			// segments that start at the same time (or have the same name) are still
+			// different segments. Break the tie, so the list doesn't drop one
+			if (res == 0) {
+				res = CreationOrder.compare(this, _creationSeq, other, other._creationSeq);
 			}
 		} else {
 			// just use string comparison

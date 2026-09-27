@@ -56,6 +56,7 @@ import org.junit.runners.Suite;
 		MWC.TacticalData.NarrativeWrapper.TestMe.class, Debrief.Wrappers.LabelWrapper.testMe.class,
 		Debrief.Wrappers.SensorContactWrapper.testSensorContact.class, Debrief.Wrappers.SensorWrapper.testSensors.class,
 		Debrief.Wrappers.ShapeWrapper.testMe.class, Debrief.Wrappers.TMAContactWrapper.TestSensorContact.class,
+		Debrief.Wrappers.DynamicTrackShapes.DynamicTrackShapeSetWrapper.testSensors.class,
 		Debrief.Wrappers.TMAWrapper.testSolutions.class, Debrief.Wrappers.TacticalDataWrapper.testMe.class,
 		Debrief.Wrappers.Track.Doublet.testCalc.class, Debrief.Wrappers.Track.TrackSegment.testListMgt.class,
 		Debrief.Wrappers.Track.TrackWrapper_Test.class, Debrief.Wrappers.Track.WormInHoleOffset.testMe.class,

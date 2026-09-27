@@ -889,7 +889,18 @@ abstract public class TacticalDataWrapper extends MWC.GUI.PlainWrapper
 	 */
 	@Override
 	public final void removeElement(final MWC.GUI.Editable plottable) {
-		_myContacts.remove(plottable);
+		if (!_myContacts.remove(plottable)) {
+			// not found by sorted search - possibly because its DTG has changed since
+			// it was stored. Find it by identity instead, and rebuild the list
+			final java.util.List<Editable> items = new java.util.ArrayList<Editable>(_myContacts);
+			if (items.removeIf(e -> e == plottable)) {
+				_myContacts.clear();
+				_myContacts.addAll(items);
+			} else {
+				MWC.Utilities.Errors.Trace.trace("Failed trying to remove " + plottable + " from " + getName(),
+						false);
+			}
+		}
 
 		// we also need to update the start/end time
 		_timePeriod = null;
