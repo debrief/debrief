@@ -113,6 +113,11 @@ public class SplitTracksIntoLegs implements RightClickContextItemGenerator {
 			for (final TrackWrapper track : _trackChanges.keySet()) {
 				final List<TrackSegment> splits = _trackChanges.get(track);
 
+				// this track may not have been split
+				if (splits == null || splits.isEmpty()) {
+					continue;
+				}
+
 				final TrackSegment target = splits.get(0);
 
 				final SegmentList existingSegments = track.getSegments();
@@ -210,6 +215,11 @@ public class SplitTracksIntoLegs implements RightClickContextItemGenerator {
 			// ok, merge the segments
 			for (final TrackWrapper track : _trackChanges.keySet()) {
 				final List<TrackSegment> splits = _trackChanges.get(track);
+
+				// this track may not have been split
+				if (splits == null || splits.isEmpty()) {
+					continue;
+				}
 
 				final TrackSegment target = splits.get(0);
 
@@ -355,6 +365,70 @@ public class SplitTracksIntoLegs implements RightClickContextItemGenerator {
 			assertEquals("correct positions", 12, tTwo.numFixes());
 		}
 		
+
+		private static TrackWrapper getContinuous() {
+			final TrackWrapper tFour = new TrackWrapper();
+			tFour.setName("t-4");
+			for (int i = 1; i <= 10; i++) {
+				tFour.addFix(getFix(i * 500, 22, 33));
+			}
+			return tFour;
+		}
+
+		/**
+		 * undo must cope with tracks that weren't split
+		 */
+		public void testUndoWhenOneTrackNotSplit() throws ExecutionException {
+			final TrackWrapper tOne = getOne();
+			final TrackWrapper tFour = getContinuous();
+
+			final Layers layers = new Layers();
+			layers.addThisLayer(tOne);
+			layers.addThisLayer(tFour);
+
+			final List<TrackWrapper> tracks = new ArrayList<TrackWrapper>();
+			tracks.add(tFour);
+			tracks.add(tOne);
+			final SplitTracksOperation oper = new SplitTracksOperation("Split tracks", layers, tracks, 1000L);
+
+			oper.execute(null, null);
+			assertEquals("more legs", 3, tOne.getSegments().size());
+			assertEquals("still one leg", 1, tFour.getSegments().size());
+
+			oper.undo(null, null);
+			assertEquals("just one leg", 1, tOne.getSegments().size());
+			assertEquals("just one leg", 1, tFour.getSegments().size());
+			assertEquals("correct positions", 14, tOne.numFixes());
+			assertEquals("correct positions", 10, tFour.numFixes());
+		}
+
+		/**
+		 * undo must cope with tracks that weren't split
+		 */
+		public void testSpatialUndoWhenOneTrackNotSplit() throws ExecutionException {
+			final TrackWrapper tThree = getThree();
+			final TrackWrapper tTwo = getTwo();
+
+			final Layers layers = new Layers();
+			layers.addThisLayer(tThree);
+			layers.addThisLayer(tTwo);
+
+			final List<TrackWrapper> tracks = new ArrayList<TrackWrapper>();
+			tracks.add(tTwo);
+			tracks.add(tThree);
+			final SpatialSplitTracksOperation oper = new SpatialSplitTracksOperation("Split tracks", layers, tracks,
+					3d);
+
+			oper.execute(null, null);
+			assertEquals("more legs", 3, tThree.getSegments().size());
+			assertEquals("still one leg", 1, tTwo.getSegments().size());
+
+			oper.undo(null, null);
+			assertEquals("just one leg", 1, tThree.getSegments().size());
+			assertEquals("just one leg", 1, tTwo.getSegments().size());
+			assertEquals("correct positions", 12, tThree.numFixes());
+			assertEquals("correct positions", 12, tTwo.numFixes());
+		}
 
 		public void testSpatialSplitOperation1() throws ExecutionException {
 
