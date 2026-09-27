@@ -16,7 +16,7 @@
 package Debrief.ReaderWriter.XML.csv_gz;
 
 import java.awt.Color;
-import java.io.BufferedOutputStream;
+import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -31,6 +31,7 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -38,6 +39,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.zip.GZIPInputStream;
+import java.util.zip.GZIPOutputStream;
 
 import org.apache.commons.compress.compressors.gzip.GzipUtils;
 import org.apache.commons.csv.CSVFormat;
@@ -61,10 +63,20 @@ import MWC.GenericData.HiResDate;
 import MWC.GenericData.WorldLocation;
 import MWC.GenericData.WorldSpeed;
 import MWC.TacticalData.Fix;
+import MWC.Utilities.ReaderWriter.SafeArchive;
 import MWC.Utilities.TextFormatting.GMTDateFormat;
 import junit.framework.TestCase;
 
 public class Import_CSV_GZ {
+
+	/**
+	 * largest permitted uncompressed size of a .csv.gz file (protects against gzip
+	 * bombs). The file is streamed line by line, so this is a guard against
+	 * runaway input rather than a memory budget. The samples in the repo are tiny
+	 * (10 KB) extracts, so doubling them isn't meaningful; real C-Log exports run
+	 * to hundreds of MB.
+	 */
+	public static final long MAX_CSV_GZ_BYTES = 1024L * 1024 * 1024;
 
 	private abstract class Core_Importer {
 		/**
@@ -646,6 +658,43 @@ public class Import_CSV_GZ {
 		@Override
 		public void setUp() {
 			DialogFactory.setRunHeadless(true);
+		}
+
+		public void test_gzip_bomb_rejected() throws IOException {
+			final String root = "../org.mwc.cmap.combined.feature/root_installs/sample_data/other_formats/csv_gz/";
+			final String filename = "BARTON_xxxx_SystemTrack_xxxx.csv.gz";
+			final byte[] realData;
+			try (InputStream in = new GZIPInputStream(new FileInputStream(root + filename))) {
+				realData = in.readAllBytes();
+			}
+
+			// real data, followed by a long run of highly compressible padding
+			final int limit = 1024 * 1024;
+			final ByteArrayOutputStream bos = new ByteArrayOutputStream();
+			try (GZIPOutputStream gz = new GZIPOutputStream(bos)) {
+				gz.write(realData);
+				final byte[] spaces = new byte[64 * 1024];
+				Arrays.fill(spaces, (byte) ' ');
+				for (int i = 0; i < 2 * limit / spaces.length; i++) {
+					gz.write(spaces);
+				}
+			}
+			assertTrue("highly compressed", bos.size() < limit / 50);
+
+			final Layers theLayers = new Layers();
+			final Logger logger = new Logger();
+			try {
+				new Import_CSV_GZ().doZipImport(theLayers, new ByteArrayInputStream(bos.toByteArray()), filename,
+						logger, limit);
+			} catch (final RuntimeException re) {
+				// the loader reports these to the user
+				logger.messages.add(re.getMessage());
+			}
+			boolean found = false;
+			for (final String msg : logger.getMessages()) {
+				found |= msg != null && msg.contains("larger than");
+			}
+			assertTrue("size limit reported:" + logger.getMessages(), found);
 		}
 
 		public void test_parse_bad_OSD_File() throws IOException {
@@ -1273,25 +1322,34 @@ public class Import_CSV_GZ {
 
 	public void doZipImport(final Layers theLayers, final InputStream inputStream, final String fileName,
 			final ErrorLogger logger) {
-		try {
-			final GZIPInputStream in = new GZIPInputStream(inputStream);
-			final ByteArrayOutputStream bos = new ByteArrayOutputStream();
-			final BufferedOutputStream fout = new BufferedOutputStream(bos, 4096);
-			for (int c = in.read(); c != -1; c = in.read()) {
-				fout.write(c);
-			}
-			in.close();
-			fout.close();
-			bos.close();
+		doZipImport(theLayers, inputStream, fileName, logger, MAX_CSV_GZ_BYTES);
+	}
 
-			// now create a byte input stream from the byte output stream
-			final ByteArrayInputStream bis = new ByteArrayInputStream(bos.toByteArray());
-
-			// and create it
-			doImport(theLayers, bis, fileName, logger);
+	void doZipImport(final Layers theLayers, final InputStream inputStream, final String fileName,
+			final ErrorLogger logger, final long maxBytes) {
+		// stream the uncompressed data straight into the (line by line) importer,
+		// with a cap on how much we'll inflate (gzip bomb)
+		try (GZIPInputStream in = new GZIPInputStream(new BufferedInputStream(inputStream, 65536))) {
+			doImport(theLayers, SafeArchive.limit(in, maxBytes, fileName), fileName, logger);
 		} catch (final IOException e) {
-			e.printStackTrace();
+			reportZipFailure(fileName, logger, e);
+		} catch (final RuntimeException re) {
+			// the CSV parser wraps read errors in runtime exceptions
+			Throwable cause = re;
+			while (cause != null && !(cause instanceof SafeArchive.ArchiveException)) {
+				cause = cause.getCause();
+			}
+			if (cause == null) {
+				throw re;
+			}
+			reportZipFailure(fileName, logger, (SafeArchive.ArchiveException) cause);
 		}
+	}
+
+	private static void reportZipFailure(final String fileName, final ErrorLogger logger, final IOException e) {
+		final String msg = "Failed to import " + fileName + ": " + e.getMessage();
+		logger.logError(ErrorLogger.ERROR, msg, e);
+		DialogFactory.showMessage("Import CSV.GZ File", msg);
 	}
 
 	private Core_Importer importerFor(final String filename) {

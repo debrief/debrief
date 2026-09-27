@@ -138,6 +138,7 @@ import org.junit.runners.Suite;
 		Debrief.ReaderWriter.GeoPDF.GenerateGeoJSON.GenerateGeoJSONTest.class,
 		Debrief.ReaderWriter.GeoPDF.AbstractGeoPDFBuilder.GeoPDFBuilderTest.class,
 		MWC.Utilities.ReaderWriter.XML.SafeXMLFactory.SafeXMLFactoryTest.class,
+		MWC.Utilities.ReaderWriter.SafeArchive.SafeArchiveTest.class,
 		Debrief.ReaderWriter.XML.KML.ImportKML.ImportKMLTest.class,
 		org.mwc.debrief.core.loaders.GpxUtil.TestGpxXXE.class})
 @RunWith(Suite.class)

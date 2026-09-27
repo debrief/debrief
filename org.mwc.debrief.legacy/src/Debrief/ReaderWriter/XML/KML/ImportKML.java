@@ -16,7 +16,6 @@
 package Debrief.ReaderWriter.XML.KML;
 
 import java.awt.Color;
-import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -30,9 +29,11 @@ import java.nio.charset.StandardCharsets;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Arrays;
 import java.util.StringTokenizer;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
+import java.util.zip.ZipOutputStream;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.ParserConfigurationException;
@@ -47,11 +48,13 @@ import org.xml.sax.SAXException;
 import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.TrackWrapper;
 import MWC.GUI.Layers;
+import MWC.GUI.Dialogs.DialogFactory;
 import MWC.GUI.Properties.DebriefColors;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.WorldLocation;
 import MWC.GenericData.WorldSpeed;
 import MWC.TacticalData.Fix;
+import MWC.Utilities.ReaderWriter.SafeArchive;
 import MWC.Utilities.ReaderWriter.XML.MWCXMLReader;
 import MWC.Utilities.ReaderWriter.XML.SafeXMLFactory;
 import MWC.Utilities.TextFormatting.GMTDateFormat;
@@ -69,6 +72,11 @@ public class ImportKML {
 
 		private static InputStream asStream(final String str) {
 			return new ByteArrayInputStream(str.getBytes(StandardCharsets.UTF_8));
+		}
+
+		@Override
+		protected void setUp() throws Exception {
+			DialogFactory.setRunHeadless(true);
 		}
 
 		public void testExternalEntityNotResolved() throws Exception {
@@ -98,7 +106,59 @@ public class ImportKML {
 			assertNotNull("track created", track);
 			assertEquals(1, track.numFixes());
 		}
+
+		private static byte[] kmz(final String entryName, final String before, final int padding, final String after)
+				throws IOException {
+			final ByteArrayOutputStream bos = new ByteArrayOutputStream();
+			try (ZipOutputStream zos = new ZipOutputStream(bos)) {
+				zos.putNextEntry(new ZipEntry(entryName));
+				zos.write(before.getBytes(StandardCharsets.UTF_8));
+				final byte[] spaces = new byte[64 * 1024];
+				Arrays.fill(spaces, (byte) ' ');
+				int remaining = padding;
+				while (remaining > 0) {
+					final int n = Math.min(spaces.length, remaining);
+					zos.write(spaces, 0, n);
+					remaining -= n;
+				}
+				zos.write(after.getBytes(StandardCharsets.UTF_8));
+				zos.closeEntry();
+			}
+			return bos.toByteArray();
+		}
+
+		public void testKmzImports() throws Exception {
+			final byte[] data = kmz("doc.kml", "<?xml version=\"1.0\"?>\n<kml><Document>"
+					+ String.format(RADAR_PLACEMARK, "12 - radar") + "<!--", 1000, "--></Document></kml>");
+			final Layers layers = new Layers();
+			doZipImport(layers, new ByteArrayInputStream(data), "radar.kmz", 100 * 1024);
+			assertNotNull("track created", layers.findLayer("doc-12"));
+		}
+
+		public void testKmzBombRejected() throws Exception {
+			// a valid KML with a comment that inflates past the limit
+			final int limit = 1024 * 1024;
+			final byte[] data = kmz("doc.kml", "<?xml version=\"1.0\"?>\n<kml><Document>"
+					+ String.format(RADAR_PLACEMARK, "12 - radar") + "<!--", 2 * limit, "--></Document></kml>");
+			assertTrue("highly compressed", data.length < limit / 50);
+			final Layers layers = new Layers();
+			doZipImport(layers, new ByteArrayInputStream(data), "radar.kmz", limit);
+			assertEquals("oversized entry not imported", 0, layers.size());
+		}
 	}
+
+	/**
+	 * largest permitted total uncompressed size of the KML inside a KMZ. The KML
+	 * is held in memory several times over while it's parsed, so this protects
+	 * against zip bombs. There are no KMZ samples in the repo; this is a generous
+	 * allowance for radar-plot / GPS tracker exports.
+	 */
+	public static final long MAX_KMZ_BYTES = 64L * 1024 * 1024;
+
+	/**
+	 * most entries we'll look through in a KMZ
+	 */
+	public static final int MAX_KMZ_ENTRIES = 1000;
 
 	// cache the last layer - for speed
 	private static TrackWrapper lastLayer = null;
@@ -310,26 +370,31 @@ public class ImportKML {
 	}
 
 	public static void doZipImport(final Layers theLayers, final InputStream inputStream, final String fileName) {
-		final ZipInputStream zis = new ZipInputStream(inputStream);
+		doZipImport(theLayers, inputStream, fileName, MAX_KMZ_BYTES);
+	}
 
+	static void doZipImport(final Layers theLayers, final InputStream inputStream, final String fileName,
+			final long maxBytes) {
 		ZipEntry entry;
-		try {
+		long remaining = maxBytes;
+		int numEntries = 0;
+		try (ZipInputStream zis = new ZipInputStream(inputStream)) {
 			while ((entry = zis.getNextEntry()) != null) {
+				if (++numEntries > MAX_KMZ_ENTRIES) {
+					throw new SafeArchive.ArchiveException(
+							fileName + " has more than the permitted " + MAX_KMZ_ENTRIES + " entries");
+				}
+
 				// is this one of ours?
 				final String theName = entry.getName();
 
 				if (theName.endsWith(".kml")) {
 					// cool, here it is - process it
 
-					// extract the data into a stream
+					// extract the data, with a cap on the uncompressed size (zip bomb)
 					final ByteArrayOutputStream bos = new ByteArrayOutputStream();
-					final BufferedOutputStream fout = new BufferedOutputStream(bos);
-					for (int c = zis.read(); c != -1; c = zis.read()) {
-						fout.write(c);
-					}
+					remaining -= SafeArchive.copy(zis, bos, remaining, fileName);
 					zis.closeEntry();
-					fout.close();
-					bos.close();
 
 					// now create a byte input stream from the byte output stream
 					final ByteArrayInputStream bis = new ByteArrayInputStream(bos.toByteArray());
@@ -339,7 +404,8 @@ public class ImportKML {
 				}
 			}
 		} catch (final IOException e) {
-			e.printStackTrace();
+			MWC.Utilities.Errors.Trace.trace(e, "Failed to read KMZ file:" + fileName);
+			DialogFactory.showMessage("Import KMZ", "Failed to read " + fileName + ": " + e.getMessage());
 		}
 
 	}
