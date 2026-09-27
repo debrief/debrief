@@ -37,7 +37,6 @@ import java.io.InterruptedIOException;
 import javax.swing.ProgressMonitorInputStream;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
-import javax.xml.parsers.SAXParserFactory;
 
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
@@ -77,9 +76,10 @@ public class MWCXMLReaderWriter extends MWCXMLReader implements PlainImporter {
 	}
 
 	/**
-	 * utility class to create & configure our SAXParser for us. We configure the
-	 * parser by telling it not to check against a specific DTD, since ASSET was
-	 * repeatedly falling over when unable to find the indicated DTD
+	 * utility class to create & configure our SAXParser for us. The parser is
+	 * hardened against XML External Entity attacks: DOCTYPE declarations are
+	 * rejected and external entities/DTDs are never loaded (see
+	 * {@link SafeXMLFactory}).
 	 *
 	 * @return a configured parser
 	 */
@@ -87,11 +87,7 @@ public class MWCXMLReaderWriter extends MWCXMLReader implements PlainImporter {
 		SAXParser res = null;
 
 		try {
-			res = SAXParserFactory.newInstance().newSAXParser();
-			// res.setProperty("http://xml.org/sax/features/validation", false);
-			// res.setFeature(
-			// "http://apache.org/xml/features/nonvalidating/load-external-dtd",
-			// false);
+			res = SafeXMLFactory.newSAXParser();
 		} catch (final SAXException e) {
 			System.err.println("could not set parser feature");
 		} catch (final ParserConfigurationException e) {

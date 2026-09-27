@@ -21,10 +21,12 @@ import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.StringReader;
+import java.nio.charset.StandardCharsets;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -33,7 +35,6 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
 import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.w3c.dom.Document;
@@ -52,9 +53,52 @@ import MWC.GenericData.WorldLocation;
 import MWC.GenericData.WorldSpeed;
 import MWC.TacticalData.Fix;
 import MWC.Utilities.ReaderWriter.XML.MWCXMLReader;
+import MWC.Utilities.ReaderWriter.XML.SafeXMLFactory;
 import MWC.Utilities.TextFormatting.GMTDateFormat;
+import junit.framework.TestCase;
 
 public class ImportKML {
+
+	public static class ImportKMLTest extends TestCase {
+
+		private static final String RADAR_PLACEMARK = "<Placemark><name>%s</name><MultiGeometry/>"
+				+ "<TimeStamp><when>2009-09-12T20:01:12Z</when></TimeStamp>"
+				+ "<Point><coordinates>7.9633,5.9696,0</coordinates></Point>"
+				+ "<description><![CDATA[<b>RADAR PLOT</b><br><hr>Lat: 05.9696<br>Lon: 07.9633"
+				+ "<br>Course: 253.0<br>Speed: 7.1 knots<br>Date: September 12, 2009]]></description></Placemark>";
+
+		private static InputStream asStream(final String str) {
+			return new ByteArrayInputStream(str.getBytes(StandardCharsets.UTF_8));
+		}
+
+		public void testExternalEntityNotResolved() throws Exception {
+			final File secret = File.createTempFile("kml_secret", ".txt");
+			try {
+				try (FileWriter fw = new FileWriter(secret)) {
+					// the track id is taken from the leading number of the name
+					fw.write("42");
+				}
+				final String kml = "<?xml version=\"1.0\"?>\n<!DOCTYPE kml [<!ENTITY xxe SYSTEM \"" + secret.toURI()
+						+ "\">]>\n<kml><Document>" + String.format(RADAR_PLACEMARK, "&xxe;") + "</Document></kml>";
+				final Layers layers = new Layers();
+				doImport(layers, asStream(kml), "radar.kml");
+				assertNull("external entity must not be resolved into a track name", layers.findLayer("radar-42"));
+				assertEquals("nothing imported from a file with a DOCTYPE", 0, layers.size());
+			} finally {
+				secret.delete();
+			}
+		}
+
+		public void testRadarPlotStillImports() throws Exception {
+			final String kml = "<?xml version=\"1.0\"?>\n<kml><Document>" + String.format(RADAR_PLACEMARK, "12 - radar")
+					+ "</Document></kml>";
+			final Layers layers = new Layers();
+			doImport(layers, asStream(kml), "radar.kml");
+			final TrackWrapper track = (TrackWrapper) layers.findLayer("radar-12");
+			assertNotNull("track created", track);
+			assertEquals(1, track.numFixes());
+		}
+	}
 
 	// cache the last layer - for speed
 	private static TrackWrapper lastLayer = null;
@@ -153,11 +197,6 @@ public class ImportKML {
 			// get the main part of the file - we use it for the track name
 			final String prefix = tidyFileName(fileName);
 
-			// get the bits ready to do the document parsing
-			final DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-			// then we have to create document-loader:
-			DocumentBuilder loader;
-
 			// read the file into a string
 			final String theStr = inputStreamAsString(inputStream);// readFileAsString(thePath);
 
@@ -167,7 +206,9 @@ public class ImportKML {
 			// wrap the string in a source
 			final InputSource s = new InputSource(new StringReader(tidyStr));
 
-			loader = factory.newDocumentBuilder();
+			// get the document loader. It's hardened against external entities
+			// (XXE), since KML files may come from anywhere
+			final DocumentBuilder loader = SafeXMLFactory.newDocumentBuilder();
 
 			// get parsing
 			final Document doc = loader.parse(s);

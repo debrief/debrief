@@ -16,6 +16,7 @@
 package MWC.Utilities.ReaderWriter.XML;
 
 import java.io.CharArrayWriter;
+import java.io.IOException;
 import java.text.DateFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.ParseException;
@@ -26,6 +27,7 @@ import java.util.Vector;
 
 import org.xml.sax.Attributes;
 import org.xml.sax.ContentHandler;
+import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.DefaultHandler;
@@ -468,6 +470,17 @@ public class MWCXMLReader extends DefaultHandler {
 	 */
 	public final void removeHandler(final MWCXMLReader handler) {
 		_myHandlers.remove(handler);
+	}
+
+	/**
+	 * never resolve external entities or DTDs referenced from a data file (XXE).
+	 * The parser from {@link SafeXMLFactory} already rejects DOCTYPEs, this is a
+	 * second line of defence since the SAX handler is also the entity resolver.
+	 */
+	@Override
+	public InputSource resolveEntity(final String publicId, final String systemId)
+			throws IOException, SAXException {
+		return SafeXMLFactory.REJECT_EXTERNAL_ENTITIES.resolveEntity(publicId, systemId);
 	}
 
 	public final void reportNotHandledErrors(final boolean val) {

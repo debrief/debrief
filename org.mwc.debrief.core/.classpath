@@ -8,7 +8,6 @@
 	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
 	<classpathentry kind="src" path="src/"/>
 	<classpathentry kind="src" path="intro/"/>
-	<classpathentry exported="true" kind="lib" path="libs/jdom-1.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/eclipselink.jar"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>
