@@ -28,7 +28,6 @@ import MWC.GUI.Plottable;
 import MWC.GUI.Properties.LocationPropertyEditor;
 import MWC.GenericData.HiResDate;
 import MWC.TacticalData.Fix;
-import MWC.Utilities.Errors.Trace;
 import MWC.Utilities.ReaderWriter.XML.MWCXMLReader;
 import MWC.Utilities.ReaderWriter.XML.Util.ColourHandler;
 import MWC.Utilities.ReaderWriter.XML.Util.FontHandler;
@@ -144,7 +143,7 @@ abstract public class FixHandler extends MWCXMLReader {
 					}
 					_theFix.setCourse(MWC.Algorithms.Conversions.Degs2Rads(courseVal));
 				} catch (final java.text.ParseException pe) {
-					MWC.Utilities.Errors.Trace.trace(pe, "Failed reading in:" + name + " value is:" + value);
+					reportProblem("Failed reading in:" + name + " value is:" + value + ": " + pe.getMessage(), pe);
 				}
 			}
 		});
@@ -155,7 +154,7 @@ abstract public class FixHandler extends MWCXMLReader {
 				try {
 					_theFix.setSpeed(MWC.Algorithms.Conversions.Kts2Yps(readThisDouble(value)));
 				} catch (final java.text.ParseException pe) {
-					MWC.Utilities.Errors.Trace.trace(pe, "Failed reading in:" + name + " value is:" + value);
+					reportProblem("Failed reading in:" + name + " value is:" + value + ": " + pe.getMessage(), pe);
 				}
 
 			}
@@ -168,7 +167,7 @@ abstract public class FixHandler extends MWCXMLReader {
 					final HiResDate hrf = DebriefFormatDateTime.parseThis(value);
 					_theFix.setTime(hrf);
 				} catch (final ParseException e) {
-					Trace.trace(e, "While parsing date");
+					reportProblem("While parsing date" + ": " + e.getMessage(), e);
 				}
 			}
 		});
@@ -238,7 +237,13 @@ abstract public class FixHandler extends MWCXMLReader {
 
 	@Override
 	public final void elementClosed() {
-		addPlottable(_theFixWrapper);
+		if (_theFix.getLocation() == null) {
+			// the location couldn't be read (already reported), don't create a
+			// fix without a position
+			reportProblem("Fix at " + _theFix.getTime() + " skipped, it has no valid location", null);
+		} else {
+			addPlottable(_theFixWrapper);
+		}
 
 		// reset our variables
 		_theFix = null;

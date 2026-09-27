@@ -46,6 +46,7 @@ import org.xml.sax.SAXParseException;
 
 import MWC.GUI.Layers;
 import MWC.GUI.Plottable;
+import MWC.Utilities.ReaderWriter.ImportProblems;
 import MWC.Utilities.ReaderWriter.PlainImporter;
 
 /**
@@ -115,6 +116,24 @@ public class MWCXMLReaderWriter extends MWCXMLReader implements PlainImporter {
 	 */
 	protected boolean _importCancelled;
 
+	/**
+	 * problems (malformed attributes) found during the last import
+	 */
+	private ImportProblems _importProblems = new ImportProblems();
+
+	/**
+	 * name of the file being imported, for problem reports
+	 */
+	private String _sourceName;
+
+	/**
+	 * @return the problems (malformed attributes, which were skipped) found during
+	 *         the last import
+	 */
+	public ImportProblems getImportProblems() {
+		return _importProblems;
+	}
+
 	/** Creates new XMLReaderWriter */
 	public MWCXMLReaderWriter() {
 		super("");
@@ -147,6 +166,8 @@ public class MWCXMLReaderWriter extends MWCXMLReader implements PlainImporter {
 	}
 
 	protected void doImport(final InputSource is, final MWCXMLReader theHandler) throws PlainImporter.ImportException {
+		// collect any malformed attributes, so we can tell the user at the end
+		_importProblems = new ImportProblems();
 		try {
 
 			// Create SAX 2 parser...
@@ -156,7 +177,15 @@ public class MWCXMLReaderWriter extends MWCXMLReader implements PlainImporter {
 			theHandler.handleThis(spf.getXMLReader(), this);
 
 			// start parsing
-			spf.parse(is, theHandler);
+			MWCXMLReader.startCollectingProblems(_importProblems);
+			try {
+				spf.parse(is, theHandler);
+			} finally {
+				MWCXMLReader.stopCollectingProblems();
+			}
+
+			// the rest of the data loaded, but let the user know what was skipped
+			_importProblems.report("Import XML file", _sourceName != null ? _sourceName : "XML file");
 		} catch (final SAXParseException se) {
 			if (_importCancelled == true) {
 				System.out.println("CANCELLED");
@@ -277,6 +306,7 @@ public class MWCXMLReaderWriter extends MWCXMLReader implements PlainImporter {
 		_importCancelled = false;
 
 		// import the datafile into this set of layers
+		_sourceName = fName;
 		doImport(new InputSource(po), reader);
 
 	}

@@ -32,7 +32,6 @@ import MWC.GenericData.HiResDate;
 import MWC.GenericData.WatchableList;
 import MWC.TacticalData.NarrativeEntry;
 import MWC.TacticalData.NarrativeWrapper;
-import MWC.Utilities.Errors.Trace;
 import MWC.Utilities.ReaderWriter.XML.LayerHandler;
 import MWC.Utilities.ReaderWriter.XML.MWCXMLReader;
 import MWC.Utilities.TextFormatting.DebriefFormatDateTime;
@@ -96,7 +95,7 @@ public final class NarrativeHandler extends MWCXMLReader {
 					try {
 						_dtg = DebriefFormatDateTime.parseThis(value);
 					} catch (final ParseException e) {
-						Trace.trace(e, "While parsing date");
+						reportProblem("While parsing date" + ": " + e.getMessage(), e);
 					}
 				}
 			});
