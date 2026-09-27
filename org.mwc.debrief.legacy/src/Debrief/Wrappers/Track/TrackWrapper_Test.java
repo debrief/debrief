@@ -39,8 +39,10 @@ import org.junit.Before;
 import Debrief.ReaderWriter.Replay.ImportReplay;
 import Debrief.Wrappers.DynamicShapeWrapper;
 import Debrief.Wrappers.FixWrapper;
+import Debrief.Wrappers.LabelWrapper;
 import Debrief.Wrappers.SensorContactWrapper;
 import Debrief.Wrappers.SensorWrapper;
+import Debrief.Wrappers.ShapeWrapper;
 import Debrief.Wrappers.TMAContactWrapper;
 import Debrief.Wrappers.TMAWrapper;
 import Debrief.Wrappers.TrackWrapper;
@@ -655,6 +657,44 @@ public class TrackWrapper_Test extends TestCase {
 	 *
 	 * @throws InterruptedException
 	 */
+
+	/**
+	 * the clipboard deserialisation filter must accept the Debrief wrappers (as
+	 * used in cut/copy/paste)
+	 */
+	public void testClipboardFilterAcceptsWrappers() throws Exception {
+		final Layers tLayers = new Layers();
+		ImportReplay.initialise(new ImportReplay.testImport.TestParent(ImportReplay.IMPORT_AS_OTG, 0L));
+		try (final InputStream bs = new FileInputStream(ownship_track)) {
+			new ImportReplay().importThis(ownship_track, bs, tLayers);
+		}
+		final TrackWrapper loaded = (TrackWrapper) tLayers.findLayer("NELSON");
+		assertNotNull("loaded track", loaded);
+
+		final TrackWrapper dummy = getDummyTrack();
+		dummy.setName("dummy");
+		final ShapeWrapper shape = new ShapeWrapper("rect",
+				new RectangleShape(new WorldLocation(1, 1, 0), new WorldLocation(2, 2, 0)), Color.RED,
+				new HiResDate(1000));
+		final LabelWrapper label = new LabelWrapper("lbl", new WorldLocation(1, 1, 0), Color.BLUE);
+		final Editable[] items = new Editable[] { loaded, dummy, shape, label };
+
+		final java.io.ByteArrayOutputStream bos = new java.io.ByteArrayOutputStream();
+		try (final java.io.ObjectOutputStream oos = new java.io.ObjectOutputStream(bos)) {
+			oos.writeObject(items);
+		}
+		final Editable[] res;
+		try (final java.io.ObjectInputStream ois = MWC.Utilities.ReaderWriter.ClipboardInputFilter
+				.createStream(new java.io.ByteArrayInputStream(bos.toByteArray()))) {
+			res = (Editable[]) ois.readObject();
+		}
+		assertEquals(4, res.length);
+		assertEquals(loaded.numFixes(), ((TrackWrapper) res[0]).numFixes());
+		assertEquals(dummy.numFixes(), ((TrackWrapper) res[1]).numFixes());
+		assertEquals(dummy.getSensors().size(), ((TrackWrapper) res[1]).getSensors().size());
+		assertEquals("rect", res[2].getName());
+		assertEquals("lbl", res[3].getName());
+	}
 
 	public void testAdd() throws InterruptedException {
 		assertEquals("start condition", 6, this.trackLength());

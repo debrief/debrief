@@ -93,6 +93,7 @@ import org.junit.runners.Suite;
 		MWC.Utilities.ReaderWriter.json.GNDStore.TestDatabase.class,
 		MWC.Utilities.TextFormatting.BriefFormatLocation.FormatLocationTest.class,
 		MWC.Utilities.TextFormatting.DebriefFormatDateTime.DebriefFormatTest.class,
+		MWC.Utilities.ReaderWriter.ClipboardInputFilter.ClipboardInputFilterTest.class,
 		org.mwc.cmap.core.CorePlugin.ClipboardTest.class,
 		org.mwc.cmap.core.DataTypes.TrackData.TrackManager.testTrackManager.class,
 		org.mwc.cmap.core.operations.RightClickCutCopyAdaptor.testCutPaste.class,

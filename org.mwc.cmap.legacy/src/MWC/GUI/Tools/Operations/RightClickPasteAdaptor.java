@@ -251,14 +251,16 @@ public class RightClickPasteAdaptor implements RightClickEdit.PlottableMenuCreat
 					// we're off!
 
 					try {
-
-						// extract the plottable
-						final Plottable theData = (Plottable) tr.getTransferData(PlottableSelection.PlottableFlavor);
-
 						PasteItem paster = null;
 
+						// only accept our own in-process selection. Check this before we
+						// extract the data: for contents from another process, AWT would
+						// deserialise the clipboard bytes to give us the data
 						if (tr instanceof PlottableSelection) {
 							final PlottableSelection ps = (PlottableSelection) tr;
+
+							// extract the plottable
+							final Plottable theData = (Plottable) ps.getTransferData(PlottableSelection.PlottableFlavor);
 
 							final boolean isCopy = ps.isACopy();
 
