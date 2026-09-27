@@ -1196,22 +1196,29 @@ public class TrackWrapper extends LightweightTrackWrapper implements WatchableLi
 			} else {
 				// calculate the course
 				final WorldVector wv = currFw.getLocation().subtract(prevFw.getLocation());
-				prevFw.getFix().setCourse(wv.getBearing());
-
-				// also, set the correct label alignment
-				currFw.resetLabelLocation();
 
 				// calculate the speed
 				// get distance in meters
 				final WorldDistance wd = new WorldDistance(wv);
 				final double distance = wd.getValueIn(WorldDistance.METRES);
-				// get time difference in seconds
-				final long timeDifference = (currFw.getTime().getMicros() - prevFw.getTime().getMicros()) / 1000000;
+				// get time difference in seconds (as a double, so sub-second gaps
+				// don't get truncated)
+				final double timeDifference = (currFw.getTime().getMicros() - prevFw.getTime().getMicros())
+						/ 1000000d;
 
 				// get speed in meters per second and convert it to knots
-				final WorldSpeed speed = new WorldSpeed(distance / timeDifference, WorldSpeed.M_sec);
-				final double knots = WorldSpeed.convert(WorldSpeed.M_sec, WorldSpeed.Kts, speed.getValue());
+				final double mps = distance / timeDifference;
+				if (timeDifference <= 0 || !Double.isFinite(mps)) {
+					// can't calculate a speed for this pair of fixes. Skip this one, we'll
+					// use the next fix to calculate speed for the previous one
+					continue;
+				}
+				final double knots = WorldSpeed.convert(WorldSpeed.M_sec, WorldSpeed.Kts, mps);
 				prevFw.setSpeed(knots);
+				prevFw.getFix().setCourse(wv.getBearing());
+
+				// also, set the correct label alignment
+				currFw.resetLabelLocation();
 
 				prevFw = currFw;
 			}
@@ -3356,21 +3363,20 @@ public class TrackWrapper extends LightweightTrackWrapper implements WatchableLi
 			return;
 		}
 
-		final long currentStart = this.getStartDTG().getMicros();
-		long startTime = (currentStart / interval) * interval;
-
-		// just check we're in the range
-		if (startTime < currentStart) {
-			startTime += interval;
-		}
-
-		// move back to millis
-		startTime /= 1000L;
-
 		// just check it's not a barking frequency
-		if (theVal.getDate().getTime() <= 0) {
+		if (interval <= 0 || theVal.getDate().getTime() <= 0) {
 			// ignore, we don't need to do anything for a zero or a -1
 		} else {
+			final long currentStart = this.getStartDTG().getMicros();
+			long startTimeMicros = (currentStart / interval) * interval;
+
+			// just check we're in the range
+			if (startTimeMicros < currentStart) {
+				startTimeMicros += interval;
+			}
+
+			// move back to millis (for the track segments)
+			final long startTime = startTimeMicros / 1000L;
 
 			final SegmentList segments = _theSegments;
 			final Enumeration<Editable> theEnum = segments.elements();
@@ -3383,7 +3389,7 @@ public class TrackWrapper extends LightweightTrackWrapper implements WatchableLi
 			if (_mySensors != null) {
 				for (final Enumeration<Editable> iterator = _mySensors.elements(); iterator.hasMoreElements();) {
 					final SensorWrapper thisS = (SensorWrapper) iterator.nextElement();
-					thisS.decimate(theVal, startTime);
+					thisS.decimate(theVal, startTimeMicros);
 				}
 			}
 
@@ -3391,7 +3397,7 @@ public class TrackWrapper extends LightweightTrackWrapper implements WatchableLi
 			if (_mySolutions != null) {
 				for (final Enumeration<Editable> iterator = _mySolutions.elements(); iterator.hasMoreElements();) {
 					final TMAWrapper thisT = (TMAWrapper) iterator.nextElement();
-					thisT.decimate(theVal, startTime);
+					thisT.decimate(theVal, startTimeMicros);
 				}
 			}
 

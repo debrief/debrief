@@ -35,6 +35,7 @@ import java.util.Vector;
 
 import Debrief.GUI.Tote.Painters.SnailDrawTacticalContact;
 import Debrief.GUI.Tote.Painters.SnailDrawTacticalContact.PlottableWrapperWithTimeAndOverrideableColor;
+import MWC.Algorithms.Conversions;
 import MWC.GUI.Defaults;
 import MWC.GUI.Editable;
 import MWC.GUI.FireReformatted;
@@ -120,24 +121,41 @@ abstract public class TacticalDataWrapper extends MWC.GUI.PlainWrapper
 		}
 
 		/**
-		 * Return the interpolated value in the supplied domain.
+		 * Return the linearly interpolated value in the supplied domain. Use this
+		 * for non-angular values (range, frequency, depth, speed, etc). For angles,
+		 * use {@link #interpDegs(double, double)} or
+		 * {@link #interpRads(double, double)}.
 		 */
 		public double interp(final double startVariable, final double endVariable) {
-			double start = startVariable;
-			double end = endVariable;
-			// do a quick sanity to check to verify if we're an angle passing through
-			// zero
-			// if we don't do this check then it will try to do it the 'short-way'
-			// through 180 degs
-			if (Math.abs(end - start) > 180) {
-				if (start > 180)
-					start -= 360;
-				if (end > 180)
-					end -= 360;
+			// two items at the same time? just use the start value
+			if (_timeDelta == 0) {
+				return startVariable;
 			}
 
-			final double gradient = (end - start) / (_timeDelta);
-			return start + (_desiredTime - _startTime) * gradient;
+			final double gradient = (endVariable - startVariable) / (_timeDelta);
+			return startVariable + (_desiredTime - _startTime) * gradient;
+		}
+
+		/**
+		 * Return the interpolated angle (degrees), taking the shortest turn
+		 * between the two values (so 350 to 010 passes through north).
+		 *
+		 * @return interpolated angle, in [0, 360)
+		 */
+		public double interpDegs(final double startDegs, final double endDegs) {
+			final double delta = Conversions.degsDifference(startDegs, endDegs);
+			return Conversions.normaliseDegs(interp(startDegs, startDegs + delta));
+		}
+
+		/**
+		 * Return the interpolated angle (radians), taking the shortest turn
+		 * between the two values.
+		 *
+		 * @return interpolated angle, in [0, 2 PI)
+		 */
+		public double interpRads(final double startRads, final double endRads) {
+			final double delta = Conversions.radsDifference(startRads, endRads);
+			return Conversions.normaliseRads(interp(startRads, startRads + delta));
 		}
 	}
 
@@ -230,6 +248,52 @@ abstract public class TacticalDataWrapper extends MWC.GUI.PlainWrapper
 			sw.decimate(new HiResDate(20000), 4000000);
 
 			assertEquals("correct number of decimated", 24, sw._myContacts.size());
+		}
+
+		/**
+		 * range, frequency and bearing are interpolated with the correct rules:
+		 * linear for range/frequency, shortest-turn for bearings
+		 */
+		public static void testDecimateNonAngularValues() {
+			final SensorWrapper sw = new SensorWrapper("mySensor");
+			final long t0 = 60000;
+			sw.add(new SensorContactWrapper("parent", new HiResDate(t0), new WorldDistance(100, WorldDistance.YARDS),
+					350d, 340d, 150d, null, Color.RED, "the label", 0, "other label"));
+			sw.add(new SensorContactWrapper("parent", new HiResDate(t0 + 60000),
+					new WorldDistance(5000, WorldDistance.YARDS), 10d, 20d, 400d, null, Color.RED, "the label", 0,
+					"other label"));
+
+			// resample every 30 secs (micros)
+			sw.decimate(new HiResDate(30000), t0 * 1000);
+
+			assertEquals("correct number of decimated", 3, sw._myContacts.size());
+
+			SensorContactWrapper mid = null;
+			for (final Editable ed : sw._myContacts) {
+				final SensorContactWrapper sc = (SensorContactWrapper) ed;
+				if (sc.getDTG().getDate().getTime() == t0 + 30000) {
+					mid = sc;
+				}
+			}
+			assertNotNull("found mid-point", mid);
+			assertEquals("range interpolated linearly", 2550d, mid.getRange().getValueIn(WorldDistance.YARDS), 0.001);
+			assertEquals("frequency interpolated linearly", 275d, mid.getFrequency(), 0.001);
+			assertEquals("bearing interpolated through north", 0d,
+					MWC.Algorithms.Conversions.signedDegs(mid.getBearing()), 0.001);
+			assertEquals("ambig bearing interpolated through north", 0d,
+					MWC.Algorithms.Conversions.signedDegs(mid.getAmbiguousBearing()), 0.001);
+			assertTrue("bearing in [0,360)", mid.getBearing() >= 0 && mid.getBearing() < 360);
+		}
+
+		public static void testInterpolatorZeroTimeDelta() {
+			final SensorContactWrapper s1 = new SensorContactWrapper("parent", new HiResDate(1000), null, 10d, null,
+					Color.RED, "a", 0, "s");
+			final SensorContactWrapper s2 = new SensorContactWrapper("parent", new HiResDate(1000), null, 20d, null,
+					Color.RED, "b", 0, "s");
+			final LinearInterpolator interp = new LinearInterpolator(s1, s2, 1000 * 1000L);
+			final double res = interp.interp(100, 200);
+			assertFalse("finite result for equal times", Double.isNaN(res) || Double.isInfinite(res));
+			assertEquals("takes start value", 100d, res, 0.0001);
 		}
 
 		public static void testDecimateThroughZero() throws ParseException {

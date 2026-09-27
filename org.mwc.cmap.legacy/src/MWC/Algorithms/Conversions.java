@@ -38,6 +38,41 @@ final public class Conversions {
 			 * note, we're not using Excel value for degs2yds, but RN approximation (6080/3)
 			 */
 		}
+
+		public void testNormaliseDegs() {
+			assertEquals(0d, Conversions.normaliseDegs(0), 1e-9);
+			assertEquals(0d, Conversions.normaliseDegs(360), 1e-9);
+			assertEquals(350d, Conversions.normaliseDegs(-10), 1e-9);
+			assertEquals(10d, Conversions.normaliseDegs(730), 1e-9);
+			assertEquals(180d, Conversions.normaliseDegs(-540), 1e-9);
+			assertEquals(359.5, Conversions.normaliseDegs(-0.5), 1e-9);
+		}
+
+		public void testSignedDegs() {
+			assertEquals(-10d, Conversions.signedDegs(350), 1e-9);
+			assertEquals(180d, Conversions.signedDegs(180), 1e-9);
+			assertEquals(180d, Conversions.signedDegs(-180), 1e-9);
+			assertEquals(-170d, Conversions.signedDegs(190), 1e-9);
+			assertEquals(10d, Conversions.signedDegs(730), 1e-9);
+			assertEquals(-10d, Conversions.signedDegs(-730), 1e-9);
+			assertEquals(170d, Conversions.signedDegs(-550), 1e-9);
+		}
+
+		public void testDegsDifference() {
+			// from 350 to 010 is +20, not -340
+			assertEquals(20d, Conversions.degsDifference(350, 10), 1e-9);
+			assertEquals(-20d, Conversions.degsDifference(10, 350), 1e-9);
+			assertEquals(-10d, Conversions.degsDifference(-175, 175), 1e-9);
+			assertEquals(0d, Conversions.degsDifference(45, 405), 1e-9);
+		}
+
+		public void testRadiansHelpers() {
+			assertEquals(Math.PI * 1.5, Conversions.normaliseRads(-Math.PI / 2), 1e-9);
+			assertEquals(0d, Conversions.normaliseRads(2 * Math.PI), 1e-9);
+			assertEquals(-Math.PI / 2, Conversions.signedRads(Math.PI * 1.5), 1e-9);
+			assertEquals(Math.PI, Conversions.signedRads(-Math.PI), 1e-9);
+			assertEquals(Degs2Rads(20), Conversions.radsDifference(Degs2Rads(350), Degs2Rads(10)), 1e-9);
+		}
 	}
 
 	/////////////////////////////////////////////////////////////
@@ -64,6 +99,105 @@ final public class Conversions {
 	 * supplied by Daniel Thibault, Dec 09
 	 */
 	final static private double YDS_NM_CONV = NM_M_CONV / (3d * FT_M_CONV);
+
+	/**
+	 * normalise an angle (degrees) to the range [0, 360)
+	 *
+	 * @param degs angle in degrees
+	 * @return equivalent angle in [0, 360)
+	 */
+	final public static double normaliseDegs(final double degs) {
+		if (degs >= 0d && degs < 360d) {
+			// already in range, don't introduce rounding errors
+			return degs;
+		}
+		double res = degs % 360d;
+		if (res < 0) {
+			res += 360d;
+		}
+		// guard against -0.0 and rounding up to exactly 360
+		if (res >= 360d || res == 0d) {
+			res = 0d;
+		}
+		return res;
+	}
+
+	/**
+	 * fold an angle (or an angular difference) in degrees into the range (-180,
+	 * 180]
+	 *
+	 * @param degs angle in degrees
+	 * @return equivalent signed angle in (-180, 180]
+	 */
+	final public static double signedDegs(final double degs) {
+		if (degs > -180d && degs <= 180d) {
+			// already in range, don't introduce rounding errors
+			return degs;
+		}
+		final double res = normaliseDegs(degs);
+		return res > 180d ? res - 360d : res;
+	}
+
+	/**
+	 * the shortest signed turn (degrees) from one angle to another, so the change
+	 * from 350 to 010 is +20, not -340
+	 *
+	 * @param fromDegs start angle (degrees)
+	 * @param toDegs   end angle (degrees)
+	 * @return signed difference (toDegs - fromDegs) in (-180, 180]
+	 */
+	final public static double degsDifference(final double fromDegs, final double toDegs) {
+		return signedDegs(toDegs - fromDegs);
+	}
+
+	/**
+	 * normalise an angle (radians) to the range [0, 2 PI)
+	 *
+	 * @param rads angle in radians
+	 * @return equivalent angle in [0, 2 PI)
+	 */
+	final public static double normaliseRads(final double rads) {
+		if (rads >= 0d && rads < 2d * Math.PI) {
+			// already in range, don't introduce rounding errors
+			return rads;
+		}
+		final double twoPi = 2d * Math.PI;
+		double res = rads % twoPi;
+		if (res < 0) {
+			res += twoPi;
+		}
+		if (res >= twoPi || res == 0d) {
+			res = 0d;
+		}
+		return res;
+	}
+
+	/**
+	 * fold an angle (or an angular difference) in radians into the range (-PI,
+	 * PI]
+	 *
+	 * @param rads angle in radians
+	 * @return equivalent signed angle in (-PI, PI]
+	 */
+	final public static double signedRads(final double rads) {
+		if (rads > -Math.PI && rads <= Math.PI) {
+			// already in range, don't introduce rounding errors
+			return rads;
+		}
+		final double res = normaliseRads(rads);
+		return res > Math.PI ? res - 2d * Math.PI : res;
+	}
+
+	/**
+	 * the shortest signed turn (radians) from one angle to another
+	 *
+	 * @param fromRads start angle (radians)
+	 * @param toRads   end angle (radians)
+	 * @return signed difference (toRads - fromRads) in (-PI, PI]
+	 */
+	final public static double radsDifference(final double fromRads, final double toRads) {
+		return signedRads(toRads - fromRads);
+	}
 
 	final public static double clipRadians(final double val) {
 		double theVal = val;

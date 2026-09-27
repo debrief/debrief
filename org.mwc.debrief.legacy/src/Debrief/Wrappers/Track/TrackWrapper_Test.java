@@ -827,6 +827,91 @@ public class TrackWrapper_Test extends TestCase {
 		assertEquals("have new items", 9, _ctr);
 	}
 
+	/**
+	 * course & speed calculation with fixes less than a second apart, and gaps that
+	 * aren't whole seconds
+	 */
+	public void testCalcCourseSpeedSubSecond() {
+		final TrackWrapper tw = new TrackWrapper();
+		tw.setName("fast");
+		// 10 m/s due east, sampled at 0.5 sec, then a 1.9 sec gap
+		final long[] times = new long[] { 10000, 10500, 11000, 12900, 13400 };
+		for (final long t : times) {
+			final double metresEast = (t - times[0]) / 1000d * 10d;
+			tw.addFix(new FixWrapper(
+					new Fix(new HiResDate(t), new WorldLocation(0, Conversions.m2Degs(metresEast), 0), 0, 0)));
+		}
+		tw.calcCourseSpeed();
+
+		final double tenMpsInKts = Conversions.Mps2Kts(10);
+		final Enumeration<Editable> iter = tw.getPositionIterator();
+		int ctr = 0;
+		while (iter.hasMoreElements() && ctr < times.length - 1) {
+			final FixWrapper fw = (FixWrapper) iter.nextElement();
+			assertEquals("speed correct for fix " + ctr, tenMpsInKts, fw.getSpeed(), 0.01);
+			assertEquals("course correct for fix " + ctr, 90d, Conversions.Rads2Degs(fw.getCourse()), 0.01);
+			ctr++;
+		}
+		assertEquals("checked fixes", times.length - 1, ctr);
+	}
+
+	/**
+	 * selecting 'None' for resample shouldn't throw
+	 */
+	public void testResampleAtZero() {
+		final TrackWrapper tw = new TrackWrapper();
+		tw.setName("some track");
+		tw.addFix(createFix3(10000, 1, 1));
+		tw.addFix(createFix3(20000, 1, 2));
+		tw.addFix(createFix3(30000, 1, 3));
+		tw.setResampleDataAt(new HiResDate(0));
+		assertEquals("unchanged", 3, tw.numFixes());
+	}
+
+	/**
+	 * resampling a track whose first leg is a relative TMA segment keeps the right
+	 * leg name (start DTG) and offset
+	 */
+	public void testDecimateRelativeTMALeg() {
+		final TrackWrapper host = new TrackWrapper();
+		host.setName("host");
+		host.addFix(createFix2(80000, 3, 3, 4, 12));
+		host.addFix(createFix2(100000, 1, 1, 4, 12));
+		host.addFix(createFix2(200000, 2, 3, 4, 12));
+		host.addFix(createFix2(300000, 3, 3, 4, 12));
+
+		final SensorWrapper sw = new SensorWrapper("some sensor");
+		host.add(sw);
+
+		final SensorContactWrapper[] items = new SensorContactWrapper[4];
+		items[0] = createSensorItem(host, sw, 115000);
+		items[1] = createSensorItem(host, sw, 125000);
+		items[2] = createSensorItem(host, sw, 135000);
+		items[3] = createSensorItem(host, sw, 145000);
+		for (final SensorContactWrapper item : items) {
+			item.setSensor(sw);
+		}
+
+		final WorldVector offset = new WorldVector(Conversions.Degs2Rads(45), 0.1, 0);
+		final RelativeTMASegment seg = new RelativeTMASegment(items, offset, new WorldSpeed(5, WorldSpeed.Kts), 33,
+				null, Color.yellow);
+		final TrackWrapper tma = new TrackWrapper();
+		tma.setName(TrackSegment.TMA_LEADER + "leg");
+		tma.add(seg);
+		// (adding a single leg renames it, so name it afterwards)
+		seg.setName(TrackSegment.TMA_LEADER + "leg");
+
+		// resample at 10 second intervals, so the leg starts at 120000
+		tma.setResampleDataAt(new HiResDate(10000));
+
+		final String expectedName = MWC.Utilities.TextFormatting.FormatRNDateTime.toString(120000);
+		assertEquals("leg named for real start time", expectedName, seg.getName());
+
+		// the offset should now be from the host position at the new start time
+		final FixWrapper first = (FixWrapper) seg.first();
+		assertEquals("first point at new start", 120000, first.getDateTimeGroup().getDate().getTime());
+	}
+
 	public void testDecimateAbsolute() throws InterruptedException {
 		final TrackSegment ts1 = new TrackSegment(TrackSegment.ABSOLUTE);
 		ts1.addFix(createFix3(0 * 1000000L, 31, 34));

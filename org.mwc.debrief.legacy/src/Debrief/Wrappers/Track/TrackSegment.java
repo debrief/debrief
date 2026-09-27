@@ -661,7 +661,8 @@ public class TrackSegment extends BaseItemLayer
 	/**
 	 * switch the sample rate of this track to the supplied frequency
 	 *
-	 * @param theVal
+	 * @param theVal    the resample interval
+	 * @param startTime the start time (millis, not micros)
 	 */
 	public void decimate(final HiResDate theVal, final TrackWrapper parentTrack, final long startTime) {
 		final Vector<FixWrapper> newItems = new Vector<FixWrapper>();
@@ -724,6 +725,13 @@ public class TrackSegment extends BaseItemLayer
 		}
 	}
 
+	/**
+	 * resample a TMA leg
+	 *
+	 * @param theVal       the resample interval
+	 * @param newItems     where to put the new positions
+	 * @param theStartTime the start time (millis, not micros)
+	 */
 	private void decimateRelativeTMA(final HiResDate theVal, final Vector<FixWrapper> newItems,
 			final long theStartTime) {
 		long tNow;
@@ -757,7 +765,8 @@ public class TrackSegment extends BaseItemLayer
 		if (tma instanceof RelativeTMASegment) {
 			final FixWrapper myStarter = (FixWrapper) tma.first();
 			final FixWrapper myEnder = (FixWrapper) tma.last();
-			final HiResDate startDTG = new HiResDate(0, theStartTime);
+			// note: theStartTime is in millis
+			final HiResDate startDTG = new HiResDate(theStartTime);
 			final FixWrapper newStarter = FixWrapper.interpolateFix(myStarter, myEnder, startDTG);
 			final WorldLocation newStartLoc = newStarter.getLocation();
 

@@ -8,6 +8,7 @@ import java.util.List;
 import Debrief.ReaderWriter.Antares.ImportAntaresImpl.ImportAntaresException;
 import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.Track.TrackSegment;
+import MWC.Algorithms.Conversions;
 import MWC.GUI.Editable;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
@@ -69,9 +70,12 @@ public class ImportAntaresTest extends TestCase {
 
 				assertEquals("Correct Depth ", expectedDepth[totalFixes], fixWrapper.getDepth(), 1e-8);
 
-				assertEquals("Correct Course ", expectedCourse[totalFixes], fixWrapper.getCourse(), 1e-8);
+				assertEquals("Correct Course (degs)", expectedCourse[totalFixes],
+						Conversions.Rads2Degs(fixWrapper.getCourse()), 1e-8);
 
-				assertEquals("Correct Speed ", expectedSpeed[totalFixes], fixWrapper.getFix().getSpeed(), 1e-8);
+				assertEquals("Correct Speed (kts)", expectedSpeed[totalFixes], fixWrapper.getSpeed(), 1e-8);
+				assertEquals("Correct Speed (yps)", Conversions.Kts2Yps(expectedSpeed[totalFixes]),
+						fixWrapper.getFix().getSpeed(), 1e-8);
 
 				assertEquals("Correct DTG ", expectedTime[totalFixes], fixWrapper.getFix().getTime().getMicros());
 				assertEquals("Correct Latitude ", expectedLocationLatitude[totalFixes], fixWrapper.getFix().getLocation().getLat(), 1e-8);
@@ -125,9 +129,12 @@ public class ImportAntaresTest extends TestCase {
 
 				assertEquals("Correct Depth ", expectedDepth[totalFixes], fixWrapper.getDepth(), 1e-8);
 
-				assertEquals("Correct Course ", expectedCourse[totalFixes], fixWrapper.getCourse(), 1e-8);
+				assertEquals("Correct Course (degs)", expectedCourse[totalFixes],
+						Conversions.Rads2Degs(fixWrapper.getCourse()), 1e-8);
 
-				assertEquals("Correct Speed ", expectedSpeed[totalFixes], fixWrapper.getFix().getSpeed(), 1e-8);
+				assertEquals("Correct Speed (kts)", expectedSpeed[totalFixes], fixWrapper.getSpeed(), 1e-8);
+				assertEquals("Correct Speed (yps)", Conversions.Kts2Yps(expectedSpeed[totalFixes]),
+						fixWrapper.getFix().getSpeed(), 1e-8);
 
 				assertEquals("Correct DTG ", expectedTime[totalFixes], fixWrapper.getFix().getTime().getMicros());
 

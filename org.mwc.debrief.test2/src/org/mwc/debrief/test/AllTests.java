@@ -103,6 +103,7 @@ import org.junit.runners.Suite;
 		org.mwc.debrief.core.ContextOperations.GenerateInfillSegment.TestGenInfill.class,
 		org.mwc.debrief.track_shift.ambiguity.AmbiguityResolver.TestResolveAmbig.class,
 		org.mwc.debrief.track_shift.ambiguity.LegOfCuts.TestLegs.class,
+		org.mwc.debrief.track_shift.zig_detector.ownship.alternate.AlternateLegWrapper.TestUnwrap.class,
 		org.mwc.debrief.track_shift.views.BearingResidualsView.TestResiduals.class,
 		org.mwc.debrief.core.ContextOperations.ExportCSVPrefs.CSVExportDropdownRegistry.TestRegistry.class,
 		Debrief.Wrappers.Track.DynamicInfillSegment.TestInterp.class,
