@@ -24,18 +24,18 @@ Class-Path: . lib/cmap_legacy.jar lib/debrief_legacy.jar lib/jt-zonals
   lib/jmf.jar lib/vrml97.jar lib/flanagan.jar lib/jackson-core-asl-1.9
  .4.jar lib/jackson-mapper-asl-1.9.4.jar lib/joda-time-2.1.jar lib/jav
  alite-common-1.2-20120312.200900-220.jar lib/commons-math3-3.3.jar li
- bb/fontbox-2.0.3.jar lib/commons-logging-1.2.jar lib/pdfbox-2.0.3.jar
-  lib/xmlbeans-2.6.0.jar lib/poi-ooxml-schemas-3.14.jar lib/poi-ooxml-
- 3.14.jar lib/January.jar lib/slf4j-api.jar lib/slf4j-simple-1.7.25.ja
- r lib/commons-cli-1.4.jar lib/commons-io-2.6.jar lib/jsoup-1.11.3.jar
-  lib/xmlunit-core-2.6.0.jar lib/zip4j-1.3.2.jar lib/poi-3.14-20160307
- .jar lib/poi-scratchpad-3.14-20160307.jar lib/WMFWriter.jar lib/xstre
- am-1.1.3.jar lib/mockito-all-1.8.5.jar lib/imageio-ext-tiff-1.1.2.jar
-  lib/imageio-ext-utilities-1.1.2.jar lib/jai_codec-1.1.3.jar lib/jai_
- core-1.1.3.jar lib/jai_imageio-1.1.jar lib/openmap.jar lib/radiance-f
- lamingo-3.0.0.jar lib/radiance-neon-3.0.0.jar lib/radiance-substance-
- 3.0.0.jar lib/radiance-substance-extras-3.0.0.jar lib/radiance-triden
- t-3.0.0.jar lib/swingx-common-1.6.6-SNAPSHOT.jar lib/swingx-core-1.6.
- 6-SNAPSHOT.jar lib/swingx-painters-1.6.6-SNAPSHOT.jar lib/cmap_geotoo
- ls.jar
+ b/fontbox-2.0.37.jar lib/commons-logging-1.2.jar lib/pdfbox-2.0.37.ja
+ r lib/xmlbeans-2.6.0.jar lib/poi-ooxml-schemas-3.14.jar lib/poi-ooxml
+ -3.14.jar lib/January.jar lib/slf4j-api.jar lib/slf4j-simple-1.7.25.j
+ ar lib/commons-cli-1.4.jar lib/commons-io-2.6.jar lib/jsoup-1.11.3.ja
+ r lib/xmlunit-core-2.6.0.jar lib/zip4j-1.3.2.jar lib/poi-3.14-2016030
+ 7.jar lib/poi-scratchpad-3.14-20160307.jar lib/WMFWriter.jar lib/xstr
+ eam-1.1.3.jar lib/mockito-all-1.8.5.jar lib/imageio-ext-tiff-1.1.2.ja
+ r lib/imageio-ext-utilities-1.1.2.jar lib/jai_codec-1.1.3.jar lib/jai
+ _core-1.1.3.jar lib/jai_imageio-1.1.jar lib/openmap.jar lib/radiance-
+ flamingo-3.0.0.jar lib/radiance-neon-3.0.0.jar lib/radiance-substance
+ -3.0.0.jar lib/radiance-substance-extras-3.0.0.jar lib/radiance-tride
+ nt-3.0.0.jar lib/swingx-common-1.6.6-SNAPSHOT.jar lib/swingx-core-1.6
+ .6-SNAPSHOT.jar lib/swingx-painters-1.6.6-SNAPSHOT.jar lib/cmap_geoto
+ ols.jar
 

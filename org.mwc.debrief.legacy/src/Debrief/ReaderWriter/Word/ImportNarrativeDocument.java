@@ -1690,6 +1690,34 @@ public class ImportNarrativeDocument {
 			assertNull(narrLayer);
 		}
 
+		/**
+		 * A page tree whose /Kids contains the /Pages node itself. PDFBox 2.0.3 recursed
+		 * until StackOverflowError here (CR-022); current 2.0.x detects the loop.
+		 */
+		public void testImportFromPdfSelfReferencingPageTree() throws Exception {
+			final String[] objs = { "<< /Type /Catalog /Pages 2 0 R >>",
+					"<< /Type /Pages /Kids [2 0 R 3 0 R] /Count 2 >>",
+					"<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] >>" };
+			final StringBuilder sb = new StringBuilder("%PDF-1.4\n");
+			final int[] offsets = new int[objs.length];
+			for (int i = 0; i < objs.length; i++) {
+				offsets[i] = sb.length();
+				sb.append(i + 1).append(" 0 obj\n").append(objs[i]).append("\nendobj\n");
+			}
+			final int xref = sb.length();
+			sb.append("xref\n0 ").append(objs.length + 1).append("\n0000000000 65535 f \n");
+			for (final int offset : offsets) {
+				sb.append(String.format("%010d 00000 n \n", offset));
+			}
+			sb.append("trailer\n<< /Size ").append(objs.length + 1).append(" /Root 1 0 R >>\nstartxref\n")
+					.append(xref).append("\n%%EOF\n");
+			final InputStream is = new ByteArrayInputStream(sb.toString().getBytes("ISO-8859-1"));
+
+			// must return rather than overflow the stack
+			final ArrayList<String> strings = importFromPdf("loop.pdf", is);
+			assertNotNull(strings);
+		}
+
 		public void testImportAllNarrativeTypes() throws Exception {
 			final String testFile = dummy_doc_path;
 			final File testI = new File(testFile);

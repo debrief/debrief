@@ -149,18 +149,31 @@ jobs:
           path: ~/.cache/debrief-win-jre
           key: win-jre-11.0.5-10
 
+      # The JRE is bundled into the shipped Windows zip and MSI, so it is pinned
+      # to the SHA-256 published alongside the release
+      # (OpenJDK11U-jre_x64_windows_hotspot_11.0.5_10.zip.sha256.txt) and the
+      # job fails on a mismatch. Keep WIN_JRE_SHA256 in step with
+      # contribs/msi/make_x64msi.sh. The JRE version itself moves with #5237.
       - name: Download Windows JRE
         if: steps.win-jre.outputs.cache-hit != 'true'
+        env:
+          WIN_JRE_SHA256: 3f9e3e4256cb2c1b63b56864dca248d7f406874b21e859e5ac7ba7ada989eceb
         run: |
           mkdir -p ~/.cache/debrief-win-jre
-          wget -q -O ~/.cache/debrief-win-jre/win-jre.zip \
+          curl -fsSL --retry 3 -o /tmp/win-jre.zip \
             https://github.com/AdoptOpenJDK/openjdk11-binaries/releases/download/jdk-11.0.5%2B10/OpenJDK11U-jre_x64_windows_hotspot_11.0.5_10.zip
+          echo "${WIN_JRE_SHA256}  /tmp/win-jre.zip" | sha256sum -c -
+          mv /tmp/win-jre.zip ~/.cache/debrief-win-jre/win-jre.zip
 
       # Bundle the Windows JRE into the product, so the Windows build runs
       # without a separate Java install. (macOS and Linux products still
       # require Java 11 on the PATH - see the PR comment workflow.)
+      # The checksum is checked again here so a restored cache is verified too.
       - name: Stage Windows JRE into the product feature
+        env:
+          WIN_JRE_SHA256: 3f9e3e4256cb2c1b63b56864dca248d7f406874b21e859e5ac7ba7ada989eceb
         run: |
+          echo "${WIN_JRE_SHA256}  ${HOME}/.cache/debrief-win-jre/win-jre.zip" | sha256sum -c -
           echo "root.win32.win32.x86_64 = win-64" >> org.mwc.debrief.combined.feature/build.properties
           rm -rf dest && mkdir -p dest
           unzip -q ~/.cache/debrief-win-jre/win-jre.zip -d dest
@@ -188,28 +201,12 @@ jobs:
             ~/.p2
           key: m2-tycho-${{ hashFiles('org.mwc.debrief.targetplatforms/eclipse-latest.target', '**/pom.xml') }}
 
-      # msitools is compiled from source (several minutes) and the MSI is only
-      # published on tag releases, so skip it elsewhere.
-      # These packages exist solely to compile msitools from source, so they
-      # follow the MSI step onto the tag-only path rather than being installed
-      # on every PR build.
+      # The MSI is only published on tag releases, so skip it elsewhere.
+      # wixl comes from the signed Ubuntu archive (install-msitools.sh) rather
+      # than being compiled from an unverified source tarball as root.
       - name: build installer
         if: startsWith(github.ref, 'refs/tags/')
         run: |
-          retry() {
-            local n
-            for n in 1 2 3; do
-              "$@" && return 0
-              echo "::warning::[attempt ${n}/3] failed: $*"
-              sleep 15
-            done
-            echo "::error::failed after 3 attempts: $*"
-            return 1
-          }
-          retry sudo apt-get -y -o Acquire::Retries=3 install \
-            intltool libgsf-1-dev uuid-runtime uuid uuid-dev \
-            libglib2.0-dev libxml2-dev gcab libgcab-1.0-0 libgcab-dev
-
           ls org.mwc.debrief.product/target/products/
           ./install-msitools.sh
           ./contribs/msi/make_x64msi.sh
@@ -276,7 +273,10 @@ jobs:
           if-no-files-found: warn
 
       # Handoff to pr-build-comment.yml. github.event.workflow_run.pull_requests
-      # is empty for fork PRs, so the PR number has to travel via an artifact.
+      # is empty for fork PRs, so the PR number also travels via an artifact.
+      # On a fork PR this file is attacker-writable, so pr-build-comment.yml
+      # treats `pr` only as a lookup hint (it must match the run's head SHA) and
+      # takes the build result from the run's conclusion, not from `build`.
       # Values go through `env:` rather than being interpolated into the script
       # body - on a fork PR these are attacker-influenced.
       - name: Record PR metadata

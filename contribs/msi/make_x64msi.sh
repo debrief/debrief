@@ -11,6 +11,8 @@ RESOURCESDIR=contribs/msi/resources/
 WORKDIR=contribs/msi/
 #URL of the jre to use
 JRE_URL=https://github.com/AdoptOpenJDK/openjdk11-binaries/releases/download/jdk-11.0.5%2B10/OpenJDK11U-jre_x64_windows_hotspot_11.0.5_10.zip
+#SHA-256 of that zip, as published in its .sha256.txt (keep in step with .github/workflows/main.yml)
+JRE_SHA256=3f9e3e4256cb2c1b63b56864dca248d7f406874b21e859e5ac7ba7ada989eceb
 
 echo "Cleaning source directory"
 rm -rf ${SOURCEDIR}*
@@ -24,6 +26,11 @@ echo "Done."
 if [ ! -d "${SOURCEDIR}jre" ]; then
     echo "Downloading JRE"
     wget -O jre.zip ${JRE_URL}
+    if ! echo "${JRE_SHA256}  jre.zip" | sha256sum -c -; then
+        echo "PROBLEM: JRE checksum mismatch, exiting"
+        rm -f jre.zip
+        exit 1
+    fi
     unzip -q jre.zip -d ${SOURCEDIR}
     mv ${SOURCEDIR}jdk* ${SOURCEDIR}jre
     rm jre.zip
