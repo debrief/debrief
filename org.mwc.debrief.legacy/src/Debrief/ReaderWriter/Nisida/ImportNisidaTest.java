@@ -18,6 +18,9 @@ import java.io.ByteArrayInputStream;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
+import java.util.Calendar;
+import java.util.Locale;
+import java.util.TimeZone;
 
 import Debrief.ReaderWriter.Nisida.ImportNisida.NisidaLoadState;
 import Debrief.Wrappers.FixWrapper;
@@ -163,5 +166,61 @@ public class ImportNisidaTest extends TestCase {
 		assertEquals("Year value", 0, status.getYear());
 		assertEquals("Month value", 0, status.getYear());
 
+	}
+
+	/**
+	 * the UNIT month must be read with English month names, whatever the
+	 * platform locale (and time zone)
+	 */
+	public void testUnitNonEnglishLocale() {
+		final Locale oldLocale = Locale.getDefault();
+		final TimeZone oldZone = TimeZone.getDefault();
+		try {
+			Locale.setDefault(Locale.GERMANY);
+			TimeZone.setDefault(TimeZone.getTimeZone("America/New_York"));
+
+			final String inputFileContent = "UNIT/ADRI/OCT20/SRF/\n311200Z/DET/RDR/23/20/777/3602.02N/00412.12E/GPS/DETECTION RECORD";
+			final Layers layers = new Layers();
+			final NisidaLoadState status = ImportNisida
+					.importThis(new ByteArrayInputStream(inputFileContent.getBytes()), layers);
+
+			assertEquals("no errors", 0, status.getErrors().size());
+			assertEquals("Year value", 2020, status.getYear());
+			assertEquals("Month value", Calendar.OCTOBER, status.getMonth());
+
+			final TrackWrapper track = (TrackWrapper) layers.findLayer("ADRI");
+			final FixWrapper fix = (FixWrapper) track.getPositionIterator().nextElement();
+			final Calendar expected = Calendar.getInstance(TimeZone.getTimeZone("GMT"));
+			expected.clear();
+			expected.set(2020, Calendar.OCTOBER, 31, 12, 0);
+			assertEquals("correct DTG", expected.getTimeInMillis(), fix.getDateTimeGroup().getDate().getTime());
+
+			// and another month whose German abbreviation differs
+			final NisidaLoadState status2 = ImportNisida
+					.importThis(new ByteArrayInputStream("UNIT/ADRI/MAR20/SRF/".getBytes()), new Layers());
+			assertEquals("no errors", 0, status2.getErrors().size());
+			assertEquals("Year value", 2020, status2.getYear());
+			assertEquals("Month value", Calendar.MARCH, status2.getMonth());
+		} finally {
+			Locale.setDefault(oldLocale);
+			TimeZone.setDefault(oldZone);
+		}
+	}
+
+	/**
+	 * if the UNIT date can't be read, we mustn't create fixes (or narratives)
+	 * with bogus dates
+	 */
+	public void testNoDataWhenUnitDateInvalid() {
+		final String inputFileContent = "UNIT/ADRI/SAUL//\n311200Z/DET/RDR/23/20/777/3602.02N/00412.12E/GPS/DETECTION RECORD\n311056Z/NAR/TEXT FOR NARRATIVE";
+		final Layers layers = new Layers();
+		final NisidaLoadState status = ImportNisida
+				.importThis(new ByteArrayInputStream(inputFileContent.getBytes()), layers);
+
+		final TrackWrapper track = (TrackWrapper) layers.findLayer("ADRI");
+		assertNotNull("created O/S track", track);
+		assertEquals("no fixes created", 0, track.numFixes());
+		assertNull("no narratives", layers.findLayer(NarrativeEntry.NARRATIVE_LAYER));
+		assertEquals("date error plus one per skipped line", 3, status.getErrors().size());
 	}
 }

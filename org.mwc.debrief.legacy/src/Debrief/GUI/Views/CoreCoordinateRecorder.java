@@ -281,6 +281,10 @@ public abstract class CoreCoordinateRecorder {
 		td.setWidth(_projection.getScreenArea().width);
 		td.setHeight(_projection.getScreenArea().height);
 		td.getTracks().addAll(_tracks.values());
+		// one time caption per recorded step (the tracks may start late or end early)
+		for (final HiResDate time : _times) {
+			td.getStepTimes().add(_dateFormat.format(time.getDate()));
+		}
 		storeNarrativesInto(td.getNarrativeEntries(), _myLayers, _tracks, _startMillis);
 		calculateScaleWidth(td, _projection, scaleVisible ? scaleBarUnit : "");
 
