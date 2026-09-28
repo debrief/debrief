@@ -52,7 +52,7 @@ abstract public class VectorHandler extends ShapeHandler implements PlottableExp
 				try {
 					_bearing = MWCXMLReader.readThisDouble(val);
 				} catch (final ParseException pe) {
-					MWC.Utilities.Errors.Trace.trace(pe, "Whilst set Vector bearing: " + val);
+					reportProblem("Whilst set Vector bearing: " + val + ": " + pe.getMessage(), pe);
 				}
 			}
 		});

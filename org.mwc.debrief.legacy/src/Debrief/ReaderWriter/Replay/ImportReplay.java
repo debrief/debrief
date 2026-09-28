@@ -30,6 +30,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.StringTokenizer;
 import java.util.Vector;
 import java.util.regex.Matcher;
@@ -65,6 +66,7 @@ import MWC.GUI.Layers.INewItemListener;
 import MWC.GUI.PlainWrapper;
 import MWC.GUI.Plottable;
 import MWC.GUI.ToolParent;
+import MWC.GUI.Dialogs.DialogFactory;
 import MWC.GUI.Properties.DebriefColors;
 import MWC.GUI.Properties.LineStylePropertyEditor;
 import MWC.GUI.Shapes.PlainShape;
@@ -75,6 +77,7 @@ import MWC.GenericData.Watchable;
 import MWC.TacticalData.NarrativeEntry;
 import MWC.TacticalData.NarrativeWrapper;
 import MWC.Utilities.ReaderWriter.ExtensibleLineImporter;
+import MWC.Utilities.ReaderWriter.ImportProblems;
 import MWC.Utilities.ReaderWriter.PlainImporter;
 import MWC.Utilities.ReaderWriter.PlainImporterBase;
 import MWC.Utilities.ReaderWriter.PlainLineImporter;
@@ -423,6 +426,38 @@ public class ImportReplay extends PlainImporterBase {
 				final SegmentList legList = trackWrapperNelson.getSegments();
 				assertEquals("Amount of segment in new segment test", 2, legList.size());
 			}
+		}
+
+		public void testMalformedLinesReported() {
+			DialogFactory.setRunHeadless(true);
+			final String text = "951212 112700.000 NELSON   @C   22  7  0.63 N 21 45 14.91 W 334.9   2.0      0 \n"
+					// latitude seconds are rubbish
+					+ "951212 112800.000 NELSON   @C   22  7  x N 21 45 19.26 W 340.7   2.0      0 \n"
+					+ "951212 112900.000 NELSON   @C   22  7 14.33 N 21 45 23.01 W 346.1   2.0      0 \n"
+					// speed is rubbish
+					+ "951212 113000.000 NELSON   @C   22  7 21.35 N 21 45 25.55 W  21.4   fast      0 \n"
+					+ ";;just a comment\n"
+					+ "951212 113100.000 NELSON   @C   22  7 26.42 N 21 45 22.64 W  21.0   2.0      0 ";
+
+			ImportReplay.initialise(new TestParent(ImportReplay.IMPORT_AS_OTG, 0L));
+			final ImportReplay importReplay = new ImportReplay(new Runner() {
+				@Override
+				public void run(final Runnable runnable) {
+					runnable.run();
+				}
+			});
+			final Layers layers = new Layers();
+			importReplay.setLayers(layers);
+			importReplay.importThis(text, 6);
+
+			final TrackWrapper track = (TrackWrapper) layers.findLayer("NELSON");
+			assertNotNull("track loaded", track);
+			assertEquals("the good fixes loaded", 3, track.numFixes());
+
+			final ImportProblems problems = importReplay.getImportProblems();
+			assertEquals("both bad lines reported:" + problems.getProblems(), 2, problems.size());
+			assertTrue(problems.getProblems().get(0), problems.getProblems().get(0).startsWith("Line 2:"));
+			assertTrue(problems.getProblems().get(1), problems.getProblems().get(1).startsWith("Line 4:"));
 		}
 
 		public void testNewSegment2() throws IOException, ParseException {
@@ -1283,6 +1318,16 @@ public class ImportReplay extends PlainImporterBase {
 	private final Runner _deferredRunner;
 
 	/**
+	 * lines that couldn't be read during the current/last import
+	 */
+	private ImportProblems _importProblems = new ImportProblems();
+
+	/**
+	 * the line being read, for error reporting
+	 */
+	private int _currentLine = -1;
+
+	/**
 	 * constructor, initialise Vector with the list of non-Fix items which we will
 	 * be reading in
 	 */
@@ -1472,6 +1517,13 @@ public class ImportReplay extends PlainImporterBase {
 		return res;
 	}
 
+	/**
+	 * @return the lines that couldn't be read (and were skipped) in the last import
+	 */
+	public ImportProblems getImportProblems() {
+		return _importProblems;
+	}
+
 	public Vector<SensorWrapper> getPendingSensors() {
 
 		final Vector<SensorWrapper> res = new Vector<SensorWrapper>();
@@ -1578,19 +1630,31 @@ public class ImportReplay extends PlainImporterBase {
 				_importSettings = null;
 				_lastImportedItem.clear();
 
+				// start a fresh list of problems
+				_importProblems = new ImportProblems();
+
 				thisLine = br.readLine();
 
 				// loop through the lines
 				while (thisLine != null) {
 					// keep line counter
 					lineCounter++;
+					_currentLine = lineCounter;
 
-					// catch import problems
-					readLine(thisLine);
+					// catch import problems. A malformed line is skipped (and reported
+					// at the end), the rest of the file is still loaded
+					try {
+						readLine(thisLine);
+					} catch (final ParseException | NumberFormatException | NoSuchElementException
+							| IndexOutOfBoundsException e) {
+						_importProblems.add(lineCounter, "Couldn't read line (" + e.getMessage() + ")",
+								thisLine.trim());
+					}
 
 					// read another line
 					thisLine = br.readLine();
 				}
+				_currentLine = -1;
 
 				// see if any importers need to finalise
 				finaliseImporters();
@@ -1614,6 +1678,17 @@ public class ImportReplay extends PlainImporterBase {
 					final TrackWrapper track = tIter.next();
 					track.sortOutRelativePositions();
 				}
+
+				// lastly, tell the user about any lines we had to skip
+				if (!_importProblems.isEmpty()) {
+					final ImportProblems problems = _importProblems;
+					_deferredRunner.run(new Runnable() {
+						@Override
+						public void run() {
+							problems.report("Import REP file", nameToUse);
+						}
+					});
+				}
 			}
 		} catch (final java.lang.NumberFormatException e) {
 
@@ -1624,9 +1699,6 @@ public class ImportReplay extends PlainImporterBase {
 			throw new PlainImporter.ImportException(null, null);
 		} catch (final java.util.NoSuchElementException e) {
 			handleException(e, lineCounter, thisLine, fName, "Missing field error");
-			throw new PlainImporter.ImportException(null, null);
-		} catch (final ParseException e) {
-			handleException(e, lineCounter, thisLine, fName, "Date format error");
 			throw new PlainImporter.ImportException(null, null);
 		} finally {
 			try {
@@ -2208,13 +2280,22 @@ public class ImportReplay extends PlainImporterBase {
 			if (line.startsWith(";;")) {
 				// don't bother, it's just a comment
 			} else {
-				MWC.Utilities.Errors.Trace.trace("Annotation type not recognised for:" + line);
+				MWC.Utilities.Errors.Trace.trace("Annotation type not recognised for:" + line, false);
+				_importProblems.add(_currentLine, "Line type not recognised", line);
 			}
 			return null;
 		}
 
 		// now read it in.
 		final Object thisObject = thisOne.readThisLine(line);
+
+		// the line importers return null if they can't read the line. Extension
+		// importers store their data themselves, and always return null
+		if (thisObject == null && !(thisOne instanceof ExtensibleLineImporter)) {
+			final String type = thisOne.getYourType() == null ? "" : thisOne.getYourType().trim();
+			_importProblems.add(_currentLine, "Couldn't read " + (type.isEmpty() ? "position" : type) + " line", line);
+			return null;
+		}
 
 		// see if we are going to do any special processing
 

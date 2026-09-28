@@ -34,6 +34,8 @@ package Debrief.ReaderWriter.ais;
 import java.util.Optional;
 import java.util.regex.Pattern;
 
+import junit.framework.TestCase;
+
 /**
  * This class parses an AIS message. <br>
  * AIS-Message format:<br>
@@ -51,6 +53,26 @@ import java.util.regex.Pattern;
  *
  */
 public class AISParser {
+
+	public static class AISParserTest extends TestCase {
+		private static String withCRC(final String body) {
+			return "!" + body + "*" + calcCRC(body);
+		}
+
+		public void testOrphanFragmentDiscarded() {
+			final AISParser parser = new AISParser();
+			// a second fragment, with no first fragment (e.g. log starts mid-message)
+			final String orphan = withCRC("AIVDM,2,2,3,B,88888888880,2");
+			assertTrue("fragment is otherwise valid", isValidAIS(orphan));
+			final Optional<IAISMessage> res = parser.parse(orphan, 1);
+			assertNotNull("never a raw null", res);
+			assertFalse(res.isPresent());
+
+			// and the parser recovers for the next, normal, message
+			final Optional<IAISMessage> next = parser.parse("!AIVDM,1,1,,B,19NS7Sp02wo?HETKA2K6mUM20<L=,0*27", 2);
+			assertNotNull(next);
+		}
+	}
 
 	/** Regular expression for AIS-Messages */
 	private static final Pattern pattern = Pattern.compile(
@@ -224,8 +246,11 @@ public class AISParser {
 				} else {
 					if (currTotalNumOfMsgs > oldTotalNumOfMsgs || currSentenceNumber != oldSentenceNumber + 1
 							|| currSequenceNumber != oldSequenceNumber) {
+						// out of sequence, or orphan, fragment (common at the start of a log)
 						initMsgParams();
-						return null;
+						MWC.Utilities.Errors.Trace.trace("AIS multi-part fragment out of sequence, discarded, line:" + lineCtr,
+								false);
+						return Optional.empty();
 					}
 					currMsg += msgTokens[4];
 					oldSentenceNumber = currSentenceNumber;

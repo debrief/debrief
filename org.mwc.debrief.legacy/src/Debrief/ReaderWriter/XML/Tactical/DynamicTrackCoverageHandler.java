@@ -22,7 +22,6 @@ import org.xml.sax.Attributes;
 
 import Debrief.Wrappers.DynamicTrackShapes.DynamicTrackCoverageWrapper;
 import Debrief.Wrappers.DynamicTrackShapes.DynamicTrackShapeWrapper;
-import MWC.Utilities.Errors.Trace;
 import MWC.Utilities.ReaderWriter.XML.Util.ColourHandler;
 
 abstract public class DynamicTrackCoverageHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLReader {
@@ -129,7 +128,7 @@ abstract public class DynamicTrackCoverageHandler extends MWC.Utilities.ReaderWr
 				try {
 					_theContact.setStartDTG(parseThisDate(value));
 				} catch (final ParseException e) {
-					Trace.trace(e, "While parsing date");
+					reportProblem("While parsing date" + ": " + e.getMessage(), e);
 				}
 			}
 		});
@@ -140,7 +139,7 @@ abstract public class DynamicTrackCoverageHandler extends MWC.Utilities.ReaderWr
 				try {
 					_theContact.setEndDTG(parseThisDate(value));
 				} catch (final ParseException e) {
-					Trace.trace(e, "While parsing date");
+					reportProblem("While parsing date" + ": " + e.getMessage(), e);
 				}
 			}
 		});

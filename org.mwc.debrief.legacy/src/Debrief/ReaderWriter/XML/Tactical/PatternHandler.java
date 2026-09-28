@@ -207,7 +207,7 @@ public final class PatternHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLR
 				try {
 					_myPattern.setBuoySymbolSize(readThisDouble(val));
 				} catch (final java.text.ParseException pe) {
-					MWC.Utilities.Errors.Trace.trace(pe, "Failed reading in:" + name + " value is:" + val);
+					reportProblem("Failed reading in:" + name + " value is:" + val + ": " + pe.getMessage(), pe);
 				}
 
 			}

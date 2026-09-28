@@ -31,7 +31,6 @@ import MWC.GUI.Layers;
 import MWC.GUI.Properties.TimeFrequencyPropertyEditor;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.WorldLocation;
-import MWC.Utilities.Errors.Trace;
 import MWC.Utilities.ReaderWriter.XML.Util.LocationHandler;
 import MWC.Utilities.TextFormatting.DebriefFormatDateTime;
 
@@ -120,7 +119,7 @@ public class CompositeTrackHandler extends TrackHandler {
 				try {
 					_startTime = DebriefFormatDateTime.parseThis(value);
 				} catch (final ParseException e) {
-					Trace.trace(e, "While parsing date");
+					reportProblem("While parsing date" + ": " + e.getMessage(), e);
 				}
 			}
 		});

@@ -136,6 +136,23 @@ public final class ImportNarrative extends AbstractPlainLineImporter {
 			assertEquals("read in correct num of lines", 11, nw.getData().size());
 		}
 
+		public void testExportRoundTrip() throws ParseException {
+			final ImportNarrative in = new ImportNarrative();
+			final NarrativeEntry original = (NarrativeEntry) in
+					.readThisLine(";NARRATIVE:	020421	121857	NELSON	Contact regained");
+			final String exported = in.exportThis(original);
+			final NarrativeEntry reread = (NarrativeEntry) in.readThisLine(exported);
+			assertEquals("track name kept:" + exported, "NELSON", reread.getTrackName());
+			assertEquals("entry kept:" + exported, "Contact regained", reread.getEntry());
+
+			// and a multi-word track name
+			final NarrativeEntry quoted = (NarrativeEntry) in
+					.readThisLine(";NARRATIVE:	020421	121857	\"HMS TORBAY\"	Contact regained");
+			final NarrativeEntry reQuoted = (NarrativeEntry) in.readThisLine(in.exportThis(quoted));
+			assertEquals("HMS TORBAY", reQuoted.getTrackName());
+			assertEquals("Contact regained", reQuoted.getEntry());
+		}
+
 		public void testImportQuotedLine() throws ParseException {
 			final String theLine = ";NARRATIVE:	020421	121857	\"HMS TORBAY\" 	GenComment	Mk Rge BAAA R121212";
 			final ImportNarrative in = new ImportNarrative();
@@ -244,7 +261,7 @@ public final class ImportNarrative extends AbstractPlainLineImporter {
 		line = line + " " + DebriefFormatDateTime.toStringHiRes(theEntry.getDTG());
 
 		// careful how we export it, in case it's a multi-word track name
-		ImportFix.exportTrackName(theEntry.getTrackName(), line);
+		line = ImportFix.exportTrackName(theEntry.getTrackName(), line);
 
 		line = line + " " + theEntry.getEntry();
 

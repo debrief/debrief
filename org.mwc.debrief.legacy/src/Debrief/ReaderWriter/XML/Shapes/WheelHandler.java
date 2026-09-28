@@ -83,7 +83,7 @@ abstract public class WheelHandler extends ShapeHandler implements PlottableExpo
 					final double _inner = readThisDouble(val);
 					_innerDist = new WorldDistance(_inner, WorldDistance.YARDS);
 				} catch (final java.text.ParseException pe) {
-					MWC.Utilities.Errors.Trace.trace(pe, "Failed reading in:" + name + " value is:" + val);
+					reportProblem("Failed reading in:" + name + " value is:" + val + ": " + pe.getMessage(), pe);
 				}
 
 			}
@@ -95,7 +95,7 @@ abstract public class WheelHandler extends ShapeHandler implements PlottableExpo
 					final double _outer = readThisDouble(val);
 					_outerDist = new WorldDistance(_outer, WorldDistance.YARDS);
 				} catch (final java.text.ParseException pe) {
-					MWC.Utilities.Errors.Trace.trace(pe, "Failed reading in:" + name + " value is:" + val);
+					reportProblem("Failed reading in:" + name + " value is:" + val + ": " + pe.getMessage(), pe);
 				}
 
 			}

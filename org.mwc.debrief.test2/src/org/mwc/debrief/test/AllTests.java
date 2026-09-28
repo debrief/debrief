@@ -138,7 +138,15 @@ import org.junit.runners.Suite;
 		Debrief.ReaderWriter.Nisida.ImportNisidaTest.class,
 		Debrief.ReaderWriter.Antares.ImportAntaresTest.class,
 		Debrief.ReaderWriter.GeoPDF.GenerateGeoJSON.GenerateGeoJSONTest.class,
-		Debrief.ReaderWriter.GeoPDF.AbstractGeoPDFBuilder.GeoPDFBuilderTest.class})
+		Debrief.ReaderWriter.GeoPDF.AbstractGeoPDFBuilder.GeoPDFBuilderTest.class,
+		MWC.Utilities.ReaderWriter.XML.SafeXMLFactory.SafeXMLFactoryTest.class,
+		MWC.Utilities.ReaderWriter.SafeArchive.SafeArchiveTest.class,
+		MWC.Utilities.ReaderWriter.ImportProblems.ImportProblemsTest.class,
+		MWC.Utilities.ReaderWriter.XML.MWCXMLReader.ReadDoubleTest.class,
+		MWC.Utilities.ReaderWriter.XML.Util.ShortLocationHandler.ShortLocationTest.class,
+		Debrief.ReaderWriter.ais.AISParser.AISParserTest.class,
+		Debrief.ReaderWriter.XML.KML.ImportKML.ImportKMLTest.class,
+		org.mwc.debrief.core.loaders.GpxUtil.TestGpxXXE.class})
 @RunWith(Suite.class)
 public class AllTests {
 
