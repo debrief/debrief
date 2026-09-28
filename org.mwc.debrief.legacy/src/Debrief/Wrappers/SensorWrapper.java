@@ -1044,17 +1044,17 @@ public class SensorWrapper extends TacticalDataWrapper
 		final SensorContactWrapper _next = (SensorContactWrapper) next;
 		final SensorContactWrapper _last = (SensorContactWrapper) last;
 
-		final double brg = interp.interp(_last.getBearing(), _next.getBearing());
+		final double brg = interp.interpDegs(_last.getBearing(), _next.getBearing());
 		double ambig = 0;
 		// note - don't bother checking for has ambig, just do the interpolation
-		ambig = interp.interp(_last.getAmbiguousBearing(), _next.getAmbiguousBearing());
+		ambig = interp.interpDegs(_last.getAmbiguousBearing(), _next.getAmbiguousBearing());
 
 		final double freq = interp.interp(_last.getFrequency(), _next.getFrequency());
 		// do we have range?
 		WorldDistance theRng = null;
 		if ((_last.getRange() != null) && (_next.getRange() != null)) {
 			// are they both in the same units?
-			if (_last.getRange().getUnits() == _last.getRange().getUnits()) {
+			if (_last.getRange().getUnits() == _next.getRange().getUnits()) {
 				// they're in the same units, stick with it.
 				final int theUnits = _last.getRange().getUnits();
 				final double theVal = interp.interp(_last.getRange().getValue(), _next.getRange().getValue());

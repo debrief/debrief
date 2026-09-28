@@ -23,7 +23,49 @@ import org.mwc.debrief.track_shift.zig_detector.Precision;
 import org.mwc.debrief.track_shift.zig_detector.ownship.LegOfData;
 import org.mwc.debrief.track_shift.zig_detector.ownship.alternate.SCAlgorithms.SpanPair;
 
+import MWC.Algorithms.Conversions;
+
 public class AlternateLegWrapper implements IOwnshipLegDetector {
+
+	static public final class TestUnwrap extends junit.framework.TestCase {
+
+		public void testCollateUnwrapsBothWays() {
+			final AlternateLegWrapper wrapper = new AlternateLegWrapper();
+			final long[] times = new long[] { 0, 1000, 2000, 3000, 4000 };
+			final double[] speeds = new double[] { 5, 5, 5, 5, 5 };
+
+			// steering either side of north, starting east of it
+			final List<Tote> res = wrapper.collateData(times, speeds, new double[] { 5, 355, 5, 350, 2 });
+			final double[] expected = new double[] { 5, -5, 5, -10, 2 };
+			for (int i = 0; i < expected.length; i++) {
+				assertEquals("unwrapped heading " + i, expected[i], res.get(i).dheading, 0.0001);
+			}
+
+			// and starting west of it
+			final List<Tote> res2 = wrapper.collateData(times, speeds, new double[] { 355, 5, 355, 10, 358 });
+			final double[] expected2 = new double[] { 355, 365, 355, 370, 358 };
+			for (int i = 0; i < expected2.length; i++) {
+				assertEquals("unwrapped heading " + i, expected2[i], res2.get(i).dheading, 0.0001);
+			}
+		}
+
+		public void testSteadyLegThroughNorth() {
+			final int len = 40;
+			final long[] times = new long[len];
+			final double[] speeds = new double[len];
+			final double[] courses = new double[len];
+			final double[] jitter = new double[] { 2, 358, 1, 359 };
+			for (int i = 0; i < len; i++) {
+				times[i] = 1000000L + i * 60000L;
+				speeds[i] = 6;
+				courses[i] = jitter[i % jitter.length];
+			}
+			final List<LegOfData> legs = new AlternateLegWrapper().identifyOwnshipLegs(times, speeds, courses, 5,
+					Precision.LOW);
+			assertEquals("single steady leg", 1, legs.size());
+			assertEquals("leg includes first fix", times[0], (long) legs.get(0).getStart());
+		}
+	}
 
 	// -------------------------------------------------------------------------
 	static private void printIntervals(final List<SCAlgorithms.SpanPair> intervals, final List<Tote> totes)
@@ -55,10 +97,9 @@ public class AlternateLegWrapper implements IOwnshipLegDetector {
 			double heading = rawCourses[i];
 
 			if (previousHeading != null) {
-				if (previousHeading - heading > 180.0)
-					heading += 360.0;
-				else if (heading - heading > 180.0)
-					heading -= 360.0;
+				// unwrap the course, so it is continuous with the previous
+				// (unwrapped) value, taking the shortest turn
+				heading = previousHeading + Conversions.degsDifference(previousHeading, heading);
 			}
 			it.dheading = heading;
 

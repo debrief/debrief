@@ -1131,7 +1131,13 @@ public class TrackWrapper extends LightweightTrackWrapper implements WatchableLi
 
 		// add fix to last track segment
 		final TrackSegment last = (TrackSegment) _theSegments.last();
+		final HiResDate oldStart = last.startDTG();
 		last.addFix(theFix);
+
+		// the start time is the sort key for segments. If it's changed, re-sort
+		if (_theSegments.size() > 1 && !java.util.Objects.equals(oldStart, last.startDTG())) {
+			_theSegments.resort();
+		}
 
 		// tell the fix about it's daddy
 		theFix.setTrackWrapper(this);
@@ -1196,22 +1202,29 @@ public class TrackWrapper extends LightweightTrackWrapper implements WatchableLi
 			} else {
 				// calculate the course
 				final WorldVector wv = currFw.getLocation().subtract(prevFw.getLocation());
-				prevFw.getFix().setCourse(wv.getBearing());
-
-				// also, set the correct label alignment
-				currFw.resetLabelLocation();
 
 				// calculate the speed
 				// get distance in meters
 				final WorldDistance wd = new WorldDistance(wv);
 				final double distance = wd.getValueIn(WorldDistance.METRES);
-				// get time difference in seconds
-				final long timeDifference = (currFw.getTime().getMicros() - prevFw.getTime().getMicros()) / 1000000;
+				// get time difference in seconds (as a double, so sub-second gaps
+				// don't get truncated)
+				final double timeDifference = (currFw.getTime().getMicros() - prevFw.getTime().getMicros())
+						/ 1000000d;
 
 				// get speed in meters per second and convert it to knots
-				final WorldSpeed speed = new WorldSpeed(distance / timeDifference, WorldSpeed.M_sec);
-				final double knots = WorldSpeed.convert(WorldSpeed.M_sec, WorldSpeed.Kts, speed.getValue());
+				final double mps = distance / timeDifference;
+				if (timeDifference <= 0 || !Double.isFinite(mps)) {
+					// can't calculate a speed for this pair of fixes. Skip this one, we'll
+					// use the next fix to calculate speed for the previous one
+					continue;
+				}
+				final double knots = WorldSpeed.convert(WorldSpeed.M_sec, WorldSpeed.Kts, mps);
 				prevFw.setSpeed(knots);
+				prevFw.getFix().setCourse(wv.getBearing());
+
+				// also, set the correct label alignment
+				currFw.resetLabelLocation();
 
 				prevFw = currFw;
 			}
@@ -1342,7 +1355,15 @@ public class TrackWrapper extends LightweightTrackWrapper implements WatchableLi
 	 *
 	 * @param res the previously split track sections
 	 */
-	public void combineSections(final Vector<TrackSegment> res) {
+	public void combineSections(final Vector<TrackSegment> sections) {
+		// the sections may be stale. For example, when undoing nested splits, a
+		// section may since have been replaced by a new segment that starts at the
+		// same time. Use the replacement in that case.
+		final Vector<TrackSegment> res = new Vector<TrackSegment>();
+		for (final TrackSegment section : sections) {
+			res.add(liveSegmentFor(section));
+		}
+
 		// ok, remember the first
 		final TrackSegment keeper = res.firstElement();
 
@@ -1362,6 +1383,29 @@ public class TrackWrapper extends LightweightTrackWrapper implements WatchableLi
 
 		// and remember we need an update
 		setRelativePending();
+	}
+
+	/**
+	 * find the segment in our list that corresponds to the supplied one. If it
+	 * isn't in our list, look for one that starts at the same time (which has
+	 * replaced it)
+	 *
+	 * @param segment the segment to look for
+	 * @return the matching segment, or the supplied one if there isn't a match
+	 */
+	private TrackSegment liveSegmentFor(final TrackSegment segment) {
+		final HiResDate start = segment.startDTG();
+		TrackSegment sameStart = null;
+		final Enumeration<Editable> segments = _theSegments.elements();
+		while (segments.hasMoreElements()) {
+			final TrackSegment seg = (TrackSegment) segments.nextElement();
+			if (seg == segment) {
+				return segment;
+			} else if (sameStart == null && start != null && start.equals(seg.startDTG())) {
+				sameStart = seg;
+			}
+		}
+		return sameStart != null ? sameStart : segment;
 	}
 
 	@Override
@@ -3356,21 +3400,20 @@ public class TrackWrapper extends LightweightTrackWrapper implements WatchableLi
 			return;
 		}
 
-		final long currentStart = this.getStartDTG().getMicros();
-		long startTime = (currentStart / interval) * interval;
-
-		// just check we're in the range
-		if (startTime < currentStart) {
-			startTime += interval;
-		}
-
-		// move back to millis
-		startTime /= 1000L;
-
 		// just check it's not a barking frequency
-		if (theVal.getDate().getTime() <= 0) {
+		if (interval <= 0 || theVal.getDate().getTime() <= 0) {
 			// ignore, we don't need to do anything for a zero or a -1
 		} else {
+			final long currentStart = this.getStartDTG().getMicros();
+			long startTimeMicros = (currentStart / interval) * interval;
+
+			// just check we're in the range
+			if (startTimeMicros < currentStart) {
+				startTimeMicros += interval;
+			}
+
+			// move back to millis (for the track segments)
+			final long startTime = startTimeMicros / 1000L;
 
 			final SegmentList segments = _theSegments;
 			final Enumeration<Editable> theEnum = segments.elements();
@@ -3383,7 +3426,7 @@ public class TrackWrapper extends LightweightTrackWrapper implements WatchableLi
 			if (_mySensors != null) {
 				for (final Enumeration<Editable> iterator = _mySensors.elements(); iterator.hasMoreElements();) {
 					final SensorWrapper thisS = (SensorWrapper) iterator.nextElement();
-					thisS.decimate(theVal, startTime);
+					thisS.decimate(theVal, startTimeMicros);
 				}
 			}
 
@@ -3391,7 +3434,7 @@ public class TrackWrapper extends LightweightTrackWrapper implements WatchableLi
 			if (_mySolutions != null) {
 				for (final Enumeration<Editable> iterator = _mySolutions.elements(); iterator.hasMoreElements();) {
 					final TMAWrapper thisT = (TMAWrapper) iterator.nextElement();
-					thisT.decimate(theVal, startTime);
+					thisT.decimate(theVal, startTimeMicros);
 				}
 			}
 
@@ -3822,6 +3865,9 @@ public class TrackWrapper extends LightweightTrackWrapper implements WatchableLi
 				final TrackSegment seg = (TrackSegment) segments.nextElement();
 				seg.trimTo(period);
 			}
+
+			// trimming may have changed the start times, which we sort by
+			_theSegments.resort();
 		}
 	}
 

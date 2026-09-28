@@ -101,6 +101,41 @@ public class CompletelyFlatEarth implements EarthModel {
 
 		}
 
+		public void testAntimeridian() {
+			final WorldLocation east = new WorldLocation(0, 179.9, 0);
+			final WorldLocation west = new WorldLocation(0, -179.9, 0);
+
+			final EarthModel[] models = new EarthModel[] { new FlatEarth(), new CompletelyFlatEarth() };
+			for (final EarthModel model : models) {
+				final String name = model.getClass().getSimpleName();
+				// going east across the date line
+				final WorldVector res = model.subtract(east, west);
+				assertEquals(name + " short range", 0.2, res.getRange(), 0.0001);
+				assertEquals(name + " heading east", 90d, MWC.Algorithms.Conversions.Rads2Degs(res.getBearing()),
+						0.0001);
+
+				// and back west
+				final WorldVector back = model.subtract(west, east);
+				assertEquals(name + " short range back", 0.2, back.getRange(), 0.0001);
+				assertEquals(name + " heading west", 270d,
+						MWC.Algorithms.Conversions.normaliseDegs(MWC.Algorithms.Conversions.Rads2Degs(back.getBearing())),
+						0.0001);
+
+				// adding the vector should land us in the western hemisphere
+				final WorldLocation sum = model.add(east, res);
+				assertEquals(name + " wrapped long", -179.9, sum.getLong(), 0.0001);
+				assertEquals(name + " lat", 0, sum.getLat(), 0.0001);
+			}
+		}
+
+		public void testNotWrappedAtBoundary() {
+			// a location exactly on the date line isn't wrapped
+			final FlatEarth fe = new FlatEarth();
+			final WorldLocation start = new WorldLocation(0, 179, 0);
+			final WorldLocation res = fe.add(start, new WorldVector(Math.PI / 2, 1, 0));
+			assertEquals("still at 180", 180, res.getLong(), 0.0001);
+		}
+
 	}
 
 	//////////////////////////////////////////////////
@@ -130,7 +165,7 @@ public class CompletelyFlatEarth implements EarthModel {
 
 		// use our internal object for calculation, to reduce object creation
 		_workingLocation.setLat(start.getLat() + dLat);
-		_workingLocation.setLong(start.getLong() + dLong);
+		_workingLocation.setLong(FlatEarth.wrapLongitude(start.getLong() + dLong));
 		_workingLocation.setDepth(start.getDepth() + dDepth);
 
 		// 6. Hooray, now produce the result
@@ -193,7 +228,8 @@ public class CompletelyFlatEarth implements EarthModel {
 
 		// calculate the deltas
 		final double dLat = to.getLat() - from.getLat();
-		final double dLong = to.getLong() - from.getLong();
+		// take the short way round, across the antimeridian if necessary
+		final double dLong = MWC.Algorithms.Conversions.signedDegs(to.getLong() - from.getLong());
 		final double dDepth = to.getDepth() - from.getDepth();
 		WorldVector result = res;
 

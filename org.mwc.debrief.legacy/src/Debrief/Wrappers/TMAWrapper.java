@@ -200,6 +200,38 @@ public final class TMAWrapper extends TacticalDataWrapper {
 
 		}
 
+		/**
+		 * resample a range/bearing solution whose course and bearing pass through
+		 * north
+		 */
+		public void testResampleThroughNorth() {
+			final TMAWrapper sol = new TMAWrapper("sol");
+			final long t0 = 60000;
+			sol.add(new TMAContactWrapper("sol", "trk", new HiResDate(t0), 1000, 350, 350, 5, 10, null, "a", null,
+					null));
+			sol.add(new TMAContactWrapper("sol", "trk", new HiResDate(t0 + 60000), 3000, 10, 10, 7, 400, null, "b",
+					null, null));
+
+			// resample every 30 secs (micros)
+			sol.decimate(new HiResDate(30000), t0 * 1000);
+			assertEquals("correct number of decimated", 3, sol._myContacts.size());
+
+			TMAContactWrapper mid = null;
+			for (final Editable ed : sol._myContacts) {
+				final TMAContactWrapper tc = (TMAContactWrapper) ed;
+				if (tc.getDTG().getDate().getTime() == t0 + 30000) {
+					mid = tc;
+				}
+			}
+			assertNotNull("found mid-point", mid);
+			assertEquals("course through north", 0d, MWC.Algorithms.Conversions.signedDegs(mid.getTargetCourse()),
+					0.001);
+			assertEquals("bearing through north", 0d, MWC.Algorithms.Conversions.signedDegs(mid.getBearing()), 0.001);
+			assertEquals("speed", 6d, mid.getSpeed(), 0.001);
+			assertEquals("depth interpolated linearly", 205d, mid.getDepth(), 0.001);
+			assertEquals("range interpolated", 2000d, mid.getRange().getValueIn(WorldDistance.YARDS), 0.001);
+		}
+
 		public void testMultipleContacts() {
 			final TMAContactWrapper sc1 = new TMAContactWrapper("aaa", "bbb", new HiResDate(12), 0, 0, 0, 0, 0, null,
 					"first", null, null);
@@ -501,8 +533,8 @@ public final class TMAWrapper extends TacticalDataWrapper {
 		final TMAContactWrapper _next = (TMAContactWrapper) next;
 		final TMAContactWrapper _last = (TMAContactWrapper) last;
 
-		final double courseDegs = MWC.Algorithms.Conversions
-				.Rads2Degs(interp.interp(_last.getCourse(), _next.getCourse()));
+		// note: interpolate course in degrees, taking the shortest turn
+		final double courseDegs = interp.interpDegs(_last.getTargetCourse(), _next.getTargetCourse());
 		final double speedKts = interp.interp(_last.getSpeed(), _next.getSpeed());
 		final double depthM = interp.interp(_last.getDepth(), _next.getDepth());
 
@@ -510,7 +542,7 @@ public final class TMAWrapper extends TacticalDataWrapper {
 				_next.getMinima().getValueIn(WorldDistance.DEGS));
 		final double maxima = interp.interp(_last.getMaxima().getValueIn(WorldDistance.DEGS),
 				_next.getMaxima().getValueIn(WorldDistance.DEGS));
-		final double orient = interp.interp(_last.getOrientation(), _next.getOrientation());
+		final double orient = interp.interpDegs(_last.getOrientation(), _next.getOrientation());
 		final EllipseShape theEllipse = new EllipseShape(new WorldLocation(2,2,0), orient, new WorldDistance(maxima, WorldDistance.DEGS),
 				new WorldDistance(minima, WorldDistance.DEGS));
 
@@ -524,9 +556,9 @@ public final class TMAWrapper extends TacticalDataWrapper {
 		} else if ((_last.getRange() != null) && (_next.getRange() != null)) {
 			// yes we have range?
 			rangeYds = interp.interp(_last.getRange().getValueIn(WorldDistance.YARDS),
-					_last.getRange().getValueIn(WorldDistance.YARDS));
+					_next.getRange().getValueIn(WorldDistance.YARDS));
 
-			final double bearingRads = interp.interp(_last.getBearingRads(), _next.getBearingRads());
+			final double bearingRads = interp.interpRads(_last.getBearingRads(), _next.getBearingRads());
 			bearingDegs = MWC.Algorithms.Conversions.Rads2Degs(bearingRads);
 		}
 

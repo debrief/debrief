@@ -12,6 +12,7 @@ import java.util.TimeZone;
 import Debrief.GUI.Frames.Application;
 import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.TrackWrapper;
+import MWC.Algorithms.Conversions;
 import MWC.GUI.Layers;
 import MWC.GUI.ToolParent;
 import MWC.GUI.Properties.DebriefColors;
@@ -123,6 +124,8 @@ public class ImportAntaresImpl {
 	 *
 	 * Sample: TRACK/DDHHMMZ/LAT-LONG/COURSE/SPEED/DEPTH//
 	 *
+	 * where COURSE is in degrees and SPEED in knots
+	 *
 	 * @param antaresLine line to parse
 	 * @param track       Layer where we will load the tracks read
 	 * @param trackName   Name of the new track (since it is not available in the
@@ -163,7 +166,9 @@ public class ImportAntaresImpl {
 		 * Ok, at this point we have everything to create the Fix, then the FixWrapper
 		 * and after all that we will insert it into the Track.
 		 */
-		final Fix newFix = new Fix(date, location, course, speed);
+		// note: Antares course is in degrees and speed in knots, but Fix stores
+		// course in radians and speed in yards/sec
+		final Fix newFix = new Fix(date, location, Conversions.Degs2Rads(course), Conversions.Kts2Yps(speed));
 		final FixWrapper newFixWrapper = new FixWrapper(newFix);
 		newFixWrapper.setDepth(depth);
 		newFixWrapper.resetName();

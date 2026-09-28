@@ -138,7 +138,7 @@ public class FlatEarth implements EarthModel {
 
 		// use our internal object for calculation, to reduce object creation
 		_workingLocation.setLat(Conversions.Rads2Degs(NEW_LAT));
-		_workingLocation.setLong(Conversions.Rads2Degs(NEW_LONG));
+		_workingLocation.setLong(wrapLongitude(Conversions.Rads2Degs(NEW_LONG)));
 		_workingLocation.setDepth(start.getDepth() + delta.getDepth());
 
 		// 6. Hooray, now produce the result
@@ -202,8 +202,9 @@ public class FlatEarth implements EarthModel {
 		final double LAT1 = Conversions.Degs2Rads(from.getLat());
 		final double LONG1 = Conversions.Degs2Rads(from.getLong());
 
-		// 1. find the deltas
-		final double DELTA_LONG = LONG2 - LONG1;
+		// 1. find the deltas (taking the short way round, across the antimeridian
+		// if necessary)
+		final double DELTA_LONG = Conversions.signedRads(LONG2 - LONG1);
 		final double DELTA_LAT = LAT2 - LAT1;
 
 		// 2. find the mean latitude
@@ -236,5 +237,19 @@ public class FlatEarth implements EarthModel {
 	//////////////////////////////////////////////////
 	// member functions
 	//////////////////////////////////////////////////
+
+	/**
+	 * wrap a longitude that has passed through the antimeridian back into the
+	 * range [-180, 180]. Values already in that range are returned unchanged.
+	 *
+	 * @param longDegs longitude (degrees)
+	 * @return equivalent longitude in [-180, 180]
+	 */
+	static double wrapLongitude(final double longDegs) {
+		if (longDegs > 180d || longDegs < -180d) {
+			return Conversions.signedDegs(longDegs);
+		}
+		return longDegs;
+	}
 
 }
