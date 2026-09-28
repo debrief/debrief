@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.TrueFileFilter;
@@ -537,12 +538,8 @@ public class PlotTracks {
 		int time_delay = intervalDuration;
 		int current_time_id = Integer.parseInt(time_tag.selectFirst("p|cNvPr").attr("id"));
 		Application.logError2(ToolParent.INFO, "Last Time Id::::: " + current_time_id, null);
-		// we will get the timestamps from the first track
-
-		final Track firstItem = trackData.getTracks().get(0);
-		final ArrayList<TrackPoint> coordinates = firstItem.getPoints();
-		for (final TrackPoint coordinate : coordinates) {
-			final String timestampString = coordinate.getFormattedTime();
+		// one time caption per animation step, starting at the first step
+		for (final String timestampString : getStepTimes(trackData)) {
 			final Element temp_time_tag = time_tag.clone();
 			temp_time_tag.selectFirst("p|cNvPr").attr("id", current_time_id + "");
 			temp_time_tag.selectFirst("p|txBody").selectFirst("a|p").selectFirst("a|r").selectFirst("a|t")
@@ -624,6 +621,31 @@ public class PlotTracks {
 		for (final Element narrative : narrative_objects) {
 			spTreeobj.insertChildren(spTreeobj.childNodeSize(), narrative);
 		}
+	}
+
+	/**
+	 * the formatted time for each animation step, starting at the first step.
+	 * These come from the recorder's per-step times, not from any one track: a
+	 * track may start late (stepsToSkip) or finish early.
+	 *
+	 * If no per-step times were supplied (e.g. data read by TrackParser, where
+	 * every track starts at the first step) we fall back to the times of the
+	 * first track.
+	 *
+	 * @param trackData the data being exported
+	 * @return one time string per step
+	 */
+	public static List<String> getStepTimes(final TrackData trackData) {
+		if (!trackData.getStepTimes().isEmpty()) {
+			return trackData.getStepTimes();
+		}
+		final List<String> res = new ArrayList<>();
+		if (!trackData.getTracks().isEmpty()) {
+			for (final TrackPoint point : trackData.getTracks().get(0).getPoints()) {
+				res.add(point.getFormattedTime());
+			}
+		}
+		return res;
 	}
 
 	public String export(final TrackData trackData, final String donorTemplateFilePath, final String output_filename)

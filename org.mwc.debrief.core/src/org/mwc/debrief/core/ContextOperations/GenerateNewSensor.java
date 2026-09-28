@@ -81,6 +81,10 @@ public class GenerateNewSensor implements RightClickContextItemGenerator {
 		@Override
 		public IStatus undo(final IProgressMonitor monitor, final IAdaptable info) throws ExecutionException {
 			_parent.removeElement(_sensorWrapper);
+
+			// and tell everyone the sensor has gone
+			_layers.fireExtended();
+
 			return Status.OK_STATUS;
 		}
 

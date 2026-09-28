@@ -47,6 +47,7 @@ import MWC.GenericData.WorldDistance;
 import MWC.GenericData.WorldLocation;
 import MWC.GenericData.WorldVector;
 import MWC.TacticalData.Fix;
+import MWC.Utilities.TextFormatting.DebriefFormatDateTime;
 import MWC.Utilities.TextFormatting.GMTDateFormat;
 import junit.framework.TestCase;
 
@@ -150,6 +151,25 @@ public class NMEA_Radar_FileImporter {
 			final String initialString = "700101_010601:$RATTM,002,0.665,224.7,T,0.17,31.2,R,0.16,99.99,N,,T,,,A*2A";
 			final Optional<RadarEntry> entry = readLine(initialString, 5);
 			assertTrue(entry.isPresent());
+		}
+
+		public void testTwentyFourHourClock() throws Exception {
+			final String tail = ":$RATTM,002,0.665,224.7,T,0.17,31.2,R,0.16,99.99,N,,T,,,A*2A";
+			// afternoon
+			Optional<RadarEntry> entry = readLine("700101_130601" + tail, 5);
+			assertTrue("PM record read", entry.isPresent());
+			assertEquals((13 * 3600 + 6 * 60 + 1) * 1000L, entry.get().dtg.getDate().getTime());
+			// noon
+			entry = readLine("700101_120601" + tail, 5);
+			assertTrue("noon record read", entry.isPresent());
+			assertEquals((12 * 3600 + 6 * 60 + 1) * 1000L, entry.get().dtg.getDate().getTime());
+			// just after midnight
+			entry = readLine("700101_000601" + tail, 5);
+			assertTrue("midnight record read", entry.isPresent());
+			assertEquals((6 * 60 + 1) * 1000L, entry.get().dtg.getDate().getTime());
+			// morning
+			entry = readLine("700101_010601" + tail, 5);
+			assertEquals((3600 + 6 * 60 + 1) * 1000L, entry.get().dtg.getDate().getTime());
 		}
 
 		public void testInvalidDate() throws Exception {
@@ -328,7 +348,9 @@ public class NMEA_Radar_FileImporter {
 	}
 
 	private static Date getDate(final String item) throws ParseException {
-		final SimpleDateFormat dateFormatter = new GMTDateFormat("yyMMdd_hhmmss");
+		// note: HH (0-23), not hh (1-12). Two-digit years use the fixed Debrief window
+		final SimpleDateFormat dateFormatter = DebriefFormatDateTime
+				.applyTwoDigitYearWindow(new GMTDateFormat("yyMMdd_HHmmss"));
 		return dateFormatter.parse(item);
 	}
 

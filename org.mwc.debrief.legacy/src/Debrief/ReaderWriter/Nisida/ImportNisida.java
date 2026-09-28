@@ -27,6 +27,7 @@ import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.TimeZone;
 
@@ -49,6 +50,8 @@ import MWC.GenericData.WorldVector;
 import MWC.TacticalData.Fix;
 import MWC.TacticalData.NarrativeEntry;
 import MWC.TacticalData.NarrativeWrapper;
+import MWC.Utilities.TextFormatting.DebriefFormatDateTime;
+import MWC.Utilities.TextFormatting.GMTDateFormat;
 
 /**
  * Nisida Format Importer
@@ -80,6 +83,11 @@ public class ImportNisida {
 		private int month;
 
 		private int year;
+
+		/**
+		 * whether the month/year from the last UNIT line were read successfully
+		 */
+		private boolean dateValid;
 
 		private TrackWrapper platform;
 
@@ -153,6 +161,14 @@ public class ImportNisida {
 
 		public void setYear(final int year) {
 			this.year = year;
+		}
+
+		public boolean isDateValid() {
+			return dateValid;
+		}
+
+		public void setDateValid(final boolean dateValid) {
+			this.dateValid = dateValid;
 		}
 
 	}
@@ -250,7 +266,9 @@ public class ImportNisida {
 
 		final NisidaLoadState status = new NisidaLoadState(layers);
 		try {
-			final SimpleDateFormat dateFormatter = new SimpleDateFormat("MMMyy");
+			// month names are always English, and the month/year is in GMT
+			final SimpleDateFormat dateFormatter = DebriefFormatDateTime
+					.applyTwoDigitYearWindow(new GMTDateFormat("MMMyy", Locale.ENGLISH));
 			String nisidaLine;
 			int lineNumber = 1;
 			while ((nisidaLine = br.readLine()) != null) {
@@ -305,6 +323,12 @@ public class ImportNisida {
 
 			processContinue(line, status);
 		} else if (line.length() > 7 && line.charAt(7) == '/' && allNumbersDigit(line.substring(0, 6))) {
+			if (!status.isDateValid()) {
+				// don't create data with bogus dates
+				status.getErrors().add(new ImportNisidaError("Error on line " + status.getLineNumber(),
+						"Line skipped, no valid month/year from a preceding UNIT line: " + line));
+				return;
+			}
 			processOperation(line, status);
 		} else {
 			// Not a line we recognise, so just skip to next one
@@ -802,11 +826,13 @@ public class ImportNisida {
 
 		try {
 			final Date date = dateFormatter.parse(dateString);
-			final Calendar calendar = Calendar.getInstance();
+			final Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("GMT"));
 			calendar.setTime(date);
 			status.setMonth(calendar.get(Calendar.MONTH));
 			status.setYear(calendar.get(Calendar.YEAR));
+			status.setDateValid(true);
 		} catch (final ParseException e) {
+			status.setDateValid(false);
 			status.getErrors().add(new ImportNisidaError("Error on line " + status.getLineNumber(),
 					"Parse error in the date: " + dateString));
 		}

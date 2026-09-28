@@ -288,7 +288,7 @@ public class MWCXMLReader extends DefaultHandler {
 	// ///////////////////////////////////////////////////////
 	public synchronized static DateFormat getRNDateFormatter() {
 		if (RNdateFormat == null) {
-			RNdateFormat = new GMTDateFormat("yyMMdd HHmmss.SSS");
+			RNdateFormat = DebriefFormatDateTime.applyTwoDigitYearWindow(new GMTDateFormat("yyMMdd HHmmss.SSS"));
 		}
 		return RNdateFormat;
 	}
@@ -439,7 +439,7 @@ public class MWCXMLReader extends DefaultHandler {
 	}
 
 	static public String writeThis(final HiResDate val) {
-		final String res = DebriefFormatDateTime.toStringHiRes(val);
+		final String res = DebriefFormatDateTime.toStringHiResXML(val);
 		return res;
 	}
 

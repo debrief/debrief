@@ -17,14 +17,28 @@ package Debrief.ReaderWriter.powerPoint.test;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import java.awt.Color;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
 
 import org.junit.Test;
 
 import Debrief.ReaderWriter.powerPoint.DebriefException;
 import Debrief.ReaderWriter.powerPoint.PlotTracks;
+import Debrief.ReaderWriter.powerPoint.model.Track;
+import Debrief.ReaderWriter.powerPoint.model.TrackData;
+import Debrief.ReaderWriter.powerPoint.model.TrackPoint;
 import net.lingala.zip4j.exception.ZipException;
 
 public class PlotTracksTest {
@@ -84,5 +98,67 @@ public class PlotTracksTest {
 					.validateDonorFile(path + File.separator + prefix + File.separator + donors[i]);
 			assertEquals(result, expectedResults[i]);
 		}
+	}
+
+	private static Track makeTrack(final String name, final int stepsToSkip, final int firstStep, final int numSteps) {
+		final Track track = new Track(name, Color.RED, stepsToSkip);
+		for (int i = firstStep; i < firstStep + numSteps; i++) {
+			track.getPoints().add(new TrackPoint(100 + i, 100 + i * 5, 0, new Date(i * 60000L), "T" + i));
+		}
+		return track;
+	}
+
+	/**
+	 * two tracks, as the recorder would produce them: B starts late (after two
+	 * steps), and happens to be first in the list. A covers steps 0-3, B covers
+	 * steps 2-4
+	 */
+	private static TrackData makeStaggeredTracks() {
+		final TrackData td = new TrackData();
+		td.setName("staggered");
+		td.setIntervals(1000);
+		td.setWidth(800);
+		td.setHeight(600);
+		td.getTracks().add(makeTrack("B", 2, 2, 3));
+		td.getTracks().add(makeTrack("A", 0, 0, 4));
+		td.getStepTimes().addAll(Arrays.asList("T0", "T1", "T2", "T3", "T4"));
+		return td;
+	}
+
+	@Test
+	public void stepTimesTest() {
+		final TrackData td = makeStaggeredTracks();
+		assertEquals(Arrays.asList("T0", "T1", "T2", "T3", "T4"), PlotTracks.getStepTimes(td));
+
+		// without recorded step times (e.g. TrackParser data) use the first track
+		td.getStepTimes().clear();
+		assertEquals(Arrays.asList("T2", "T3", "T4"), PlotTracks.getStepTimes(td));
+	}
+
+	/**
+	 * the time captions in the exported slide must be one per step, starting at
+	 * the first step, not taken from whichever track is first in the list
+	 */
+	@Test
+	public void timeCaptionsPerStepTest() throws IOException, ZipException, DebriefException {
+		final TrackData td = makeStaggeredTracks();
+		final File out = File.createTempFile("staggered", ".pptx");
+		out.delete();
+		final String donor = "../org.mwc.cmap.combined.feature/root_installs/sample_data/other_formats/master_template.pptx";
+		final String exported = new PlotTracks().export(td, donor, out.getAbsolutePath());
+		final List<String> captions = new ArrayList<>();
+		try (final ZipFile zip = new ZipFile(exported)) {
+			final ZipEntry slide = zip.getEntry("ppt/slides/slide1.xml");
+			try (final InputStream is = zip.getInputStream(slide)) {
+				final String xml = new String(is.readAllBytes(), StandardCharsets.UTF_8);
+				final Matcher m = Pattern.compile("<a:t>(T\\d+)</a:t>").matcher(xml);
+				while (m.find()) {
+					captions.add(m.group(1));
+				}
+			}
+		} finally {
+			new File(exported).delete();
+		}
+		assertEquals(Arrays.asList("T0", "T1", "T2", "T3", "T4"), captions);
 	}
 }
