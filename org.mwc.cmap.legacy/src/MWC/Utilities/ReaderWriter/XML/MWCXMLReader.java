@@ -210,6 +210,12 @@ public class MWCXMLReader extends DefaultHandler {
 			assertRejected("NaN");
 			assertRejected("nan");
 			assertRejected("Infinity");
+			// could be a thousands separator or a decimal comma, so don't guess
+			assertRejected("1,234");
+			assertRejected("-12,500");
+			assertRejected("1,234,567");
+			assertEquals(1.2345, readThisDouble("1,2345"), 1e-9);
+			assertEquals(1234.5, readThisDouble("1234,5"), 1e-9);
 		}
 	}
 
@@ -240,6 +246,12 @@ public class MWCXMLReader extends DefaultHandler {
 	 * an optional '.' or ',' decimal separator, optional exponent
 	 */
 	static private final Pattern NUMBER_PATTERN = Pattern.compile("[+-]?(\\d+([.,]\\d*)?|[.,]\\d+)([eE][+-]?\\d+)?");
+
+	/**
+	 * a number that could equally be read with ',' as a thousands separator or as
+	 * the decimal separator, e.g. 1,234
+	 */
+	static private final Pattern AMBIGUOUS_COMMA_PATTERN = Pattern.compile("[+-]?\\d{1,3},\\d{3}");
 
 	private static final String HANDLER_NOT_FOUND_MESSAGE = " handler not found.\n\nMaybe it's not a Debrief file.";
 
@@ -348,7 +360,8 @@ public class MWCXMLReader extends DefaultHandler {
 	/**
 	 * parse a number from a data file. The whole (trimmed) value must be a number:
 	 * either '.' or ',' may be used as the decimal separator (no thousands
-	 * separators), and exponent notation (1.2E1, 1e5) is accepted. Anything else,
+	 * separators, and values such as 1,234 that could be either are rejected), and
+	 * exponent notation (1.2E1, 1e5) is accepted. Anything else,
 	 * including trailing text, NaN and infinity, is rejected rather than silently
 	 * truncated.
 	 *
@@ -366,6 +379,12 @@ public class MWCXMLReader extends DefaultHandler {
 
 		if (!NUMBER_PATTERN.matcher(trimmed).matches()) {
 			throw new ParseException("Unparseable number: \"" + value + "\"", 0);
+		}
+
+		// "1,234" could be a thousands separator or a decimal comma. Don't guess
+		if (AMBIGUOUS_COMMA_PATTERN.matcher(trimmed).matches()) {
+			throw new ParseException("Ambiguous number (thousands separator or decimal comma?): \"" + value + "\"",
+					0);
 		}
 
 		// only one decimal separator can be present, so we can normalise it
