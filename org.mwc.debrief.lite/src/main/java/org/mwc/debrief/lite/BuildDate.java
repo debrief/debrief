@@ -15,10 +15,37 @@
 
 package org.mwc.debrief.lite;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
+
 /**
+ * The date Debrief Lite was built. The Ant build (build.xml, target
+ * buildDate) writes it to the builddate.txt resource beside this class, so the
+ * build doesn't have to rewrite a tracked source file. Builds that skip that
+ * step (e.g. running from the IDE) report {@link #UNKNOWN}.
+ *
  * @author Ayesha
  *
  */
 public class BuildDate {
-	public static final String BUILD_DATE = "$DATE_HERE$";
+	static final String UNKNOWN = "development build";
+
+	public static final String BUILD_DATE = readBuildDate();
+
+	private static String readBuildDate() {
+		try (InputStream in = BuildDate.class.getResourceAsStream("builddate.txt")) {
+			if (in != null) {
+				final String line = new BufferedReader(new InputStreamReader(in, StandardCharsets.UTF_8)).readLine();
+				if (line != null && !line.trim().isEmpty()) {
+					return line.trim();
+				}
+			}
+		} catch (final IOException e) {
+			// fall through to the default
+		}
+		return UNKNOWN;
+	}
 }
