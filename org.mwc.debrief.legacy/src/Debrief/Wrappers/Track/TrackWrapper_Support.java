@@ -377,8 +377,8 @@ public class TrackWrapper_Support {
 		@Override
 		public void removeElement(final Editable p) {
 			// segment start times can change after they're stored, so make sure the
-			// list is sorted before we search it
-			resort();
+			// list is still in order before we search it
+			resortIfNeeded();
 
 			super.removeElement(p);
 
@@ -394,17 +394,35 @@ public class TrackWrapper_Support {
 		}
 
 		/**
-		 * re-sort the segments. The sort key (start time) of a segment can change
-		 * after it has been stored (e.g. adding an earlier fix, or trimming it), so
-		 * call this after doing so.
+		 * re-sort the segments, if their order no longer matches their start times.
+		 * The sort key (start time) of a segment can change after it has been stored
+		 * (e.g. adding an earlier fix, or trimming it), so call this after doing so.
+		 * The set is only rebuilt when it is out of order, since rebuilding it
+		 * disturbs any loop that is currently iterating through the segments.
 		 */
-		public void resort() {
+		public void resortIfNeeded() {
 			final Collection<Editable> data = getData();
-			if (data.size() > 1) {
+			if (data.size() > 1 && !isSorted(data)) {
 				final List<Editable> items = new ArrayList<Editable>(data);
 				data.clear();
 				data.addAll(items);
 			}
+		}
+
+		private static boolean isSorted(final Collection<Editable> data) {
+			TrackSegment previous = null;
+			for (final Editable item : data) {
+				if (!(item instanceof TrackSegment)) {
+					// we only know how to check segments
+					return true;
+				}
+				final TrackSegment seg = (TrackSegment) item;
+				if (previous != null && previous.compareTo(seg) >= 0) {
+					return false;
+				}
+				previous = seg;
+			}
+			return true;
 		}
 
 		/**

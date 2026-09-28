@@ -268,6 +268,31 @@ public class TrackSegment extends BaseItemLayer
 			assertSame("right one left", late, segs.first());
 		}
 
+		/**
+		 * removing (and re-adding) segments whilst looping through them, as
+		 * TrackWrapper.tidyUpOnPaste does, must still visit every segment
+		 */
+		public void testRemoveWhilstLooping() {
+			final TrackWrapper tw = new TrackWrapper();
+			tw.setName("track");
+			for (int i = 1; i <= 4; i++) {
+				tw.add(segmentStarting(i * 5000, "leg" + i));
+			}
+			final TrackWrapper_Support.SegmentList segs = tw.getSegments();
+			assertEquals("four legs", 4, segs.size());
+
+			int visited = 0;
+			final Enumeration<Editable> iter = segs.elements();
+			while (iter.hasMoreElements()) {
+				final TrackSegment seg = (TrackSegment) iter.nextElement();
+				segs.removeElement(seg);
+				segs.addSegment(seg);
+				visited++;
+			}
+			assertEquals("all legs visited", 4, visited);
+			assertEquals("all legs still present", 4, segs.size());
+		}
+
 		public void testDeleteNotVisible() {
 			final TrackSegment ts = getDummyList();
 

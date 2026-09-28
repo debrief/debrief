@@ -1136,7 +1136,7 @@ public class TrackWrapper extends LightweightTrackWrapper implements WatchableLi
 
 		// the start time is the sort key for segments. If it's changed, re-sort
 		if (_theSegments.size() > 1 && !java.util.Objects.equals(oldStart, last.startDTG())) {
-			_theSegments.resort();
+			_theSegments.resortIfNeeded();
 		}
 
 		// tell the fix about it's daddy
@@ -3867,7 +3867,7 @@ public class TrackWrapper extends LightweightTrackWrapper implements WatchableLi
 			}
 
 			// trimming may have changed the start times, which we sort by
-			_theSegments.resort();
+			_theSegments.resortIfNeeded();
 		}
 	}
 
