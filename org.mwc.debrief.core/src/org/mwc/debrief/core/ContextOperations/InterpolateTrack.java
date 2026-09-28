@@ -172,6 +172,10 @@ public class InterpolateTrack implements RightClickContextItemGenerator {
 						contents._segment.addFix((FixWrapper) fix);
 					}
 				}
+
+				// the segments' start times changed while they were in the sorted
+				// list, so re-sort it
+				_track.getSegments().resort();
 			}
 
 			// and clear the new fixes list, ready for any redo
