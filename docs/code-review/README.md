@@ -46,7 +46,7 @@ One row filed by a reviewer was removed during merge because its cited manifest 
 | `issue_type` | Closed taxonomy (below). One row per (class, issue type); several occurrences in the same class are listed together in `instances`. |
 | `severity` | See scale below. Reviewer's estimate of impact **if** the finding is real. |
 | `confidence` | High / Medium / Low: reviewer's belief that the finding is real. Low-confidence Critical rows deserve the first look, not dismissal. |
-| `status` | `candidate` (read but not executed), `verified` (reviewer executed a check, e.g. recomputed a constant), `unverified-needs-runtime` (needs a running workbench or network to confirm). |
+| `status` | `candidate` (read but not executed), `verified` (reviewer executed a check, e.g. recomputed a constant), `unverified-needs-runtime` (needs a running workbench or network to confirm). After triage: `fixed`, `partial` (mitigated; remainder tracked in the listed issue), `deferred` (moved to the listed issue), `rejected` (did not reproduce). |
 | `title` | ≤ 80 chars, issue-title ready. |
 | `description` | What is wrong and which invariant or threat is violated. |
 | `instances` | Line references at the reviewed commit, e.g. `L68; L947-L952`. |
