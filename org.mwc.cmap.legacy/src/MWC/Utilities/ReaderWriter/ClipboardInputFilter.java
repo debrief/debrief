@@ -61,7 +61,12 @@ public final class ClipboardInputFilter {
 					+ "java.lang.Long;java.lang.Float;java.lang.Double;java.lang.Number;java.lang.String;"
 					+ "java.lang.Enum;java.lang.Object;java.util.*;java.util.concurrent.ConcurrentSkipListMap;"
 					+ "java.util.concurrent.ConcurrentSkipListSet;java.util.concurrent.ConcurrentHashMap;"
-					+ "java.util.concurrent.CopyOnWriteArrayList;java.awt.Color;java.awt.Font;"
+					+ "java.util.concurrent.CopyOnWriteArrayList;"
+					// ConcurrentHashMap serialises through its segments and their locks
+					+ "java.util.concurrent.ConcurrentHashMap$Segment;java.util.concurrent.locks.*;"
+					// towed array datasets, held in sensor additional data
+					+ "org.eclipse.january.**;"
+					+ "java.awt.Color;java.awt.Font;"
 					+ "java.awt.font.TextAttribute;java.text.AttributedCharacterIterator$Attribute;"
 					+ "java.awt.Dimension;java.awt.Point;java.awt.Rectangle;java.awt.geom.*;"
 					+ "java.beans.PropertyChangeSupport;java.text.*;java.math.*;sun.util.calendar.ZoneInfo;"

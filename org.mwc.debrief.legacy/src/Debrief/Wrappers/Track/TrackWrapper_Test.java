@@ -696,6 +696,34 @@ public class TrackWrapper_Test extends TestCase {
 		assertEquals("lbl", res[3].getName());
 	}
 
+	/**
+	 * towed array data is held in sensors as January datasets. Check a track
+	 * carrying it can still be pasted
+	 */
+	public void testClipboardFilterAcceptsTASensorData() throws Exception {
+		final SensorWrapper sensor = new SensorWrapper("TA");
+		final Debrief.Wrappers.Extensions.Measurements.DataFolder folder = new Debrief.Wrappers.Extensions.Measurements.DataFolder();
+		sensor.getAdditionalData().add(folder);
+		folder.add(new Debrief.Wrappers.Extensions.Measurements.TimeSeriesDatasetDouble("Fore", "degs",
+				new long[] { 1000, 2000 }, new double[] { 1, 2 }));
+		final TrackWrapper track = new TrackWrapper();
+		track.setName("ta_track");
+		track.add(sensor);
+
+		final java.io.ByteArrayOutputStream bos = new java.io.ByteArrayOutputStream();
+		try (final java.io.ObjectOutputStream oos = new java.io.ObjectOutputStream(bos)) {
+			oos.writeObject(new Editable[] { track });
+		}
+		final Editable[] res;
+		try (final java.io.ObjectInputStream ois = MWC.Utilities.ReaderWriter.ClipboardInputFilter
+				.createStream(new java.io.ByteArrayInputStream(bos.toByteArray()))) {
+			res = (Editable[]) ois.readObject();
+		}
+		assertEquals(1, res.length);
+		final SensorWrapper pasted = (SensorWrapper) ((TrackWrapper) res[0]).getSensors().elements().nextElement();
+		assertEquals("TA data present", 1, pasted.getAdditionalData().size());
+	}
+
 	public void testAdd() throws InterruptedException {
 		assertEquals("start condition", 6, this.trackLength());
 
