@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.commands.operations.IUndoableOperation;
@@ -53,6 +54,84 @@ import junit.framework.TestCase;
  */
 public class SplitTracksIntoLegs implements RightClickContextItemGenerator {
 
+	/**
+	 * remember which leg each fix was in before the split, so undo can restore the
+	 * legs exactly
+	 *
+	 * @param track the track about to be split
+	 * @return the index of the original leg for each fix
+	 */
+	private static Map<FixWrapper, Integer> originalLegsOf(final TrackWrapper track) {
+		final Map<FixWrapper, Integer> res = new HashMap<FixWrapper, Integer>();
+		final Enumeration<Editable> segs = track.getSegments().elements();
+		int legIndex = 0;
+		while (segs.hasMoreElements()) {
+			final TrackSegment seg = (TrackSegment) segs.nextElement();
+			final Enumeration<Editable> fixes = seg.elements();
+			while (fixes.hasMoreElements()) {
+				res.put((FixWrapper) fixes.nextElement(), legIndex);
+			}
+			legIndex++;
+		}
+		return res;
+	}
+
+	/**
+	 * undo a split: merge the split segments back together, keeping fixes that
+	 * came from different legs in different legs
+	 *
+	 * @param track        the track that was split
+	 * @param splits       the segments created by the split
+	 * @param originalLegs which leg each fix was in before the split
+	 * @return how many segments were merged away
+	 */
+	private static int mergeBack(final TrackWrapper track, final List<TrackSegment> splits,
+			final Map<FixWrapper, Integer> originalLegs) {
+		// this track may not have been split
+		if (splits == null || splits.isEmpty()) {
+			return 0;
+		}
+
+		final SegmentList existingSegments = track.getSegments();
+
+		// the segment we're merging into, for each original leg
+		final Map<Integer, TrackSegment> targets = new HashMap<Integer, TrackSegment>();
+
+		int ctr = 0;
+		for (final TrackSegment segment : splits) {
+			// check this is an existing segment for this track
+			// if we've performed several split/merge operations
+			// the list may now be out of sync
+			if (segment.isEmpty() || !existingSegments.contains(segment)) {
+				continue;
+			}
+
+			final FixWrapper firstFix = (FixWrapper) segment.elements().nextElement();
+			final Integer leg = originalLegs == null ? null : originalLegs.get(firstFix);
+			final Integer key = leg == null ? -1 : leg;
+			final TrackSegment target = targets.get(key);
+			if (target == null) {
+				// first segment for this leg, merge the others into it
+				targets.put(key, segment);
+			} else {
+				// remove the segment
+				track.removeElement(segment);
+
+				final Enumeration<Editable> fixes = segment.elements();
+				while (fixes.hasMoreElements()) {
+					final FixWrapper fix = (FixWrapper) fixes.nextElement();
+					target.addFix(fix);
+				}
+				ctr++;
+			}
+		}
+
+		// adding fixes may have changed the start times we sort legs by
+		existingSegments.resortIfNeeded();
+
+		return ctr;
+	}
+
 	private static class SplitTracksOperation extends CMAPOperation {
 
 		/**
@@ -62,6 +141,7 @@ public class SplitTracksIntoLegs implements RightClickContextItemGenerator {
 		private final List<TrackWrapper> _tracks;
 		private final Long _period;
 		private final HashMap<TrackWrapper, List<TrackSegment>> _trackChanges;
+		private final HashMap<TrackWrapper, Map<FixWrapper, Integer>> _originalLegs = new HashMap<TrackWrapper, Map<FixWrapper, Integer>>();
 
 		public SplitTracksOperation(final String title, final Layers theLayers, final List<TrackWrapper> tracks,
 				final Long period) {
@@ -86,9 +166,11 @@ public class SplitTracksIntoLegs implements RightClickContextItemGenerator {
 		public IStatus execute(final IProgressMonitor monitor, final IAdaptable info) throws ExecutionException {
 			boolean modified = false;
 			_trackChanges.clear();
+			_originalLegs.clear();
 
 			// loop through the tracks
 			for (final TrackWrapper track : _tracks) {
+				_originalLegs.put(track, originalLegsOf(track));
 				final List<TrackSegment> newSegments = TrackWrapper_Support.splitTrackAtJumps(track, _period);
 				modified = modified || !newSegments.isEmpty();
 				_trackChanges.put(track, newSegments);
@@ -111,38 +193,7 @@ public class SplitTracksIntoLegs implements RightClickContextItemGenerator {
 
 			// ok, merge the segments
 			for (final TrackWrapper track : _trackChanges.keySet()) {
-				final List<TrackSegment> splits = _trackChanges.get(track);
-
-				// this track may not have been split
-				if (splits == null || splits.isEmpty()) {
-					continue;
-				}
-
-				final TrackSegment target = splits.get(0);
-
-				final SegmentList existingSegments = track.getSegments();
-
-				int ctr = 0;
-				for (final TrackSegment segment : splits) {
-					if (segment != target) {
-						// check this is an existing segment for this track
-						// if we've performed several split/merge operations
-						// the list may now be out of sync
-						if (existingSegments.contains(segment)) {
-							// remove the segment
-							track.removeElement(segment);
-
-							final Enumeration<Editable> fixes = segment.elements();
-							while (fixes.hasMoreElements()) {
-								final FixWrapper fix = (FixWrapper) fixes.nextElement();
-								target.addFix(fix);
-							}
-							ctr++;
-						}
-					}
-				}
-
-				numChanges += ctr;
+				numChanges += mergeBack(track, _trackChanges.get(track), _originalLegs.get(track));
 			}
 
 			final boolean modified = numChanges > 0;
@@ -165,6 +216,7 @@ public class SplitTracksIntoLegs implements RightClickContextItemGenerator {
 		private final List<TrackWrapper> _tracks;
 		private final double _factor;
 		private final HashMap<TrackWrapper, List<TrackSegment>> _trackChanges;
+		private final HashMap<TrackWrapper, Map<FixWrapper, Integer>> _originalLegs = new HashMap<TrackWrapper, Map<FixWrapper, Integer>>();
 
 		public SpatialSplitTracksOperation(final String title, final Layers theLayers, final List<TrackWrapper> tracks,
 				final double factor) {
@@ -189,9 +241,11 @@ public class SplitTracksIntoLegs implements RightClickContextItemGenerator {
 		public IStatus execute(final IProgressMonitor monitor, final IAdaptable info) throws ExecutionException {
 			boolean modified = false;
 			_trackChanges.clear();
+			_originalLegs.clear();
 
 			// loop through the tracks
 			for (final TrackWrapper track : _tracks) {
+				_originalLegs.put(track, originalLegsOf(track));
 				final List<TrackSegment> newSegments = TrackWrapper_Support.splitTrackAtSpatialJumps(track, _factor);
 				modified = modified || !newSegments.isEmpty();
 				_trackChanges.put(track, newSegments);
@@ -214,38 +268,7 @@ public class SplitTracksIntoLegs implements RightClickContextItemGenerator {
 
 			// ok, merge the segments
 			for (final TrackWrapper track : _trackChanges.keySet()) {
-				final List<TrackSegment> splits = _trackChanges.get(track);
-
-				// this track may not have been split
-				if (splits == null || splits.isEmpty()) {
-					continue;
-				}
-
-				final TrackSegment target = splits.get(0);
-
-				final SegmentList existingSegments = track.getSegments();
-
-				int ctr = 0;
-				for (final TrackSegment segment : splits) {
-					if (segment != target) {
-						// check this is an existing segment for this track
-						// if we've performed several split/merge operations
-						// the list may now be out of sync
-						if (existingSegments.contains(segment)) {
-							// remove the segment
-							track.removeElement(segment);
-
-							final Enumeration<Editable> fixes = segment.elements();
-							while (fixes.hasMoreElements()) {
-								final FixWrapper fix = (FixWrapper) fixes.nextElement();
-								target.addFix(fix);
-							}
-							ctr++;
-						}
-					}
-				}
-
-				numChanges += ctr;
+				numChanges += mergeBack(track, _trackChanges.get(track), _originalLegs.get(track));
 			}
 
 			final boolean modified = numChanges > 0;
@@ -400,6 +423,47 @@ public class SplitTracksIntoLegs implements RightClickContextItemGenerator {
 			assertEquals("just one leg", 1, tFour.getSegments().size());
 			assertEquals("correct positions", 14, tOne.numFixes());
 			assertEquals("correct positions", 10, tFour.numFixes());
+		}
+
+		private static List<Integer> legSizes(final TrackWrapper track) {
+			final List<Integer> res = new ArrayList<Integer>();
+			final Enumeration<Editable> segs = track.getSegments().elements();
+			while (segs.hasMoreElements()) {
+				res.add(((TrackSegment) segs.nextElement()).size());
+			}
+			return res;
+		}
+
+		/**
+		 * undo must restore the original legs, not merge them all into one
+		 */
+		public void testUndoKeepsOriginalLegs() throws ExecutionException {
+			final TrackWrapper track = new TrackWrapper();
+			track.setName("two-legs");
+			final TrackSegment legOne = new TrackSegment(TrackSegment.ABSOLUTE);
+			legOne.setName("one");
+			for (final long t : new long[] { 1000, 2000, 5000, 6000, 7000 }) {
+				legOne.addFix(getFix(t, 22, 33));
+			}
+			final TrackSegment legTwo = new TrackSegment(TrackSegment.ABSOLUTE);
+			legTwo.setName("two");
+			for (final long t : new long[] { 20000, 21000, 25000, 26000 }) {
+				legTwo.addFix(getFix(t, 22, 33));
+			}
+			track.add(legOne);
+			track.add(legTwo);
+
+			final Layers layers = new Layers();
+			layers.addThisLayer(track);
+			final List<TrackWrapper> tracks = new ArrayList<TrackWrapper>();
+			tracks.add(track);
+			final SplitTracksOperation oper = new SplitTracksOperation("Split tracks", layers, tracks, 1000L);
+
+			assertEquals("before", "[5, 4]", legSizes(track).toString());
+			oper.execute(null, null);
+			assertEquals("split", "[2, 3, 2, 2]", legSizes(track).toString());
+			oper.undo(null, null);
+			assertEquals("original legs restored", "[5, 4]", legSizes(track).toString());
 		}
 
 		/**
