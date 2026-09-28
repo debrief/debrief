@@ -57,14 +57,15 @@
 		<property name="dist.dir" value="dist"/>
 		<property name="dist.lib.dir" value="dist/lib"/>
 	</target>
-	<target name="buildDateReplace">
-		<copy file="conf/builddate.txt" tofile="src/main/java/org/mwc/debrief/lite/BuildDate.java" overwrite="true"/>
-		<replace file="src/main/java/org/mwc/debrief/lite/BuildDate.java" token="$DATE_HERE$" value="${today_date}"/>
+	<!-- the build date is written as a resource into the jar staging dir, so
+	     the build does not modify tracked sources. BuildDate reads it at runtime. -->
+	<target name="buildDate">
+		<mkdir dir="${temp.folder}/debrief_lite.jar.bin/org/mwc/debrief/lite"/>
+		<echo file="${temp.folder}/debrief_lite.jar.bin/org/mwc/debrief/lite/builddate.txt" message="${today_date}"/>
 	</target>
 	<target name="debrief_lite.jar" depends="quiet,init" unless="debrief_lite.jar" description="Create jar: org.mwc.debrief.lite debrief_lite.jar.">
 		<delete dir="${temp.folder}/debrief_lite.jar.bin"/>
 		<mkdir dir="${temp.folder}/debrief_lite.jar.bin"/>
-		<antcall target="buildDateReplace"/>
 		<path id="debrief_lite.jar.classpath">
 			<pathelement location="../org.mwc.debrief.legacy/cmap_legacy.jar"/>
 			<pathelement location="../org.mwc.debrief.legacy/debrief_legacy.jar"/>
@@ -94,10 +95,13 @@
 				<include name="images"/>
 		 	</fileset>
 		</copy>
-		<manifest file="${basedir}/conf/manifest.txt" mode="update">
+		<antcall target="buildDate"/>
+		<!-- update a copy of the hand-maintained manifest, not the tracked file itself -->
+		<copy file="${basedir}/conf/manifest.txt" tofile="${temp.folder}/manifest.txt" overwrite="true"/>
+		<manifest file="${temp.folder}/manifest.txt" mode="update">
 			<attribute name="Implementation-Version" value="${product.version}"/>
 		</manifest>
-		<jar  manifest="${basedir}/conf/manifest.txt" destfile="${temp.folder}/debrief_lite.jar" basedir="${temp.folder}/debrief_lite.jar.bin">
+		<jar  manifest="${temp.folder}/manifest.txt" destfile="${temp.folder}/debrief_lite.jar" basedir="${temp.folder}/debrief_lite.jar.bin">
 		</jar>
 		<delete dir="${temp.folder}/debrief_lite.jar.bin"/>
 	</target>
