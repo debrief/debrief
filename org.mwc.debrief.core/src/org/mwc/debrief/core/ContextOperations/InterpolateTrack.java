@@ -141,14 +141,24 @@ public class InterpolateTrack implements RightClickContextItemGenerator {
 					_originalFixes.add(new SegmentContents((TrackSegment) segments.nextElement()));
 				}
 
+				// the resampled fixes all go in the last segment. Get it now, since
+				// the segments get re-sorted as they gain positions
+				final TrackSegment target = (TrackSegment) _track.getSegments().last();
+
 				// cool, it worked. clear them all out
 				_track.clearPositions();
 
 				// right, now add the fixes
 				for (final Iterator<FixWrapper> iter = _newFixes.iterator(); iter.hasNext();) {
 					final FixWrapper fix = iter.next();
-					_track.add(fix);
+					target.addFix(fix);
+					fix.setTrackWrapper(_track);
 				}
+				_track.getSegments().resortIfNeeded();
+
+				// we've bypassed the track when adding the fixes, so clear its caches
+				_track.flushPeriodCache();
+				_track.flushPositionCache();
 			}
 
 			// ok, switch off interpolation
@@ -175,7 +185,7 @@ public class InterpolateTrack implements RightClickContextItemGenerator {
 
 				// the segments' start times changed while they were in the sorted
 				// list, so re-sort it
-				_track.getSegments().resort();
+				_track.getSegments().resortIfNeeded();
 			}
 
 			// and clear the new fixes list, ready for any redo
@@ -245,6 +255,15 @@ public class InterpolateTrack implements RightClickContextItemGenerator {
 			return res;
 		}
 
+		private static String legSizes(final TrackWrapper track) {
+			final List<Integer> sizes = new ArrayList<Integer>();
+			for (final List<Editable> leg : contentsOf(track)) {
+				sizes.add(leg.size());
+			}
+			Collections.sort(sizes);
+			return sizes.toString();
+		}
+
 		/**
 		 * undo must put back exactly the original fixes, in their original segments
 		 */
@@ -273,6 +292,7 @@ public class InterpolateTrack implements RightClickContextItemGenerator {
 
 			ct.execute(null, null);
 			assertEquals("resampled", 26, track.numFixes());
+			assertEquals("resampled fixes all in one leg", "[0, 26]", legSizes(track));
 
 			ct.undo(null, null);
 			assertEquals("original fixes restored", before, contentsOf(track));
@@ -282,6 +302,7 @@ public class InterpolateTrack implements RightClickContextItemGenerator {
 			// and redo/undo again
 			ct.execute(null, null);
 			assertEquals("resampled", 26, track.numFixes());
+			assertEquals("resampled fixes all in one leg", "[0, 26]", legSizes(track));
 			ct.undo(null, null);
 			assertEquals("original fixes restored", before, contentsOf(track));
 		}
