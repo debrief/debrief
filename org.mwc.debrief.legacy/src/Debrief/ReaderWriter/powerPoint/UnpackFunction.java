@@ -31,10 +31,10 @@ public class UnpackFunction {
 	/**
 	 * largest permitted uncompressed size of a PPTX master template, in total
 	 * and for any single entry. The largest template in the sample/test data
-	 * inflates to 2.1 MB (largest entry 2.0 MB), this is roughly double that,
-	 * rounded up.
+	 * inflates to 2.1 MB (largest entry 2.0 MB), but corporate templates can hold
+	 * large background images, so allow plenty of headroom.
 	 */
-	public static final long MAX_TEMPLATE_BYTES = 8L * 1024 * 1024;
+	public static final long MAX_TEMPLATE_BYTES = 64L * 1024 * 1024;
 
 	/**
 	 * most entries permitted in a PPTX master template. Sample templates have up
