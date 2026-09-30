@@ -42,6 +42,7 @@ import Debrief.ReaderWriter.Replay.ImportReplay;
 import Debrief.Wrappers.SensorContactWrapper;
 import Debrief.Wrappers.SensorWrapper;
 import Debrief.Wrappers.TrackWrapper;
+import MWC.Algorithms.Conversions;
 import MWC.GUI.BaseLayer;
 import MWC.GUI.Editable;
 import MWC.GUI.Layers;
@@ -131,15 +132,9 @@ public class AmbiguityResolver {
 				break;
 			}
 
-			// ok, sort out the minimum angle between the two
-			double score = afterBearing - beforeBearing;
-			if (score > 180) {
-				score -= 360;
-			} else if (score < -180) {
-				score += 360;
-			}
-
-			thisScore = Math.abs(score);
+			// ok, sort out the minimum angle between the two. Note: the curves are
+			// unwrapped, so the difference may be several turns
+			thisScore = Math.abs(Conversions.degsDifference(beforeBearing, afterBearing));
 		}
 
 		@Override
@@ -586,13 +581,16 @@ public class AmbiguityResolver {
 			final LegOfCuts zigs = res.zigCuts;
 
 			assertNotNull("found zigs", zigs);
-			assertEquals("found correct number of zig cuts", 6, zigs.size());
+			// note: before the (ambig - core) domain fold was corrected (CR-033) this
+			// produced 6 zig cuts and 25 legs, including two spurious leg breaks
+			// (13th, 22:43 & 23:23) while ownship was steady on 303.5
+			assertEquals("found correct number of zig cuts", 4, zigs.size());
 
 			assertNotNull("found zones", legs);
-			assertEquals("found correct number of zones", 25, legs.size());
+			assertEquals("found correct number of zones", 23, legs.size());
 
 			final List<ResolvedLeg> resolved = AmbiguityResolver.resolve(legs);
-			assertEquals("resolved", 25, resolved.size());
+			assertEquals("resolved", 23, resolved.size());
 
 			// check they're all resolved
 			for (final ResolvedLeg leg : resolved) {
@@ -746,6 +744,56 @@ public class AmbiguityResolver {
 			assertNotNull("produced slices", sliced);
 			assertEquals("correct legs", 4, sliced.legs.size());
 			assertEquals("correct turning cuts", 13, sliced.zigCuts.size());
+		}
+
+		/**
+		 * ambiguous bearing passes through north (and out of the 'near north' zone)
+		 * on a steady leg. The (ambig - core) delta changes domain, which shouldn't
+		 * be treated as a zig.
+		 */
+		public static void testSteadyAmbigThroughNorth() {
+			final SensorWrapper sensor = new SensorWrapper("name");
+			for (int i = 0; i <= 24; i++) {
+				final double core = 100d + i;
+				final double ambig = Conversions.normaliseDegs(60d - 5d * i);
+				sensor.add(wrapMe(sensor, 100000 + i * 10000, core, ambig));
+			}
+
+			sensor.setVisible(true);
+			final TimePeriod timePeriod = new TimePeriod.BaseTimePeriod(sensor.getStartDTG(), sensor.getEndDTG());
+
+			final TrackWrapper host = new TrackWrapper();
+			host.setName("Host");
+			host.add(sensor);
+
+			final LegsAndZigs sliced = AmbiguityResolver.sliceTrackIntoLegsUsingAmbiguity(host, 2.2, 0.2, 22, null,
+					null, OS_TURN_MIN_COURSE_CHANGE, OS_TURN_MIN_TIME_INTERVAL, timePeriod, null);
+
+			assertNotNull("produced slices", sliced);
+			assertEquals("no turning cuts", 0, sliced.zigCuts.size());
+			assertEquals("single leg", 1, sliced.legs.size());
+		}
+
+		/**
+		 * the permutation score should be the smallest angle between the bearings,
+		 * even if the curves have unwrapped a long way
+		 */
+		public static void testPermScoreFold() {
+			final LegPermutation last = new LegPermutation(null, null, null, null, null);
+			final LegPermutation next = new LegPermutation(null, null, null, null, null);
+			last.coreAfter = 10;
+			last.ambigAfter = 10;
+
+			next.coreBefore = 10 + 720 + 5;
+			next.ambigBefore = 10 - 720 - 5;
+			assertEquals("core folded", 5d, new PermScore(last, next, WhichBearing.CORE, WhichBearing.CORE).thisScore,
+					0.0001);
+			assertEquals("ambig folded", 5d,
+					new PermScore(last, next, WhichBearing.AMBIGUOUS, WhichBearing.AMBIGUOUS).thisScore, 0.0001);
+
+			next.coreBefore = 10 + 350;
+			assertEquals("simple fold", 10d,
+					new PermScore(last, next, WhichBearing.CORE, WhichBearing.CORE).thisScore, 0.0001);
 		}
 
 		public static void testTrim() {
@@ -1119,15 +1167,7 @@ public class AmbiguityResolver {
 	}
 
 	private static double shortAngle(final double brg1, final double brg2) {
-		double res = brg1 - brg2;
-		if (res > 180) {
-			res -= 360;
-		}
-		if (res < -180) {
-			res += 360;
-		}
-
-		return res;
+		return Conversions.degsDifference(brg2, brg1);
 	}
 
 	/**
@@ -1210,11 +1250,7 @@ public class AmbiguityResolver {
 					// if we're not already in a turn, then any
 					// monster delta will prob be related to domain
 					if (thisLeg != null) {
-						if (valueDelta < -180) {
-							valueDelta += 360d;
-						} else if (valueDelta > 180) {
-							valueDelta -= 180d;
-						}
+						valueDelta = Conversions.signedDegs(valueDelta);
 					}
 
 					// ok, work out the change rate

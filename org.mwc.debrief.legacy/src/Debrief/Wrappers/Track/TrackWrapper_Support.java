@@ -296,6 +296,11 @@ public class TrackWrapper_Support {
 
 			super.add(segment);
 
+			// check it got stored
+			if (!getData().contains(segment)) {
+				MWC.Utilities.Errors.Trace.trace("Failed to add leg " + segment.getName() + " to " + getName(), false);
+			}
+
 			// if we've just got the one, set it's name to positions
 			if (this.size() == 1) {
 				final TrackSegment first = (TrackSegment) getData().iterator().next();
@@ -371,6 +376,10 @@ public class TrackWrapper_Support {
 
 		@Override
 		public void removeElement(final Editable p) {
+			// segment start times can change after they're stored, so make sure the
+			// list is still in order before we search it
+			resortIfNeeded();
+
 			super.removeElement(p);
 
 			// if it's a dynamic infill, we've got to clear it
@@ -382,6 +391,38 @@ public class TrackWrapper_Support {
 			final TrackSegment seg = (TrackSegment) p;
 			seg.setWrapper(null);
 
+		}
+
+		/**
+		 * re-sort the segments, if their order no longer matches their start times.
+		 * The sort key (start time) of a segment can change after it has been stored
+		 * (e.g. adding an earlier fix, or trimming it), so call this after doing so.
+		 * The set is only rebuilt when it is out of order, since rebuilding it
+		 * disturbs any loop that is currently iterating through the segments.
+		 */
+		public void resortIfNeeded() {
+			final Collection<Editable> data = getData();
+			if (data.size() > 1 && !isSorted(data)) {
+				final List<Editable> items = new ArrayList<Editable>(data);
+				data.clear();
+				data.addAll(items);
+			}
+		}
+
+		private static boolean isSorted(final Collection<Editable> data) {
+			TrackSegment previous = null;
+			for (final Editable item : data) {
+				if (!(item instanceof TrackSegment)) {
+					// we only know how to check segments
+					return true;
+				}
+				final TrackSegment seg = (TrackSegment) item;
+				if (previous != null && previous.compareTo(seg) >= 0) {
+					return false;
+				}
+				previous = seg;
+			}
+			return true;
 		}
 
 		/**

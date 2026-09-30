@@ -373,6 +373,80 @@ public final class SensorContactWrapper extends SnailDrawTMAContact.PlottableWra
 			super(val);
 		}
 
+		private static void assertOrderingContract(final java.util.List<? extends Plottable> items) {
+			for (final Plottable a : items) {
+				assertEquals("reflexive", 0, a.compareTo(a));
+				for (final Plottable b : items) {
+					if (a != b) {
+						final int ab = a.compareTo(b);
+						assertTrue("distinct items not equal", ab != 0);
+						assertEquals("antisymmetric", Integer.signum(ab), -Integer.signum(b.compareTo(a)));
+					}
+				}
+			}
+		}
+
+		private static SensorContactWrapper cutAt(final long millis, final double brg) {
+			return new SensorContactWrapper("trk", new HiResDate(millis), null, brg, null, Color.RED, "c" + brg, 0,
+					"sensor");
+		}
+
+		/**
+		 * several cuts at the same DTG (e.g. multi-target sonar) must all be stored,
+		 * and each one must be removable
+		 */
+		public final void testEqualTimeCuts() {
+			final SensorWrapper sw = new SensorWrapper("sensor");
+			final java.util.List<SensorContactWrapper> cuts = new java.util.ArrayList<SensorContactWrapper>();
+			cuts.add(cutAt(5000, 1));
+			for (int i = 0; i < 5; i++) {
+				cuts.add(cutAt(10000, 10 + i));
+			}
+			cuts.add(cutAt(20000, 20));
+			for (final SensorContactWrapper cut : cuts) {
+				sw.add(cut);
+			}
+			assertEquals("all stored", cuts.size(), sw._myContacts.size());
+			assertOrderingContract(cuts);
+
+			// equal-time items stay in the order they were created
+			final java.util.Iterator<Editable> iter = sw._myContacts.iterator();
+			for (final SensorContactWrapper cut : cuts) {
+				assertSame("insertion order kept", cut, iter.next());
+			}
+
+			// and a serialized copy (as used by copy/paste) keeps them all, and they
+			// can be removed
+			final SensorWrapper copy = (SensorWrapper) MWC.GUI.Tools.Operations.CloneUtil.cloneThis(sw);
+			assertEquals("all copied", cuts.size(), copy._myContacts.size());
+			final java.util.List<Editable> copiedCuts = new java.util.ArrayList<Editable>(copy._myContacts);
+			for (final Editable cut : copiedCuts) {
+				copy.removeElement(cut);
+				assertFalse("copied cut removed", copy._myContacts.contains(cut));
+			}
+			assertEquals("copy emptied", 0, copy._myContacts.size());
+
+			// a copy of a cut can be pasted back alongside the original
+			final SensorContactWrapper dupe = (SensorContactWrapper) MWC.GUI.Tools.Operations.CloneUtil
+					.cloneThis(cuts.get(2));
+			sw.add(dupe);
+			assertEquals("duplicate stored", cuts.size() + 1, sw._myContacts.size());
+			sw.removeElement(dupe);
+			assertEquals("duplicate removed", cuts.size(), sw._myContacts.size());
+
+			// now delete them, one at a time, from the middle outwards
+			int expected = cuts.size();
+			for (final int i : new int[] { 3, 1, 5, 2, 4, 0, 6 }) {
+				final SensorContactWrapper cut = cuts.get(i);
+				sw.removeElement(cut);
+				expected--;
+				assertEquals("removed cut " + i, expected, sw._myContacts.size());
+				for (final Editable ed : sw._myContacts) {
+					assertNotSame("cut " + i + " gone", cut, ed);
+				}
+			}
+		}
+
 		public final void testMyCode() {
 			// setup our object to be tested
 			final WorldLocation origin = new WorldLocation(0, 0, 0);
@@ -503,6 +577,12 @@ public final class SensorContactWrapper extends SnailDrawTMAContact.PlottableWra
 	 *
 	 */
 	private static final long serialVersionUID = 1L;
+
+	/**
+	 * our position in the creation sequence, used to give a stable order to items
+	 * with the same time (see {@link CreationOrder})
+	 */
+	private final long _creationSeq = CreationOrder.next();
 
 	public static final String TRANSPARENCY = "SensorTransparency";
 
@@ -735,8 +815,17 @@ public final class SensorContactWrapper extends SnailDrawTMAContact.PlottableWra
 	@Override
 	public final int compareTo(final Plottable o) {
 		final SensorContactWrapper other = (SensorContactWrapper) o;
-		if (_DTG == null || other == null || other._DTG == null) {
+		if (other == null) {
 			return 1;
+		}
+		if (_DTG == null || other._DTG == null) {
+			// items without a DTG go last
+			if (_DTG != null) {
+				return -1;
+			} else if (other._DTG != null) {
+				return 1;
+			}
+			return CreationOrder.compare(this, _creationSeq, other, other._creationSeq);
 		}
 		int res = 0;
 		if (_DTG.lessThan(other._DTG)) {
@@ -744,20 +833,10 @@ public final class SensorContactWrapper extends SnailDrawTMAContact.PlottableWra
 		} else if (_DTG.greaterThan(other._DTG)) {
 			res = 1;
 		} else {
-			// just check if this is actually the same object (in which case return 0)
-			if (o == this) {
-				// we need a correct implementation of compare to for when we're finding
-				// the position
-				// of an item which is actually in the list - otherwise it won't get
-				// found and we can't
-				// delete it.
-				res = 0;
-			} else {
-				// same times, make the newer item appear later. This is to overcome the
-				// problem we experience where only the first contact at a particular
-				// DTG gets recorded for a sensor
-				res = 1;
-			}
+			// same times. Return 0 only for the same object, otherwise make the newer
+			// item appear later. This gives a consistent (total) order, so we don't
+			// lose items at the same DTG, and we can find them to delete them.
+			res = CreationOrder.compare(this, _creationSeq, other, other._creationSeq);
 		}
 
 		return res;

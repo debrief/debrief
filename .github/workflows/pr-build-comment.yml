@@ -62,38 +62,94 @@ jobs:
             const { owner, repo } = context.repo;
             const run = context.payload.workflow_run;
 
-            // meta.env is written by a job that ran untrusted pull request code,
-            // so validate before using any of it. Without the guard on `pr`, a
-            // crafted value would steer this write-token comment onto an
-            // arbitrary issue in the repository.
-            const meta = Object.fromEntries(
-              fs.readFileSync('pr-meta/meta.env', 'utf8')
-                .split('\n')
-                .filter(Boolean)
-                .map(line => {
-                  const i = line.indexOf('=');
-                  return [line.slice(0, i), line.slice(i + 1)];
-                })
-            );
+            // meta.env is written by a job that ran untrusted pull request code
+            // (a fork's poms execute on that runner before the file is written),
+            // so nothing in it is trusted. Its `pr` value is used only as one more
+            // candidate to look up; every candidate must be confirmed against the
+            // triggering run itself before anything is written.
+            let meta = {};
+            try {
+              meta = Object.fromEntries(
+                fs.readFileSync('pr-meta/meta.env', 'utf8')
+                  .split('\n')
+                  .filter(Boolean)
+                  .map(line => {
+                    const i = line.indexOf('=');
+                    return [line.slice(0, i), line.slice(i + 1)];
+                  })
+              );
+            } catch (e) {
+              core.info(`Ignoring unreadable pr-meta: ${e.message}`);
+            }
 
-            const prNumber = Number(meta.pr);
-            if (!Number.isInteger(prNumber) || prNumber <= 0) {
-              core.setFailed(`Refusing to comment: unusable PR number ${JSON.stringify(meta.pr)}`);
+            // Resolve the pull request from the workflow_run event, which GitHub
+            // populates and the pull request cannot influence. pull_requests is
+            // empty for fork PRs, so fall back to the commit and head-branch
+            // lookups.
+            const headSha = run.head_sha;
+            const headRepo = run.head_repository ? run.head_repository.full_name : null;
+            const candidates = new Set();
+            for (const p of run.pull_requests || []) candidates.add(p.number);
+            const hinted = Number(meta.pr);
+            if (Number.isInteger(hinted) && hinted > 0) candidates.add(hinted);
+            try {
+              const { data: assoc } = await github.rest.repos.listPullRequestsAssociatedWithCommit({
+                owner, repo, commit_sha: headSha, per_page: 100,
+              });
+              for (const p of assoc) candidates.add(p.number);
+            } catch (e) {
+              core.info(`listPullRequestsAssociatedWithCommit failed: ${e.message}`);
+            }
+            if (run.head_repository && run.head_branch) {
+              const { data: byHead } = await github.rest.pulls.list({
+                owner, repo, state: 'open', per_page: 100,
+                head: `${run.head_repository.owner.login}:${run.head_branch}`,
+              });
+              for (const p of byHead) candidates.add(p.number);
+            }
+
+            // Only an open pull request into this repository whose head is
+            // exactly the commit this run built, from the same head repository,
+            // qualifies.
+            const prNumbers = [];
+            for (const n of candidates) {
+              let pull;
+              try {
+                ({ data: pull } = await github.rest.pulls.get({ owner, repo, pull_number: n }));
+              } catch (e) {
+                core.info(`PR #${n}: lookup failed (${e.message}); skipping.`);
+                continue;
+              }
+              const ok = pull.state === 'open'
+                && pull.head && pull.head.sha === headSha
+                && pull.base && pull.base.repo && pull.base.repo.full_name === `${owner}/${repo}`
+                && (!headRepo || (pull.head.repo && pull.head.repo.full_name === headRepo));
+              if (ok) {
+                prNumbers.push(pull.number);
+              } else {
+                core.info(`PR #${n} does not match run ${run.id} (head ${headSha}); skipping.`);
+              }
+            }
+            if (prNumbers.length === 0) {
+              // Typically a newer push has moved the PR head on; that run posts
+              // its own result.
+              core.info(`No open pull request has head ${headSha}; nothing to comment on.`);
               return;
             }
-            const sha = /^[0-9a-f]{40}$/.test(meta.sha) ? meta.sha.slice(0, 7) : 'unknown';
+            const sha = headSha.slice(0, 7);
 
+            // The build result comes from the run itself, not from meta.env.
             // A cancelled build has not failed - the concurrency group killed it
-            // because a newer push superseded it, and the build job uploads its
-            // metadata under if: always(), so we do get here. Saying "the build
-            // failed" would be wrong, and would replace a good comment with a red
-            // one until the newer run catches up. Leave the comment alone.
-            if (meta.build === 'cancelled') {
+            // because a newer push superseded it. Saying "the build failed" would
+            // be wrong, and would replace a good comment with a red one until the
+            // newer run catches up. Leave the comment alone. (The job-level `if`
+            // already skips cancelled runs; this is belt and braces.)
+            if (run.conclusion === 'cancelled') {
               core.info('Build was cancelled (superseded); leaving the comment as it is.');
               return;
             }
 
-            const built = meta.build === 'success';
+            const built = run.conclusion === 'success';
 
             const { data } = await github.rest.actions.listWorkflowRunArtifacts({
               owner, repo, run_id: run.id, per_page: 100,
@@ -174,15 +230,17 @@ jobs:
             body += `\n\n---\n_Posted by \`.github/workflows/pr-build-comment.yml\` · run #${run.run_number}_`;
 
             // Sticky comment: update in place rather than posting one per push.
-            const comments = await github.paginate(github.rest.issues.listComments, {
-              owner, repo, issue_number: prNumber, per_page: 100,
-            });
-            const existing = comments.find(
-              c => c.user && c.user.login === 'github-actions[bot]' && c.body && c.body.includes(MARKER)
-            );
+            for (const prNumber of prNumbers) {
+              const comments = await github.paginate(github.rest.issues.listComments, {
+                owner, repo, issue_number: prNumber, per_page: 100,
+              });
+              const existing = comments.find(
+                c => c.user && c.user.login === 'github-actions[bot]' && c.body && c.body.includes(MARKER)
+              );
 
-            if (existing) {
-              await github.rest.issues.updateComment({ owner, repo, comment_id: existing.id, body });
-            } else {
-              await github.rest.issues.createComment({ owner, repo, issue_number: prNumber, body });
+              if (existing) {
+                await github.rest.issues.updateComment({ owner, repo, comment_id: existing.id, body });
+              } else {
+                await github.rest.issues.createComment({ owner, repo, issue_number: prNumber, body });
+              }
             }

@@ -5,6 +5,7 @@ import java.awt.geom.Point2D;
 import java.io.Serializable;
 import java.math.BigDecimal;
 
+import MWC.Algorithms.Conversions;
 import MWC.Algorithms.EarthModels.CompletelyFlatEarth;
 
 /**
@@ -245,6 +246,35 @@ public class WorldLocation implements Serializable, Cloneable {
 			assertEquals("off-track error is correct (using range from operator)", 4.9497,
 					res.getValueIn(WorldDistance.DEGS), 0.001);
 
+		}
+
+		public final void testPerpDistanceAtHighLatitude() {
+			// use the default (locally flat) earth model
+			WorldLocation.setModel(new MWC.Algorithms.EarthModels.FlatEarth());
+
+			// N-S leg at 0 deg long, point 1 deg of longitude east of it, at 60N
+			final WorldLocation me = new WorldLocation(60, 1, 0);
+			final WorldLocation p1 = new WorldLocation(59, 0, 0);
+			final WorldLocation p2 = new WorldLocation(61, 0, 0);
+
+			final double expected = me.rangeFrom(new WorldLocation(60, 0, 0));
+			assertEquals("check expected is 30nm", 30d, Conversions.Degs2Nm(expected), 0.01);
+
+			final WorldDistance res = me.perpendicularDistanceBetween(p1, p2);
+			assertEquals("cross track honours cos(lat)", 30d, res.getValueIn(WorldDistance.NM), 0.1);
+
+			// and nearest point beyond the end of the segment
+			final WorldLocation p3 = new WorldLocation(60, -2, 0);
+			final WorldLocation p4 = new WorldLocation(60, 0, 0);
+			final WorldDistance res2 = me.perpendicularDistanceBetween(p3, p4);
+			assertEquals("off end of line", 30d, res2.getValueIn(WorldDistance.NM), 0.01);
+
+			// and across the date line
+			final WorldLocation dl = new WorldLocation(60, -179.5, 0);
+			final WorldLocation d1 = new WorldLocation(59, 179.5, 0);
+			final WorldLocation d2 = new WorldLocation(61, 179.5, 0);
+			assertEquals("across date line", 30d, dl.perpendicularDistanceBetween(d1, d2).getValueIn(WorldDistance.NM),
+					0.1);
 		}
 
 		public final void testRangeFrom() {
@@ -624,9 +654,15 @@ public class WorldLocation implements Serializable, Cloneable {
 	 */
 	protected WorldDistance perpendicularDistanceBetween(final WorldLocation lineStart, final WorldLocation lineEnd) {
 
-		final Point2D pStart = new Point2D.Double(lineStart.getLong(), lineStart.getLat());
-		final Point2D pEnd = new Point2D.Double(lineEnd.getLong(), lineEnd.getLat());
-		final Point2D tgt = new Point2D.Double(this.getLong(), this.getLat());
+		// project the line ends into a local x/y plane (degrees of arc) centred on
+		// this point. This honours the convergence of the meridians (cos(lat))
+		// and the antimeridian, rather than treating a degree of longitude as a
+		// degree of latitude. We use a single scale factor, so a line that is
+		// straight in lat/long stays straight.
+		final double xScale = _model instanceof CompletelyFlatEarth ? 1d : Math.cos(Math.toRadians(getLat()));
+		final Point2D pStart = localOffsetTo(lineStart, xScale);
+		final Point2D pEnd = localOffsetTo(lineEnd, xScale);
+		final Point2D tgt = new Point2D.Double(0, 0);
 
 		final double res = distanceToSegment(pStart, pEnd, tgt);
 		final WorldDistance distance = new WorldDistance(res, WorldDistance.DEGS);
@@ -649,6 +685,20 @@ public class WorldLocation implements Serializable, Cloneable {
 
 		// sorted.
 		return distance;
+	}
+
+	/**
+	 * produce the offset from this point to the other one, in a local x/y plane
+	 * (degrees of arc, x east, y north)
+	 *
+	 * @param other  the other location
+	 * @param xScale scale factor to convert degrees of longitude to degrees of
+	 *               arc (cos(lat))
+	 * @return offset from this point
+	 */
+	private Point2D localOffsetTo(final WorldLocation other, final double xScale) {
+		final double dLong = Conversions.signedDegs(other.getLong() - getLong());
+		return new Point2D.Double(dLong * xScale, other.getLat() - getLat());
 	}
 
 	/**

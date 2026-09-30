@@ -138,6 +138,45 @@ public final class TMAContactWrapper extends SnailDrawTMAContact.PlottableWrappe
 			super(val);
 		}
 
+		/**
+		 * several solutions at the same DTG must all be stored, and each one must be
+		 * removable
+		 */
+		public final void testEqualTimeSolutions() {
+			final TMAWrapper tw = new TMAWrapper("sol");
+			final java.util.List<TMAContactWrapper> items = new java.util.ArrayList<TMAContactWrapper>();
+			items.add(new TMAContactWrapper("sol", "trk", new HiResDate(5000), 1, 0, 0, 0, 0, null, "a", null, null));
+			for (int i = 0; i < 5; i++) {
+				items.add(new TMAContactWrapper("sol", "trk", new HiResDate(10000), 1, i, 0, 0, 0, null, "b" + i, null,
+						null));
+			}
+			items.add(new TMAContactWrapper("sol", "trk", new HiResDate(20000), 1, 0, 0, 0, 0, null, "c", null, null));
+			for (final TMAContactWrapper item : items) {
+				tw.add(item);
+			}
+			assertEquals("all stored", items.size(), tw._myContacts.size());
+
+			for (final TMAContactWrapper a : items) {
+				for (final TMAContactWrapper b : items) {
+					if (a != b) {
+						assertTrue("distinct", a.compareTo(b) != 0);
+						assertEquals("antisymmetric", Integer.signum(a.compareTo(b)), -Integer.signum(b.compareTo(a)));
+					}
+				}
+			}
+
+			int expected = items.size();
+			for (final int i : new int[] { 3, 1, 5, 2, 4, 0, 6 }) {
+				final TMAContactWrapper item = items.get(i);
+				tw.removeElement(item);
+				expected--;
+				assertEquals("removed item " + i, expected, tw._myContacts.size());
+				for (final Editable ed : tw._myContacts) {
+					assertNotSame("item " + i + " gone", item, ed);
+				}
+			}
+		}
+
 		public final void testMyCalcs() {
 			// setup our object to be tested using an absolute location
 			final WorldLocation origin = new WorldLocation(2, 2, 0);
@@ -323,6 +362,12 @@ public final class TMAContactWrapper extends SnailDrawTMAContact.PlottableWrappe
 	 *
 	 */
 	private static final long serialVersionUID = 1L;
+
+	/**
+	 * our position in the creation sequence, used to give a stable order to items
+	 * with the same time (see {@link CreationOrder})
+	 */
+	private final long _creationSeq = CreationOrder.next();
 
 	/**
 	 * the name of the parent track (the host vessel)
@@ -578,20 +623,10 @@ public final class TMAContactWrapper extends SnailDrawTMAContact.PlottableWrappe
 		else if (_DTG.greaterThan(other._DTG))
 			res = 1;
 		else {
-			// just check if this is actually the same object (in which case return 0)
-			if (o == this) {
-				// we need a correct implementation of compare to for when we're finding
-				// the position
-				// of an item which is actually in the list - otherwise it won't get
-				// found and we can't
-				// delete it.
-				res = 0;
-			} else {
-				// same times, make the newer item appear later. This is to overcome the
-				// problem we experience where only the first contact at a particular
-				// DTG gets recorded for a sensor
-				res = 1;
-			}
+			// same times. Return 0 only for the same object, otherwise make the newer
+			// item appear later. This gives a consistent (total) order, so we don't
+			// lose items at the same DTG, and we can find them to delete them.
+			res = CreationOrder.compare(this, _creationSeq, other, other._creationSeq);
 		}
 
 		return res;

@@ -31,6 +31,13 @@ public class TrackData {
 	private final ArrayList<ExportNarrativeEntry> narrativeEntries = new ArrayList<>();
 	private final ArrayList<Track> tracks = new ArrayList<>();
 
+	/**
+	 * formatted time for each animation step (one per step, from the first step),
+	 * as recorded. May be empty, in which case the times are derived from the
+	 * track points.
+	 */
+	private final ArrayList<String> stepTimes = new ArrayList<>();
+
 	private boolean basicFieldComparison(final TrackData other) {
 		return !(height != other.height || intervals != other.intervals || width != other.width
 				|| (name == null && other.name != null) || !name.equals(other.name));
@@ -75,6 +82,10 @@ public class TrackData {
 
 	public int getScaleWidth() {
 		return scaleWidth;
+	}
+
+	public ArrayList<String> getStepTimes() {
+		return stepTimes;
 	}
 
 	public ArrayList<Track> getTracks() {

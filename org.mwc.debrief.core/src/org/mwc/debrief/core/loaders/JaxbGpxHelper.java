@@ -30,11 +30,9 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.JAXBIntrospector;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
+import javax.xml.transform.dom.DOMSource;
 
 import org.eclipse.core.runtime.IStatus;
-import org.jdom.Document;
-import org.jdom.output.DOMOutputter;
-import org.jdom.transform.JDOMSource;
 import org.mwc.cmap.core.CorePlugin;
 import org.mwc.debrief.core.gpx.mappers.TrackMapper;
 
@@ -134,7 +132,7 @@ public class JaxbGpxHelper implements GpxHelper {
 			layers = new Layers();
 		}
 		try {
-			final JDOMSource source = (JDOMSource) getDocumentSource(gpxStream);
+			final DOMSource source = getDocumentSource(gpxStream);
 
 			final boolean isGpx10 = isGpx10(source);
 			final boolean xmlValid = isValid(source, isGpx10);
@@ -143,7 +141,6 @@ public class JaxbGpxHelper implements GpxHelper {
 				CorePlugin.logError(IStatus.WARNING, "GPX Doc failed to validate. Trying to import anyway", null);
 			}
 
-			final Document document = source.getDocument();
 			Unmarshaller unmarshaller;
 			List<TrackWrapper> tracks = Collections.emptyList();
 
@@ -151,12 +148,12 @@ public class JaxbGpxHelper implements GpxHelper {
 
 				unmarshaller = GPX_1_0_JAXB_CTX.createUnmarshaller();
 				final com.topografix.gpx.v10.Gpx gpx10Type = (com.topografix.gpx.v10.Gpx) JAXBIntrospector
-						.getValue(unmarshaller.unmarshal(new DOMOutputter().output(document)));
+						.getValue(unmarshaller.unmarshal(source.getNode()));
 				tracks = trackMapper.fromGpx10(gpx10Type);
 			} else {
 				unmarshaller = GPX_1_1_JAXB_CTX.createUnmarshaller();
 				final GpxType gpxType = (GpxType) JAXBIntrospector
-						.getValue(unmarshaller.unmarshal(new DOMOutputter().output(document)));
+						.getValue(unmarshaller.unmarshal(source.getNode()));
 				tracks = trackMapper.fromGpx(gpxType);
 			}
 			for (final TrackWrapper track : tracks) {

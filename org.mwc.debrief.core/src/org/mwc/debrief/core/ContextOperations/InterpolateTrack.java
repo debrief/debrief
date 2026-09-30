@@ -15,8 +15,12 @@
 
 package org.mwc.debrief.core.ContextOperations;
 
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
+import java.util.Enumeration;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Vector;
 
 import org.eclipse.core.commands.ExecutionException;
@@ -35,6 +39,7 @@ import org.mwc.cmap.core.property_support.RightClickSupport.RightClickContextIte
 
 import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.TrackWrapper;
+import Debrief.Wrappers.Track.TrackSegment;
 import MWC.GUI.Editable;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
@@ -49,6 +54,19 @@ import MWC.TacticalData.Fix;
  */
 public class InterpolateTrack implements RightClickContextItemGenerator {
 
+	/**
+	 * a track segment, plus the fixes it contained before the operation
+	 */
+	private static class SegmentContents {
+		private final TrackSegment _segment;
+		private final List<Editable> _fixes;
+
+		private SegmentContents(final TrackSegment segment) {
+			_segment = segment;
+			_fixes = Collections.list(segment.elements());
+		}
+	}
+
 	private static class InterpolateTrackOperation extends CMAPOperation {
 
 		/**
@@ -60,6 +78,11 @@ public class InterpolateTrack implements RightClickContextItemGenerator {
 		 * list of new fixes we're creating
 		 */
 		private Vector<FixWrapper> _newFixes;
+
+		/**
+		 * the original fixes in each segment, so undo can restore them
+		 */
+		private List<SegmentContents> _originalFixes;
 
 		/**
 		 * the track we're interpolating
@@ -87,8 +110,9 @@ public class InterpolateTrack implements RightClickContextItemGenerator {
 			// switch on track interpolation
 			_track.setInterpolatePoints(true);
 
-			for (long thisTime = (startTime
-					+ _thisIntervalMicros); thisTime < endTime; thisTime += _thisIntervalMicros) {
+			// include the start and end times, so the resampled track covers the same
+			// period as the original
+			for (long thisTime = startTime; thisTime <= endTime; thisTime += _thisIntervalMicros) {
 				// ok, generate the point at this interval
 				if (_newFixes == null) {
 					_newFixes = new Vector<FixWrapper>(0, 1);
@@ -98,8 +122,9 @@ public class InterpolateTrack implements RightClickContextItemGenerator {
 				if (matches.length > 0) {
 					final FixWrapper interpFix = (FixWrapper) matches[0];
 
-					// make it an normal FixWrapper, not an interpolated one
-					final FixWrapper newFix = new FixWrapper(interpFix.getFix());
+					// make it an normal FixWrapper, not an interpolated one. Copy the fix,
+					// since at the start/end we may have been given an original fix
+					final FixWrapper newFix = new FixWrapper(interpFix.getFix().makeCopy());
 
 					// tidy the interpolated fix name
 					newFix.resetName();
@@ -109,14 +134,31 @@ public class InterpolateTrack implements RightClickContextItemGenerator {
 			}
 
 			if (_newFixes != null) {
+				// remember the original fixes, so we can restore them on undo
+				_originalFixes = new ArrayList<SegmentContents>();
+				final Enumeration<Editable> segments = _track.getSegments().elements();
+				while (segments.hasMoreElements()) {
+					_originalFixes.add(new SegmentContents((TrackSegment) segments.nextElement()));
+				}
+
+				// the resampled fixes all go in the last segment. Get it now, since
+				// the segments get re-sorted as they gain positions
+				final TrackSegment target = (TrackSegment) _track.getSegments().last();
+
 				// cool, it worked. clear them all out
 				_track.clearPositions();
 
 				// right, now add the fixes
 				for (final Iterator<FixWrapper> iter = _newFixes.iterator(); iter.hasNext();) {
 					final FixWrapper fix = iter.next();
-					_track.add(fix);
+					target.addFix(fix);
+					fix.setTrackWrapper(_track);
 				}
+				_track.getSegments().resortIfNeeded();
+
+				// we've bypassed the track when adding the fixes, so clear its caches
+				_track.flushPeriodCache();
+				_track.flushPositionCache();
 			}
 
 			// ok, switch off interpolation
@@ -130,17 +172,27 @@ public class InterpolateTrack implements RightClickContextItemGenerator {
 
 		@Override
 		public IStatus undo(final IProgressMonitor monitor, final IAdaptable info) throws ExecutionException {
-			// forget about the new tracks
-			for (final Iterator<FixWrapper> iter = _newFixes.iterator(); iter.hasNext();) {
-				final FixWrapper trk = iter.next();
-				_track.removeElement(trk);
+			if (_newFixes != null && _originalFixes != null) {
+				// ditch the resampled fixes
+				_track.clearPositions();
+
+				// and restore the original ones, in their original segments
+				for (final SegmentContents contents : _originalFixes) {
+					for (final Editable fix : contents._fixes) {
+						contents._segment.addFix((FixWrapper) fix);
+					}
+				}
+
+				// the segments' start times changed while they were in the sorted
+				// list, so re-sort it
+				_track.getSegments().resortIfNeeded();
 			}
 
-			// and clear the new tracks item
-			_newFixes.removeAllElements();
+			// and clear the new fixes list, ready for any redo
 			_newFixes = null;
+			_originalFixes = null;
 
-			_layers.fireModified(_track);
+			_layers.fireExtended(null, _track);
 
 			return Status.OK_STATUS;
 		}
@@ -186,9 +238,73 @@ public class InterpolateTrack implements RightClickContextItemGenerator {
 				fail("Exception thrown");
 			}
 
-			// check we've got the right number of fixes
-			assertEquals("right num of fixes generated", 9, track.numFixes());
+			// check we've got the right number of fixes (12:00 to 12:10 inclusive)
+			assertEquals("right num of fixes generated", 11, track.numFixes());
+			assertEquals("keeps start", 0, ((FixWrapper) track.getPositionIterator().nextElement()).getDTG()
+					.getDate().getTime() % (5 * 60 * 1000));
 
+		}
+
+		private static List<List<Editable>> contentsOf(final TrackWrapper track) {
+			final List<List<Editable>> res = new ArrayList<List<Editable>>();
+			final Enumeration<Editable> segs = track.getSegments().elements();
+			while (segs.hasMoreElements()) {
+				final TrackSegment seg = (TrackSegment) segs.nextElement();
+				res.add(Collections.list(seg.elements()));
+			}
+			return res;
+		}
+
+		private static String legSizes(final TrackWrapper track) {
+			final List<Integer> sizes = new ArrayList<Integer>();
+			for (final List<Editable> leg : contentsOf(track)) {
+				sizes.add(leg.size());
+			}
+			Collections.sort(sizes);
+			return sizes.toString();
+		}
+
+		/**
+		 * undo must put back exactly the original fixes, in their original segments
+		 */
+		public final void testUndoRestoresOriginalFixes() throws ExecutionException {
+			final Layers theLayers = new Layers();
+			final TrackWrapper track = new TrackWrapper();
+			track.setName("Trk");
+			theLayers.addThisLayer(track);
+
+			final TrackSegment legOne = new TrackSegment(TrackSegment.ABSOLUTE);
+			final TrackSegment legTwo = new TrackSegment(TrackSegment.ABSOLUTE);
+			for (int i = 0; i < 6; i++) {
+				final WorldLocation thisLoc = new WorldLocation(0, i, 0, 'N', 0, 0, 0, 'W', 0);
+				final Fix newFix = new Fix(new HiResDate(1000000000000L + i * 5 * 60 * 1000L), thisLoc, 0, 0);
+				(i < 3 ? legOne : legTwo).addFix(new FixWrapper(newFix));
+			}
+			track.add(legOne);
+			track.add(legTwo);
+
+			final List<List<Editable>> before = contentsOf(track);
+			assertEquals("two legs", 2, before.size());
+			assertEquals("six fixes", 6, track.numFixes());
+
+			final InterpolateTrackOperation ct = new InterpolateTrackOperation("convert it", theLayers, track, "1 min",
+					60 * 1000 * 1000);
+
+			ct.execute(null, null);
+			assertEquals("resampled", 26, track.numFixes());
+			assertEquals("resampled fixes all in one leg", "[0, 26]", legSizes(track));
+
+			ct.undo(null, null);
+			assertEquals("original fixes restored", before, contentsOf(track));
+			assertEquals("six fixes", 6, track.numFixes());
+			assertEquals("same period", 1000000000000L, track.getStartDTG().getDate().getTime());
+
+			// and redo/undo again
+			ct.execute(null, null);
+			assertEquals("resampled", 26, track.numFixes());
+			assertEquals("resampled fixes all in one leg", "[0, 26]", legSizes(track));
+			ct.undo(null, null);
+			assertEquals("original fixes restored", before, contentsOf(track));
 		}
 	}
 

@@ -39,8 +39,10 @@ import org.junit.Before;
 import Debrief.ReaderWriter.Replay.ImportReplay;
 import Debrief.Wrappers.DynamicShapeWrapper;
 import Debrief.Wrappers.FixWrapper;
+import Debrief.Wrappers.LabelWrapper;
 import Debrief.Wrappers.SensorContactWrapper;
 import Debrief.Wrappers.SensorWrapper;
+import Debrief.Wrappers.ShapeWrapper;
 import Debrief.Wrappers.TMAContactWrapper;
 import Debrief.Wrappers.TMAWrapper;
 import Debrief.Wrappers.TrackWrapper;
@@ -656,6 +658,72 @@ public class TrackWrapper_Test extends TestCase {
 	 * @throws InterruptedException
 	 */
 
+	/**
+	 * the clipboard deserialisation filter must accept the Debrief wrappers (as
+	 * used in cut/copy/paste)
+	 */
+	public void testClipboardFilterAcceptsWrappers() throws Exception {
+		final Layers tLayers = new Layers();
+		ImportReplay.initialise(new ImportReplay.testImport.TestParent(ImportReplay.IMPORT_AS_OTG, 0L));
+		try (final InputStream bs = new FileInputStream(ownship_track)) {
+			new ImportReplay().importThis(ownship_track, bs, tLayers);
+		}
+		final TrackWrapper loaded = (TrackWrapper) tLayers.findLayer("NELSON");
+		assertNotNull("loaded track", loaded);
+
+		final TrackWrapper dummy = getDummyTrack();
+		dummy.setName("dummy");
+		final ShapeWrapper shape = new ShapeWrapper("rect",
+				new RectangleShape(new WorldLocation(1, 1, 0), new WorldLocation(2, 2, 0)), Color.RED,
+				new HiResDate(1000));
+		final LabelWrapper label = new LabelWrapper("lbl", new WorldLocation(1, 1, 0), Color.BLUE);
+		final Editable[] items = new Editable[] { loaded, dummy, shape, label };
+
+		final java.io.ByteArrayOutputStream bos = new java.io.ByteArrayOutputStream();
+		try (final java.io.ObjectOutputStream oos = new java.io.ObjectOutputStream(bos)) {
+			oos.writeObject(items);
+		}
+		final Editable[] res;
+		try (final java.io.ObjectInputStream ois = MWC.Utilities.ReaderWriter.ClipboardInputFilter
+				.createStream(new java.io.ByteArrayInputStream(bos.toByteArray()))) {
+			res = (Editable[]) ois.readObject();
+		}
+		assertEquals(4, res.length);
+		assertEquals(loaded.numFixes(), ((TrackWrapper) res[0]).numFixes());
+		assertEquals(dummy.numFixes(), ((TrackWrapper) res[1]).numFixes());
+		assertEquals(dummy.getSensors().size(), ((TrackWrapper) res[1]).getSensors().size());
+		assertEquals("rect", res[2].getName());
+		assertEquals("lbl", res[3].getName());
+	}
+
+	/**
+	 * towed array data is held in sensors as January datasets. Check a track
+	 * carrying it can still be pasted
+	 */
+	public void testClipboardFilterAcceptsTASensorData() throws Exception {
+		final SensorWrapper sensor = new SensorWrapper("TA");
+		final Debrief.Wrappers.Extensions.Measurements.DataFolder folder = new Debrief.Wrappers.Extensions.Measurements.DataFolder();
+		sensor.getAdditionalData().add(folder);
+		folder.add(new Debrief.Wrappers.Extensions.Measurements.TimeSeriesDatasetDouble("Fore", "degs",
+				new long[] { 1000, 2000 }, new double[] { 1, 2 }));
+		final TrackWrapper track = new TrackWrapper();
+		track.setName("ta_track");
+		track.add(sensor);
+
+		final java.io.ByteArrayOutputStream bos = new java.io.ByteArrayOutputStream();
+		try (final java.io.ObjectOutputStream oos = new java.io.ObjectOutputStream(bos)) {
+			oos.writeObject(new Editable[] { track });
+		}
+		final Editable[] res;
+		try (final java.io.ObjectInputStream ois = MWC.Utilities.ReaderWriter.ClipboardInputFilter
+				.createStream(new java.io.ByteArrayInputStream(bos.toByteArray()))) {
+			res = (Editable[]) ois.readObject();
+		}
+		assertEquals(1, res.length);
+		final SensorWrapper pasted = (SensorWrapper) ((TrackWrapper) res[0]).getSensors().elements().nextElement();
+		assertEquals("TA data present", 1, pasted.getAdditionalData().size());
+	}
+
 	public void testAdd() throws InterruptedException {
 		assertEquals("start condition", 6, this.trackLength());
 
@@ -825,6 +893,91 @@ public class TrackWrapper_Test extends TestCase {
 			_ctr++;
 		}
 		assertEquals("have new items", 9, _ctr);
+	}
+
+	/**
+	 * course & speed calculation with fixes less than a second apart, and gaps that
+	 * aren't whole seconds
+	 */
+	public void testCalcCourseSpeedSubSecond() {
+		final TrackWrapper tw = new TrackWrapper();
+		tw.setName("fast");
+		// 10 m/s due east, sampled at 0.5 sec, then a 1.9 sec gap
+		final long[] times = new long[] { 10000, 10500, 11000, 12900, 13400 };
+		for (final long t : times) {
+			final double metresEast = (t - times[0]) / 1000d * 10d;
+			tw.addFix(new FixWrapper(
+					new Fix(new HiResDate(t), new WorldLocation(0, Conversions.m2Degs(metresEast), 0), 0, 0)));
+		}
+		tw.calcCourseSpeed();
+
+		final double tenMpsInKts = Conversions.Mps2Kts(10);
+		final Enumeration<Editable> iter = tw.getPositionIterator();
+		int ctr = 0;
+		while (iter.hasMoreElements() && ctr < times.length - 1) {
+			final FixWrapper fw = (FixWrapper) iter.nextElement();
+			assertEquals("speed correct for fix " + ctr, tenMpsInKts, fw.getSpeed(), 0.01);
+			assertEquals("course correct for fix " + ctr, 90d, Conversions.Rads2Degs(fw.getCourse()), 0.01);
+			ctr++;
+		}
+		assertEquals("checked fixes", times.length - 1, ctr);
+	}
+
+	/**
+	 * selecting 'None' for resample shouldn't throw
+	 */
+	public void testResampleAtZero() {
+		final TrackWrapper tw = new TrackWrapper();
+		tw.setName("some track");
+		tw.addFix(createFix3(10000, 1, 1));
+		tw.addFix(createFix3(20000, 1, 2));
+		tw.addFix(createFix3(30000, 1, 3));
+		tw.setResampleDataAt(new HiResDate(0));
+		assertEquals("unchanged", 3, tw.numFixes());
+	}
+
+	/**
+	 * resampling a track whose first leg is a relative TMA segment keeps the right
+	 * leg name (start DTG) and offset
+	 */
+	public void testDecimateRelativeTMALeg() {
+		final TrackWrapper host = new TrackWrapper();
+		host.setName("host");
+		host.addFix(createFix2(80000, 3, 3, 4, 12));
+		host.addFix(createFix2(100000, 1, 1, 4, 12));
+		host.addFix(createFix2(200000, 2, 3, 4, 12));
+		host.addFix(createFix2(300000, 3, 3, 4, 12));
+
+		final SensorWrapper sw = new SensorWrapper("some sensor");
+		host.add(sw);
+
+		final SensorContactWrapper[] items = new SensorContactWrapper[4];
+		items[0] = createSensorItem(host, sw, 115000);
+		items[1] = createSensorItem(host, sw, 125000);
+		items[2] = createSensorItem(host, sw, 135000);
+		items[3] = createSensorItem(host, sw, 145000);
+		for (final SensorContactWrapper item : items) {
+			item.setSensor(sw);
+		}
+
+		final WorldVector offset = new WorldVector(Conversions.Degs2Rads(45), 0.1, 0);
+		final RelativeTMASegment seg = new RelativeTMASegment(items, offset, new WorldSpeed(5, WorldSpeed.Kts), 33,
+				null, Color.yellow);
+		final TrackWrapper tma = new TrackWrapper();
+		tma.setName(TrackSegment.TMA_LEADER + "leg");
+		tma.add(seg);
+		// (adding a single leg renames it, so name it afterwards)
+		seg.setName(TrackSegment.TMA_LEADER + "leg");
+
+		// resample at 10 second intervals, so the leg starts at 120000
+		tma.setResampleDataAt(new HiResDate(10000));
+
+		final String expectedName = MWC.Utilities.TextFormatting.FormatRNDateTime.toString(120000);
+		assertEquals("leg named for real start time", expectedName, seg.getName());
+
+		// the offset should now be from the host position at the new start time
+		final FixWrapper first = (FixWrapper) seg.first();
+		assertEquals("first point at new start", 120000, first.getDateTimeGroup().getDate().getTime());
 	}
 
 	public void testDecimateAbsolute() throws InterruptedException {
@@ -2172,6 +2325,9 @@ public class TrackWrapper_Test extends TestCase {
 		assertEquals("correct layer name:", "010001.40", s1.getName());
 		assertEquals("correct layer name:", "010005.00", s2.getName());
 
+		// note: the second split replaced the last leg in 'segs' with a new one
+		// (which starts at the same time). This is what happens when undoing
+		// nested splits.
 		_tw.combineSections(segs);
 		assertEquals("has 1 segment1", 1, numSegments());
 		assertEquals("first is of correct length", 6, segs.firstElement().size());

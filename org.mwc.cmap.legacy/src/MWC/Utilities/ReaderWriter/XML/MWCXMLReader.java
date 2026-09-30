@@ -15,7 +15,10 @@
 
 package MWC.Utilities.ReaderWriter.XML;
 
+import java.io.ByteArrayInputStream;
 import java.io.CharArrayWriter;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.text.DateFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.ParseException;
@@ -23,18 +26,24 @@ import java.util.Date;
 import java.util.Enumeration;
 import java.util.Locale;
 import java.util.Vector;
+import java.util.regex.Pattern;
 
 import org.xml.sax.Attributes;
 import org.xml.sax.ContentHandler;
+import org.xml.sax.InputSource;
+import org.xml.sax.Locator;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.DefaultHandler;
 
+import MWC.GUI.Dialogs.DialogFactory;
 import MWC.GUI.Shapes.TextLabel;
 import MWC.GenericData.Duration;
 import MWC.GenericData.HiResDate;
+import MWC.Utilities.ReaderWriter.ImportProblems;
 import MWC.Utilities.TextFormatting.DebriefFormatDateTime;
 import MWC.Utilities.TextFormatting.GMTDateFormat;
+import junit.framework.TestCase;
 
 /**
  * @author IAN MAYO
@@ -81,7 +90,7 @@ public class MWCXMLReader extends DefaultHandler {
 				final long time = getXMLDateFormatter().parse(value).getTime();
 				setValue(name, time);
 			} catch (final ParseException e) {
-				MWC.Utilities.Errors.Trace.trace(e, "Failed to parse Date value of:" + value + " for:" + name);
+				reportProblem("Couldn't read date for " + name + ": \"" + value + "\"", e);
 			}
 		}
 	}
@@ -99,7 +108,7 @@ public class MWCXMLReader extends DefaultHandler {
 				final double val = readThisDouble(value);
 				setValue(name, val);
 			} catch (final ParseException pe) {
-				MWC.Utilities.Errors.Trace.trace(pe, "Reader: Whilst reading in " + name + " value of :" + value);
+				reportProblem("Couldn't read number for " + name + ": \"" + value + "\"", pe);
 			}
 		}
 
@@ -133,6 +142,83 @@ public class MWCXMLReader extends DefaultHandler {
 		}
 	}
 
+	public static class ReadDoubleTest extends TestCase {
+		private static void assertRejected(final String val) {
+			try {
+				final double res = readThisDouble(val);
+				fail("should have rejected '" + val + "', got " + res);
+			} catch (final ParseException pe) {
+				// expected
+			}
+		}
+
+		public void testAttributeProblemsReported() throws Exception {
+			DialogFactory.setRunHeadless(true);
+			final double[] course = { -1 };
+			final double[] speed = { -1 };
+			final MWCXMLReader handler = new MWCXMLReader("fix") {
+				{
+					addAttributeHandler(new HandleDoubleAttribute("Course") {
+						@Override
+						public void setValue(final String name, final double value) {
+							course[0] = value;
+						}
+					});
+					addAttributeHandler(new HandleDoubleAttribute("Speed") {
+						@Override
+						public void setValue(final String name, final double value) {
+							speed[0] = value;
+						}
+					});
+				}
+			};
+			final String doc = "<?xml version=\"1.0\"?>\n<fix\n Course=\"9.0E1\" Speed=\"12kts\"/>";
+			final MWCXMLReaderWriter rw = new MWCXMLReaderWriter();
+			rw.importThis("test.dpf", new ByteArrayInputStream(doc.getBytes(StandardCharsets.UTF_8)), handler);
+			assertEquals("exponent notation read in full", 90d, course[0], 0.0001);
+			assertEquals("bad value not applied", -1d, speed[0], 0.0001);
+			final ImportProblems problems = rw.getImportProblems();
+			assertEquals(1, problems.size());
+			final String problem = problems.getProblems().get(0);
+			assertTrue(problem, problem.contains("Speed") && problem.contains("12kts") && problem.startsWith("Line 3"));
+		}
+
+		public void testReadThisDouble() throws ParseException {
+			assertEquals(12.5, readThisDouble("12.5"), 0);
+			assertEquals(12.5, readThisDouble(" 12.5 "), 0);
+			assertEquals(-0.5, readThisDouble("-0.5"), 0);
+			assertEquals(12, readThisDouble("12"), 0);
+			assertEquals(0.5, readThisDouble(".5"), 0);
+			// exponent notation
+			assertEquals(12, readThisDouble("1.2E1"), 0);
+			assertEquals(90, readThisDouble("9.0E1"), 0);
+			assertEquals(100000, readThisDouble("1e5"), 0);
+			assertEquals(0.00012, readThisDouble("1.2e-4"), 1e-12);
+			// comma decimal separator
+			assertEquals(22.5, readThisDouble("22,5"), 0);
+			assertEquals(239.9, readThisDouble("239,9"), 1e-9);
+			assertEquals(53.54, readThisDouble("53,54"), 1e-9);
+			// trailing garbage / partial numbers
+			assertRejected("12abc");
+			assertRejected("12.5abc");
+			assertRejected("22 10");
+			assertRejected("1.2.3");
+			assertRejected("");
+			assertRejected("   ");
+			assertRejected("x");
+			// not-a-number is not a valid measurement
+			assertRejected("NaN");
+			assertRejected("nan");
+			assertRejected("Infinity");
+			// could be a thousands separator or a decimal comma, so don't guess
+			assertRejected("1,234");
+			assertRejected("-12,500");
+			assertRejected("1,234,567");
+			assertEquals(1.2345, readThisDouble("1,2345"), 1e-9);
+			assertEquals(1234.5, readThisDouble("1234,5"), 1e-9);
+		}
+	}
+
 	private static final String FALSE = "false";
 
 	private static final String TRUE = "true";
@@ -156,13 +242,29 @@ public class MWCXMLReader extends DefaultHandler {
 			new DecimalFormatSymbols(Locale.UK));
 
 	/**
-	 * number formatter used by our "readThis" methods
+	 * a complete number, as accepted by readThisDouble: optional sign, digits with
+	 * an optional '.' or ',' decimal separator, optional exponent
 	 */
-	// comma is used as the decimal separator here
-	static private final java.text.DecimalFormat shortCommaFormat = new java.text.DecimalFormat("0.000",
-			new DecimalFormatSymbols(Locale.FRANCE));
+	static private final Pattern NUMBER_PATTERN = Pattern.compile("[+-]?(\\d+([.,]\\d*)?|[.,]\\d+)([eE][+-]?\\d+)?");
+
+	/**
+	 * a number that could equally be read with ',' as a thousands separator or as
+	 * the decimal separator, e.g. 1,234
+	 */
+	static private final Pattern AMBIGUOUS_COMMA_PATTERN = Pattern.compile("[+-]?\\d{1,3},\\d{3}");
 
 	private static final String HANDLER_NOT_FOUND_MESSAGE = " handler not found.\n\nMaybe it's not a Debrief file.";
+
+	/**
+	 * problems found during the import running on this thread (null if we're not
+	 * collecting them)
+	 */
+	private static final ThreadLocal<ImportProblems> _currentProblems = new ThreadLocal<ImportProblems>();
+
+	/**
+	 * where the parser has got to in the file, for problem reports
+	 */
+	private static final ThreadLocal<Locator> _currentLocator = new ThreadLocal<Locator>();
 
 	public static String fromXML(final String val) {
 		String res = new String();
@@ -198,7 +300,7 @@ public class MWCXMLReader extends DefaultHandler {
 	// ///////////////////////////////////////////////////////
 	public synchronized static DateFormat getRNDateFormatter() {
 		if (RNdateFormat == null) {
-			RNdateFormat = new GMTDateFormat("yyMMdd HHmmss.SSS");
+			RNdateFormat = DebriefFormatDateTime.applyTwoDigitYearWindow(new GMTDateFormat("yyMMdd HHmmss.SSS"));
 		}
 		return RNdateFormat;
 	}
@@ -211,6 +313,42 @@ public class MWCXMLReader extends DefaultHandler {
 		return _XMLDateFormat;
 	}
 
+	/**
+	 * record a problem with the data being imported (e.g. a malformed attribute
+	 * that has been skipped). During an import by {@link MWCXMLReaderWriter} it is
+	 * added (with the line number) to the summary shown to the analyst at the end
+	 * of the import; otherwise it just goes to the trace log.
+	 *
+	 * @param reason what was wrong
+	 * @param e      the exception, if there was one
+	 */
+	public static void reportProblem(final String reason, final Exception e) {
+		final ImportProblems problems = _currentProblems.get();
+		if (problems != null) {
+			final Locator locator = _currentLocator.get();
+			problems.add(locator == null ? -1 : locator.getLineNumber(), reason, null);
+		} else if (e != null) {
+			MWC.Utilities.Errors.Trace.trace(e, reason);
+		} else {
+			MWC.Utilities.Errors.Trace.trace(reason, false);
+		}
+	}
+
+	/**
+	 * start collecting problems found by the handlers on this thread
+	 */
+	static void startCollectingProblems(final ImportProblems problems) {
+		_currentProblems.set(problems);
+	}
+
+	/**
+	 * stop collecting problems on this thread
+	 */
+	static void stopCollectingProblems() {
+		_currentProblems.remove();
+		_currentLocator.remove();
+	}
+
 	static public HiResDate parseThisDate(final String val) throws ParseException {
 		return DebriefFormatDateTime.parseThis(val);
 	}
@@ -219,25 +357,38 @@ public class MWCXMLReader extends DefaultHandler {
 		return Duration.fromString(val);
 	}
 
-	static public synchronized double readThisDouble(final String value) throws ParseException {
-		double res;
+	/**
+	 * parse a number from a data file. The whole (trimmed) value must be a number:
+	 * either '.' or ',' may be used as the decimal separator (no thousands
+	 * separators, and values such as 1,234 that could be either are rejected), and
+	 * exponent notation (1.2E1, 1e5) is accepted. Anything else,
+	 * including trailing text, NaN and infinity, is rejected rather than silently
+	 * truncated.
+	 *
+	 * @param value the text to parse
+	 * @return the number
+	 * @throws ParseException if the value isn't a valid number
+	 */
+	static public double readThisDouble(final String value) throws ParseException {
+		if (value == null) {
+			throw new ParseException("Missing number", 0);
+		}
 
 		// do some trimming, just in case
 		final String trimmed = value.trim();
 
-		// SPECIAL CASE: An external system is producing Debrief datafiles. It
-		// puts NaN in for course, and it's making us trip over.
-		if (trimmed.toUpperCase().equals("NAN"))
-			res = 0;
-		else {
-			try {
-				res = shortFormat.parse(trimmed).doubleValue();
-			} catch (final ParseException e) {
-				res = shortCommaFormat.parse(trimmed).doubleValue();
-			}
+		if (!NUMBER_PATTERN.matcher(trimmed).matches()) {
+			throw new ParseException("Unparseable number: \"" + value + "\"", 0);
 		}
 
-		return res;
+		// "1,234" could be a thousands separator or a decimal comma. Don't guess
+		if (AMBIGUOUS_COMMA_PATTERN.matcher(trimmed).matches()) {
+			throw new ParseException("Ambiguous number (thousands separator or decimal comma?): \"" + value + "\"",
+					0);
+		}
+
+		// only one decimal separator can be present, so we can normalise it
+		return Double.parseDouble(trimmed.replace(',', '.'));
 	}
 
 	/**
@@ -307,7 +458,7 @@ public class MWCXMLReader extends DefaultHandler {
 	}
 
 	static public String writeThis(final HiResDate val) {
-		final String res = DebriefFormatDateTime.toStringHiRes(val);
+		final String res = DebriefFormatDateTime.toStringHiResXML(val);
 		return res;
 	}
 
@@ -439,7 +590,7 @@ public class MWCXMLReader extends DefaultHandler {
 					ha.setValue(ha.myName, val);
 					// //
 				} catch (final Exception e) {
-					MWC.Utilities.Errors.Trace.trace(e, "Trouble handling attribute: " + ha.myName + " for:" + _myType);
+					reportProblem("Couldn't read " + ha.myName + " of " + _myType + ": \"" + val + "\"", e);
 				}
 			} else {
 				// let's not bother about parameters not being found, they're
@@ -468,6 +619,25 @@ public class MWCXMLReader extends DefaultHandler {
 	 */
 	public final void removeHandler(final MWCXMLReader handler) {
 		_myHandlers.remove(handler);
+	}
+
+	/**
+	 * never resolve external entities or DTDs referenced from a data file (XXE).
+	 * The parser from {@link SafeXMLFactory} already rejects DOCTYPEs, this is a
+	 * second line of defence since the SAX handler is also the entity resolver.
+	 */
+	@Override
+	public InputSource resolveEntity(final String publicId, final String systemId)
+			throws IOException, SAXException {
+		return SafeXMLFactory.REJECT_EXTERNAL_ENTITIES.resolveEntity(publicId, systemId);
+	}
+
+	/**
+	 * remember the locator, so problems can be reported with a line number
+	 */
+	@Override
+	public void setDocumentLocator(final Locator locator) {
+		_currentLocator.set(locator);
 	}
 
 	public final void reportNotHandledErrors(final boolean val) {

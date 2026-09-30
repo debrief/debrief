@@ -25,7 +25,6 @@ import MWC.GUI.Properties.LineLocationPropertyEditor;
 import MWC.GUI.Properties.LineStylePropertyEditor;
 import MWC.GUI.Properties.LocationPropertyEditor;
 import MWC.GenericData.WorldDistance;
-import MWC.Utilities.Errors.Trace;
 import MWC.Utilities.ReaderWriter.XML.Util.ColourHandler;
 import MWC.Utilities.ReaderWriter.XML.Util.LocationHandler;
 import MWC.Utilities.ReaderWriter.XML.Util.WorldDistanceHandler;
@@ -255,7 +254,7 @@ abstract public class SensorContactHandler extends MWC.Utilities.ReaderWriter.XM
 				try {
 					_theContact.setDTG(parseThisDate(value));
 				} catch (final ParseException e) {
-					Trace.trace(e, "While parsing date");
+					reportProblem("While parsing date" + ": " + e.getMessage(), e);
 				}
 			}
 		});

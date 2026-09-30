@@ -23,10 +23,24 @@ import org.apache.commons.io.FileUtils;
 
 import Debrief.GUI.Frames.Application;
 import MWC.GUI.ToolParent;
-import net.lingala.zip4j.core.ZipFile;
+import MWC.Utilities.ReaderWriter.SafeArchive;
 import net.lingala.zip4j.exception.ZipException;
 
 public class UnpackFunction {
+
+	/**
+	 * largest permitted uncompressed size of a PPTX master template, in total
+	 * and for any single entry. The largest template in the sample/test data
+	 * inflates to 2.1 MB (largest entry 2.0 MB), but corporate templates can hold
+	 * large background images, so allow plenty of headroom.
+	 */
+	public static final long MAX_TEMPLATE_BYTES = 64L * 1024 * 1024;
+
+	/**
+	 * most entries permitted in a PPTX master template. Sample templates have up
+	 * to 63.
+	 */
+	public static final int MAX_TEMPLATE_ENTRIES = 256;
 
 	public String unpackFunction(final String pptx_path) throws ZipException, DebriefException {
 		return unpackFunction(pptx_path, "");
@@ -64,8 +78,15 @@ public class UnpackFunction {
 			}
 		}
 
-		final ZipFile zip_ref = new ZipFile(pptx_path);
-		zip_ref.extractAll(unpack_path);
+		// the template may come from anywhere, so check the entry names stay in
+		// the unpack folder (zip-slip) and cap the size (zip bomb)
+		try {
+			SafeArchive.extractZip(new File(pptx_path), new File(unpack_path),
+					new SafeArchive.Limits(MAX_TEMPLATE_ENTRIES, MAX_TEMPLATE_BYTES, MAX_TEMPLATE_BYTES));
+		} catch (final IOException e) {
+			throw new ZipException("Unable to unpack the PPTX master template " + pptx_path + ": " + e.getMessage(),
+					e);
+		}
 		Application.logError2(ToolParent.INFO, "File unpacked at " + unpack_path, null);
 		return unpack_path;
 	}

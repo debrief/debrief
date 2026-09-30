@@ -18,6 +18,7 @@ package org.mwc.cmap.core.operations;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InvalidClassException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.ObjectStreamClass;
@@ -70,6 +71,7 @@ import MWC.GenericData.WorldDistance;
 import MWC.GenericData.WorldLocation;
 import MWC.GenericData.WorldVector;
 import MWC.TacticalData.Fix;
+import MWC.Utilities.ReaderWriter.ClipboardInputFilter;
 
 public class RightClickCutCopyAdaptor {
 
@@ -602,9 +604,19 @@ public class RightClickCutCopyAdaptor {
 				Editable[] myData = null;
 				try {
 					final ByteArrayInputStream in = new ByteArrayInputStream(buffer);
-					final ObjectInputStream readIn = new ObjectInputStream(in);
-					myData = (Editable[]) readIn.readObject();
+					// the clipboard may hold data from another process, so only
+					// accept Debrief data (see ClipboardInputFilter)
+					final ObjectInputStream readIn = ClipboardInputFilter.createStream(in);
+					final Object read = readIn.readObject();
 					readIn.close();
+					if (read instanceof Editable[]) {
+						myData = (Editable[]) read;
+					} else {
+						CorePlugin.logError(IStatus.WARNING, "Ignoring unexpected clipboard contents", null);
+					}
+				} catch (final InvalidClassException ex) {
+					CorePlugin.logError(IStatus.WARNING, "Clipboard contents rejected: " + ex.getMessage(), null);
+					return null;
 				} catch (final IOException ex) {
 					CorePlugin.logError(IStatus.ERROR, "Problem converting object to clipboard format", null);
 					return null;

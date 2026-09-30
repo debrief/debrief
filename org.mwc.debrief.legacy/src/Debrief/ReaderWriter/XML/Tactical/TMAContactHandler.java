@@ -36,7 +36,6 @@ import MWC.GUI.Layers;
 import MWC.GUI.Shapes.EllipseShape;
 import MWC.GenericData.WorldDistance;
 import MWC.GenericData.WorldLocation;
-import MWC.Utilities.Errors.Trace;
 import MWC.Utilities.ReaderWriter.XML.Util.ColourHandler;
 import MWC.Utilities.ReaderWriter.XML.Util.LocationHandler;
 import MWC.Utilities.ReaderWriter.XML.Util.WorldDistanceHandler;
@@ -254,7 +253,7 @@ abstract public class TMAContactHandler extends MWC.Utilities.ReaderWriter.XML.M
 				try {
 					_thisSolution.setDTG(DebriefFormatDateTime.parseThis(value));
 				} catch (final ParseException e) {
-					Trace.trace(e, "While parsing date");
+					reportProblem("While parsing date" + ": " + e.getMessage(), e);
 				}
 			}
 		});

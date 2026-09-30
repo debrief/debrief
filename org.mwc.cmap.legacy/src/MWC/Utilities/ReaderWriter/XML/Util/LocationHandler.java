@@ -51,8 +51,11 @@ abstract public class LocationHandler extends MWCXMLReader {
 
 	@Override
 	public void elementClosed() {
-		// pass on to the listener class
-		setLocation(_res);
+		// pass on to the listener class. If the location couldn't be read, it has
+		// already been reported, and we don't pass on a dummy location
+		if (_res != null) {
+			setLocation(_res);
+		}
 
 		_res = null;
 	}

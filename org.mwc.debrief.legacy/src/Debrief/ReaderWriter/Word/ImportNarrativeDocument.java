@@ -406,248 +406,288 @@ public class ImportNarrativeDocument {
 
 		boolean appendedToPrevious = false;
 
-		@SuppressWarnings("deprecation")
 		public NarrEntry(final String entry) throws ParseException {
 			final String trimmed = entry.trim();
 			final String[] parts = trimmed.split(",");
-			int ctr = 0;
-
-			// if(entry.contains("message 69"))
-			// {
-			// System.out.println("here");
-			// }
 
 			final boolean correctLength = parts.length > 5;
 			final boolean sixFigDTG = correctLength && parts[0].length() == 6 && parts[0].matches(DATE_MATCH_SIX);
 			final boolean fourFigDTG = correctLength && parts[0].length() == 4 && parts[0].matches(DATE_MATCH_FOUR);
-			final boolean hasDTG = sixFigDTG || fourFigDTG;
 
-			if (hasDTG) {
-				final String dtgStr;
-				if (fourFigDTG) {
-					dtgStr = parts[ctr++];
-				} else {
-					dtgStr = parts[ctr++].substring(2, 6);
-				}
-
-				// ok, sort out the time first
-				String dayStr = parts[ctr++];
-				final String monStr = parts[ctr++];
-				final String yrStr = parts[ctr++];
-				platform = parts[ctr++].trim();
-				type = parts[ctr++].trim();
-
-				/**
-				 * special processing, to overcome problem with entries being pulled back from
-				 * the next day. The problem has occurred when something that happened at, say
-				 * 2345 only gets entered at 0005, so the user moves the entry back to the real
-				 * time
-				 */
-				if (sixFigDTG) {
-					final int dtgDate = Integer.valueOf(parts[0].substring(0, 2));
-					final int hours = Integer.valueOf(parts[0].substring(2, 4));
-
-					// is this entry after 2300? (that's the usual destination)
-					if (hours == 23) {
-						final int hiddenDay = Integer.parseInt(dayStr);
-						if (hiddenDay == dtgDate + 1) {
-							// ok, the date in the hidden text is one day after
-							// that in 6-fix DTG. correct the date
-							dayStr = "" + dtgDate;
-						}
-					}
-				}
-
-				/**
-				 * special processing, to overcome the previous day being used
-				 *
-				 */
-				final boolean dayDecreased = lastDay != null && Integer.parseInt(dayStr) < Integer.parseInt(lastDay);
-				final boolean monthIncreased = lastMonth != null
-						&& Integer.parseInt(monStr) > Integer.parseInt(lastMonth);
-				final boolean yearIncreased = lastYear != null && Integer.parseInt(yrStr) > Integer.parseInt(lastYear);
-
-				if (dayDecreased && !monthIncreased && !yearIncreased) {
-					// ok, the day has dropped, but the month hasn't increased
-					dayStr = lastDay;
-
-					// insert warning, since this may be a mangled DTG
-					final String msg = "Day decreased, but month didn't increase: " + dtgStr
-							+ ". The previous entry may be a mangled cut/paste";
-					logThisError(ToolParent.ERROR, msg, null);
-				} else {
-					// it's valid, update the last day
-					lastDay = dayStr;
-					lastMonth = monStr;
-					lastYear = yrStr;
-				}
-
-				// hmm, on occasion we don't get the closing comma on the entry type
-				if (type.length() > 20) {
-					final int firstSpace = type.indexOf(" ");
-					// note: should actually be looking for non-alphanumeric, since it may be a tab
-					type = type.substring(0, firstSpace - 1);
-				}
-
-				final int year;
-				if (yrStr.length() == 2) {
-					final int theYear = Integer.parseInt(yrStr);
-
-					// is this from the late 80's onwards?
-					if (theYear > 80) {
-						year = 1900 + theYear;
-					} else {
-						year = 2000 + theYear;
-					}
-				} else {
-					year = Integer.parseInt(yrStr);
-				}
-
-				final int hours = Integer.parseInt(dtgStr.substring(0, 2));
-				final int mins = Integer.parseInt(dtgStr.substring(2, 4));
-
-				final Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("GMT"));
-				cal.set(year, Integer.parseInt(monStr) - 1, Integer.parseInt(dayStr), hours, mins, 0);
-				cal.set(Calendar.MILLISECOND, 0);
-				dtg = new HiResDate(cal.getTime());
-
-				// ok, and the message part
-				final int ind = entry.indexOf(type);
-
-				text = entry.substring(ind + type.length() + 1).trim();
-
-				// remember what's happening, so we can refer back to previous entries
-				lastDtg = new Date(dtg.getDate().getTime());
-				lastPlatform = platform;
-				lastEntry = this;
+			if (sixFigDTG || fourFigDTG) {
+				parseFullEntry(entry, parts, sixFigDTG);
 			} else {
+				parseShortEntry(entry, trimmed);
+			}
+		}
 
-				final int firstTab = firstWhiteSpace(trimmed);
+		/**
+		 * create a GMT date from its components
+		 *
+		 * @param month zero-based month
+		 */
+		private static HiResDate gmtDate(final int year, final int month, final int day, final int hours,
+				final int mins) {
+			final Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("GMT"));
+			cal.set(year, month, day, hours, mins, 0);
+			cal.set(Calendar.MILLISECOND, 0);
+			return new HiResDate(cal.getTime());
+		}
 
-				// see if the first few characters are date
-				final String dateStr = firstTab > 0 ? trimmed.substring(0, Math.min(trimmed.length(), firstTab))
-						: trimmed;
+		/**
+		 * special processing, to overcome problem with entries being pulled back from
+		 * the next day. The problem has occurred when something that happened at, say
+		 * 2345 only gets entered at 0005, so the user moves the entry back to the real
+		 * time
+		 *
+		 * @param sixFigDTG the DDHHMM field
+		 * @param dayStr    the day from the hidden metadata
+		 * @return the day to use
+		 */
+		private static String correctLateEntryDay(final String sixFigDTG, final String dayStr) {
+			final int dtgDate = Integer.valueOf(sixFigDTG.substring(0, 2));
+			final int hours = Integer.valueOf(sixFigDTG.substring(2, 4));
 
-				// is this all numeric
-				boolean probIsDate = false;
+			// is this entry after 2300? (that's the usual destination)
+			if (hours == 23 && Integer.parseInt(dayStr) == dtgDate + 1) {
+				// ok, the date in the hidden text is one day after
+				// that in 6-fix DTG. correct the date
+				return "" + dtgDate;
+			}
+			return dayStr;
+		}
 
-				try {
-					if (dateStr.length() == 6 || dateStr.length() == 4) {
-						@SuppressWarnings("unused")
-						final int testInt = Integer.parseInt(dateStr);
-						probIsDate = true;
-					}
-				} catch (final NumberFormatException e) {
-				}
+		/**
+		 * special processing, to overcome the previous day being used
+		 *
+		 * @return the day to use
+		 */
+		private static String checkDaySequence(final String dtgStr, final String dayStr, final String monStr,
+				final String yrStr) {
+			final boolean dayDecreased = lastDay != null && Integer.parseInt(dayStr) < Integer.parseInt(lastDay);
+			final boolean monthIncreased = lastMonth != null && Integer.parseInt(monStr) > Integer.parseInt(lastMonth);
+			final boolean yearIncreased = lastYear != null && Integer.parseInt(yrStr) > Integer.parseInt(lastYear);
 
-				final boolean probHasContent = entry.length() > 8;
+			if (dayDecreased && !monthIncreased && !yearIncreased) {
+				// insert warning, since this may be a mangled DTG
+				final String msg = "Day decreased, but month didn't increase: " + dtgStr
+						+ ". The previous entry may be a mangled cut/paste";
+				logThisError(ToolParent.ERROR, msg, null);
 
-				if (probIsDate && probHasContent) {
-					// yes, go for it.
+				// ok, the day has dropped, but the month hasn't increased
+				return lastDay;
+			}
 
-					// ooh, do we have some stored data?
-					if (lastDtg != null && lastPlatform != null) {
-						final String parseStr;
-						Integer theseDays = null;
-						if (dateStr.length() == 6) {
-							// reduce to four charts
-							theseDays = Integer.parseInt(dateStr.substring(0, 2));
-							parseStr = dateStr.substring(2, 6);
-						} else {
-							parseStr = dateStr;
-						}
+			// it's valid, update the last day
+			lastDay = dayStr;
+			lastMonth = monStr;
+			lastYear = yrStr;
+			return dayStr;
+		}
 
-						// first try to parse it
-						final int hours = Integer.parseInt(parseStr.substring(0, 2));
-						final int mins = Integer.parseInt(parseStr.substring(2, 4));
+		private static int yearFrom(final String yrStr) {
+			if (yrStr.length() == 2) {
+				final int theYear = Integer.parseInt(yrStr);
 
-						// do some date fiddling
-						int daysToUse = lastDtg.getDate();
-						int monthToUse = lastDtg.getMonth();
-						int yearToUse = lastDtg.getYear();
-						if (theseDays != null) {
-							// ok, see if the day has changed
-							if (theseDays < daysToUse) {
-								// day moved backwards, we must be in a different month
-								if (monthToUse == 11) {
-									// hey, happy new year!
-									yearToUse++;
-
-									// set to January
-									monthToUse = 0;
-								} else {
-									// just increment to the next month
-									monthToUse++;
-								}
-
-							}
-
-							// ok use the new value of days
-							daysToUse = theseDays;
-						}
-
-						final Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("GMT"));
-						cal.set(1900 + yearToUse, monthToUse, daysToUse, hours, mins, 0);
-						cal.set(Calendar.MILLISECOND, 0);
-						dtg = new HiResDate(cal.getTime());
-
-						// stash the platform
-						platform = lastPlatform;
-
-						// and catch the rest of the text
-						text = trimmed.substring(dateStr.length()).trim();
-
-						final String startOfLine = text.substring(0, Math.min(20, text.length() - 1));
-						final String trackNum = FCSEntry.parseTrack(startOfLine);
-						if (trackNum != null) {
-							type = "FCS";
-						} else {
-							// explain we don't know what type of comment this is
-							type = "N/A";
-						}
-
-						// try to replace soft returns with hard returns
-						text = text.replace("\r", "\n");
-
-						// remember what's happening, so we can refer back to previous entries
-						lastDtg = new Date(dtg.getDate().getTime());
-						lastPlatform = platform;
-						lastEntry = this;
-					}
+				// is this from the late 80's onwards?
+				if (theYear > 80) {
+					return 1900 + theYear;
 				} else {
-					// hmm, see if it's just text. If it is, stick it on the end of the previous one
-
-					// ooh, it may be a next day marker. have a check
-					final DateFormat dtgBlock = new GMTDateFormat("dd MMM yy");
-
-					boolean hasDate = false;
-					try {
-						final Date scrapDate = dtgBlock.parse(trimmed);
-						hasDate = true;
-
-						// store the date, ready for successive lines
-						lastDtg = scrapDate;
-
-						// hey, maybe this is a data-file without any metadata
-						// give it a platform
-						if (lastPlatform == null) {
-							lastPlatform = NAME_NOT_PRESENT;
-						}
-					} catch (final ParseException e) {
-						// it's ok, we can silently fail
-					}
-
-					if (!hasDate) {
-						// ooh, do we have a previous one?
-						if (lastEntry != null) {
-							text = trimmed;
-
-							// now flag that we've just added ourselves to the previous one
-							appendedToPrevious = true;
-						}
-					}
+					return 2000 + theYear;
 				}
 			}
+			return Integer.parseInt(yrStr);
+		}
+
+		/**
+		 * is this a four or six digit number?
+		 */
+		private static boolean isNumericTime(final String dateStr) {
+			if (dateStr.length() != 6 && dateStr.length() != 4) {
+				return false;
+			}
+			try {
+				Integer.parseInt(dateStr);
+				return true;
+			} catch (final NumberFormatException e) {
+				return false;
+			}
+		}
+
+		/**
+		 * parse an entry that has a DTG, day, month, year, platform and type
+		 */
+		private void parseFullEntry(final String entry, final String[] parts, final boolean sixFigDTG) {
+			int ctr = 0;
+			final String dtgStr;
+			if (sixFigDTG) {
+				dtgStr = parts[ctr++].substring(2, 6);
+			} else {
+				dtgStr = parts[ctr++];
+			}
+
+			// ok, sort out the time first
+			String dayStr = parts[ctr++];
+			final String monStr = parts[ctr++];
+			final String yrStr = parts[ctr++];
+			platform = parts[ctr++].trim();
+			type = parts[ctr++].trim();
+
+			if (sixFigDTG) {
+				dayStr = correctLateEntryDay(parts[0], dayStr);
+			}
+
+			dayStr = checkDaySequence(dtgStr, dayStr, monStr, yrStr);
+
+			// hmm, on occasion we don't get the closing comma on the entry type
+			if (type.length() > 20) {
+				final int firstSpace = type.indexOf(" ");
+				// note: should actually be looking for non-alphanumeric, since it may be a tab
+				type = type.substring(0, firstSpace - 1);
+			}
+
+			final int hours = Integer.parseInt(dtgStr.substring(0, 2));
+			final int mins = Integer.parseInt(dtgStr.substring(2, 4));
+			dtg = gmtDate(yearFrom(yrStr), Integer.parseInt(monStr) - 1, Integer.parseInt(dayStr), hours, mins);
+
+			// ok, and the message part
+			final int ind = entry.indexOf(type);
+
+			text = entry.substring(ind + type.length() + 1).trim();
+
+			rememberThisEntry();
+		}
+
+		/**
+		 * parse a line that follows on from a previous entry: a time and some text,
+		 * some text, or a new-day marker
+		 */
+		private void parseShortEntry(final String entry, final String trimmed) {
+			final int firstTab = firstWhiteSpace(trimmed);
+
+			// see if the first few characters are date
+			final String dateStr = firstTab > 0 ? trimmed.substring(0, Math.min(trimmed.length(), firstTab))
+					: trimmed;
+
+			final boolean probHasContent = entry.length() > 8;
+
+			if (isNumericTime(dateStr) && probHasContent) {
+				// yes, go for it. But only if we have some stored data
+				if (lastDtg != null && lastPlatform != null) {
+					parseTimedEntry(trimmed, dateStr);
+				}
+			} else {
+				parseTextOrDayMarker(trimmed);
+			}
+		}
+
+		/**
+		 * parse a line that starts with a time, taking the date and platform from the
+		 * previous entry
+		 */
+		@SuppressWarnings("deprecation")
+		private void parseTimedEntry(final String trimmed, final String dateStr) {
+			final String parseStr;
+			Integer theseDays = null;
+			if (dateStr.length() == 6) {
+				// reduce to four charts
+				theseDays = Integer.parseInt(dateStr.substring(0, 2));
+				parseStr = dateStr.substring(2, 6);
+			} else {
+				parseStr = dateStr;
+			}
+
+			// first try to parse it
+			final int hours = Integer.parseInt(parseStr.substring(0, 2));
+			final int mins = Integer.parseInt(parseStr.substring(2, 4));
+
+			// do some date fiddling
+			int daysToUse = lastDtg.getDate();
+			int monthToUse = lastDtg.getMonth();
+			int yearToUse = lastDtg.getYear();
+			if (theseDays != null) {
+				// ok, see if the day has changed
+				if (theseDays < daysToUse) {
+					// day moved backwards, we must be in a different month
+					if (monthToUse == 11) {
+						// hey, happy new year!
+						yearToUse++;
+
+						// set to January
+						monthToUse = 0;
+					} else {
+						// just increment to the next month
+						monthToUse++;
+					}
+				}
+
+				// ok use the new value of days
+				daysToUse = theseDays;
+			}
+
+			dtg = gmtDate(1900 + yearToUse, monthToUse, daysToUse, hours, mins);
+
+			// stash the platform
+			platform = lastPlatform;
+
+			// and catch the rest of the text
+			text = trimmed.substring(dateStr.length()).trim();
+
+			final String startOfLine = text.substring(0, Math.min(20, text.length() - 1));
+			final String trackNum = FCSEntry.parseTrack(startOfLine);
+			if (trackNum != null) {
+				type = "FCS";
+			} else {
+				// explain we don't know what type of comment this is
+				type = "N/A";
+			}
+
+			// try to replace soft returns with hard returns
+			text = text.replace("\r", "\n");
+
+			rememberThisEntry();
+		}
+
+		/**
+		 * hmm, see if it's just text. If it is, stick it on the end of the previous one
+		 */
+		private void parseTextOrDayMarker(final String trimmed) {
+			// ooh, it may be a next day marker. have a check
+			final DateFormat dtgBlock = new GMTDateFormat("dd MMM yy");
+
+			boolean hasDate = false;
+			try {
+				final Date scrapDate = dtgBlock.parse(trimmed);
+				hasDate = true;
+
+				// store the date, ready for successive lines
+				lastDtg = scrapDate;
+
+				// hey, maybe this is a data-file without any metadata
+				// give it a platform
+				if (lastPlatform == null) {
+					lastPlatform = NAME_NOT_PRESENT;
+				}
+			} catch (final ParseException e) {
+				// it's ok, we can silently fail
+			}
+
+			// ooh, do we have a previous one?
+			if (!hasDate && lastEntry != null) {
+				text = trimmed;
+
+				// now flag that we've just added ourselves to the previous one
+				appendedToPrevious = true;
+			}
+		}
+
+		/**
+		 * remember what's happening, so we can refer back to previous entries
+		 */
+		private void rememberThisEntry() {
+			lastDtg = new Date(dtg.getDate().getTime());
+			lastPlatform = platform;
+			lastEntry = this;
 		}
 	}
 
@@ -1004,6 +1044,66 @@ public class ImportNarrativeDocument {
 
 			final String match3 = FCSEntry.parseSource(str3);
 			assertEquals("got source", "AAAA AAAA AAA (AAAA)", match3);
+		}
+
+		/**
+		 * pin down how each style of narrative line is parsed, so the parser can be
+		 * restructured safely
+		 */
+		public void testNarrEntryParsing() {
+			NarrEntry.reset();
+			final String[] lines = new String[] {
+					// hidden six-figure DTG, full metadata
+					"121005,12,03,20,NONSUCH,SOURCE,Some text here",
+					// four-figure DTG, four digit year
+					"1106,12,03,2020,NONSUCH,COMMS,Next message",
+					// entry at 23xx, hidden day one ahead of the DTG
+					"122345,13,03,20,NONSUCH,SOURCE,Late entry",
+					// day has gone backwards, without month changing
+					"110900,11,03,20,NONSUCH,SOURCE,Mangled date",
+					// two-digit year from the 1980s, month increasing
+					"010800,01,04,85,OTHER,TYPE,Old year",
+					// entry type that is missing its closing comma
+					"020900,02,04,85,OTHER,VERYLONGTYPEWITHOUT COMMA and more text,trailing",
+					// time-only line, following on from previous entry
+					"1015 follow on text for the entry",
+					// six digit time-only line, day moving backwards (so next month)
+					"011030 C0101 Tgt B-123 continued FCS text",
+					// continuation text
+					"just some more words for the previous entry",
+					// a new-day marker
+					"12 Mar 20",
+					// time-only line after the day marker
+					"1200 after the day marker",
+					// too short to be anything
+					"1234", };
+
+			final StringBuilder res = new StringBuilder();
+			final DateFormat df = new GMTDateFormat("yyyy-MM-dd HH:mm");
+			int ctr = 0;
+			for (final String line : lines) {
+				final NarrEntry entry = NarrEntry.create(line, ++ctr);
+				if (entry == null) {
+					res.append("null\n");
+				} else {
+					res.append(entry.dtg == null ? "no-dtg" : df.format(entry.dtg.getDate())).append("|")
+							.append(entry.platform).append("|").append(entry.type).append("|").append(entry.text)
+							.append("|").append(entry.appendedToPrevious).append("\n");
+				}
+			}
+			NarrEntry.reset();
+
+			assertEquals("2020-03-12 10:05|NONSUCH|SOURCE|Some text here|false\n"
+					+ "2020-03-12 11:06|NONSUCH|COMMS|Next message|false\n"
+					+ "2020-03-12 23:45|NONSUCH|SOURCE|Late entry|false\n"
+					+ "2020-03-12 09:00|NONSUCH|SOURCE|Mangled date|false\n"
+					+ "1985-04-01 08:00|OTHER|TYPE|Old year|false\n"
+					+ "1985-04-02 09:00|OTHER|VERYLONGTYPEWITHOU|COMMA and more text,trailing|false\n"
+					+ "1985-04-02 10:15|OTHER|N/A|follow on text for the entry|false\n"
+					+ "1985-05-01 10:30|OTHER|FCS|C0101 Tgt B-123 continued FCS text|false\n"
+					+ "no-dtg|null|null|just some more words for the previous entry|true\n" + "null\n"
+					+ "2020-03-12 12:00|OTHER|N/A|after the day marker|false\n" + "no-dtg|null|null|1234|true\n",
+					res.toString());
 		}
 
 		public static void testDTGZ_in_preamble() throws UnsupportedEncodingException {
@@ -1690,6 +1790,34 @@ public class ImportNarrativeDocument {
 			assertNull(narrLayer);
 		}
 
+		/**
+		 * A page tree whose /Kids contains the /Pages node itself. PDFBox 2.0.3 recursed
+		 * until StackOverflowError here (CR-022); current 2.0.x detects the loop.
+		 */
+		public void testImportFromPdfSelfReferencingPageTree() throws Exception {
+			final String[] objs = { "<< /Type /Catalog /Pages 2 0 R >>",
+					"<< /Type /Pages /Kids [2 0 R 3 0 R] /Count 2 >>",
+					"<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] >>" };
+			final StringBuilder sb = new StringBuilder("%PDF-1.4\n");
+			final int[] offsets = new int[objs.length];
+			for (int i = 0; i < objs.length; i++) {
+				offsets[i] = sb.length();
+				sb.append(i + 1).append(" 0 obj\n").append(objs[i]).append("\nendobj\n");
+			}
+			final int xref = sb.length();
+			sb.append("xref\n0 ").append(objs.length + 1).append("\n0000000000 65535 f \n");
+			for (final int offset : offsets) {
+				sb.append(String.format("%010d 00000 n \n", offset));
+			}
+			sb.append("trailer\n<< /Size ").append(objs.length + 1).append(" /Root 1 0 R >>\nstartxref\n")
+					.append(xref).append("\n%%EOF\n");
+			final InputStream is = new ByteArrayInputStream(sb.toString().getBytes("ISO-8859-1"));
+
+			// must return rather than overflow the stack
+			final ArrayList<String> strings = importFromPdf("loop.pdf", is);
+			assertNotNull(strings);
+		}
+
 		public void testImportAllNarrativeTypes() throws Exception {
 			final String testFile = dummy_doc_path;
 			final File testI = new File(testFile);
@@ -2340,102 +2468,11 @@ public class ImportNarrativeDocument {
 			return;
 		}
 		final Map<String, Integer> typeVsCount = new HashMap<>();
-		final boolean proceed = true;
-
-		// maximum number of follow-on-sentences to use
-		final int MAX_APPENDED = 6;
-
-		int appendedToPreviousCtr = 0;
-
-		// see if we have an index for start of records
-		final int START_INDEX = indexOfStart(strings);
 		final List<NarrEntry> narrativeEntries = new ArrayList<NarrEntry>();
+
 		// ok, now we can loop through the strings
-		if (proceed) {
-			int ctr = 0;
-			for (final String raw_text : strings) {
-				// increment counter, for num lines processed
-				ctr++;
+		collectEntries(strings, typeVsCount, narrativeEntries);
 
-				// do we have an index for the start of records?
-				if (ctr < START_INDEX + 1) {
-					continue;
-				}
-
-				if (raw_text.trim().length() == 0) {
-					continue;
-				}
-
-				// also remove any other control chars that may throw MS Word
-				final String text = removeBadChars(raw_text);
-
-				// wrap import process in try/catch, so we can report errors
-				try {
-
-					// ok, get the narrative type
-					final NarrEntry thisN = NarrEntry.create(text, ctr);
-
-					if (thisN == null) {
-						// logError("Unable to parse line:" + text, null);
-						continue;
-					}
-
-					// see if it's the special end of records marker
-					if (thisN.text.startsWith(END_OF_RECORDS_1) || thisN.text.startsWith(END_OF_RECORDS_2)) {
-						// ok. we're done. We don't need to store it.
-
-						// log the fact we did this
-						Application.logError3(ToolParent.WARNING, "Import terminated at phrase:" + thisN.text, null,
-								false);
-
-						// and drop out of the loop
-						break;
-					}
-
-					// is it just text, that we will append
-					if (thisN.appendedToPrevious && appendedToPreviousCtr < MAX_APPENDED) {
-						// hmm, just check if this is an FCS
-
-						// do we have a previous one?
-						if (_lastNarrEntry != null) {
-							final String newText = thisN.text;
-
-							_lastNarrEntry.text = _lastNarrEntry.text + "\n" + newText;
-
-							// ok, keep track of how many times we've appended
-							appendedToPreviousCtr++;
-						}
-
-						// ok, we can't do any more. carry on
-						continue;
-					} else {
-						// clear the appended flag
-						appendedToPreviousCtr = 0;
-					}
-					final String type;
-					if (thisN.type != null) {
-						type = thisN.type;
-					} else if (thisN.platform != null) {
-						type = "None";
-					} else {
-						type = null;
-					}
-					if (type != null) {
-						if (typeVsCount.get(type) == null) {
-							typeVsCount.put(type, 1);
-						} else {
-							typeVsCount.put(type, typeVsCount.get(type) + 1);
-						}
-						// remember that entry, in case we get incomplete text inthe future
-						_lastNarrEntry = thisN;
-						narrativeEntries.add(thisN);
-					}
-
-				} catch (final Exception e) {
-					logThisError(ToolParent.WARNING, "Failed whilst parsing line:" + text, e);
-				}
-			}
-		}
 		// keep track of if we've added anything
 		final boolean dataAdded;
 
@@ -2449,6 +2486,121 @@ public class ImportNarrativeDocument {
 		}
 		if (dataAdded) {
 			_layers.fireModified(getNarrativeLayer());
+		}
+	}
+
+	/**
+	 * parse the strings into narrative entries, appending follow-on text to the
+	 * previous entry
+	 *
+	 * @param strings          the lines to parse
+	 * @param typeVsCount      (output) how many entries of each type we found
+	 * @param narrativeEntries (output) the entries found
+	 */
+	private void collectEntries(final ArrayList<String> strings, final Map<String, Integer> typeVsCount,
+			final List<NarrEntry> narrativeEntries) {
+		// maximum number of follow-on-sentences to use
+		final int MAX_APPENDED = 6;
+
+		int appendedToPreviousCtr = 0;
+
+		// see if we have an index for start of records
+		final int START_INDEX = indexOfStart(strings);
+
+		int ctr = 0;
+		for (final String raw_text : strings) {
+			// increment counter, for num lines processed
+			ctr++;
+
+			// skip lines before the start of records, and empty lines
+			if (ctr < START_INDEX + 1 || raw_text.trim().length() == 0) {
+				continue;
+			}
+
+			// also remove any other control chars that may throw MS Word
+			final String text = removeBadChars(raw_text);
+
+			// wrap import process in try/catch, so we can report errors
+			try {
+
+				// ok, get the narrative type
+				final NarrEntry thisN = NarrEntry.create(text, ctr);
+
+				if (thisN == null) {
+					continue;
+				}
+
+				// see if it's the special end of records marker
+				if (isEndOfRecords(thisN)) {
+					// ok. we're done. We don't need to store it.
+					break;
+				}
+
+				// is it just text, that we will append
+				if (thisN.appendedToPrevious && appendedToPreviousCtr < MAX_APPENDED) {
+					// ok, keep track of how many times we've appended
+					if (appendToPrevious(thisN)) {
+						appendedToPreviousCtr++;
+					}
+
+					// ok, we can't do any more. carry on
+					continue;
+				}
+
+				// clear the appended flag
+				appendedToPreviousCtr = 0;
+
+				storeEntry(thisN, typeVsCount, narrativeEntries);
+
+			} catch (final Exception e) {
+				logThisError(ToolParent.WARNING, "Failed whilst parsing line:" + text, e);
+			}
+		}
+	}
+
+	/**
+	 * is this the special end of records marker? If it is, log the fact
+	 */
+	private static boolean isEndOfRecords(final NarrEntry thisN) {
+		if (thisN.text.startsWith(END_OF_RECORDS_1) || thisN.text.startsWith(END_OF_RECORDS_2)) {
+			Application.logError3(ToolParent.WARNING, "Import terminated at phrase:" + thisN.text, null, false);
+			return true;
+		}
+		return false;
+	}
+
+	/**
+	 * add the text of this entry to the previous one
+	 *
+	 * @return whether there was a previous one
+	 */
+	private boolean appendToPrevious(final NarrEntry thisN) {
+		if (_lastNarrEntry == null) {
+			return false;
+		}
+		_lastNarrEntry.text = _lastNarrEntry.text + "\n" + thisN.text;
+		return true;
+	}
+
+	/**
+	 * store this entry, if we can determine its type
+	 */
+	private void storeEntry(final NarrEntry thisN, final Map<String, Integer> typeVsCount,
+			final List<NarrEntry> narrativeEntries) {
+		final String type;
+		if (thisN.type != null) {
+			type = thisN.type;
+		} else if (thisN.platform != null) {
+			type = "None";
+		} else {
+			type = null;
+		}
+		if (type != null) {
+			typeVsCount.merge(type, 1, Integer::sum);
+
+			// remember that entry, in case we get incomplete text inthe future
+			_lastNarrEntry = thisN;
+			narrativeEntries.add(thisN);
 		}
 	}
 
@@ -2532,68 +2684,97 @@ public class ImportNarrativeDocument {
 				match = theL.getName();
 				nameMatches.put(originalName, match);
 			} else {
-				// try skipping then names
-				final Iterator<String> nameIter = SkipNames.iterator();
-				while (nameIter.hasNext() && match == null) {
-					final String thisSkip = nameIter.next();
-					if (platform.startsWith(thisSkip)) {
-						final String subStr = platform.substring(thisSkip.length()).trim();
-						match = trackFor(originalName, subStr);
-					}
-				}
-
-				// did it work?
-				if (match == null) {
-					// ok, fallback processing.
-
-					// do we have a track that has come straight from WECDIS?
-					match = existingWECDISTrack(_layers, name);
-				}
-
-				if (match == null) {
-					// ok, if there is just one track present, invite the user to use that
-					final TrackWrapper singleTrack = singleTrackPresent(_layers, name);
-
-					// did we find one?
-					if (singleTrack != null) {
-						// ok, ask the user if he wants to change the subject track to this track's name
-						if (!name.equals(NAME_NOT_PRESENT) && questionHelper != null) {
-
-							final boolean wantsTo = questionHelper.askYes("Change track name",
-									"Host platform not found for narrative entries.\nDo you want to rename track ["
-											+ singleTrack.getName() + "] to [" + name + "]");
-
-							// remember that we've asked about it
-							askedAbout.add(singleTrack.getName() + name);
-
-							if (wantsTo) {
-								singleTrack.setName(name);
-								match = name;
-							}
-						} else {
-							match = singleTrack.getName();
-						}
-					} else {
-						// we can't find a host track.
-
-						// have we already told the user?
-						if (!_declaredNoHostFound) {
-							// ok, stop it appearing again
-							_declaredNoHostFound = true;
-
-							// tell the user
-							MessageProvider.Base.show("Import Narrative",
-									"Narrative entries will be imported, but we won't be creating FCSs "
-											+ "since we couldn't determine the host track for: " + originalName + ".",
-									MessageProvider.WARNING);
-
-						}
-					}
-				}
+				match = trackForUnknownPlatform(originalName, name, platform);
 			}
 		}
 
 		return match;
+	}
+
+	/**
+	 * the platform isn't a layer name. Try the fallback strategies
+	 */
+	private String trackForUnknownPlatform(final String originalName, final String name, final String platform) {
+		// try skipping then names
+		String match = trackWithoutSkipName(originalName, platform);
+
+		// ok, fallback processing.
+		if (match == null) {
+			// do we have a track that has come straight from WECDIS?
+			match = existingWECDISTrack(_layers, name);
+		}
+
+		if (match == null) {
+			// ok, if there is just one track present, invite the user to use that
+			match = trackFromSingleTrack(originalName, name);
+		}
+		return match;
+	}
+
+	/**
+	 * try the platform name without any of the prefixes we can skip
+	 */
+	private String trackWithoutSkipName(final String originalName, final String platform) {
+		String match = null;
+		final Iterator<String> nameIter = SkipNames.iterator();
+		while (nameIter.hasNext() && match == null) {
+			final String thisSkip = nameIter.next();
+			if (platform.startsWith(thisSkip)) {
+				final String subStr = platform.substring(thisSkip.length()).trim();
+				match = trackFor(originalName, subStr);
+			}
+		}
+		return match;
+	}
+
+	/**
+	 * if there is just one track present, use it (asking the user first, if we
+	 * can)
+	 */
+	private String trackFromSingleTrack(final String originalName, final String name) {
+		final TrackWrapper singleTrack = singleTrackPresent(_layers, name);
+
+		// did we find one?
+		if (singleTrack == null) {
+			// we can't find a host track.
+			declareNoHostFound(originalName);
+			return null;
+		}
+
+		if (name.equals(NAME_NOT_PRESENT) || questionHelper == null) {
+			return singleTrack.getName();
+		}
+
+		// ok, ask the user if he wants to change the subject track to this track's name
+		final boolean wantsTo = questionHelper.askYes("Change track name",
+				"Host platform not found for narrative entries.\nDo you want to rename track ["
+						+ singleTrack.getName() + "] to [" + name + "]");
+
+		// remember that we've asked about it
+		askedAbout.add(singleTrack.getName() + name);
+
+		if (wantsTo) {
+			singleTrack.setName(name);
+			return name;
+		}
+		return null;
+	}
+
+	/**
+	 * tell the user we can't find a host track, but only once
+	 */
+	private void declareNoHostFound(final String originalName) {
+		// have we already told the user?
+		if (!_declaredNoHostFound) {
+			// ok, stop it appearing again
+			_declaredNoHostFound = true;
+
+			// tell the user
+			MessageProvider.Base.show("Import Narrative",
+					"Narrative entries will be imported, but we won't be creating FCSs "
+							+ "since we couldn't determine the host track for: " + originalName + ".",
+					MessageProvider.WARNING);
+		}
 	}
 
 }

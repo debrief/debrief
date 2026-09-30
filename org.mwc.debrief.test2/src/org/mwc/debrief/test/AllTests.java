@@ -56,6 +56,7 @@ import org.junit.runners.Suite;
 		MWC.TacticalData.NarrativeWrapper.TestMe.class, Debrief.Wrappers.LabelWrapper.testMe.class,
 		Debrief.Wrappers.SensorContactWrapper.testSensorContact.class, Debrief.Wrappers.SensorWrapper.testSensors.class,
 		Debrief.Wrappers.ShapeWrapper.testMe.class, Debrief.Wrappers.TMAContactWrapper.TestSensorContact.class,
+		Debrief.Wrappers.DynamicTrackShapes.DynamicTrackShapeSetWrapper.testSensors.class,
 		Debrief.Wrappers.TMAWrapper.testSolutions.class, Debrief.Wrappers.TacticalDataWrapper.testMe.class,
 		Debrief.Wrappers.Track.Doublet.testCalc.class, Debrief.Wrappers.Track.TrackSegment.testListMgt.class,
 		Debrief.Wrappers.Track.TrackWrapper_Test.class, Debrief.Wrappers.Track.WormInHoleOffset.testMe.class,
@@ -93,6 +94,7 @@ import org.junit.runners.Suite;
 		MWC.Utilities.ReaderWriter.json.GNDStore.TestDatabase.class,
 		MWC.Utilities.TextFormatting.BriefFormatLocation.FormatLocationTest.class,
 		MWC.Utilities.TextFormatting.DebriefFormatDateTime.DebriefFormatTest.class,
+		MWC.Utilities.ReaderWriter.ClipboardInputFilter.ClipboardInputFilterTest.class,
 		org.mwc.cmap.core.CorePlugin.ClipboardTest.class,
 		org.mwc.cmap.core.DataTypes.TrackData.TrackManager.testTrackManager.class,
 		org.mwc.cmap.core.operations.RightClickCutCopyAdaptor.testCutPaste.class,
@@ -103,6 +105,7 @@ import org.junit.runners.Suite;
 		org.mwc.debrief.core.ContextOperations.GenerateInfillSegment.TestGenInfill.class,
 		org.mwc.debrief.track_shift.ambiguity.AmbiguityResolver.TestResolveAmbig.class,
 		org.mwc.debrief.track_shift.ambiguity.LegOfCuts.TestLegs.class,
+		org.mwc.debrief.track_shift.zig_detector.ownship.alternate.AlternateLegWrapper.TestUnwrap.class,
 		org.mwc.debrief.track_shift.views.BearingResidualsView.TestResiduals.class,
 		org.mwc.debrief.core.ContextOperations.ExportCSVPrefs.CSVExportDropdownRegistry.TestRegistry.class,
 		Debrief.Wrappers.Track.DynamicInfillSegment.TestInterp.class,
@@ -120,6 +123,8 @@ import org.junit.runners.Suite;
 		org.mwc.debrief.core.ContextOperations.ConvertTrackToLightweightTrack.testMe.class,
 		org.mwc.cmap.TimeController.recorders.CoordinateRecorder.CoordinateRecorderTest.class,
 		org.mwc.debrief.core.ContextOperations.SmoothTrackJumps.TestMe.class,
+		org.mwc.debrief.core.ContextOperations.InterpolateTrack.testMe.class,
+		org.mwc.debrief.core.ContextOperations.SplitTracksIntoLegs.TestSplittingTracks.class,
 		Debrief.ReaderWriter.BRT.BRTImporter.BRTImporterTest.class,
 		Debrief.ReaderWriter.FlatFile.OTH_Importer.OTH_ImporterTest.class,
 		MWC.TacticalData.SliderConverter.SliderConverterTest.class,
@@ -136,7 +141,15 @@ import org.junit.runners.Suite;
 		Debrief.ReaderWriter.Nisida.ImportNisidaTest.class,
 		Debrief.ReaderWriter.Antares.ImportAntaresTest.class,
 		Debrief.ReaderWriter.GeoPDF.GenerateGeoJSON.GenerateGeoJSONTest.class,
-		Debrief.ReaderWriter.GeoPDF.AbstractGeoPDFBuilder.GeoPDFBuilderTest.class})
+		Debrief.ReaderWriter.GeoPDF.AbstractGeoPDFBuilder.GeoPDFBuilderTest.class,
+		MWC.Utilities.ReaderWriter.XML.SafeXMLFactory.SafeXMLFactoryTest.class,
+		MWC.Utilities.ReaderWriter.SafeArchive.SafeArchiveTest.class,
+		MWC.Utilities.ReaderWriter.ImportProblems.ImportProblemsTest.class,
+		MWC.Utilities.ReaderWriter.XML.MWCXMLReader.ReadDoubleTest.class,
+		MWC.Utilities.ReaderWriter.XML.Util.ShortLocationHandler.ShortLocationTest.class,
+		Debrief.ReaderWriter.ais.AISParser.AISParserTest.class,
+		Debrief.ReaderWriter.XML.KML.ImportKML.ImportKMLTest.class,
+		org.mwc.debrief.core.loaders.GpxUtil.TestGpxXXE.class})
 @RunWith(Suite.class)
 public class AllTests {
 
