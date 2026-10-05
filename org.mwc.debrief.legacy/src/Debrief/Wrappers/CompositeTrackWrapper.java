@@ -23,10 +23,14 @@ import java.beans.PropertyDescriptor;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Iterator;
+import java.util.Vector;
 
+import Debrief.Wrappers.DynamicTrackShapes.DynamicTrackShapeSetWrapper;
+import Debrief.Wrappers.DynamicTrackShapes.DynamicTrackShapeWrapper;
 import Debrief.Wrappers.Track.PlanningSegment;
 import Debrief.Wrappers.Track.PlanningSegment.ClosingSegment;
 import Debrief.Wrappers.Track.TrackWrapper_Support.SegmentList;
+import MWC.GUI.BaseLayer;
 import MWC.GUI.Editable;
 import MWC.GUI.ExportLayerAsSingleItem;
 import MWC.GUI.FireExtended;
@@ -380,6 +384,10 @@ public class CompositeTrackWrapper extends TrackWrapper
 					thisFix.resetLabelLocation();
 				}
 			}
+		} else if (point instanceof DynamicTrackShapeSetWrapper || point instanceof DynamicTrackShapeWrapper) {
+			// dynamic shapes (e.g. sensor arcs) are positioned against our
+			// generated fixes at paint time, so they follow the legs
+			super.add(point);
 		} else {
 			throw new RuntimeException("You can't add this type to a composite track wrapper");
 		}
@@ -473,10 +481,20 @@ public class CompositeTrackWrapper extends TrackWrapper
 	@Override
 	public Enumeration<Editable> elements() {
 		/**
-		 * just return the track segments, we don't contain any other data...
+		 * return the track segments, plus any dynamic shapes
 		 *
 		 */
-		return _theSegments.elements();
+		final BaseLayer shapes = getDynamicShapes();
+		if (shapes.isEmpty()) {
+			return _theSegments.elements();
+		}
+		final Vector<Editable> res = new Vector<Editable>();
+		final Enumeration<Editable> segs = _theSegments.elements();
+		while (segs.hasMoreElements()) {
+			res.add(segs.nextElement());
+		}
+		res.add(shapes);
+		return res.elements();
 	}
 
 	@Override
@@ -675,6 +693,15 @@ public class CompositeTrackWrapper extends TrackWrapper
 
 	@FireExtended
 	public void setStartDate(final HiResDate startDate) {
+		// move any timed dynamic shapes, so they stay aligned with the plan
+		if (_startDate != null && startDate != null) {
+			final long delta = startDate.getMicros() - _startDate.getMicros();
+			final Enumeration<Editable> iter = getDynamicShapes().elements();
+			while (iter.hasMoreElements()) {
+				((DynamicTrackShapeSetWrapper) iter.nextElement()).shiftTimes(delta);
+			}
+		}
+
 		this._startDate = startDate;
 		recalculate();
 	}

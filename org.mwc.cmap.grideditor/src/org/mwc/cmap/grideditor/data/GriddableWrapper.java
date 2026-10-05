@@ -220,6 +220,11 @@ public class GriddableWrapper implements GriddableSeries {
 				while (enumer.hasMoreElements()) {
 					final Editable ed = enumer.nextElement();
 
+					// skip non-griddable children (e.g. dynamic shapes on a planning track)
+					if (!(ed instanceof TimeStampedDataItem)) {
+						continue;
+					}
+
 					if (_onlyVisItems) {
 						// right, this should be a plottable - just check
 						if (ed instanceof Plottable) {

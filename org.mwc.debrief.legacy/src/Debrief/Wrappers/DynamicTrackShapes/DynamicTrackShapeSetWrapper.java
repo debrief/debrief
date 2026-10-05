@@ -412,6 +412,42 @@ public class DynamicTrackShapeSetWrapper extends BaseLayer implements Cloneable,
 		return getName() + " (" + size() + " items)";
 	}
 
+	/**
+	 * move the start/end times of our shapes by the supplied offset. Shapes with
+	 * no start/end time (whole-track lifetime) are left unchanged.
+	 *
+	 * @param deltaMicros offset to apply (micros)
+	 */
+	public void shiftTimes(final long deltaMicros) {
+		if (deltaMicros == 0) {
+			return;
+		}
+
+		_timePeriod = null;
+
+		// all items move by the same amount, so their relative order is preserved
+		final Enumeration<Editable> it = this.elements();
+		while (it.hasMoreElements()) {
+			final DynamicTrackShapeWrapper thisE = (DynamicTrackShapeWrapper) it.nextElement();
+			final HiResDate start = thisE.getStartDTG();
+			if (start != null) {
+				thisE.setStartDTG(new HiResDate(0, start.getMicros() + deltaMicros));
+			}
+			final HiResDate end = thisE.getEndDTG();
+			if (end != null) {
+				thisE.setEndDTG(new HiResDate(0, end.getMicros() + deltaMicros));
+			}
+
+			// maintain our time period
+			if (_timePeriod == null) {
+				_timePeriod = new TimePeriod.BaseTimePeriod(thisE.getStartDTG(), thisE.getEndDTG());
+			} else {
+				_timePeriod.extend(thisE.getStartDTG());
+				_timePeriod.extend(thisE.getEndDTG());
+			}
+		}
+	}
+
 	public void trimTo(final TimePeriod period) {
 		final java.util.SortedSet<Editable> newList = new java.util.TreeSet<Editable>();
 
