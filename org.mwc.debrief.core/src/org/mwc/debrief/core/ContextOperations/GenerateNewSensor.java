@@ -33,6 +33,7 @@ import org.mwc.cmap.core.operations.CMAPOperation;
 import org.mwc.cmap.core.property_support.RightClickSupport.RightClickContextItemGenerator;
 import org.mwc.debrief.core.wizards.core.NewSensorWizard;
 
+import Debrief.Wrappers.CompositeTrackWrapper;
 import Debrief.Wrappers.SensorWrapper;
 import Debrief.Wrappers.TrackWrapper;
 import Debrief.Wrappers.Track.SplittableLayer;
@@ -113,7 +114,10 @@ public class GenerateNewSensor implements RightClickContextItemGenerator {
 			final Editable thisE = subjects[i];
 
 			// is this one we can watch?
-			if (thisE instanceof TrackWrapper) {
+			if (thisE instanceof CompositeTrackWrapper) {
+				// planning tracks don't hold sensor data
+				continue;
+			} else if (thisE instanceof TrackWrapper) {
 				host = (Layer) thisE;
 			} else if (thisE instanceof SplittableLayer) {
 				final SplittableLayer sl = (SplittableLayer) thisE;

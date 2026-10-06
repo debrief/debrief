@@ -28,12 +28,12 @@ import org.eclipse.jface.wizard.WizardDialog;
 import org.mwc.debrief.core.creators.shapes.CoreInsertSensorArc;
 import org.mwc.debrief.core.wizards.sensorarc.NewSensorArcWizard;
 
-import Debrief.Wrappers.CompositeTrackWrapper;
 import Debrief.Wrappers.TrackWrapper;
 import Debrief.Wrappers.DynamicTrackShapes.DynamicTrackShapeWrapper;
 import MWC.GUI.Editable;
 import MWC.GUI.Layers;
 import MWC.GUI.PlainChart;
+import MWC.GenericData.HiResDate;
 
 /**
  * @author Ayesha<ayesha.ma@gmail.com>
@@ -51,7 +51,7 @@ public class InsertSensorArc extends CoreInsertSensorArc {
 		final Enumeration<Editable> elements = layers.elements();
 		while (elements.hasMoreElements()) {
 			final Editable elem = elements.nextElement();
-			if (elem instanceof TrackWrapper && !(elem instanceof CompositeTrackWrapper)) {
+			if (elem instanceof TrackWrapper) {
 				trackNames.add(elem.getName());
 				proceed = true;
 			}
@@ -76,13 +76,16 @@ public class InsertSensorArc extends CoreInsertSensorArc {
 		while (elements.hasMoreElements()) {
 			TrackWrapper theTrack = null;
 			final Editable elem = elements.nextElement();
-			if (elem instanceof TrackWrapper && !(elem instanceof CompositeTrackWrapper)) {
+			if (elem instanceof TrackWrapper) {
 				theTrack = (TrackWrapper) elem;
-				if (startDate == null || theTrack.getStartDTG().getDate().before(startDate)) {
-					startDate = theTrack.getStartDTG().getDate();
+				// planning tracks may not have any legs yet
+				final HiResDate trackStart = theTrack.getStartDTG();
+				final HiResDate trackEnd = theTrack.getEndDTG();
+				if (trackStart != null && (startDate == null || trackStart.getDate().before(startDate))) {
+					startDate = trackStart.getDate();
 				}
-				if (endDate == null || theTrack.getEndDTG().getDate().after(endDate)) {
-					endDate = theTrack.getEndDTG().getDate();
+				if (trackEnd != null && (endDate == null || trackEnd.getDate().after(endDate))) {
+					endDate = trackEnd.getDate();
 				}
 				tracks.put(elem.getName(), theTrack);
 			}
