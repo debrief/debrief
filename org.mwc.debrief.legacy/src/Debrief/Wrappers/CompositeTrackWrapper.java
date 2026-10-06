@@ -659,6 +659,11 @@ public class CompositeTrackWrapper extends TrackWrapper
 				thisDate = seg.endDTG();
 			}
 		}
+
+		// the fixes have been regenerated, so drop any cached lookups of the old
+		// ones (dynamic shapes and the time marker are positioned from them)
+		flushPeriodCache();
+		flushPositionCache();
 	}
 
 	@Override

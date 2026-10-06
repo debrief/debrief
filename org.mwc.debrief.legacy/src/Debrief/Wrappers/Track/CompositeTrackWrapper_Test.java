@@ -159,6 +159,36 @@ public class CompositeTrackWrapper_Test extends TestCase {
 		assertEquals("host still the planning track", track, getSet(track, "fwd").getHost());
 	}
 
+	public void testNoStaleFixAfterRecalculate() {
+		final CompositeTrackWrapper track = createPlan();
+		track.add(createArc("fwd", null, null));
+
+		// look up a time on the closing leg, so the track caches that fix
+		final HiResDate inClosing = new HiResDate(START + 25 * ONE_MIN);
+		final Watchable before = track.getNearestTo(inClosing)[0];
+
+		// edit the first leg, as the Properties view does - the leg asks the track
+		// to recalculate, so every later fix gets regenerated
+		final PlanningSegment leg1 = (PlanningSegment) track.getSegments().first();
+		leg1.setCourse(180);
+
+		// the same time must now resolve against the new fixes, not the cached one
+		final Watchable after = track.getNearestTo(inClosing)[0];
+		assertNotSame("not the stale fix", before, after);
+		assertFalse("position moved with the plan", before.getLocation().equals(after.getLocation()));
+		assertTrue("resolves to a fix in the regenerated closing leg", containsFix(track.getSegments().last(), after));
+	}
+
+	private static boolean containsFix(final Editable seg, final Watchable fix) {
+		final Enumeration<Editable> iter = ((TrackSegment) seg).elements();
+		while (iter.hasMoreElements()) {
+			if (iter.nextElement() == fix) {
+				return true;
+			}
+		}
+		return false;
+	}
+
 	public void testShiftStartTime() {
 		final CompositeTrackWrapper track = createPlan();
 		track.add(createArc("timed", new HiResDate(START + ONE_MIN), new HiResDate(START + 5 * ONE_MIN)));

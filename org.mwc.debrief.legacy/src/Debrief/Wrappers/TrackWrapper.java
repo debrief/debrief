@@ -1748,6 +1748,8 @@ public class TrackWrapper extends LightweightTrackWrapper implements WatchableLi
 	 *
 	 */
 	public void flushPositionCache() {
+		_lastFix = null;
+		_lastPosIterator = null;
 	}
 
 	/**
