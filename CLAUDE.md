@@ -90,7 +90,6 @@ mvn test -pl org.mwc.debrief.test2
 Unit tests use JUnit and are organized in test suites:
 - **Main test suite**: `org.mwc.debrief.test2/src/org/mwc/debrief/test/AllTests.java`
 - **Asset tests**: `org.mwc.asset.test/src/org/mwc/asset/test/AllTests.java`
-- **Lite tests**: `org.mwc.debrief.lite/src/test/java/org/mwc/debrief/lite/tests/AllTests.java`
 
 Tests run via Tycho Surefire with UI harness. Test classes follow pattern `**/AllTests.class` or `**/*TestSuite*.class`.
 
