@@ -146,8 +146,8 @@ is local git.
 Poll the tag's workflow run. When it finishes, `mcp__github__get_release_by_tag`
 and confirm:
 
-- all seven assets are attached: `DebriefNG-{Linux64Bit,MacOSX64Bit,Windows64Bit}.zip`,
-  `P2_Repository.zip`, `DebriefLegacy*.jar`, `debrief-lite*.zip` and
+- all six assets are attached: `DebriefNG-{Linux64Bit,MacOSX64Bit,Windows64Bit}.zip`,
+  `P2_Repository.zip`, `DebriefLegacy*.jar` and
   `DebriefNG-Windows64Bit.msi`. There is no 32-bit build for any platform: the
   root `pom.xml` lists only x86_64 environments (its one 32-bit entry,
   linux/gtk/x86, is commented out).
