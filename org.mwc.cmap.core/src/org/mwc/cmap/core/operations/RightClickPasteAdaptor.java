@@ -16,6 +16,7 @@
 package org.mwc.cmap.core.operations;
 
 import java.awt.Color;
+import java.util.ArrayList;
 import java.util.Enumeration;
 
 import org.eclipse.core.commands.ExecutionException;
@@ -23,6 +24,7 @@ import org.eclipse.core.commands.operations.AbstractOperation;
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
@@ -34,8 +36,12 @@ import org.eclipse.ui.actions.ActionFactory;
 import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.operations.RightClickCutCopyAdaptor.EditableTransfer;
 
+import Debrief.Wrappers.DynamicShapeWrapper;
 import Debrief.Wrappers.LabelWrapper;
+import Debrief.Wrappers.TrackWrapper;
+import Debrief.Wrappers.DynamicTrackShapes.DynamicTrackCoverageWrapper;
 import Debrief.Wrappers.DynamicTrackShapes.DynamicTrackShapeSetWrapper;
+import Debrief.Wrappers.DynamicTrackShapes.DynamicTrackShapeWrapper.DynamicShape;
 import MWC.GUI.BaseLayer;
 import MWC.GUI.CanEnumerate;
 import MWC.GUI.DynamicLayer;
@@ -45,7 +51,11 @@ import MWC.GUI.HasEditables;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
 import MWC.GUI.Renamable;
+import MWC.GUI.Shapes.CircleShape;
+import MWC.GUI.Shapes.RectangleShape;
+import MWC.GUI.Tools.Operations.RightClickPasteAdaptor.CannotBePastedIntoLayer;
 import MWC.GUI.Tools.Operations.RightClickPasteAdaptor.NeedsTidyingOnPaste;
+import MWC.GenericData.HiResDate;
 import MWC.GenericData.WorldLocation;
 import junit.framework.TestCase;
 
@@ -140,8 +150,7 @@ public class RightClickPasteAdaptor {
 	}
 
 	public static class PasteLayer extends PasteItem {
-		public PasteLayer(final Editable[] items, final Clipboard clipboard, final Layer theDestination,
-				final Layers theLayers) {
+		public PasteLayer(final Editable[] items, final Layer theDestination, final Layers theLayers) {
 			super(items, theDestination, theLayers);
 		}
 
@@ -242,10 +251,9 @@ public class RightClickPasteAdaptor {
 			final BaseLayer layer3 = new BaseLayer();
 			layer3.setName("name");
 			final Editable[] items = new Editable[] { layer1, layer2, layer3 };
-			final Clipboard clipboard = null;
 			final Layer destination = null;
 
-			final PasteItem action = createAction(destination, layers, clipboard, items);
+			final PasteItem action = createAction(destination, layers, items);
 
 			assertEquals("Check empty", 0, layers.size());
 
@@ -263,10 +271,9 @@ public class RightClickPasteAdaptor {
 			final BaseLayer layer3 = new BaseLayer();
 			layer3.setName("name");
 			final Editable[] items = new Editable[] { layer1, layer2, layer3 };
-			final Clipboard clipboard = null;
 			final DynamicLayer destination = new DynamicLayer();
 
-			final PasteItem action = createAction(destination, layers, clipboard, items);
+			final PasteItem action = createAction(destination, layers, items);
 
 			assertNull("failed to create action", action);
 		}
@@ -276,9 +283,8 @@ public class RightClickPasteAdaptor {
 			final DynamicTrackShapeSetWrapper layer1 = new DynamicTrackShapeSetWrapper("title");
 			layer1.setName("name");
 			final Editable[] items = new Editable[] { layer1 };
-			final Clipboard clipboard = null;
 			final DynamicLayer destination = new DynamicLayer();
-			final PasteItem action = createAction(destination, layers, clipboard, items);
+			final PasteItem action = createAction(destination, layers, items);
 			assertNull("failed to create action", action);
 		}
 
@@ -317,9 +323,8 @@ public class RightClickPasteAdaptor {
 			final BaseLayer layer3 = new BaseLayer();
 			layer3.setName("name");
 			final Editable[] items = new Editable[] { layer1, layer2, layer3 };
-			final Clipboard clipboard = null;
 			final Layer destination = null;
-			final PasteItem paste = new PasteLayer(items, clipboard, destination, layers);
+			final PasteItem paste = new PasteLayer(items, destination, layers);
 
 			assertEquals("starts empty", 0, layers.size());
 
@@ -336,6 +341,86 @@ public class RightClickPasteAdaptor {
 			assertEquals("was renamed", "Copy of name", i2.getName());
 			assertEquals("was renamed", "name", i1.getName());
 		}
+		public void testPasteTrackToLayer() {
+			final Layers layers = new Layers();
+			final BaseLayer destination = new BaseLayer();
+			destination.setName("name");
+			final TrackWrapper track = new TrackWrapper();
+			track.setName("track");
+			final Editable[] items = new Editable[] { track};
+			final PasteItem action = createAction(destination, layers, items);
+			assertNull("failed to create action", action);
+			
+			
+		}
+		public void testPasteSensorArcToTrack() {
+			final Layers layers = new Layers();
+			final BaseLayer destination = new BaseLayer();
+			destination.setName("dest");
+			HiResDate startDTG = new HiResDate(System.currentTimeMillis()-60*60*1000);
+			HiResDate endDTG = new HiResDate(System.currentTimeMillis());
+			DynamicTrackCoverageWrapper sensorArc = new DynamicTrackCoverageWrapper("track1", startDTG, endDTG,
+					new ArrayList<DynamicShape>(), Color.blue, 2, "coverage");
+			DynamicTrackShapeSetWrapper sa = new DynamicTrackShapeSetWrapper("dynamicarc");
+			sa.add(sensorArc);
+			final Editable[] items = new Editable[] {sa};
+			final PasteItem action = createAction(destination, layers, items);
+			assertNull("failed to create action", action);
+		}
+		
+		public void testDynamicShapeToLayers() {
+			final Layers layers = new Layers();
+			final BaseLayer destination = new BaseLayer();
+			destination.setName("dest");
+			layers.addThisLayer(destination);
+			
+			HiResDate startDTG = new HiResDate(System.currentTimeMillis()-60*60*1000);
+			{
+				DynamicShapeWrapper dynCircle = new DynamicShapeWrapper("circle1",new CircleShape(new WorldLocation(0,2,2),5.0),Color.blue, startDTG, "coverage");
+
+				final Editable[] items = new Editable[] {dynCircle};
+				final PasteItem action = createAction(destination, layers, items);
+				assertTrue("layers has one layer",layers.size()==1);
+				action.run();
+				assertTrue("paste failed",destination.size()==1);
+			}
+			{
+				DynamicShapeWrapper dynRectangle = new DynamicShapeWrapper("rect1",new RectangleShape(new WorldLocation(0,2,2),new WorldLocation(2,2,2)),Color.blue, startDTG, "coverage");
+				final Editable[] items = new Editable[] {dynRectangle};
+				final PasteItem action = createAction(destination, layers, items);
+				assertTrue("initial size failed",layers.size()==1);
+				action.run();
+				assertTrue("paste successful",destination.size()==2);
+			}
+
+			
+		}
+		
+//		public void testDynamicShapeToTrack() {
+//			final Layers layers = new Layers();
+//			final TrackWrapper track = new TrackWrapper();
+//			track.setName("dest");
+//			layers.addThisLayer(track);
+//			HiResDate startDTG = new HiResDate(System.currentTimeMillis()-60*60*1000);
+//			{
+//				DynamicShapeWrapper dynCircle = new DynamicShapeWrapper("circle1",new CircleShape(new WorldLocation(0,2,2),5.0),Color.blue, startDTG, "coverage");
+//
+//				final Editable[] items = new Editable[] {dynCircle};
+//				final PasteItem action = createAction(track, layers, items);
+//				//assertNull("paste dynamic circle to track",action);
+//				action.run();
+//				assertFalse(track.elements().hasMoreElements());
+//				
+//			}
+//			{
+//				DynamicShapeWrapper dynRectangle = new DynamicShapeWrapper("rect1",new RectangleShape(new WorldLocation(0,2,2),new WorldLocation(2,2,2)),Color.blue, startDTG, "coverage");
+//				final Editable[] items = new Editable[] {dynRectangle};
+//				final PasteItem action = createAction(track, layers, items);
+//				action.run();
+//				assertFalse(track.elements().hasMoreElements());
+//			}
+//		}
+		
 	}
 
 	private static final String DUPLICATE_PREFIX = "Copy of ";
@@ -359,13 +444,21 @@ public class RightClickPasteAdaptor {
 		return false;
 	}
 
-	public static PasteItem createAction(final Editable destination, final Layers theLayers, final Clipboard _clipboard,
-			final Editable[] theDataList) {
-		PasteItem paster = null;
+	/**
+	 * create action to paste item(s) into target
+	 * 
+	 * @param destination       where it's to be pasted into
+	 * @param theLayers         top level layers object (required for refresh)
+	 * @param clipboardContents
+	 * @return action, or null if paste not possible
+	 */
+	public static PasteItem createAction(final Editable destination, final Layers theLayers,
+			final Editable[] clipboardContents) {
+		final PasteItem paster;
 		// see if all of the selected items are layers - or not
 		boolean allLayers = true;
-		for (int i = 0; i < theDataList.length; i++) {
-			final Editable editable = theDataList[i];
+		for (int i = 0; i < clipboardContents.length; i++) {
+			final Editable editable = clipboardContents[i];
 			if (!(editable instanceof Layer)) {
 				allLayers = false;
 				continue;
@@ -374,31 +467,43 @@ public class RightClickPasteAdaptor {
 			// just check that it we're not trying to drop a layer onto a layer
 			if ((editable instanceof BaseLayer) && (destination instanceof BaseLayer)) {
 				// nope, we don't allow a baselayer to be dropped onto a baselayer
-				return paster;
+				return null;
 			}
-
+			if ((destination != null) && (destination instanceof BaseLayer)
+					&& (editable instanceof CannotBePastedIntoLayer)) {
+				// nope, we don't allow a this type of object to be dropped onto a baselayer
+				return null;
+			}
 		}
 
 		// so, are we just dealing with layers?
 		if (allLayers) {
-			// create the menu items
-			paster = new PasteLayer(theDataList, _clipboard, (Layer) destination, theLayers);
+			// create the menu items.
+			// Note: destination can be null,if we're pasting to top level
+			paster = new PasteLayer(clipboardContents, (Layer) destination, theLayers);
 		} else {
 			// just check that there isn't a null destination
-			if (destination != null) {
-				// just check that the layers are compliant (that we're not trying to paste a
-				// dynamic
-				// plottable
-				// into a non-compliant layer
-				if (!(destination instanceof DynamicLayer) || theDataList[0] instanceof DynamicPlottable) {
-					// create the menu items
-					paster = new PasteItem(theDataList, (Layer) destination, theLayers);
-
-					// formatting
-					paster.setImageDescriptor(PlatformUI.getWorkbench().getSharedImages()
-							.getImageDescriptor(ISharedImages.IMG_TOOL_PASTE));
-					paster.setActionDefinitionId(ActionFactory.PASTE.getCommandId());
-				}
+			final boolean hasDest = destination != null;
+			
+			final boolean contentsSensor = clipboardContents[0] instanceof DynamicPlottable;
+			//final boolean contentsDynamicShape = clipboardContents[0] instanceof DynamicShapeWrapper;
+			final boolean destinationDynamic = destination instanceof DynamicLayer;
+			// just check that the layers are compliant (that we're not trying to paste a
+			// dynamic plottable into a non-compliant layer)
+			if (hasDest && (!contentsSensor || destinationDynamic)) {
+				// create the menu items
+				paster = new PasteItem(clipboardContents, (Layer) destination, theLayers);
+			}
+			else {
+				return null;
+			}
+		}
+		if(Platform.isRunning()) {
+			if (paster != null) {
+				// format the action
+				paster.setImageDescriptor(
+						PlatformUI.getWorkbench().getSharedImages().getImageDescriptor(ISharedImages.IMG_TOOL_PASTE));
+				paster.setActionDefinitionId(ActionFactory.PASTE.getCommandId());
 			}
 		}
 		return paster;
@@ -426,7 +531,7 @@ public class RightClickPasteAdaptor {
 					// extract the plottable
 					PasteItem paster = null;
 
-					paster = createAction(destination, theLayers, _clipboard, tr);
+					paster = createAction(destination, theLayers, tr);
 
 					// did we find one?
 					if (paster != null) {
