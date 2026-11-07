@@ -45,7 +45,7 @@ flowchart TD
 
 ## Project Overview
 
-Debrief is an Eclipse RCP (Rich Client Platform) maritime analysis application. Built with Tycho/Maven for building Eclipse plugins and features. Builds on JDK 17; plugins compile for Java 11 (`--release 11`), which is still the runtime.
+Debrief is an Eclipse RCP (Rich Client Platform) maritime analysis application. Built with Tycho/Maven for building Eclipse plugins and features. Builds on JDK 21 with Tycho 5; plugins compile for Java 11 (`--release 11`), which is still the runtime.
 
 ### Two-Layer Architecture
 
@@ -87,7 +87,7 @@ mvn test -pl org.mwc.debrief.test2
 
 Keep library jars named on a plugin's `Bundle-ClassPath` at the bundle root, not in a subfolder such as `libs/`. Tycho turns each one into a dependency whose classifier is its path, and Maven 3.10 rejects a classifier containing `/` (`Invalid Collect Request: null`).
 
-Build with **JDK 17**. Tycho 2.7 refuses to start on JDK 21 (`Unknown OSGi execution environment: 'JavaSE-21'`); JDK 21 comes with the Tycho 5 upgrade (debrief/debrief#5262). Tycho compiles with `<release>11</release>` and the Ant `<javac>` tasks set `release="11"`, so output still runs on Java 11.
+Build with **JDK 21** and **Maven 3.9 or later**: Tycho 5 needs both. Tycho compiles with `<release>11</release>` and the Ant `<javac>` tasks set `release="11"`, so output still runs on Java 11 until the runtime moves to 21 (debrief/debrief#5262).
 
 ## Test Architecture
 
