@@ -14,7 +14,7 @@
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
  -->
 
-<toc label="Debrief Data Model" link_to="../org.eclipse.ease.help/help/main.xml#reference" topic="javadoc/index.html">
+<toc label="Debrief Data Model" topic="javadoc/index.html">
    <topic href="javadoc/index.html" label="Debrief object model">
    </topic>
 </toc>
