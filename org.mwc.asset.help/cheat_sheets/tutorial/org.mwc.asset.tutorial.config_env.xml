@@ -34,7 +34,7 @@
       </description>
       <command
             required="false"
-            serialization="org.eclipse.ui.views.showView(org.eclipse.ui.views.showView.viewId=org.eclipse.ui.views.ResourceNavigator)"/>
+            serialization="org.eclipse.ui.views.showView(org.eclipse.ui.views.showView.viewId=org.eclipse.ui.navigator.ProjectExplorer)"/>
    </item>
    <item
          title="Check you have a project">

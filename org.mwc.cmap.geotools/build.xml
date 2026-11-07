@@ -88,7 +88,7 @@
 			<fileset dir="." includes="*.jar"/>
 		</path>
 		<!-- compile the source code -->
-		<javac release="11" destdir="${build.result.folder}/@dot" failonerror="true" includeAntRuntime="no"
+		<javac release="21" destdir="${build.result.folder}/@dot" failonerror="true" includeAntRuntime="no"
 			verbose="${javacVerbose}" >
 			<classpath refid="@dot.classpath" />
 			<src path="src/"			/>

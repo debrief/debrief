@@ -442,7 +442,7 @@ Library.
 
    <plugin
          id="org.objectweb.asm"
-         version="5.0.1.v201404251740"/>
+         version="0.0.0"/>
 
    <plugin
          id="org.eclipse.jdt.launching"

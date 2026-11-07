@@ -165,15 +165,15 @@ jobs:
             const rows = [
               row('DebriefNG-Windows-x64', {
                 platform: 'Windows x64',
-                note: 'Java 11 bundled — unzip and run `DebriefNG.exe`',
+                note: 'Java 21 bundled — unzip and run `DebriefNG.exe`',
               }),
               row('DebriefNG-macOS-x64', {
                 platform: 'macOS x64',
-                note: '**Requires Java 11 on the PATH**; Intel build, runs under Rosetta 2',
+                note: '**Requires Java 21 on the PATH**; Intel build, runs under Rosetta 2',
               }),
               row('DebriefNG-Linux-x64', {
                 platform: 'Linux x64',
-                note: '**Requires Java 11 on the PATH**',
+                note: '**Requires Java 21 on the PATH**',
               }),
             ].filter(Boolean);
 

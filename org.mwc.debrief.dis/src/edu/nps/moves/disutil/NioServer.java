@@ -4,13 +4,11 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.io.IOException;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.net.DatagramSocketImpl;
 import java.net.InetSocketAddress;
 import java.net.NetworkInterface;
 import java.net.SocketAddress;
+import java.net.SocketException;
 import java.nio.ByteBuffer;
 import java.nio.channels.DatagramChannel;
 import java.nio.channels.SelectableChannel;
@@ -19,6 +17,7 @@ import java.nio.channels.Selector;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -1278,36 +1277,13 @@ public class NioServer {
 							final InetSocketAddress groupAddr = new InetSocketAddress(group, port);
 							if (groupAddr.getAddress().isMulticastAddress()) {
 
-								// http://www.mernst.org/blog/archives/12-01-2006_12-31-2006.html
-								// UGLY UGLY HACK: multicast support for NIO
-								// create a temporary instanceof PlainDatagramSocket, set its fd and configure
-								// it
-								@SuppressWarnings("unchecked")
-								final Constructor<? extends DatagramSocketImpl> c = (Constructor<? extends DatagramSocketImpl>) Class
-										.forName("java.net.PlainDatagramSocketImpl").getDeclaredConstructor();
-								c.setAccessible(true);
-								final DatagramSocketImpl socketImpl = c.newInstance();
-
-								final Field channelFd = Class.forName("sun.nio.ch.DatagramChannelImpl")
-										.getDeclaredField("fd");
-								channelFd.setAccessible(true);
-
-								final Field socketFd = DatagramSocketImpl.class.getDeclaredField("fd");
-								socketFd.setAccessible(true);
-								socketFd.set(socketImpl, channelFd.get(dc));
-
-								try {
-									final Method m = DatagramSocketImpl.class.getDeclaredMethod("joinGroup",
-											SocketAddress.class, NetworkInterface.class);
-									// Method m = DatagramSocketImpl.class.getDeclaredMethod("joinGroup",
-									// InetAddress.class );
-									m.setAccessible(true);
-									m.invoke(socketImpl, groupAddr, null);
-								} catch (final Exception e) {
-									e.printStackTrace();
-								} finally {
-									// important, otherwise the fake socket's finalizer will nuke the fd
-									socketFd.set(socketImpl, null);
+								// Join through the channel (Java 7+). This replaces a reflective hack on
+								// java.net.PlainDatagramSocketImpl, which JDK 15 removed.
+								final NetworkInterface ni = multicastInterface();
+								if (ni == null) {
+									LOGGER.warning("No multicast-capable network interface to join " + group);
+								} else {
+									dc.join(groupAddr.getAddress(), ni);
 								}
 
 							} // end if: multicast
@@ -1654,4 +1630,23 @@ public class NioServer {
 		} // end if: already STARTED
 	} // end stop
 
+
+	/**
+	 * @return the first network interface that is up and supports multicast,
+	 *         preferring one that is not loopback; or null if there is none
+	 */
+	private static NetworkInterface multicastInterface() throws SocketException {
+		NetworkInterface loopback = null;
+		for (final NetworkInterface ni : Collections.list(NetworkInterface.getNetworkInterfaces())) {
+			if (ni.isUp() && ni.supportsMulticast()) {
+				if (!ni.isLoopback()) {
+					return ni;
+				}
+				if (loopback == null) {
+					loopback = ni;
+				}
+			}
+		}
+		return loopback;
+	}
 } // end class NioServer

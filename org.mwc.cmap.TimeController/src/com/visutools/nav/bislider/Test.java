@@ -172,7 +172,7 @@ public class Test {
 						} catch (final InterruptedException InterruptedException_Arg) {
 						}
 						BiSlider2.repaint();
-						yield();
+						Thread.yield();
 					}
 					while (LineX > 0) {
 						LineX -= 0.01f;
@@ -181,7 +181,7 @@ public class Test {
 						} catch (final InterruptedException InterruptedException_Arg) {
 						}
 						BiSlider2.repaint();
-						yield();
+						Thread.yield();
 					}
 				}
 			}

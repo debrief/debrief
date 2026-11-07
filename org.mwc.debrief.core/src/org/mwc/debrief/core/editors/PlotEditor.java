@@ -57,7 +57,6 @@ import org.eclipse.core.commands.operations.IUndoableOperation;
 import org.eclipse.core.filesystem.EFS;
 import org.eclipse.core.filesystem.IFileStore;
 import org.eclipse.core.internal.resources.ResourceException;
-import org.eclipse.core.internal.utils.FileUtil;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFileState;
 import org.eclipse.core.resources.IMarker;
@@ -106,7 +105,6 @@ import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.IFileEditorInput;
 import org.eclipse.ui.IPersistableElement;
 import org.eclipse.ui.IPropertyListener;
-import org.eclipse.ui.IViewPart;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
@@ -120,7 +118,6 @@ import org.eclipse.ui.ide.IGotoMarker;
 import org.eclipse.ui.part.FileEditorInput;
 import org.eclipse.ui.progress.WorkbenchJob;
 import org.eclipse.ui.views.contentoutline.IContentOutlinePage;
-import org.eclipse.ui.views.navigator.ResourceNavigator;
 import org.eclipse.ui.views.properties.IPropertySheetPage;
 import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.DataTypes.Temporal.TimeControlProperties;
@@ -1079,12 +1076,8 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor {
 
 								final IFile file = ((IFileEditorInput) getEditorInput()).getFile();
 
-								InputStream source = null;
-								try {
-									source = new FileInputStream(tmpFile);
+								try (InputStream source = new FileInputStream(tmpFile)) {
 									file.setContents(source, true, true, monitor);
-								} finally {
-									FileUtil.safeClose(source);
 								}
 							} else if (input instanceof FileRevisionEditorInput) {
 								CorePlugin.logError(IStatus.INFO, "Performing FileRevisionEditorInput save", null);
@@ -1092,14 +1085,10 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor {
 								final FileRevisionEditorInput frei = (FileRevisionEditorInput) input;
 								final IFile file = getFile(frei);
 
-								InputStream source = null;
-								try {
-									source = new FileInputStream(tmpFile);
+								try (InputStream source = new FileInputStream(tmpFile)) {
 									file.setContents(source, true, true, monitor);
 									final FileEditorInput newInput = new FileEditorInput(file);
 									setInputWithNotify(newInput);
-								} finally {
-									FileUtil.safeClose(source);
 								}
 							} else if (input instanceof FileStoreEditorInput) {
 
@@ -1112,15 +1101,9 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor {
 
 								// create pointers to the existing file, and the backup file
 								final IFileStore existingFile = EFS.getLocalFileSystem().getStore(_p);
-								OutputStream out = null;
-								InputStream source = null;
-								try {
-									out = existingFile.openOutputStream(EFS.OVERWRITE, monitor);
-									source = new FileInputStream(tmpFile);
-									FileUtil.transferStreams(source, out, existingFile.toString(), monitor);
-								} finally {
-									FileUtil.safeClose(source);
-									FileUtil.safeClose(out);
+								try (OutputStream out = existingFile.openOutputStream(EFS.OVERWRITE, monitor);
+										InputStream source = new FileInputStream(tmpFile)) {
+									source.transferTo(out);
 								}
 							}
 						}
@@ -1250,12 +1233,7 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor {
 				// lastly, trigger a navigator refresh
 				final IFile iff = newInput.getFile();
 				iff.refreshLocal(IResource.DEPTH_ONE, null);
-				// refresh navigator
-				final IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
-				final IViewPart view = page.findView("org.eclipse.ui.views.ResourceNavigator");
-				if (view instanceof ResourceNavigator) {
-					((ResourceNavigator) view).getViewer().refresh(iff);
-				}
+				// (refreshLocal() is enough: the Project Explorer follows resource changes)
 
 				// ok, lastly indicate that the save worked
 				_plotIsDirty = false;

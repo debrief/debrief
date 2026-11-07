@@ -30,7 +30,7 @@
 			the installation directory of this fresh one.
 		</description>
 		<command required="false"
-			serialization="org.eclipse.ui.views.showView(org.eclipse.ui.views.showView.viewId=org.eclipse.ui.views.ResourceNavigator)" />
+			serialization="org.eclipse.ui.views.showView(org.eclipse.ui.views.showView.viewId=org.eclipse.ui.navigator.ProjectExplorer)" />
 	</item>
 	<item title="View sample data">
 		<description>In the Navigator, expand the folder that contains your

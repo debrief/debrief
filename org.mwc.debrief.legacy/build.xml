@@ -70,7 +70,7 @@
 			<fileset dir="libs" includes="*.jar"></fileset>
 		</path>
 		<!-- compile the source code -->
-		<javac release="11" destdir="${temp.folder}/debrief_legacy.jar.bin" failonerror="true">
+		<javac release="21" destdir="${temp.folder}/debrief_legacy.jar.bin" failonerror="true">
 			<classpath refid="debrief_legacy.jar.classpath" />
 			<src path="src/"			/>
 		</javac>
