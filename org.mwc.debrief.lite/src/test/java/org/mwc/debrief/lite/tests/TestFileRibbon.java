@@ -310,6 +310,9 @@ public class TestFileRibbon extends BaseTestCase
         {
           robot = new Robot();
           robot.keyPress(KeyEvent.VK_ENTER);
+          // release it too: a key left pressed stays down on the display and
+          // silently confirms the dialogs of the tests that follow
+          robot.keyRelease(KeyEvent.VK_ENTER);
         }
         catch (final AWTException e)
         {
@@ -527,6 +530,9 @@ public class TestFileRibbon extends BaseTestCase
           robot = new Robot();
           robot.delay(200);
           robot.keyPress(KeyEvent.VK_ENTER);
+          // release it too: a key left pressed stays down on the display and
+          // silently confirms the dialogs of the tests that follow
+          robot.keyRelease(KeyEvent.VK_ENTER);
         }
         catch (final AWTException e)
         {
@@ -674,6 +680,9 @@ public class TestFileRibbon extends BaseTestCase
           robot = new Robot();
           robot.delay(400);
           robot.keyPress(KeyEvent.VK_ENTER);
+          // release it too: a key left pressed stays down on the display and
+          // silently confirms the dialogs of the tests that follow
+          robot.keyRelease(KeyEvent.VK_ENTER);
         }
         catch (final AWTException e)
         {
