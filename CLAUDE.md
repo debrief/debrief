@@ -85,6 +85,8 @@ mvn clean install -pl org.mwc.debrief.core
 mvn test -pl org.mwc.debrief.test2
 ```
 
+`.mvn/maven.config` sets `-Dmaven.resolver.validation=MILD`. Maven 3.10 otherwise rejects the jars nested in plugins (Tycho passes their `libs/...` paths as dependency classifiers), and the build fails with `Invalid Collect Request: null`.
+
 ## Test Architecture
 
 Unit tests use JUnit and are organized in test suites:
