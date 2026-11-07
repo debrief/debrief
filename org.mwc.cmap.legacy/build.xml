@@ -59,7 +59,7 @@
 			<fileset dir="libs" includes="*.jar"></fileset>
 		</path>
 		<!-- compile the source code -->
-		<javac destdir="${temp.folder}/cmap_legacy.jar.bin" 
+		<javac release="11" destdir="${temp.folder}/cmap_legacy.jar.bin" 
 			failonerror="true"  includeAntRuntime="no" >
 			<classpath refid="cmap_legacy.jar.classpath" />
 			<src path="src/"			/>

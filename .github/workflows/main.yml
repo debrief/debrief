@@ -118,7 +118,9 @@ jobs:
         uses: actions/setup-java@v4
         with:
           distribution: temurin
-          java-version: '11'
+          # Build JDK only: plugins still compile for Java 11 (--release 11).
+          # Tycho 2.7 cannot run on JDK 21 - see debrief/debrief#5262.
+          java-version: '17'
 
       # Tycho otherwise re-resolves the whole Eclipse target platform from
       # remote P2 sites on every run. Restore only: Actions caches are
