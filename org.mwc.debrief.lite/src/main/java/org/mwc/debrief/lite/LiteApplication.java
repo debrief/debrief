@@ -26,7 +26,7 @@ import Debrief.ReaderWriter.Replay.ImportReplay;
 import Debrief.ReaderWriter.Replay.ImportReplay.ProvidesModeSelector;
 import MWC.GUI.Tool;
 
-class LiteApplication extends Application implements ProvidesModeSelector {
+public class LiteApplication extends Application implements ProvidesModeSelector {
 
 	/**
 	 * store preferences for import mode, and import frequency
@@ -99,12 +99,17 @@ class LiteApplication extends Application implements ProvidesModeSelector {
 
 	@Override
 	public void restoreCursor() {
-		_theFrame.getContentPane().setCursor(null);
+		// no frame when running headless (tests): nothing to restore
+		if (_theFrame != null) {
+			_theFrame.getContentPane().setCursor(null);
+		}
 	}
 
 	@Override
 	public void setCursor(final int theCursor) {
-		_theFrame.getContentPane().setCursor(new Cursor(theCursor));
+		if (_theFrame != null) {
+			_theFrame.getContentPane().setCursor(new Cursor(theCursor));
+		}
 	}
 
 	public void setFrame(final JFrame theFrame) {

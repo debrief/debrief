@@ -94,7 +94,8 @@ Build with **JDK 21** and **Maven 3.9 or later**: Tycho 5 needs both. Bundles de
 Unit tests use JUnit and are organized in test suites:
 - **Main test suite**: `org.mwc.debrief.test2/src/org/mwc/debrief/test/AllTests.java`
 - **Asset tests**: `org.mwc.asset.test/src/org/mwc/asset/test/AllTests.java`
-- **Lite UI tests**: Swing tests in `org.mwc.debrief.lite/src/test/java`, run by Ant's `<junit>` only with `-DliteUiTests=true` (CI's separate `lite-ui-tests` job does this under xvfb). The main build just produces `org.mwc.debrief.lite/dist/debrief-lite-<version>.zip`.
+- **Lite headless tests**: `org.mwc.debrief.lite/src/test/java/org/mwc/debrief/lite/headless/`, run by Ant's `<junit>` in every build (skipped with `-DskipTests`) with `java.awt.headless=true`: file round-trips, time stepping and the tote, plot state, shape insertion with undo/redo. They drive Lite's own non-UI code (`org.mwc.debrief.lite.util.PlotFiles`, `PlotState`, `LiteTote`, `LiteStepControl`, the shape actions).
+- **Lite UI tests**: Swing tests in `org.mwc.debrief.lite/src/test/java/org/mwc/debrief/lite/tests/`, run by Ant's `<junit>` only with `-DliteUiTests=true` (CI's separate `lite-ui-tests` job does this under xvfb). The main build also produces `org.mwc.debrief.lite/dist/debrief-lite-<version>.zip`.
 
 Tests run via Tycho Surefire with UI harness. Test classes follow pattern `**/AllTests.class` or `**/*TestSuite*.class`.
 
