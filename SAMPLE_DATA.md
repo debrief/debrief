@@ -28,7 +28,6 @@ for the debrief-future project to drive UI development using realistic maritime 
 | `.xls` / `.xlsx` | 7 | 6.9 MB | Spreadsheet data (SATC experiments) |
 | `.xml` | 5 | 247 KB | XML control/config files |
 | `.gpx` | 4 | 126 KB | GPS Exchange Format tracks |
-| `.js` | 4 | 10 KB | Debrief scripting examples |
 | `.avi` | 2 | 12.6 MB | Video recordings |
 | `.pdf` | 2 | 140 KB | Narrative documentation |
 | `.pptx` | 2 | 154 KB | PowerPoint report templates |
@@ -230,7 +229,6 @@ sample_data/                          86 MB total
   SATC_Test/                           27 MB  - SATC algorithm test datasets
     OwnshipZig/                        4 files - Ownship zigzag experiment data
   other_formats/                       35 MB  - Non-native format examples
-    Scripts/                           4 files - Debrief JavaScript scripting examples
     TA_DUMMY_DATA/                     13 files - Towed array test data
     TimedImages/                       43 files - Time-stamped JPEG image sequence
     csv_gz/                            6 files - Compressed CSV exchange data
@@ -662,17 +660,6 @@ Designed for time-synchronized image overlay during track playback.
 | `sqlite_sample_data.ini` | 296 B | Pepys database connection configuration |
 | `lookup_test_control.xml` | 1.2 KB | Lookup control/test configuration |
 | `for_gpx.xml` | 238 KB | Debrief XML formatted for GPX export testing |
-
-#### Scripting Examples (Scripts/)
-
-JavaScript scripts for Debrief's built-in scripting engine.
-
-| File | Size | Description |
-|------|-----:|-------------|
-| `filter_matching_symbol.js` | 2.4 KB | Filter tracks by symbol type |
-| `offset_ellipses.js` | 2.2 KB | Apply offset to error ellipses |
-| `read_CSV.js` | 2.9 KB | Read CSV data into Debrief |
-| `write_CSV.js` | 2.8 KB | Export Debrief data to CSV |
 
 #### Bearing-Time Import Test Data (test_data/brt_import/)
 

@@ -183,7 +183,7 @@ Location: `org.mwc.debrief.legacy/src/Debrief/ReaderWriter/`
 
 ## Target Platform
 
-Eclipse target platform defined in `org.mwc.debrief.targetplatforms/eclipse-latest.target`. Based on Eclipse 2026-09 (platform 4.41) with GEF, EMF, WTP, Nebula and EASE 0.9. EASE has had no release since 0.9, which needs `org.eclipse.osgi.services` (taken from 2022-12).
+Eclipse target platform defined in `org.mwc.debrief.targetplatforms/eclipse-latest.target`. Based on Eclipse 2026-09 (platform 4.41) with GEF, EMF and WTP. EASE scripting was retired (debrief/debrief#5270): it had had no release since 0.9 and no longer resolved against current Eclipse without workarounds.
 
 ## Architecture Notes
 

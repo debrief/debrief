@@ -223,6 +223,8 @@ All annotations support time start/end properties and can be placed on Tote for 
 
 ### 2.8 Scripting / Automation
 
+> **Retired** from Debrief (debrief/debrief#5270): EASE, the scripting engine underneath, is no longer maintained. Listed here as a capability a future Debrief may want back.
+
 - **Scripting Perspective**: JavaScript/Groovy scripting environment
 - Record UI actions as scripts
 - Access Debrief objects programmatically
@@ -230,7 +232,7 @@ All annotations support time start/end properties and can be placed on Tote for 
 - Assign keyboard shortcuts to scripts
 - Debug perspective for script development
 
-> Scripting examples: [`other_formats/Scripts/`](org.mwc.cmap.combined.feature/root_installs/sample_data/other_formats/Scripts).
+> The scripting examples were removed with it; see git history before #5270.
 
 ---
 
