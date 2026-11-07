@@ -118,7 +118,9 @@ jobs:
         uses: actions/setup-java@v4
         with:
           distribution: temurin
-          java-version: '11'
+          # Build JDK only: plugins still compile for Java 11 (--release 11).
+          # Tycho 2.7 cannot run on JDK 21 - see debrief/debrief#5262.
+          java-version: '17'
 
       # Pin Maven rather than take whatever the runner image ships. Tycho 2.7.0
       # cannot resolve the plugins' bundled library jars under Maven 3.10
