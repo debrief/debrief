@@ -10,10 +10,10 @@ Bundle-RequiredExecutionEnvironment: JavaSE-11
 Bundle-ActivationPolicy: lazy
 Bundle-Vendor: MWC
 Bundle-ClassPath: .,
- libs/jcommon-1.0.23.jar,
- libs/jfreechart-1.0.19-experimental.jar,
- libs/jfreechart-1.0.19-swt.jar,
- libs/jfreechart-1.0.19.jar
+ jcommon-1.0.23.jar,
+ jfreechart-1.0.19-experimental.jar,
+ jfreechart-1.0.19-swt.jar,
+ jfreechart-1.0.19.jar
 Export-Package: com.keypoint,
  org.jfree,
  org.jfree.base,

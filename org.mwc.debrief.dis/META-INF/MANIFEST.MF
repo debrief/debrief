@@ -26,8 +26,8 @@ Bundle-ActivationPolicy: lazy
 Export-Package: org.mwc.debrief.dis,
  org.mwc.debrief.dis.ui.preferences,
  org.mwc.debrief.dis.ui.views
-Bundle-ClassPath: libs/dis-enums_1.1.jar,
- libs/srm_4.4.0.jar,
+Bundle-ClassPath: dis-enums_1.1.jar,
+ srm_4.4.0.jar,
  .
 Import-Package: javax.xml.bind,
  javax.xml.bind.annotation,

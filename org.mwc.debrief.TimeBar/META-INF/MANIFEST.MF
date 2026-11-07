@@ -5,7 +5,7 @@ Bundle-SymbolicName: org.mwc.debrief.TimeBar;singleton:=true
 Bundle-Version: 1.0.19
 Bundle-Activator: org.mwc.debrief.timebar.Activator
 Bundle-ClassPath: .,
- libs/org.eclipse.nebula.widgets.ganttchart-2.0-NIGHTLY.jar
+ org.eclipse.nebula.widgets.ganttchart-2.0-NIGHTLY.jar
 Bundle-Vendor: MWC
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,

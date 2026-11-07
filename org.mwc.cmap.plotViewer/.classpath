@@ -7,6 +7,6 @@
 			<attribute name="module" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="/org.mwc.cmap.core/libs/WMFWriter.jar"/>
+	<classpathentry kind="lib" path="/org.mwc.cmap.core/WMFWriter.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

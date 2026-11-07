@@ -2,17 +2,17 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="src" path="libs"/>
-	<classpathentry kind="lib" path="libs/resty-0.3.1.jar"/>
-	<classpathentry kind="lib" path="libs/jackson-mapper-asl-1.9.4.jar"/>
-	<classpathentry kind="lib" path="libs/jackson-core-asl-1.9.4.jar"/>
+	<classpathentry kind="lib" path="resty-0.3.1.jar"/>
+	<classpathentry kind="lib" path="jackson-mapper-asl-1.9.4.jar"/>
+	<classpathentry kind="lib" path="jackson-core-asl-1.9.4.jar"/>
 	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
-	<classpathentry kind="lib" path="libs/postgis_1.3.5.jar"/>
-	<classpathentry kind="lib" path="libs/postgresql-8.3-604.jdbc4.jar"/>
+	<classpathentry kind="lib" path="postgis_1.3.5.jar"/>
+	<classpathentry kind="lib" path="postgresql-8.3-604.jdbc4.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER">
 		<attributes>
 			<attribute name="module" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="libs/jaxen-1.2.0.jar"/>
+	<classpathentry kind="lib" path="jaxen-1.2.0.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

@@ -8,12 +8,12 @@ Bundle-RequiredExecutionEnvironment: JavaSE-11
 Bundle-ActivationPolicy: lazy
 Bundle-Vendor: MWC
 Bundle-ClassPath: .,
- libs/freehep-graphics2d-2.4.jar,
- libs/freehep-graphicsbase-2.4.jar,
- libs/freehep-graphicsio-2.4.jar,
- libs/freehep-graphicsio-emf-2.4.jar,
- libs/freehep-io-2.2.2.jar,
- libs/freehep-graphicsio-pdf-2.4.jar
+ freehep-graphics2d-2.4.jar,
+ freehep-graphicsbase-2.4.jar,
+ freehep-graphicsio-2.4.jar,
+ freehep-graphicsio-emf-2.4.jar,
+ freehep-io-2.2.2.jar,
+ freehep-graphicsio-pdf-2.4.jar
 Export-Package: org.freehep.graphics2d,
  org.freehep.graphics2d.font,
  org.freehep.graphicsbase.swing,

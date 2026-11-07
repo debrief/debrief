@@ -8,7 +8,7 @@ Bundle-Vendor: BBN Technologies
 Require-Bundle: org.eclipse.core.runtime
 Bundle-RequiredExecutionEnvironment: JavaSE-11
 Bundle-ActivationPolicy: lazy
-Bundle-ClassPath: libs/openmap.jar,
+Bundle-ClassPath: openmap.jar,
  .
 Export-Package: Acme,
  Acme.JPM.Encoders,
