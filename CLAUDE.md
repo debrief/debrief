@@ -94,6 +94,7 @@ Build with **JDK 21** and **Maven 3.9 or later**: Tycho 5 needs both. Bundles de
 Unit tests use JUnit and are organized in test suites:
 - **Main test suite**: `org.mwc.debrief.test2/src/org/mwc/debrief/test/AllTests.java`
 - **Asset tests**: `org.mwc.asset.test/src/org/mwc/asset/test/AllTests.java`
+- **Lite UI tests**: Swing tests in `org.mwc.debrief.lite/src/test/java`, run by Ant's `<junit>` only with `-DliteUiTests=true` (CI's separate `lite-ui-tests` job does this under xvfb). The main build just produces `org.mwc.debrief.lite/dist/debrief-lite-<version>.zip`.
 
 Tests run via Tycho Surefire with UI harness. Test classes follow pattern `**/AllTests.class` or `**/*TestSuite*.class`.
 

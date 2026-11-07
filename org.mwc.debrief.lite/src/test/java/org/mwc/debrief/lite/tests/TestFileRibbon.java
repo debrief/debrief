@@ -205,7 +205,7 @@ public class TestFileRibbon extends BaseTestCase
     {
       Thread.sleep(200);
       ok = (JButton) TestUtils.getChildIndexed(ribbonFrame, "JButton", 1, true);
-      assertTrue(i < 10);
+      assertTrue("no save-changes dialog after " + (i * 200) + " ms, dirty=" + DebriefLiteApp.isDirty(), i < 10);
     }
     assertEquals("No", ok.getText());
     final JButton no = ok;
