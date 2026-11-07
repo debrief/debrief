@@ -19,6 +19,8 @@ import java.util.Enumeration;
 
 import org.mwc.debrief.lite.DebriefLiteApp;
 
+import Debrief.Wrappers.LabelWrapper;
+import Debrief.Wrappers.ShapeWrapper;
 import Debrief.Wrappers.DynamicTrackShapes.DynamicTrackShapeSetWrapper;
 import Debrief.Wrappers.TrackWrapper;
 import Debrief.Wrappers.Track.LightweightTrackWrapper;
@@ -42,6 +44,7 @@ public final class PlotState {
 	public static PlotState of(final Layers layers) {
 		boolean hasTracks = false;
 		boolean hasNarratives = false;
+		boolean hasShapes = false;
 		boolean hasStart = false;
 		boolean hasEnd = false;
 
@@ -57,6 +60,7 @@ public final class PlotState {
 				final Enumeration<Editable> ele = baseL.elements();
 				while (ele.hasMoreElements() && !hasTracks) {
 					final Editable nextE = ele.nextElement();
+					hasShapes |= nextE instanceof ShapeWrapper || nextE instanceof LabelWrapper;
 					hasTracks |= nextE instanceof LightweightTrackWrapper
 							|| nextE instanceof DynamicTrackShapeSetWrapper;
 					if (!hasTracks && nextE instanceof WatchableList) {
@@ -79,16 +83,19 @@ public final class PlotState {
 				hasEnd |= wl.getEndDTG() != null;
 			}
 		}
-		return new PlotState(hasTracks, hasNarratives, hasStart && hasEnd);
+		return new PlotState(hasTracks, hasNarratives, hasShapes, hasStart && hasEnd);
 	}
 
 	private final boolean _hasTracks;
 	private final boolean _hasNarratives;
+	private final boolean _hasShapes;
 	private final boolean _hasTimePeriod;
 
-	private PlotState(final boolean hasTracks, final boolean hasNarratives, final boolean hasTimePeriod) {
+	private PlotState(final boolean hasTracks, final boolean hasNarratives, final boolean hasShapes,
+			final boolean hasTimePeriod) {
 		_hasTracks = hasTracks;
 		_hasNarratives = hasNarratives;
+		_hasShapes = hasShapes;
 		_hasTimePeriod = hasTimePeriod;
 	}
 
@@ -108,10 +115,10 @@ public final class PlotState {
 	}
 
 	/**
-	 * Lite treats a plot holding tracks or narratives as having data worth saving,
-	 * so it asks before discarding it
+	 * Lite treats a plot holding tracks, narratives, or shapes and labels drawn by
+	 * the user as having data worth saving, so it asks before discarding it
 	 */
 	public boolean isDirty() {
-		return _hasTracks || _hasNarratives;
+		return _hasTracks || _hasNarratives || _hasShapes;
 	}
 }
