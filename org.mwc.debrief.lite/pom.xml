@@ -27,21 +27,33 @@
   <packaging>eclipse-plugin</packaging>
   <build>
     <plugins>
+      <!-- Ant compiles and runs Lite's tests (build.xml, -DliteUiTests=true). Tycho 5 would
+           otherwise compile src/test/java without the Ant-built classes, and fail. -->
+      <plugin>
+        <groupId>org.eclipse.tycho</groupId>
+        <artifactId>tycho-compiler-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>default-testCompile</id>
+            <phase>none</phase>
+          </execution>
+        </executions>
+      </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-antrun-plugin</artifactId>
         <version>3.1.0</version>
         <dependencies>
         <dependency>
-                    <groupId>ant</groupId>
+                    <groupId>org.apache.ant</groupId>
                     <artifactId>ant-junit</artifactId>
-                    <version>1.6.5</version>
+                    <version>1.10.12</version>
                     <!--scope>test</scope -->
                 </dependency>
                 <dependency>
                     <groupId>junit</groupId>
                     <artifactId>junit</artifactId>
-                    <version>4.8.2</version>
+                    <version>4.13.2</version>
                     <!--scope>test</scope -->
                 </dependency>
                 <dependency>
@@ -55,7 +67,8 @@
             <phase>compile</phase>
             <configuration>
                 <target>
-                  <ant  dir="${basedir}" target="all" antfile="build.xml" />
+                  <!-- "ci" builds dist/debrief-lite-<version>.zip; add -DliteUiTests=true to run the Swing UI tests -->
+                  <ant  dir="${basedir}" target="ci" antfile="build.xml" />
                 </target>
             </configuration>
             <goals>

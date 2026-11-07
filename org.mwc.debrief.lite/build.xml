@@ -70,11 +70,11 @@
 			<pathelement location="../org.mwc.debrief.legacy/cmap_legacy.jar"/>
 			<pathelement location="../org.mwc.debrief.legacy/debrief_legacy.jar"/>
 			<pathelement location="../org.mwc.cmap.geotools/cmap_geotools.jar"/>
-			<fileset dir="../org.mwc.cmap.legacy/libs" includes="*.jar"></fileset>
-			<fileset dir="../org.mwc.debrief.legacy/libs" includes="*.jar"></fileset>
-			<fileset dir="../org.mwc.cmap.jfreechart/libs" includes="*.jar"></fileset>
-			<fileset dir="../org.mwc.cmap.geotools/libs" includes="*.jar"></fileset>
-			<fileset dir="libs" includes="*.jar"></fileset>
+			<fileset dir="../org.mwc.cmap.legacy" includes="*.jar" excludes="cmap_legacy.jar,debrief_legacy.jar,cmap_geotools.jar,debrief_lite.jar"></fileset><fileset dir="../org.mwc.cmap.legacy/libs" includes="*.jar"></fileset>
+			<fileset dir="../org.mwc.debrief.legacy" includes="*.jar" excludes="cmap_legacy.jar,debrief_legacy.jar,cmap_geotools.jar,debrief_lite.jar"></fileset><fileset dir="../org.mwc.debrief.legacy/libs" includes="*.jar"></fileset>
+			<fileset dir="../org.mwc.cmap.jfreechart" includes="*.jar"></fileset>
+			<fileset dir="../org.mwc.cmap.geotools" includes="*.jar" excludes="cmap_legacy.jar,debrief_legacy.jar,cmap_geotools.jar,debrief_lite.jar"></fileset>
+			<fileset dir="." includes="*.jar" excludes="cmap_legacy.jar,debrief_legacy.jar,cmap_geotools.jar,debrief_lite.jar"></fileset>
 		</path>
 		<!-- compile the source code -->
 		<javac release="21" destdir="${temp.folder}/debrief_lite.jar.bin" failonerror="true">
@@ -109,22 +109,22 @@
 	<!-- skipped when the build is run with -DskipTests, which maven-antrun
 	     passes through as an Ant property. The Ant junit task below is not
 	     covered by surefire's own skipTests handling. -->
-	<target name="unitTests" depends="init" unless="skipTests">
+	<target name="unitTests" depends="init" if="liteUiTests" unless="skipTests">
 		<mkdir dir="${temp.folder}/reports"/>
 		<property name="report.dir" value="${temp.folder}/reports"/>
 				<path id="debrief_lite.test.classpath">
 							<pathelement location="../org.mwc.debrief.legacy/cmap_legacy.jar"/>
 							<pathelement location="../org.mwc.debrief.legacy/debrief_legacy.jar"/>
 							<pathelement location="../org.mwc.cmap.geotools/cmap_geotools.jar"/>
-							<fileset dir="../org.mwc.cmap.legacy/libs" includes="*.jar"></fileset>
-							<fileset dir="../org.mwc.debrief.legacy/libs" includes="*.jar"></fileset>
-							<fileset dir="../org.mwc.cmap.jfreechart/libs" includes="*.jar"></fileset>
-							<fileset dir="../org.mwc.cmap.geotools/libs" includes="*.jar"></fileset>
-							<fileset dir="libs" includes="*.jar"></fileset>
+							<fileset dir="../org.mwc.cmap.legacy" includes="*.jar" excludes="cmap_legacy.jar,debrief_legacy.jar,cmap_geotools.jar,debrief_lite.jar"></fileset><fileset dir="../org.mwc.cmap.legacy/libs" includes="*.jar"></fileset>
+							<fileset dir="../org.mwc.debrief.legacy" includes="*.jar" excludes="cmap_legacy.jar,debrief_legacy.jar,cmap_geotools.jar,debrief_lite.jar"></fileset><fileset dir="../org.mwc.debrief.legacy/libs" includes="*.jar"></fileset>
+							<fileset dir="../org.mwc.cmap.jfreechart" includes="*.jar"></fileset>
+							<fileset dir="../org.mwc.cmap.geotools" includes="*.jar" excludes="cmap_legacy.jar,debrief_legacy.jar,cmap_geotools.jar,debrief_lite.jar"></fileset>
+							<fileset dir="." includes="*.jar" excludes="cmap_legacy.jar,debrief_legacy.jar,cmap_geotools.jar,debrief_lite.jar"></fileset>
 							<fileset file="${temp.folder}/debrief_lite.jar"/>
 						</path>
 				<junit dir="${basedir}"
-					printsummary="yes" haltonfailure="yes">
+					printsummary="yes" haltonfailure="no" failureproperty="lite.tests.failed" errorproperty="lite.tests.failed">
 					<classpath refid="debrief_lite.test.classpath" />
 					<classpath location="src/test/java" />
 					<classpath location="${env.ANT_HOME}/lib"> </classpath>
@@ -143,6 +143,8 @@
 						
 						</batchtest>
 				</junit>
+				<!-- run every test class, then fail if any failed -->
+				<fail if="lite.tests.failed" message="Debrief Lite UI tests failed: see ${report.dir}"/>
 	</target>
 	
 	<target name="runTests" depends="init,debrief_lite.jar" description="run the tests independently">
@@ -175,14 +177,14 @@
 			</fileset>
 		</copy>
 		<copy todir="${debrief-lite-lib.dir}" failonerror="true" overwrite="true">
-			<fileset dir="../org.mwc.cmap.legacy/libs" includes="*.jar"/>
-			<fileset dir="../org.mwc.debrief.legacy/libs" includes="*.jar"/>
-			<fileset dir="../org.mwc.cmap.jfreechart/libs" includes="*.jar"/>
-			<fileset dir="../org.mwc.cmap.geotools/libs" includes="*.jar"/>
+			<fileset dir="../org.mwc.cmap.legacy" includes="*.jar" excludes="cmap_legacy.jar,debrief_legacy.jar,cmap_geotools.jar,debrief_lite.jar"/><fileset dir="../org.mwc.cmap.legacy/libs" includes="*.jar"/>
+			<fileset dir="../org.mwc.debrief.legacy" includes="*.jar" excludes="cmap_legacy.jar,debrief_legacy.jar,cmap_geotools.jar,debrief_lite.jar"/><fileset dir="../org.mwc.debrief.legacy/libs" includes="*.jar"/>
+			<fileset dir="../org.mwc.cmap.jfreechart" includes="*.jar"/>
+			<fileset dir="../org.mwc.cmap.geotools" includes="*.jar" excludes="cmap_legacy.jar,debrief_legacy.jar,cmap_geotools.jar,debrief_lite.jar"/>
 			<fileset dir="../org.mwc.debrief.legacy" includes="cmap_legacy.jar"/>
 			<fileset dir="../org.mwc.cmap.geotools" includes="cmap_geotools.jar"/>
 			<fileset dir="../org.mwc.debrief.legacy" includes="debrief_legacy.jar"/>
-			<fileset dir="libs" includes="*.jar"/>
+			<fileset dir="." includes="*.jar" excludes="cmap_legacy.jar,debrief_legacy.jar,cmap_geotools.jar,debrief_lite.jar"/>
 		</copy>
 		<copy todir="${debrief-lite-dist.dir}/${svg-symbols.dest.dir}"><fileset dir="${svg-symbols.source.dir}" includes="**/*"></fileset></copy>
 		<copy todir="${debrief-lite-dist.dir}" file="src/main/java/icons/d_lite.png" failonerror="true" overwrite="false"/>
@@ -232,6 +234,17 @@
 		<antcall target="generate"/>
 	</target>
 	
+	<!-- Used by the Maven build: produces dist/debrief-lite-<version>.zip. The reactor has
+	     already built cmap_legacy.jar and debrief_legacy.jar; cmap_geotools.jar is jarred
+	     from geotools' compiled classes. (makeonejar's single jar does not run: GeoTools'
+	     LocaleUtils cannot read its resources through One-JAR's class loader.) -->
+	<target name="ci" depends="clean">
+		<copy file="../org.mwc.cmap.legacy/cmap_legacy.jar" todir="../org.mwc.debrief.legacy" overwrite="true"/>
+		<jar destfile="../org.mwc.cmap.geotools/cmap_geotools.jar" basedir="../org.mwc.cmap.geotools/target/classes"/>
+		<antcall target="generate"/>
+		<antcall target="unitTests"/>
+	</target>
+
 	<target name="all" depends="dist,unitTests">
 	</target>
 </project>

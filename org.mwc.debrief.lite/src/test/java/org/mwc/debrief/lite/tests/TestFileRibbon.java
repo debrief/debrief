@@ -205,7 +205,7 @@ public class TestFileRibbon extends BaseTestCase
     {
       Thread.sleep(200);
       ok = (JButton) TestUtils.getChildIndexed(ribbonFrame, "JButton", 1, true);
-      assertTrue(i < 10);
+      assertTrue("no save-changes dialog after " + (i * 200) + " ms, dirty=" + DebriefLiteApp.isDirty(), i < 10);
     }
     assertEquals("No", ok.getText());
     final JButton no = ok;
@@ -310,6 +310,9 @@ public class TestFileRibbon extends BaseTestCase
         {
           robot = new Robot();
           robot.keyPress(KeyEvent.VK_ENTER);
+          // release it too: a key left pressed stays down on the display and
+          // silently confirms the dialogs of the tests that follow
+          robot.keyRelease(KeyEvent.VK_ENTER);
         }
         catch (final AWTException e)
         {
@@ -527,6 +530,9 @@ public class TestFileRibbon extends BaseTestCase
           robot = new Robot();
           robot.delay(200);
           robot.keyPress(KeyEvent.VK_ENTER);
+          // release it too: a key left pressed stays down on the display and
+          // silently confirms the dialogs of the tests that follow
+          robot.keyRelease(KeyEvent.VK_ENTER);
         }
         catch (final AWTException e)
         {
@@ -674,6 +680,9 @@ public class TestFileRibbon extends BaseTestCase
           robot = new Robot();
           robot.delay(400);
           robot.keyPress(KeyEvent.VK_ENTER);
+          // release it too: a key left pressed stays down on the display and
+          // silently confirms the dialogs of the tests that follow
+          robot.keyRelease(KeyEvent.VK_ENTER);
         }
         catch (final AWTException e)
         {

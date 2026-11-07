@@ -319,7 +319,56 @@ jobs:
                  org.mwc.debrief.product/target/products/DebriefNG-Windows64Bit.zip
                  org.mwc.debrief.product/target/products/P2_Repository.zip
                  org.mwc.debrief.legacy/dist/DebriefLegacy*.jar
+                 org.mwc.debrief.lite/dist/debrief-lite*.zip
                  org.mwc.debrief.product/target/products/DebriefNG-Windows64Bit.msi
       #make sure the xvfb windows that was opened is closed in the end
       - name: Cleanup xvfb pidx
         uses: bcomnes/cleanup-xvfb@v1
+
+  # Debrief Lite's Swing UI tests take minutes and are prone to timing
+  # failures under xvfb, so they run here, in parallel with the main build,
+  # rather than inside it. Not required yet: make it required once it has
+  # passed on several consecutive runs (debrief/debrief#5261).
+  lite-ui-tests:
+    name: Debrief Lite UI tests
+    needs: changes
+    if: needs.changes.outputs.software == 'true'
+    runs-on: ubuntu-24.04
+    continue-on-error: true
+    permissions:
+      contents: read
+    steps:
+      - name: Install xvfb
+        run: sudo apt-get -y -o Acquire::Retries=3 update && sudo apt-get -y -o Acquire::Retries=3 install xvfb
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+      - name: Restore Maven / Tycho cache
+        uses: actions/cache/restore@v4
+        with:
+          path: |
+            ~/.m2/repository
+            ~/.p2
+          key: m2-tycho-${{ hashFiles('org.mwc.debrief.targetplatforms/eclipse-latest.target', '**/pom.xml') }}
+          restore-keys: |
+            m2-tycho-
+      # Builds only Lite and the bundles it requires. They are listed by hand
+      # because -am follows Maven dependencies, not OSGi Require-Bundle, and
+      # misses the target definition too. Keep this in step with
+      # org.mwc.debrief.lite/META-INF/MANIFEST.MF. -DliteUiTests=true turns on
+      # the Ant junit run in org.mwc.debrief.lite/build.xml.
+      - name: Build Lite and run its UI tests
+        run: >-
+          xvfb-run -a mvn -B verify -DliteUiTests=true -pl
+          org.mwc.debrief.targetplatforms,org.mwc.cmap.jfreechart,org.mwc.cmap.legacy,org.mwc.debrief.legacy,org.mwc.cmap.geotools,org.mwc.debrief.lite
+      - name: Upload Lite UI test reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: lite-ui-test-reports
+          path: org.mwc.debrief.lite/temp.folder/reports/
+          if-no-files-found: ignore
