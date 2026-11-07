@@ -119,8 +119,8 @@ jobs:
         with:
           distribution: temurin
           # Build JDK only: plugins still compile for Java 11 (--release 11).
-          # Tycho 2.7 cannot run on JDK 21 - see debrief/debrief#5262.
-          java-version: '17'
+          # Tycho 5 needs JDK 21 to run - see debrief/debrief#5262.
+          java-version: '21'
 
       - name: Show Maven version
         run: mvn --version

@@ -209,7 +209,6 @@ Library.
       <import plugin="org.mwc.debrief.legacy"/>
       <import plugin="org.eclipse.ui"/>
       <import plugin="org.eclipse.core.runtime"/>
-      <import plugin="org.eclipse.core.resources"/>
       <import plugin="org.eclipse.ui.views"/>
       <import plugin="org.eclipse.jface" version="3.4.1" match="greaterOrEqual"/>
       <import plugin="com.ibm.icu" version="3.8.1" match="greaterOrEqual"/>
