@@ -18,6 +18,7 @@ package org.mwc.debrief.lite.headless;
 import org.mwc.debrief.lite.DebriefLiteApp;
 import org.mwc.debrief.lite.util.PlotState;
 
+import Debrief.Wrappers.LabelWrapper;
 import Debrief.Wrappers.ShapeWrapper;
 import MWC.GUI.BaseLayer;
 import MWC.GUI.Layers;
@@ -75,13 +76,24 @@ public class PlotStateTest extends TestCase {
 		_layers.addThisLayer(shapes);
 
 		shapes.add(circle(null, null));
-		assertState("an untimed shape changes nothing", DebriefLiteApp.INACTIVE_STATE, false);
+		assertState("an untimed shape leaves the time controls off, but is worth saving",
+				DebriefLiteApp.INACTIVE_STATE, true);
 
 		shapes.add(circle(new HiResDate(T0), null));
-		assertState("a start time alone is not a period", DebriefLiteApp.INACTIVE_STATE, false);
+		assertState("a start time alone is not a period", DebriefLiteApp.INACTIVE_STATE, true);
 
 		shapes.add(circle(new HiResDate(T0), new HiResDate(T0 + 60_000)));
-		assertState("a timed shape enables the time controls", DebriefLiteApp.TIME_ENABLED_STATE, false);
+		assertState("a timed shape enables the time controls", DebriefLiteApp.TIME_ENABLED_STATE, true);
+	}
+
+	public void testLabels() {
+		final BaseLayer labels = new BaseLayer();
+		labels.setName("Labels");
+		_layers.addThisLayer(labels);
+		assertState("an empty layer changes nothing", DebriefLiteApp.INACTIVE_STATE, false);
+
+		labels.add(new LabelWrapper("blank label", new WorldLocation(0, 0, 0), java.awt.Color.ORANGE));
+		assertState("a label is worth saving", DebriefLiteApp.INACTIVE_STATE, true);
 	}
 
 	public void testTracks() {
