@@ -19,10 +19,7 @@ import java.awt.Dimension;
 import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -37,6 +34,7 @@ import org.mwc.debrief.lite.DebriefLiteApp;
 import org.mwc.debrief.lite.map.GeoToolMapRenderer;
 import org.mwc.debrief.lite.util.DoSave;
 import org.mwc.debrief.lite.util.DoSaveAs;
+import org.mwc.debrief.lite.util.PlotFiles;
 import org.mwc.debrief.lite.util.ResizableIconFactory;
 import org.pushingpixels.flamingo.api.common.CommandAction;
 import org.pushingpixels.flamingo.api.common.CommandActionEvent;
@@ -58,7 +56,6 @@ import org.pushingpixels.flamingo.api.ribbon.RibbonTask;
 
 import Debrief.GUI.Frames.Application;
 import Debrief.GUI.Frames.Session;
-import Debrief.ReaderWriter.XML.DebriefXMLReaderWriter;
 import MWC.GUI.ToolParent;
 import MWC.GUI.Dialogs.AWT.MessageDialog;
 
@@ -411,26 +408,15 @@ public class DebriefRibbonFile {
 		final File targetFile = new File(currentFileName);
 		if ((targetFile != null && targetFile.exists() && targetFile.canWrite())
 				|| (targetFile != null && !targetFile.exists() && targetFile.getParentFile().canWrite())) {
-			// export to this file.
-			// if it already exists, check with rename/cancel
-			OutputStream stream = null;
 			try {
-				stream = new FileOutputStream(targetFile.getAbsolutePath());
-				DebriefXMLReaderWriter.exportThis(session, stream);
+				PlotFiles.writePlot(session, targetFile);
 				// remember the last file save location
 				DebriefLiteApp.getDefault().setProperty(DoSaveAs.LAST_FILE_LOCATION,
 						targetFile.getParentFile().getAbsolutePath());
-			} catch (final FileNotFoundException e1) {
-				Application.logError2(ToolParent.ERROR, "Can't find file", e1);
-			} finally {
-				try {
-					stream.close();
-					DebriefLiteApp.currentFileName = targetFile.getAbsolutePath();
-					DebriefLiteApp.setDirty(false);
-
-				} catch (final IOException e1) {
-					// ignore
-				}
+				DebriefLiteApp.currentFileName = targetFile.getAbsolutePath();
+				DebriefLiteApp.setDirty(false);
+			} catch (final IOException e1) {
+				Application.logError2(ToolParent.ERROR, "Failed to save plot to " + targetFile, e1);
 			}
 		}
 

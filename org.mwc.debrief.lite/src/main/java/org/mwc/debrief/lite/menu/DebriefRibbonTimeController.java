@@ -29,7 +29,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.Enumeration;
 import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.TimeZone;
@@ -59,6 +58,7 @@ import org.mwc.debrief.lite.custom.RibbonRngSliderProj;
 import org.mwc.debrief.lite.custom.RibbonSliderProjection;
 import org.mwc.debrief.lite.custom.SliderCompContMdl;
 import org.mwc.debrief.lite.gui.LiteStepControl;
+import org.mwc.debrief.lite.util.PlotState;
 import org.mwc.debrief.lite.gui.LiteStepControl.SliderControls;
 import org.mwc.debrief.lite.gui.LiteStepControl.TimeLabel;
 import org.mwc.debrief.lite.gui.custom.RangeSlider;
@@ -94,12 +94,7 @@ import Debrief.GUI.Tote.Painters.TotePainter;
 import Debrief.GUI.Tote.Painters.Highlighters.PlotHighlighter;
 import Debrief.GUI.Tote.Painters.Highlighters.PlotHighlighter.RectangleHighlight;
 import Debrief.GUI.Tote.Painters.Highlighters.SymbolHighlighter;
-import Debrief.Wrappers.TrackWrapper;
-import Debrief.Wrappers.DynamicTrackShapes.DynamicTrackShapeSetWrapper;
-import Debrief.Wrappers.Track.LightweightTrackWrapper;
-import MWC.GUI.BaseLayer;
 import MWC.GUI.CanvasType;
-import MWC.GUI.Editable;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
 import MWC.GUI.Layers.DataListener;
@@ -109,9 +104,6 @@ import MWC.GUI.Tools.Swing.MyMetalToolBarUI.ToolbarOwner;
 import MWC.GUI.Undo.UndoBuffer;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.TimePeriod;
-import MWC.GenericData.WatchableList;
-import MWC.TacticalData.NarrativeEntry;
-import MWC.TacticalData.NarrativeWrapper;
 import MWC.TacticalData.SliderConverter;
 import MWC.TacticalData.temporal.ControllablePeriod;
 import MWC.TacticalData.temporal.PlotOperations;
@@ -626,58 +618,9 @@ public class DebriefRibbonTimeController {
 
 			private void updateTimeController() {
 				liteStepControl.startStepping(false);
-				boolean hasTracks = false;
-				boolean hasNarratives = false;
-				boolean hasStart = false;
-				boolean hasEnd = false;
-
-				final Enumeration<Editable> lIter = liteStepControl.getLayers().elements();
-				while (lIter.hasMoreElements()) {
-					final Editable next = lIter.nextElement();
-					if (next instanceof TrackWrapper) {
-						hasTracks = true;
-						break;
-					} else if (next instanceof BaseLayer) {
-						// check the children, to see if they're like a track
-						final BaseLayer baseL = (BaseLayer) next;
-						final Enumeration<Editable> ele = baseL.elements();
-						while (ele.hasMoreElements() && !hasTracks) {
-							final Editable nextE = ele.nextElement();
-							hasTracks |= nextE instanceof LightweightTrackWrapper
-									|| nextE instanceof DynamicTrackShapeSetWrapper;
-							if (!hasTracks && nextE instanceof WatchableList) {
-								hasStart |= ((WatchableList) nextE).getStartDTG() != null;
-								hasEnd |= ((WatchableList) nextE).getEndDTG() != null;
-							}
-						}
-					} else if (next instanceof NarrativeWrapper) {
-						// check if we have any narrative item inside.
-						final NarrativeWrapper narrativeWrapper = (NarrativeWrapper) next;
-						final Enumeration<Editable> elements = narrativeWrapper.elements();
-						while (elements.hasMoreElements() && !hasNarratives) {
-							final Editable nextE = elements.nextElement();
-							hasNarratives |= nextE instanceof NarrativeEntry;
-						}
-					} else if (next instanceof WatchableList) {
-						// look at the date
-						final WatchableList wl = (WatchableList) next;
-						final HiResDate startDTG = wl.getStartDTG();
-						final HiResDate endDTG = wl.getEndDTG();
-
-						// is it a real date?
-						hasStart |= startDTG != null;
-						hasEnd |= endDTG != null;
-					}
-				}
-
-				DebriefLiteApp.setDirty(hasTracks || hasNarratives);
-				String newState = DebriefLiteApp.INACTIVE_STATE;
-				if (hasTracks) {
-					newState = DebriefLiteApp.ACTIVE_STATE;
-				} else if (hasNarratives || (hasEnd && hasStart)) {
-					newState = DebriefLiteApp.TIME_ENABLED_STATE;
-				}
-				DebriefLiteApp.setState(newState);
+				final PlotState state = PlotState.of(liteStepControl.getLayers());
+				DebriefLiteApp.setDirty(state.isDirty());
+				DebriefLiteApp.setState(state.getState());
 			}
 		};
 

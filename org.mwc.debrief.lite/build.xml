@@ -106,23 +106,45 @@
 		<delete dir="${temp.folder}/debrief_lite.jar.bin"/>
 	</target>
 	
+	<target name="testClasspath" depends="init">
+		<path id="debrief_lite.test.classpath">
+			<pathelement location="../org.mwc.debrief.legacy/cmap_legacy.jar"/>
+			<pathelement location="../org.mwc.debrief.legacy/debrief_legacy.jar"/>
+			<pathelement location="../org.mwc.cmap.geotools/cmap_geotools.jar"/>
+			<fileset dir="../org.mwc.cmap.legacy" includes="*.jar" excludes="cmap_legacy.jar,debrief_legacy.jar,cmap_geotools.jar,debrief_lite.jar"></fileset><fileset dir="../org.mwc.cmap.legacy/libs" includes="*.jar"></fileset>
+			<fileset dir="../org.mwc.debrief.legacy" includes="*.jar" excludes="cmap_legacy.jar,debrief_legacy.jar,cmap_geotools.jar,debrief_lite.jar"></fileset><fileset dir="../org.mwc.debrief.legacy/libs" includes="*.jar"></fileset>
+			<fileset dir="../org.mwc.cmap.jfreechart" includes="*.jar"></fileset>
+			<fileset dir="../org.mwc.cmap.geotools" includes="*.jar" excludes="cmap_legacy.jar,debrief_legacy.jar,cmap_geotools.jar,debrief_lite.jar"></fileset>
+			<fileset dir="." includes="*.jar" excludes="cmap_legacy.jar,debrief_legacy.jar,cmap_geotools.jar,debrief_lite.jar"></fileset>
+			<fileset file="${temp.folder}/debrief_lite.jar"/>
+		</path>
+	</target>
+
+	<!-- Headless tests: no display needed, so they run in every build (skipped only with
+	     -DskipTests). java.awt.headless=true makes any accidental UI use fail loudly. -->
+	<target name="headlessTests" depends="init,testClasspath" unless="skipTests">
+		<property name="headless.report.dir" value="${temp.folder}/headless-reports"/>
+		<mkdir dir="${headless.report.dir}"/>
+		<junit dir="${basedir}" printsummary="yes" haltonfailure="no"
+			failureproperty="lite.headless.failed" errorproperty="lite.headless.failed">
+			<classpath refid="debrief_lite.test.classpath" />
+			<formatter type="xml" />
+			<formatter type="plain" />
+			<sysproperty key="java.awt.headless" value="true"/>
+			<sysproperty key="TEST_MODE" value="true"/>
+			<batchtest fork="true" todir="${headless.report.dir}">
+				<fileset dir="src/test/java" includes="**/headless/*Test.java"/>
+			</batchtest>
+		</junit>
+		<fail if="lite.headless.failed" message="Debrief Lite headless tests failed: see ${headless.report.dir}"/>
+	</target>
+
 	<!-- skipped when the build is run with -DskipTests, which maven-antrun
 	     passes through as an Ant property. The Ant junit task below is not
 	     covered by surefire's own skipTests handling. -->
-	<target name="unitTests" depends="init" if="liteUiTests" unless="skipTests">
+	<target name="unitTests" depends="init,testClasspath" if="liteUiTests" unless="skipTests">
 		<mkdir dir="${temp.folder}/reports"/>
 		<property name="report.dir" value="${temp.folder}/reports"/>
-				<path id="debrief_lite.test.classpath">
-							<pathelement location="../org.mwc.debrief.legacy/cmap_legacy.jar"/>
-							<pathelement location="../org.mwc.debrief.legacy/debrief_legacy.jar"/>
-							<pathelement location="../org.mwc.cmap.geotools/cmap_geotools.jar"/>
-							<fileset dir="../org.mwc.cmap.legacy" includes="*.jar" excludes="cmap_legacy.jar,debrief_legacy.jar,cmap_geotools.jar,debrief_lite.jar"></fileset><fileset dir="../org.mwc.cmap.legacy/libs" includes="*.jar"></fileset>
-							<fileset dir="../org.mwc.debrief.legacy" includes="*.jar" excludes="cmap_legacy.jar,debrief_legacy.jar,cmap_geotools.jar,debrief_lite.jar"></fileset><fileset dir="../org.mwc.debrief.legacy/libs" includes="*.jar"></fileset>
-							<fileset dir="../org.mwc.cmap.jfreechart" includes="*.jar"></fileset>
-							<fileset dir="../org.mwc.cmap.geotools" includes="*.jar" excludes="cmap_legacy.jar,debrief_legacy.jar,cmap_geotools.jar,debrief_lite.jar"></fileset>
-							<fileset dir="." includes="*.jar" excludes="cmap_legacy.jar,debrief_legacy.jar,cmap_geotools.jar,debrief_lite.jar"></fileset>
-							<fileset file="${temp.folder}/debrief_lite.jar"/>
-						</path>
 				<junit dir="${basedir}"
 					printsummary="yes" haltonfailure="no" failureproperty="lite.tests.failed" errorproperty="lite.tests.failed">
 					<classpath refid="debrief_lite.test.classpath" />
@@ -139,6 +161,7 @@
 								<exclude name="**/*Util*.java"/>
 								<exclude name="**/*TestCase*.java"/>
 								<exclude name="**/*AllTests.java"/>
+								<exclude name="**/headless/**"/>
 							</fileset>
 						
 						</batchtest>
@@ -242,6 +265,7 @@
 		<copy file="../org.mwc.cmap.legacy/cmap_legacy.jar" todir="../org.mwc.debrief.legacy" overwrite="true"/>
 		<jar destfile="../org.mwc.cmap.geotools/cmap_geotools.jar" basedir="../org.mwc.cmap.geotools/target/classes"/>
 		<antcall target="generate"/>
+		<antcall target="headlessTests"/>
 		<antcall target="unitTests"/>
 	</target>
 

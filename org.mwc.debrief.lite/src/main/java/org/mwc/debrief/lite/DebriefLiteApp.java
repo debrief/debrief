@@ -90,6 +90,7 @@ import org.mwc.debrief.lite.menu.DebriefRibbonView;
 import org.mwc.debrief.lite.menu.MenuUtils;
 import org.mwc.debrief.lite.outline.OutlinePanelView;
 import org.mwc.debrief.lite.util.DoSaveAs;
+import org.mwc.debrief.lite.util.PlotFiles;
 import org.mwc.debrief.lite.util.ResizableIconFactory;
 import org.opengis.geometry.MismatchedDimensionException;
 import org.opengis.referencing.operation.MathTransform;
@@ -105,7 +106,6 @@ import Debrief.GUI.Tote.Painters.PainterManager;
 import Debrief.GUI.Tote.Painters.SnailPainter2;
 import Debrief.GUI.Tote.Painters.TotePainter;
 import Debrief.ReaderWriter.Antares.ImportAntares;
-import Debrief.ReaderWriter.NMEA.ImportNMEA;
 import Debrief.ReaderWriter.Nisida.ImportNisida;
 import Debrief.ReaderWriter.Replay.ImportReplay;
 import Debrief.ReaderWriter.XML.DebriefXMLReaderWriter;
@@ -1169,18 +1169,8 @@ public class DebriefLiteApp implements FileDropListener {
 	private void handleImportDPF(final File file) {
 		boolean success = true;
 
-		final DebriefXMLReaderWriter reader = new DebriefXMLReaderWriter(app);
 		try {
-			final FileInputStream is = new FileInputStream(file);
-			try {
-				reader.importThis(file.getName(), is, session);
-			} finally {
-				try {
-					is.close();
-				} catch (final IOException e) {
-					getDefault().logError(ToolParent.ERROR, "Failed to close DPF file", e);
-				}
-			}
+			PlotFiles.importPlot(file, session, app);
 			// update the time panel
 			final TimePeriod period = _theLayers.getTimePeriod();
 			_myOperations.setPeriod(period);
@@ -1198,7 +1188,7 @@ public class DebriefLiteApp implements FileDropListener {
 
 			// and the spatial bounds
 			new FitToWindow(_theLayers, mapPane, projection, null).actionPerformed(null);
-		} catch (final FileNotFoundException e) {
+		} catch (final IOException e) {
 			app.logError(ToolParent.ERROR, "Failed to read DPF File", e);
 			MWC.GUI.Dialogs.DialogFactory.showMessage("Open Debrief file", "Failed to read DPF File" + e.getMessage());
 			success = false;
@@ -1241,21 +1231,8 @@ public class DebriefLiteApp implements FileDropListener {
 		
 	}
 
-	private void handleImportNMEAFile(final File file) throws FileNotFoundException {
-		// show the dialog first, then import the file
-
-		final ImportNMEA importer = new ImportNMEA(_theLayers);
-
-		final FileInputStream fis = new FileInputStream(file);
-		try {
-			importer.importThis(file.getName(), fis, 60000, 60000, false);
-		} finally {
-			try {
-				fis.close();
-			} catch (final IOException e) {
-				getDefault().logError(ToolParent.ERROR, "Failed to close NMEA file", e);
-			}
-		}
+	private void handleImportNMEAFile(final File file) throws IOException {
+		PlotFiles.importNmea(file, _theLayers);
 
 		final TimePeriod period = _theLayers.getTimePeriod();
 		_myOperations.setPeriod(period);
