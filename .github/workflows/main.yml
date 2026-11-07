@@ -122,22 +122,6 @@ jobs:
           # Tycho 2.7 cannot run on JDK 21 - see debrief/debrief#5262.
           java-version: '17'
 
-      # Pin Maven rather than take whatever the runner image ships. Tycho 2.7.0
-      # cannot resolve the plugins' bundled library jars under Maven 3.10
-      # ("Invalid Collect Request: null" on org.freehep), which the
-      # ubuntu-24.04 image picked up in late October 2026. The checksum is
-      # Maven Central's published SHA-512 for this tarball.
-      - name: Install pinned Maven
-        env:
-          MAVEN_VERSION: 3.9.16
-          MAVEN_SHA512: 831a8591fe20c8243b1dbe7d71e3244f31d1665b0804b2e825e38cbbe5ce0cafb8338851f90780735568773e0a6cd07bbec107cda0b896b008b861075358b6f6
-        run: |
-          tarball="apache-maven-${MAVEN_VERSION}-bin.tar.gz"
-          curl -fsSL --retry 5 --retry-all-errors -o "$RUNNER_TEMP/$tarball" \
-            "https://repo.maven.apache.org/maven2/org/apache/maven/apache-maven/${MAVEN_VERSION}/${tarball}"
-          echo "${MAVEN_SHA512}  $RUNNER_TEMP/$tarball" | sha512sum -c -
-          tar xzf "$RUNNER_TEMP/$tarball" -C "$RUNNER_TEMP"
-          echo "$RUNNER_TEMP/apache-maven-${MAVEN_VERSION}/bin" >> "$GITHUB_PATH"
       - name: Show Maven version
         run: mvn --version
 
