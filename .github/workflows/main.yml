@@ -356,10 +356,12 @@ jobs:
           key: m2-tycho-${{ hashFiles('org.mwc.debrief.targetplatforms/eclipse-latest.target', '**/pom.xml') }}
           restore-keys: |
             m2-tycho-
-      # -am builds only what Lite depends on; -DliteUiTests=true turns on the
-      # Ant junit run in org.mwc.debrief.lite/build.xml.
+      # -am builds only what Lite depends on. The target definition module is
+      # listed too: -am does not count it as a dependency, but every bundle
+      # resolves against it. -DliteUiTests=true turns on the Ant junit run in
+      # org.mwc.debrief.lite/build.xml.
       - name: Build Lite and run its UI tests
-        run: xvfb-run -a mvn -B verify -pl org.mwc.debrief.lite -am -DliteUiTests=true
+        run: xvfb-run -a mvn -B verify -pl org.mwc.debrief.targetplatforms,org.mwc.debrief.lite -am -DliteUiTests=true
       - name: Upload Lite UI test reports
         if: always()
         uses: actions/upload-artifact@v4
