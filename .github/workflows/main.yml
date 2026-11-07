@@ -118,8 +118,7 @@ jobs:
         uses: actions/setup-java@v4
         with:
           distribution: temurin
-          # Build JDK only: plugins still compile for Java 11 (--release 11).
-          # Tycho 5 needs JDK 21 to run - see debrief/debrief#5262.
+          # Tycho 5 needs JDK 21, and Java 21 is also Debrief's runtime.
           java-version: '21'
 
       - name: Show Maven version
@@ -147,31 +146,31 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ~/.cache/debrief-win-jre
-          key: win-jre-11.0.5-10
+          key: win-jre-21.0.13-9
 
       # The JRE is bundled into the shipped Windows zip and MSI, so it is pinned
       # to the SHA-256 published alongside the release
-      # (OpenJDK11U-jre_x64_windows_hotspot_11.0.5_10.zip.sha256.txt) and the
+      # (OpenJDK21U-jre_x64_windows_hotspot_21.0.13_9.zip.sha256.txt) and the
       # job fails on a mismatch. Keep WIN_JRE_SHA256 in step with
-      # contribs/msi/make_x64msi.sh. The JRE version itself moves with #5237.
+      # contribs/msi/make_x64msi.sh.
       - name: Download Windows JRE
         if: steps.win-jre.outputs.cache-hit != 'true'
         env:
-          WIN_JRE_SHA256: 3f9e3e4256cb2c1b63b56864dca248d7f406874b21e859e5ac7ba7ada989eceb
+          WIN_JRE_SHA256: 2332c0b4cff6bed722da3567c91d5e47568bcba863fa4945d0a8d6fc76158628
         run: |
           mkdir -p ~/.cache/debrief-win-jre
           curl -fsSL --retry 3 -o /tmp/win-jre.zip \
-            https://github.com/AdoptOpenJDK/openjdk11-binaries/releases/download/jdk-11.0.5%2B10/OpenJDK11U-jre_x64_windows_hotspot_11.0.5_10.zip
+            https://github.com/adoptium/temurin21-binaries/releases/download/jdk-21.0.13%2B9/OpenJDK21U-jre_x64_windows_hotspot_21.0.13_9.zip
           echo "${WIN_JRE_SHA256}  /tmp/win-jre.zip" | sha256sum -c -
           mv /tmp/win-jre.zip ~/.cache/debrief-win-jre/win-jre.zip
 
       # Bundle the Windows JRE into the product, so the Windows build runs
       # without a separate Java install. (macOS and Linux products still
-      # require Java 11 on the PATH - see the PR comment workflow.)
+      # require Java 21 on the PATH - see the PR comment workflow.)
       # The checksum is checked again here so a restored cache is verified too.
       - name: Stage Windows JRE into the product feature
         env:
-          WIN_JRE_SHA256: 3f9e3e4256cb2c1b63b56864dca248d7f406874b21e859e5ac7ba7ada989eceb
+          WIN_JRE_SHA256: 2332c0b4cff6bed722da3567c91d5e47568bcba863fa4945d0a8d6fc76158628
         run: |
           echo "${WIN_JRE_SHA256}  ${HOME}/.cache/debrief-win-jre/win-jre.zip" | sha256sum -c -
           echo "root.win32.win32.x86_64 = win-64" >> org.mwc.debrief.combined.feature/build.properties

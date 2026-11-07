@@ -45,7 +45,7 @@ flowchart TD
 
 ## Project Overview
 
-Debrief is an Eclipse RCP (Rich Client Platform) maritime analysis application. Built with Tycho/Maven for building Eclipse plugins and features. Builds on JDK 21 with Tycho 5; plugins compile for Java 11 (`--release 11`), which is still the runtime.
+Debrief is an Eclipse RCP (Rich Client Platform) maritime analysis application. Built with Tycho/Maven for building Eclipse plugins and features. Java 21 for build and runtime, built with Tycho 5.
 
 ### Two-Layer Architecture
 
@@ -87,7 +87,7 @@ mvn test -pl org.mwc.debrief.test2
 
 Keep library jars named on a plugin's `Bundle-ClassPath` at the bundle root, not in a subfolder such as `libs/`. Tycho turns each one into a dependency whose classifier is its path, and Maven 3.10 rejects a classifier containing `/` (`Invalid Collect Request: null`).
 
-Build with **JDK 21** and **Maven 3.9 or later**: Tycho 5 needs both. Tycho compiles with `<release>11</release>` and the Ant `<javac>` tasks set `release="11"`, so output still runs on Java 11 until the runtime moves to 21 (debrief/debrief#5262).
+Build with **JDK 21** and **Maven 3.9 or later**: Tycho 5 needs both. Bundles declare `JavaSE-21`; Tycho compiles with `<release>21</release>` and the Ant `<javac>` tasks set `release="21"`.
 
 ## Test Architecture
 
@@ -182,7 +182,7 @@ Location: `org.mwc.debrief.legacy/src/Debrief/ReaderWriter/`
 
 ## Target Platform
 
-Eclipse target platform defined in `org.mwc.debrief.targetplatforms/eclipse-latest.target`. Based on Eclipse 2021-12 with GEF, EMF, Nebula widgets.
+Eclipse target platform defined in `org.mwc.debrief.targetplatforms/eclipse-latest.target`. Based on Eclipse 2026-09 (platform 4.41) with GEF, EMF, WTP, Nebula and EASE 0.9. EASE has had no release since 0.9, which needs `org.eclipse.osgi.services` (taken from 2022-12).
 
 ## Architecture Notes
 

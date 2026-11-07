@@ -438,4 +438,4 @@ Bundle-ClassPath: postgis_1.3.5.jar,
  jackson-core-asl-1.9.4.jar,
  jackson-mapper-asl-1.9.4.jar,
  resty-0.3.1.jar
-Bundle-RequiredExecutionEnvironment: JavaSE-11
+Bundle-RequiredExecutionEnvironment: JavaSE-21
