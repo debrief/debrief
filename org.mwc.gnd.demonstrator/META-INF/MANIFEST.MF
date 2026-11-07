@@ -12,6 +12,6 @@ Require-Bundle: org.eclipse.ui,
  org.mwc.cmap.core;bundle-version="1.0.65"
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-11
-Bundle-ClassPath: libs/postgis_1.3.5.jar,
+Bundle-ClassPath: postgis_1.3.5.jar,
  .,
- libs/postgresql-8.3-604.jdbc4.jar
+ postgresql-8.3-604.jdbc4.jar

@@ -60,8 +60,10 @@
 		<mkdir dir="${temp.folder}/debrief_legacy.jar.bin"/>
 		<path id="debrief_legacy.jar.classpath">
 			<pathelement location="cmap_legacy.jar"/>
+			<fileset dir="../org.mwc.cmap.legacy" includes="*.jar" excludes="cmap_legacy.jar"></fileset>
 			<fileset dir="../org.mwc.cmap.legacy/libs" includes="*.jar"></fileset>
-			<fileset dir="../org.mwc.cmap.jfreechart/libs" includes="*.jar"></fileset>
+			<fileset dir="../org.mwc.cmap.jfreechart" includes="*.jar"></fileset>
+			<fileset dir="." includes="*.jar" excludes="cmap_legacy.jar,debrief_legacy.jar"></fileset>
 			<fileset dir="libs" includes="*.jar"></fileset>
 		</path>
 		<!-- compile the source code -->
@@ -114,9 +116,11 @@
 			</fileset>
 		</copy>
 		<copy todir="${dist.lib.dir}" failonerror="true" overwrite="true">
+			<fileset dir="${basedir}" includes="*.jar" excludes="cmap_legacy.jar,debrief_legacy.jar"/>
 			<fileset dir="${basedir}/libs" includes="*.jar"/>
+			<fileset dir="../org.mwc.cmap.legacy" includes="*.jar" excludes="cmap_legacy.jar"/>
 			<fileset dir="../org.mwc.cmap.legacy/libs" includes="*.jar"/>
-			<fileset dir="../org.mwc.cmap.jfreechart/libs" includes="*.jar"/>
+			<fileset dir="../org.mwc.cmap.jfreechart" includes="*.jar"/>
 			<fileset dir="." includes="cmap_legacy.jar"/>
 		</copy>
 	</target>

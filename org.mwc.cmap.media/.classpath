@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry exported="true" kind="lib" path="lib/xuggle-xuggler.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/commons-cli.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/logback-classic.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/logback-core.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/slf4j-api.jar"/>
-	<classpathentry kind="lib" path="lib/jni_helper.jar"/>
-	<classpathentry kind="lib" path="lib/commons-io-2.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="xuggle-xuggler.jar"/>
+	<classpathentry exported="true" kind="lib" path="commons-cli.jar"/>
+	<classpathentry exported="true" kind="lib" path="logback-classic.jar"/>
+	<classpathentry exported="true" kind="lib" path="logback-core.jar"/>
+	<classpathentry exported="true" kind="lib" path="slf4j-api.jar"/>
+	<classpathentry kind="lib" path="jni_helper.jar"/>
+	<classpathentry kind="lib" path="commons-io-2.1.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-11">
 		<attributes>
 			<attribute name="module" value="true"/>
@@ -14,6 +14,6 @@
 	</classpathentry>
 	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
 	<classpathentry kind="src" path="src"/>
-	<classpathentry kind="lib" path="lib/jai_imageio.jar"/>
+	<classpathentry kind="lib" path="jai_imageio.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

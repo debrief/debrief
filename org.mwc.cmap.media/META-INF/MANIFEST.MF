@@ -15,15 +15,15 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.nebula.widgets.cdatetime;bundle-version="0.14.0"
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-11
-Bundle-ClassPath: lib/commons-cli.jar,
- lib/logback-classic.jar,
- lib/logback-core.jar,
- lib/slf4j-api.jar,
+Bundle-ClassPath: commons-cli.jar,
+ logback-classic.jar,
+ logback-core.jar,
+ slf4j-api.jar,
  .,
- lib/jai_imageio.jar,
- lib/jni_helper.jar,
- lib/commons-io-2.1.jar,
- lib/xuggle-xuggler.jar
+ jai_imageio.jar,
+ jni_helper.jar,
+ commons-io-2.1.jar,
+ xuggle-xuggler.jar
 Export-Package: org.mwc.cmap.media,
  org.mwc.cmap.media.time,
  org.mwc.cmap.media.utility,

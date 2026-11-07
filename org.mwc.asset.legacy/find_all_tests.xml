@@ -28,7 +28,7 @@
 				<pathelement location="${build.tests}" />
 				<pathelement path="libs/junit.jar" />
 				<pathelement path="../org.mwc.cmap.legacy/bin" />
-				<pathelement path="../org.mwc.cmap.legacy/libs/openmap.jar" />
+				<pathelement path="../org.mwc.cmap.legacy/openmap.jar" />
 			</classpath>
 
 			<formatter type="plain" />

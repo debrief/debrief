@@ -7,6 +7,6 @@
 	</classpathentry>
 	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
 	<classpathentry kind="src" path="src"/>
-	<classpathentry kind="lib" path="/org.mwc.cmap.legacy/libs/flanagan.jar"/>
+	<classpathentry kind="lib" path="/org.mwc.cmap.legacy/flanagan.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

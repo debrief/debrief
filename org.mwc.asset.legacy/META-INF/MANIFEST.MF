@@ -431,11 +431,11 @@ Export-Package: ASSET;
  ASSET.Util.XMLFactory;uses:="org.w3c.dom",
  ASSET.Util.jip.rmi,
  ASSET.Util.jip.tools
-Bundle-ClassPath: libs/postgis_1.3.5.jar,
- libs/postgresql-8.3-604.jdbc4.jar,
+Bundle-ClassPath: postgis_1.3.5.jar,
+ postgresql-8.3-604.jdbc4.jar,
  .,
- libs/jaxen-1.2.0.jar,
- libs/jackson-core-asl-1.9.4.jar,
- libs/jackson-mapper-asl-1.9.4.jar,
- libs/resty-0.3.1.jar
+ jaxen-1.2.0.jar,
+ jackson-core-asl-1.9.4.jar,
+ jackson-mapper-asl-1.9.4.jar,
+ resty-0.3.1.jar
 Bundle-RequiredExecutionEnvironment: JavaSE-11
