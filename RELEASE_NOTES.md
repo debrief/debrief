@@ -1,4 +1,4 @@
-# Debrief 3.1.47
+# Debrief 3.2.0
 
 **Debrief now needs Java 21.** This release moves Debrief to a current Eclipse
 and Java toolchain, brings back Debrief Lite as a download, and retires the

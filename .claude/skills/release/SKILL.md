@@ -51,6 +51,10 @@ prerelease).
 python3 contribs/PyScripts/release_versions.py plan --json
 ```
 
+The marketing version moves by one in its last segment unless the user asks for
+a minor or major release: then pass `--marketing-version X.Y.Z` to both `plan`
+and `apply`.
+
 Show the user a table of every bundle being bumped (`old → new`), the marketing
 version change, the proposed tag, **and the list of changed paths that matched
 no bundle**. That last list is the one worth reading: a changed plugin missing
@@ -83,7 +87,7 @@ Show the draft and ask the user to approve or edit it.
 ### 4. Apply and open the PR
 
 ```bash
-python3 contribs/PyScripts/release_versions.py apply
+python3 contribs/PyScripts/release_versions.py apply   # plus --marketing-version if used in step 2
 git diff --stat
 ```
 
