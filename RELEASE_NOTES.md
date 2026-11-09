@@ -31,6 +31,9 @@ Scripting perspective. See **Before you upgrade** below.
   labels; until now it asked only when there were tracks or narratives (#5273)
 - Debrief Lite no longer marks a plot as saved, or fails with an error, when
   saving it fails (#5272)
+- On Windows, Debrief no longer offers at first start to exclude itself from
+  Microsoft Defender scanning; the prompt came with the newer Eclipse
+  platform (#5277)
 - The DebriefLegacy jar now identifies itself as "Debrief Legacy" in its
   manifest, not "Debrief Lite" (#5259)
 - DIS multicast in the vendored NPS networking code now joins groups through
