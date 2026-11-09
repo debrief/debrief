@@ -327,14 +327,13 @@ jobs:
 
   # Debrief Lite's Swing UI tests take minutes and are prone to timing
   # failures under xvfb, so they run here, in parallel with the main build,
-  # rather than inside it. Not required yet: make it required once it has
-  # passed on several consecutive runs (debrief/debrief#5261).
+  # rather than inside it. A failure here fails the workflow: the job passed
+  # 11 runs in a row before it was made required (debrief/debrief#5261).
   lite-ui-tests:
     name: Debrief Lite UI tests
     needs: changes
     if: needs.changes.outputs.software == 'true'
     runs-on: ubuntu-24.04
-    continue-on-error: true
     permissions:
       contents: read
     steps:
