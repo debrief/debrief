@@ -82,6 +82,7 @@ import org.mwc.debrief.lite.map.ContextMenu;
 import org.mwc.debrief.lite.map.GeoToolMapRenderer;
 import org.mwc.debrief.lite.map.GeoToolMapRenderer.MapRenderer;
 import org.mwc.debrief.lite.map.LiteMapPane;
+import org.mwc.debrief.lite.map.MouseWheelHandler;
 import org.mwc.debrief.lite.menu.DebriefRibbon;
 import org.mwc.debrief.lite.menu.DebriefRibbonFile;
 import org.mwc.debrief.lite.menu.DebriefRibbonInsert;
@@ -711,6 +712,14 @@ public class DebriefLiteApp implements FileDropListener {
 
 		mapPane = (LiteMapPane) geoMapRenderer.getMap();
 		createContextMenu(mapPane, geoMapRenderer.getTransform());
+
+		// wheel steps the time, ctrl-wheel zooms
+		mapPane.addMouseListener(new MouseWheelHandler(_stepControl, new Runnable() {
+			@Override
+			public void run() {
+				updateProjectionArea();
+			}
+		}));
 
 		dropSupport.addComponent(mapPane);
 
