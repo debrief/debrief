@@ -67,10 +67,24 @@ public class SliderThumbTest extends TestCase {
 		assertEquals("middle is half way", (left + right) / 2.0, JRibbonSlider.thumbCentreX(middle), 1);
 	}
 
+	public void testTrackSpansTheRange() throws Exception {
+		final JSlider slider = slider(300);
+		final int[] ends = JRibbonSlider.trackEnds(slider);
+		assertNotNull(ends);
+		assertTrue("track runs left to right, got " + ends[0] + ".." + ends[1], 0 < ends[0] && ends[0] < ends[1]
+				&& ends[1] < slider.getWidth());
+		final BasicSliderUI ui = (BasicSliderUI) slider.getUI();
+		assertEquals("left end is the minimum", slider.getMinimum(), ui.valueForXPosition(ends[0]));
+		assertEquals("right end is the maximum", slider.getMaximum(), ui.valueForXPosition(ends[1]));
+		final int x = JRibbonSlider.thumbCentreX(slider);
+		assertTrue("thumb is on the track", ends[0] <= x && x <= ends[1]);
+	}
+
 	public void testNothingDrawnWithoutARange() throws Exception {
 		final JSlider empty = new JSlider(5, 5, 5);
 		empty.setSize(400, 20);
 		assertEquals(-1, JRibbonSlider.thumbCentreX(empty));
+		assertNull(JRibbonSlider.trackEnds(empty));
 		final JSlider vertical = new JSlider(JSlider.VERTICAL, 0, 10, 5);
 		vertical.setSize(20, 400);
 		assertEquals(-1, JRibbonSlider.thumbCentreX(vertical));
