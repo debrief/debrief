@@ -77,9 +77,19 @@
 			<fileset dir="." includes="*.jar" excludes="cmap_legacy.jar,debrief_legacy.jar,cmap_geotools.jar,debrief_lite.jar"></fileset>
 		</path>
 		<!-- compile the source code -->
+		<!-- the jar's entry point: compiled for Java 8, so that on an older Java it can
+		     load and tell the user to install Java 21, instead of failing with
+		     UnsupportedClassVersionError. It refers to the rest of Lite only by name. -->
+		<javac release="8" destdir="${temp.folder}/debrief_lite.jar.bin" failonerror="true" includeantruntime="false">
+			<src path="src/main/java"/>
+			<include name="org/mwc/debrief/lite/LiteLauncher.java"/>
+			<compilerarg value="-Xlint:-options"/>
+		</javac>
 		<javac release="21" destdir="${temp.folder}/debrief_lite.jar.bin" failonerror="true">
+			<!-- LiteLauncher, compiled above, is found in destdir -->
 			<classpath refid="debrief_lite.jar.classpath" />
 			<src path="src/"			/>
+			<exclude name="**/LiteLauncher.java"/>
 		</javac>
 		<!-- Copy necessary resources -->
 		<copy todir="${temp.folder}/debrief_lite.jar.bin" failonerror="true" overwrite="false">
