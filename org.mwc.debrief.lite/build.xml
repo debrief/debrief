@@ -211,6 +211,14 @@
 		</copy>
 		<copy todir="${debrief-lite-dist.dir}/${svg-symbols.dest.dir}"><fileset dir="${svg-symbols.source.dir}" includes="**/*"></fileset></copy>
 		<copy todir="${debrief-lite-dist.dir}" file="src/main/java/icons/d_lite.png" failonerror="true" overwrite="false"/>
+		<!-- Scaled splash images for HiDPI displays (Windows UI zoom). Java takes the image
+		     from the jar, but only after finding a file of that name relative to the working
+		     directory, so they must also sit beside the jar. Without them the splash is shown
+		     pixel-for-pixel, which is tiny at 200% zoom. They are splash.gif upscaled; Windows
+		     wants splash@NNNpct.gif for fractional scales and splash@Nx.gif for whole ones. -->
+		<copy todir="${debrief-lite-dist.dir}/images" failonerror="true" overwrite="true">
+			<fileset dir="src/main/java/images" includes="splash@*.gif"/>
+		</copy>
 		<zip destfile="${dist.dir}/debrief-lite-${product.version}.zip">
 			<fileset dir="." includes="data/**/*"/>
 			<fileset dir="." includes="*.pdf"/>
