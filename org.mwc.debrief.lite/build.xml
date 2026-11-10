@@ -77,9 +77,19 @@
 			<fileset dir="." includes="*.jar" excludes="cmap_legacy.jar,debrief_legacy.jar,cmap_geotools.jar,debrief_lite.jar"></fileset>
 		</path>
 		<!-- compile the source code -->
+		<!-- the jar's entry point: compiled for Java 8, so that on an older Java it can
+		     load and tell the user to install Java 21, instead of failing with
+		     UnsupportedClassVersionError. It refers to the rest of Lite only by name. -->
+		<javac release="8" destdir="${temp.folder}/debrief_lite.jar.bin" failonerror="true" includeantruntime="false">
+			<src path="src/main/java"/>
+			<include name="org/mwc/debrief/lite/LiteLauncher.java"/>
+			<compilerarg value="-Xlint:-options"/>
+		</javac>
 		<javac release="21" destdir="${temp.folder}/debrief_lite.jar.bin" failonerror="true">
+			<!-- LiteLauncher, compiled above, is found in destdir -->
 			<classpath refid="debrief_lite.jar.classpath" />
 			<src path="src/"			/>
+			<exclude name="**/LiteLauncher.java"/>
 		</javac>
 		<!-- Copy necessary resources -->
 		<copy todir="${temp.folder}/debrief_lite.jar.bin" failonerror="true" overwrite="false">
@@ -211,6 +221,14 @@
 		</copy>
 		<copy todir="${debrief-lite-dist.dir}/${svg-symbols.dest.dir}"><fileset dir="${svg-symbols.source.dir}" includes="**/*"></fileset></copy>
 		<copy todir="${debrief-lite-dist.dir}" file="src/main/java/icons/d_lite.png" failonerror="true" overwrite="false"/>
+		<!-- Scaled splash images for HiDPI displays (Windows UI zoom). Java takes the image
+		     from the jar, but only after finding a file of that name relative to the working
+		     directory, so they must also sit beside the jar. Without them the splash is shown
+		     pixel-for-pixel, which is tiny at 200% zoom. They are splash.gif upscaled; Windows
+		     wants splash@NNNpct.gif for fractional scales and splash@Nx.gif for whole ones. -->
+		<copy todir="${debrief-lite-dist.dir}/images" failonerror="true" overwrite="true">
+			<fileset dir="src/main/java/images" includes="splash@*.gif"/>
+		</copy>
 		<zip destfile="${dist.dir}/debrief-lite-${product.version}.zip">
 			<fileset dir="." includes="data/**/*"/>
 			<fileset dir="." includes="*.pdf"/>
