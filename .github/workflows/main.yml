@@ -245,6 +245,10 @@ jobs:
             src="${products}/DebriefNG-${pair%%:*}.zip"
             [ -f "$src" ] && ln -f "$src" "review-builds/DebriefNG-${pair##*:}-${SHA}.zip"
           done
+          # Debrief Lite: one platform-neutral zip (debrief-lite-<version>.zip)
+          for src in org.mwc.debrief.lite/dist/debrief-lite-*.zip; do
+            [ -f "$src" ] && ln -f "$src" "review-builds/DebriefLite-${SHA}.zip"
+          done
           ls -l review-builds
       - name: Upload Windows build
         uses: actions/upload-artifact@v7
@@ -267,6 +271,14 @@ jobs:
         if: always() && !startsWith(github.ref, 'refs/tags/')
         with:
           path: review-builds/DebriefNG-Linux-x64-${{ steps.meta.outputs.sha }}.zip
+          archive: false
+          retention-days: 7
+          if-no-files-found: warn
+      - name: Upload Debrief Lite build
+        uses: actions/upload-artifact@v7
+        if: always() && !startsWith(github.ref, 'refs/tags/')
+        with:
+          path: review-builds/DebriefLite-${{ steps.meta.outputs.sha }}.zip
           archive: false
           retention-days: 7
           if-no-files-found: warn

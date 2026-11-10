@@ -175,6 +175,10 @@ jobs:
                 platform: 'Linux x64',
                 note: '**Requires Java 21 on the PATH**',
               }),
+              row('DebriefLite-', {
+                platform: 'Debrief Lite (any OS)',
+                note: '**Requires Java 21**; unzip and run `java -jar debrief_lite.jar`',
+              }),
             ].filter(Boolean);
 
             let body;
@@ -221,7 +225,7 @@ jobs:
                 '**Linux** — run `chmod +x DebriefNG` if the executable bit did not survive',
                 'the round trip.',
                 '',
-                'These are throwaway review builds and are deleted after 14 days. Please do',
+                'These are throwaway review builds and are deleted after 7 days. Please do',
                 'not redistribute them.',
                 '</details>',
               ].join('\n');
