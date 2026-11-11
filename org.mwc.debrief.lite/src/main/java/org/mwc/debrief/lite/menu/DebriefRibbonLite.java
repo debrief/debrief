@@ -31,7 +31,7 @@ import org.mwc.debrief.lite.util.ResizableIconFactory;
 import org.pushingpixels.flamingo.api.common.CommandAction;
 import org.pushingpixels.flamingo.api.common.CommandActionEvent;
 import org.pushingpixels.flamingo.api.common.RichTooltip;
-import org.pushingpixels.flamingo.api.common.icon.ImageWrapperResizableIcon;
+import org.mwc.debrief.lite.util.ScaledImageIcon;
 import org.pushingpixels.flamingo.api.common.model.Command;
 import org.pushingpixels.flamingo.api.common.projection.CommandButtonProjection;
 import org.pushingpixels.flamingo.api.ribbon.JRibbon;
@@ -164,10 +164,10 @@ public class DebriefRibbonLite {
 
 	private static Command addToggleCommand(final String commandName, final String imagePath,
 			final CommandAction actionToAdd) {
-		ImageWrapperResizableIcon imageIcon = null;
+		ScaledImageIcon imageIcon = null;
 		if (imagePath != null) {
 			final Image zoominImage = MenuUtils.createImage(imagePath);
-			imageIcon = ImageWrapperResizableIcon.getIcon(zoominImage, MenuUtils.ICON_SIZE_16);
+			imageIcon = ScaledImageIcon.getIcon(zoominImage, MenuUtils.ICON_SIZE_16);
 		}
 		final Command.Builder builder = Command.builder().setText(commandName)
 				.setIconFactory(ResizableIconFactory.factory(imageIcon)).setAction(actionToAdd)

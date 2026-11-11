@@ -39,7 +39,7 @@ import org.mwc.debrief.lite.util.ResizableIconFactory;
 import org.opengis.geometry.MismatchedDimensionException;
 import org.opengis.referencing.operation.TransformException;
 import org.pushingpixels.flamingo.api.common.RichTooltip;
-import org.pushingpixels.flamingo.api.common.icon.ImageWrapperResizableIcon;
+import org.mwc.debrief.lite.util.ScaledImageIcon;
 import org.pushingpixels.flamingo.api.ribbon.JRibbon;
 import org.pushingpixels.flamingo.api.ribbon.JRibbonBand;
 import org.pushingpixels.flamingo.api.ribbon.JRibbonBand.PresentationPriority;
@@ -126,7 +126,7 @@ public class DebriefRibbonInsert {
 		RibbonComboBoxContentModel<String> selectLayerModel;
 
 		final Image activeLayerImg = MenuUtils.createImage("icons/24/auto_layer.png");
-		final ImageWrapperResizableIcon imageIcon = ImageWrapperResizableIcon.getIcon(activeLayerImg,
+		final ScaledImageIcon imageIcon = ScaledImageIcon.getIcon(activeLayerImg,
 				MenuUtils.ICON_SIZE_24);
 
 		selectLayerModel = RibbonDefaultComboBoxContentModel.<String>builder()

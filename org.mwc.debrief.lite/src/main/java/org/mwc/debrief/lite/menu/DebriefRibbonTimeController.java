@@ -69,7 +69,7 @@ import org.pushingpixels.flamingo.api.common.CommandAction;
 import org.pushingpixels.flamingo.api.common.CommandActionEvent;
 import org.pushingpixels.flamingo.api.common.CommandButtonPresentationState;
 import org.pushingpixels.flamingo.api.common.RichTooltip;
-import org.pushingpixels.flamingo.api.common.icon.ImageWrapperResizableIcon;
+import org.mwc.debrief.lite.util.ScaledImageIcon;
 import org.pushingpixels.flamingo.api.common.model.Command;
 import org.pushingpixels.flamingo.api.common.model.CommandGroup;
 import org.pushingpixels.flamingo.api.common.model.CommandStripPresentationModel;
@@ -968,7 +968,7 @@ public class DebriefRibbonTimeController {
 		SwingUtilities.invokeLater(() -> {
 			// switch the icon
 			final Image playStopinImage = MenuUtils.createImage(image);
-			final ImageWrapperResizableIcon imageIcon = ImageWrapperResizableIcon.getIcon(playStopinImage,
+			final ScaledImageIcon imageIcon = ScaledImageIcon.getIcon(playStopinImage,
 					MenuUtils.ICON_SIZE_16);
 
 			playCommandButton.setExtraText(tooltip);

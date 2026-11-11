@@ -47,7 +47,7 @@ import org.opengis.referencing.operation.MathTransform;
 import org.pushingpixels.flamingo.api.common.CommandAction;
 import org.pushingpixels.flamingo.api.common.CommandActionEvent;
 import org.pushingpixels.flamingo.api.common.RichTooltip;
-import org.pushingpixels.flamingo.api.common.icon.ImageWrapperResizableIcon;
+import org.mwc.debrief.lite.util.ScaledImageIcon;
 import org.pushingpixels.flamingo.api.common.model.Command;
 import org.pushingpixels.flamingo.api.common.model.CommandButtonPresentationModel;
 import org.pushingpixels.flamingo.api.common.model.CommandGroup;
@@ -150,9 +150,9 @@ public class DebriefRibbonView {
 		final RangeBearingAction rangeAction = new RangeBearingAction(mapPane, false, statusBar, transform);
 		
 		
-		ImageWrapperResizableIcon imageIcon = null;
+		ScaledImageIcon imageIcon = null;
 		final Image zoominImage = MenuUtils.createImage("icons/24/rng_brg.png");
-		imageIcon = ImageWrapperResizableIcon.getIcon(zoominImage, MenuUtils.ICON_SIZE_16);
+		imageIcon = ScaledImageIcon.getIcon(zoominImage, MenuUtils.ICON_SIZE_16);
 		for (int i = 0; i < WorldDistance.UnitLabels.length; i++) {
 			rangeBearingUnitPopupCommands.add(Command.builder().setText(WorldDistance.UnitLabels[i]).setToggle()
 					.build());
