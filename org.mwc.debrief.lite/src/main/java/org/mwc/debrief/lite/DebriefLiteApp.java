@@ -97,7 +97,7 @@ import org.opengis.geometry.MismatchedDimensionException;
 import org.opengis.referencing.operation.MathTransform;
 import org.opengis.referencing.operation.NoninvertibleTransformException;
 import org.opengis.referencing.operation.TransformException;
-import org.pushingpixels.flamingo.api.common.icon.ImageWrapperResizableIcon;
+import org.mwc.debrief.lite.util.ScaledImageIcon;
 import org.pushingpixels.flamingo.api.ribbon.JRibbonFrame;
 import org.pushingpixels.substance.api.SubstanceCortex;
 import org.pushingpixels.substance.api.skin.BusinessBlueSteelSkin;
@@ -830,7 +830,7 @@ public class DebriefLiteApp implements FileDropListener {
 		// lastly give us some backdrop data
 		loadBackdropdata(_theLayers);
 		theFrame.setApplicationIcon(ResizableIconFactory.factory(
-				ImageWrapperResizableIcon.getIcon(MenuUtils.createImage("icons/d_lite.png"), MenuUtils.ICON_SIZE_32)));
+				ScaledImageIcon.getIcon(MenuUtils.createImage("icons/d_lite.png"), MenuUtils.ICON_SIZE_32)));
 		theFrame.setIconImage(new ImageIcon(ClassLoader.getSystemResource("icons/d_lite.png")).getImage());
 		theFrame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 		theFrame.setVisible(true);

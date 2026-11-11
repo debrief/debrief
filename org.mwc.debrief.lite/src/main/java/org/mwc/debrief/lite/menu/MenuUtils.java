@@ -30,7 +30,7 @@ import org.pushingpixels.flamingo.api.common.CommandAction;
 import org.pushingpixels.flamingo.api.common.CommandButtonPresentationState;
 import org.pushingpixels.flamingo.api.common.JCommandButton;
 import org.pushingpixels.flamingo.api.common.RichTooltip;
-import org.pushingpixels.flamingo.api.common.icon.ImageWrapperResizableIcon;
+import org.mwc.debrief.lite.util.ScaledImageIcon;
 import org.pushingpixels.flamingo.api.common.model.Command;
 import org.pushingpixels.flamingo.api.common.model.CommandButtonPresentationModel;
 import org.pushingpixels.flamingo.api.common.model.CommandToggleGroupModel;
@@ -129,10 +129,10 @@ public class MenuUtils {
 	public static Command addCommandToggleButton(final String commandName, final String imagePath,
 			final CommandAction actionToAdd, final JRibbonBand mapBand, final PresentationPriority priority,
 			final boolean isToggle, final CommandToggleGroupModel group, final boolean toggleSelected) {
-		ImageWrapperResizableIcon imageIcon = null;
+		ScaledImageIcon imageIcon = null;
 		if (imagePath != null) {
 			final Image zoominImage = createImage(imagePath);
-			imageIcon = ImageWrapperResizableIcon.getIcon(zoominImage, ICON_SIZE_16);
+			imageIcon = ScaledImageIcon.getIcon(zoominImage, ICON_SIZE_16);
 		}
 		final Command.Builder builder = Command.builder().setText(commandName)
 				.setIconFactory(ResizableIconFactory.factory(imageIcon)).setAction(actionToAdd)
@@ -159,10 +159,10 @@ public class MenuUtils {
 
 	public static CommandButtonProjection<Command> createCommand(final String commandName, final String imagePath,
 			final CommandAction actionToAdd, final PopupPanelCallback popupCallback, final String tooltip) {
-		ImageWrapperResizableIcon imageIcon = null;
+		ScaledImageIcon imageIcon = null;
 		if (imagePath != null) {
 			final Image zoominImage = createImage(imagePath);
-			imageIcon = ImageWrapperResizableIcon.getIcon(zoominImage, new Dimension(16, 16));
+			imageIcon = ScaledImageIcon.getIcon(zoominImage, new Dimension(16, 16));
 		}
 
 		final Command.Builder builder = Command.builder().setText(commandName)
@@ -192,10 +192,10 @@ public class MenuUtils {
 	 */
 	public static Command createCommandObject(final String commandName, final String imagePath,
 			final CommandAction actionToAdd, final PresentationPriority priority, final String description) {
-		ImageWrapperResizableIcon imageIcon = null;
+		ScaledImageIcon imageIcon = null;
 		if (imagePath != null) {
 			final Image zoominImage = createImage(imagePath);
-			imageIcon = ImageWrapperResizableIcon.getIcon(zoominImage, new Dimension(16, 16));
+			imageIcon = ScaledImageIcon.getIcon(zoominImage, new Dimension(16, 16));
 		}
 
 		final Command.Builder builder = Command.builder().setText(commandName)

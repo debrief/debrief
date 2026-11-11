@@ -39,7 +39,7 @@ import org.mwc.debrief.lite.util.ResizableIconFactory;
 import org.pushingpixels.flamingo.api.common.CommandAction;
 import org.pushingpixels.flamingo.api.common.CommandActionEvent;
 import org.pushingpixels.flamingo.api.common.CommandButtonPresentationState;
-import org.pushingpixels.flamingo.api.common.icon.ImageWrapperResizableIcon;
+import org.mwc.debrief.lite.util.ScaledImageIcon;
 import org.pushingpixels.flamingo.api.common.model.Command;
 import org.pushingpixels.flamingo.api.common.model.CommandButtonPresentationModel;
 import org.pushingpixels.flamingo.api.common.model.CommandGroup;
@@ -305,7 +305,7 @@ public class DebriefRibbonFile {
 				.build();
 
 		final Image saveImage = MenuUtils.createImage("icons/16/save.png");
-		final ImageWrapperResizableIcon imageIcon = ImageWrapperResizableIcon.getIcon(saveImage, new Dimension(16, 16));
+		final ScaledImageIcon imageIcon = ScaledImageIcon.getIcon(saveImage, new Dimension(16, 16));
 		fileMenu.addRibbonCommand(
 				Command.builder().setText("Save").setAction(new DoSave(session, ribbon.getRibbonFrame()))
 						.setIconFactory(ResizableIconFactory.factory(imageIcon))
@@ -375,7 +375,7 @@ public class DebriefRibbonFile {
 	private static CommandMenuContentModel getSavePopupContentModel(final Session session,
 			final JRibbonFrame theFrame) {
 		final Image saveImage = MenuUtils.createImage("icons/16/save.png");
-		final ImageWrapperResizableIcon imageIcon = ImageWrapperResizableIcon.getIcon(saveImage, new Dimension(16, 16));
+		final ScaledImageIcon imageIcon = ScaledImageIcon.getIcon(saveImage, new Dimension(16, 16));
 		final List<CommandGroup> commandGroups = new ArrayList<>();
 		final List<Command> commands = new ArrayList<>();
 		final Command saveCommand = Command.builder().setText("Save")
@@ -390,7 +390,7 @@ public class DebriefRibbonFile {
 		 */
 
 		final Image saveAsImage = MenuUtils.createImage("icons/16/save-as.png");
-		final ImageWrapperResizableIcon imageIcon2 = ImageWrapperResizableIcon.getIcon(saveAsImage,
+		final ScaledImageIcon imageIcon2 = ScaledImageIcon.getIcon(saveAsImage,
 				new Dimension(16, 16));
 		final Command saveAsCommand = Command.builder().setText("SaveAs")
 				.setIconFactory(ResizableIconFactory.factory(imageIcon2)).setAction(new DoSaveAs(session, theFrame))
