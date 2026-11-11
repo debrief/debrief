@@ -15,6 +15,7 @@
 
 package org.mwc.debrief.lite.gui.custom.graph;
 
+import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.FlowLayout;
@@ -31,6 +32,7 @@ import java.io.File;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Vector;
@@ -45,6 +47,10 @@ import javax.swing.JPanel;
 import javax.swing.JToggleButton;
 
 import org.jfree.chart.annotations.XYTextAnnotation;
+import org.jfree.chart.axis.ValueAxis;
+import org.jfree.chart.event.ChartProgressEvent;
+import org.jfree.chart.event.ChartProgressListener;
+import org.jfree.chart.plot.XYPlot;
 import org.jfree.data.time.TimeSeriesCollection;
 import org.jfree.ui.TextAnchor;
 import org.mwc.debrief.lite.gui.LiteStepControl;
@@ -74,6 +80,7 @@ import MWC.GUI.JFreeChart.NewFormattedJFreeChart;
 import MWC.GUI.JFreeChart.RelBearingFormatter;
 import MWC.GUI.JFreeChart.formattingOperation;
 import MWC.GenericData.WatchableList;
+import MWC.Utilities.TextFormatting.GMTDateFormat;
 import MWC.Utilities.XYPlot.XYPlotUtilities;
 
 public class GraphPanelToolbar extends JPanel {
@@ -103,11 +110,22 @@ public class GraphPanelToolbar extends JPanel {
 
 	private final SimpleEditablePropertyPanel _xyPanel;
 
+	private static final String SHOW_CROSSHAIR = "Show the crosshair on the graph";
+
+	private static final String HIDE_CROSSHAIR = "Hide the crosshair from the graph (for printing)";
+
 	private final String symbolOn = "icons/16/symbol_on.png";
 
 	private final String symbolOff = "icons/16/symbol_off.png";
 
 	private final JToggleButton showSymbolsButton;
+
+	private final JToggleButton hideCrosshair;
+
+	/**
+	 * label showing the value at the crosshair
+	 */
+	private final XYTextAnnotation _crosshairValueText;
 
 	private final DefaultComboBoxModel<CalculationHolder> operationComboModel = new DefaultComboBoxModel<CalculationHolder>();
 
@@ -176,11 +194,84 @@ public class GraphPanelToolbar extends JPanel {
 		_xyPanel = xyPanel;
 
 		showSymbolsButton = createJToggleButton("Show Symbols", symbolOff);
+		hideCrosshair = createJToggleButton(SHOW_CROSSHAIR, "icons/16/fix.png");
+		_crosshairValueText = new XYTextAnnotation(" ", 0, 0);
+		_crosshairValueText.setTextAnchor(TextAnchor.TOP_LEFT);
+		_crosshairValueText.setFont(Defaults.getFont());
+		_crosshairValueText.setPaint(Color.black);
+		_crosshairValueText.setBackgroundPaint(Color.white);
 		init();
 
 		stateListeners = new ArrayList<>(Arrays.asList(enableDisableButtonsListener, tracksChangedListeners));
 
 		setState(INACTIVE_STATE);
+	}
+
+	/**
+	 * show/hide the crosshair (and its value label) on the current chart, to match
+	 * the toggle button
+	 */
+	private void applyCrosshair() {
+		final boolean show = hideCrosshair.isSelected();
+		hideCrosshair.setToolTipText(show ? HIDE_CROSSHAIR : SHOW_CROSSHAIR);
+
+		if (_xytool == null || _xytool.getGeneratedJFreeChart() == null) {
+			return;
+		}
+
+		final XYPlot plot = _xytool.getGeneratedJFreeChart().getXYPlot();
+		plot.removeAnnotation(_crosshairValueText);
+		if (show) {
+			plot.setDomainCrosshairPaint(Color.GRAY);
+			plot.setRangeCrosshairPaint(Color.GRAY);
+			plot.setDomainCrosshairStroke(new BasicStroke(2));
+			plot.setRangeCrosshairStroke(new BasicStroke(2));
+
+			// the crosshair starts at the origin, which is rarely on the graph. Put it
+			// somewhere the user can see it, they can click on the graph to move it
+			if (!plot.getDomainAxis().getRange().contains(plot.getDomainCrosshairValue())) {
+				plot.setDomainCrosshairValue(plot.getDomainAxis().getRange().getCentralValue(), false);
+			}
+			if (!plot.getRangeAxis().getRange().contains(plot.getRangeCrosshairValue())) {
+				plot.setRangeCrosshairValue(plot.getRangeAxis().getRange().getCentralValue(), false);
+			}
+			updateCrosshairLabel(plot);
+			plot.addAnnotation(_crosshairValueText);
+		}
+		plot.setDomainCrosshairVisible(show);
+		plot.setRangeCrosshairVisible(show);
+	}
+
+	/**
+	 * keep the crosshair label in the top-left corner, showing the crosshair value
+	 *
+	 * @return whether anything changed
+	 */
+	private boolean updateCrosshairLabel(final XYPlot plot) {
+		boolean changed = false;
+		// (some axes are inverted, depth for instance)
+		final ValueAxis xAxis = plot.getDomainAxis();
+		final ValueAxis yAxis = plot.getRangeAxis();
+		final double x = xAxis.isInverted() ? xAxis.getUpperBound() : xAxis.getLowerBound();
+		final double y = yAxis.isInverted() ? yAxis.getLowerBound() : yAxis.getUpperBound();
+		if (_crosshairValueText.getX() != x) {
+			_crosshairValueText.setX(x);
+			changed = true;
+		}
+		if (_crosshairValueText.getY() != y) {
+			_crosshairValueText.setY(y);
+			changed = true;
+		}
+
+		final String value = MWC.Utilities.TextFormatting.GeneralFormat
+				.formatOneDecimalPlace(plot.getRangeCrosshairValue());
+		final String time = new GMTDateFormat("HHmm:ss").format(new Date((long) plot.getDomainCrosshairValue()));
+		final String message = " [" + time + "," + value + "]";
+		if (!message.equals(_crosshairValueText.getText())) {
+			_crosshairValueText.setText(message);
+			changed = true;
+		}
+		return changed;
 	}
 
 	/**
@@ -328,32 +419,11 @@ public class GraphPanelToolbar extends JPanel {
 				updateSymbolButton(symbolOn, symbolOff, showSymbolsButton, isSelected);
 			}
 		});
-		final JToggleButton hideCrosshair = createJToggleButton("Show the crosshair from the graph (for printing)",
-				"icons/16/fix.png");
-
-		final XYTextAnnotation _crosshairValueText = new XYTextAnnotation(" ", 0, 0);
-		_crosshairValueText.setTextAnchor(TextAnchor.TOP_LEFT);
-		_crosshairValueText.setFont(Defaults.getFont());
-		_crosshairValueText.setPaint(Color.black);
-		_crosshairValueText.setBackgroundPaint(Color.white);
 		hideCrosshair.addActionListener(new ActionListener() {
 
 			@Override
 			public void actionPerformed(final ActionEvent arg0) {
-				_xytool.getGeneratedChartPanel().getChart().getXYPlot()
-						.setDomainCrosshairVisible(hideCrosshair.isSelected());
-				_xytool.getGeneratedChartPanel().getChart().getXYPlot()
-						.setRangeCrosshairVisible(hideCrosshair.isSelected());
-
-				if (hideCrosshair.isSelected()) {
-					_xytool.getGeneratedJFreeChart().getXYPlot().addAnnotation(_crosshairValueText);
-					hideCrosshair.setToolTipText("Hide the crosshair from the graph (for printing)");
-				} else {
-					_xytool.getGeneratedJFreeChart().getXYPlot().removeAnnotation(_crosshairValueText);
-					hideCrosshair.setToolTipText("Show the crosshair from the graph (for printing)");
-				}
-
-				_xytool.getGeneratedChartPanel().invalidate();
+				applyCrosshair();
 			}
 		});
 		// final JToggleButton expandButton = createJToggleButton(
@@ -527,6 +597,24 @@ public class GraphPanelToolbar extends JPanel {
 						}
 					}
 				});
+
+				final NewFormattedJFreeChart chart = _xytool.getGeneratedJFreeChart();
+				chart.addProgressListener(new ChartProgressListener() {
+
+					@Override
+					public void chartProgress(final ChartProgressEvent event) {
+						// the crosshair moves when the user clicks on the graph, and the axes
+						// move on zoom. Keep the label in step with them
+						if (event.getType() == ChartProgressEvent.DRAWING_FINISHED && hideCrosshair.isSelected()
+								&& updateCrosshairLabel(chart.getXYPlot())) {
+							chart.fireChartChanged();
+						}
+					}
+				});
+
+				// this is a new chart, so give it the settings the buttons are showing
+				chart.setShowSymbols(showSymbolsButton.isSelected());
+				applyCrosshair();
 
 				setState(ACTIVE_STATE);
 			} else {

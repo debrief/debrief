@@ -64,6 +64,15 @@ public class ColourStandardXYItemRenderer extends DefaultXYItemRenderer {
 	private double _symbolSize = 6;
 
 	/**
+	 * cached answer for hasMarkedItems()
+	 */
+	private transient TimeSeries _lastSeries;
+
+	private transient int _lastSeriesCount;
+
+	private transient boolean _lastSeriesMarked;
+
+	/**
 	 * Constructs a new renderer.
 	 * <p>
 	 * To specify the type of renderer, use one of the constants: SHAPES, LINES or
@@ -259,7 +268,9 @@ public class ColourStandardXYItemRenderer extends DefaultXYItemRenderer {
 				if (tsdp instanceof ColouredDataItem) {
 					final ColouredDataItem cdi = (ColouredDataItem) tsdp;
 					// is the base renderer set to show all
-					if (this.getBaseShapesVisible() && cdi.isParentSymVisible()) {
+					// only mark the items whose parent has a visible symbol - unless
+					// none of them do, in which case we mark all of them
+					if (this.getBaseShapesVisible() && (cdi.isParentSymVisible() || !hasMarkedItems(bts))) {
 						res = true;
 					} else {
 						res = false;
@@ -275,6 +286,29 @@ public class ColourStandardXYItemRenderer extends DefaultXYItemRenderer {
 		}
 
 		return res;
+	}
+
+	/**
+	 * whether any item in this series has a parent with a visible symbol. Items
+	 * are drawn a series at a time, so we just remember the answer for the most
+	 * recent series
+	 *
+	 * @param series the series to check
+	 * @return yes/no
+	 */
+	private boolean hasMarkedItems(final TimeSeries series) {
+		final int count = series.getItemCount();
+		if (series != _lastSeries || count != _lastSeriesCount) {
+			boolean found = false;
+			for (int i = 0; i < count && !found; i++) {
+				final TimeSeriesDataItem item = series.getDataItem(i);
+				found = item instanceof ColouredDataItem && ((ColouredDataItem) item).isParentSymVisible();
+			}
+			_lastSeries = series;
+			_lastSeriesCount = count;
+			_lastSeriesMarked = found;
+		}
+		return _lastSeriesMarked;
 	}
 
 	/**
