@@ -119,7 +119,6 @@
 		</copy>
 		<copy todir="${dist.lib.dir}" failonerror="true" overwrite="true">
 			<fileset dir="${basedir}" includes="*.jar" excludes="cmap_legacy.jar,debrief_legacy.jar"/>
-			<fileset dir="${basedir}/libs" includes="*.jar"/>
 			<fileset dir="../org.mwc.cmap.legacy" includes="*.jar" excludes="cmap_legacy.jar"/>
 			<fileset dir="../org.mwc.cmap.legacy/libs" includes="*.jar"/>
 			<fileset dir="../org.mwc.cmap.jfreechart" includes="*.jar"/>
