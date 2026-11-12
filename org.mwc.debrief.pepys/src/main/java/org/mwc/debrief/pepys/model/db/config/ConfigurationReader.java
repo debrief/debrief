@@ -43,7 +43,9 @@ public class ConfigurationReader {
 
 		/** Debrief reads Pepys SQLite files only: a Postgres configuration says so */
 		public void testPostgresIsRejected() throws Exception {
-			final String postgresConfiguration = "[database]\ndb_type = postgres\ndb_host = localhost\n";
+			final String postgresConfiguration = "[" + org.mwc.debrief.pepys.model.db.DatabaseConnection.CONFIGURATION_TAG
+					+ "]\n" + org.mwc.debrief.pepys.model.db.DatabaseConnection.CONFIGURATION_DATABASE_TYPE + " = "
+					+ org.mwc.debrief.pepys.model.db.DatabaseConnection.POSTGRES + "\n";
 			final org.mwc.debrief.pepys.model.ModelConfiguration model = new org.mwc.debrief.pepys.model.ModelConfiguration();
 			try {
 				model.loadDatabaseConfiguration(new ByteArrayInputStream(postgresConfiguration.getBytes()));
