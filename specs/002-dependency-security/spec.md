@@ -118,4 +118,4 @@ Each vulnerable library is upgraded in its own pull request, ordered by exposure
 - `.github/workflows/dependency-scan.yml`, `.github/grype.yaml`, `.github/scripts/dependency_report.py`, `.github/dependabot.yml`.
 - Golden-file tests and `org.mwc.debrief.legacy/test_data/golden/`.
 - `docs/dependencies/baseline-2026-11.md`.
-- **Moved forward from PR 3:** XStream 1.4.12 → 1.4.21, with an allow-list. The new test showed 1.4.12 can't create an `XStream` on Java 21, so saving and restoring XY plots was broken.
+- **Moved forward from PR 3:** XStream 1.4.12 → 1.4.21, with an allow-list. The new test showed 1.4.12 can't create an `XStream` on Java 21, so saving and restoring XY plots was broken. The memento also leaves out JFreeChart's series listener fields, which Java 21 won't let XStream reach, and re-links each series on reading.

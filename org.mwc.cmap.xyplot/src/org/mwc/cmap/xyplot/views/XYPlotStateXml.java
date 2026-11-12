@@ -16,13 +16,22 @@
 package org.mwc.cmap.xyplot.views;
 
 import java.awt.Color;
+import java.beans.PropertyChangeSupport;
+import java.beans.VetoableChangeListener;
+import java.beans.VetoableChangeSupport;
 import java.io.File;
+import java.lang.reflect.Field;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 
+import javax.swing.event.EventListenerList;
+
+import org.jfree.data.general.Series;
+import org.jfree.data.general.SeriesChangeListener;
 import org.jfree.data.time.FixedMillisecond;
 import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.TimeSeriesCollection;
+import org.jfree.data.xy.XYSeriesCollection;
 
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.xml.DomDriver;
@@ -45,6 +54,12 @@ public final class XYPlotStateXml {
 	public static final class TestMe extends TestCase {
 
 		private static final String GOLDEN = "xyplot/time_series_memento.xml";
+
+		/** a type outside the allow-list, with no XStream converter of its own */
+		private static final class NotAllowed {
+			@SuppressWarnings("unused")
+			private final int value = 1;
+		}
 
 		/** a dataset shaped like the ones Debrief's time-variable plots build */
 		private static TimeSeriesCollection sampleDataset() {
@@ -91,7 +106,19 @@ public final class XYPlotStateXml {
 			final String dataXml = writer().toXML(dataset);
 			final String formatterXml = writer().toXML(formatter);
 
-			assertSameDataset(dataset, reader().fromXML(dataXml));
+			final Object restored = readDataset(reader(), dataXml);
+			assertSameDataset(dataset, restored);
+
+			// the restored series are wired to their collection, as addSeries() does
+			final TimeSeries series = ((TimeSeriesCollection) restored).getSeries(0);
+			series.add(new FixedMillisecond(818740800000L + 3_600_000L), 1d);
+			assertEquals("collection sees the new item", 6, ((TimeSeriesCollection) restored).getItemCount(0));
+			try {
+				series.setKey("COLLINGWOOD range");
+				fail("the collection vetoes a duplicate series key");
+			} catch (final IllegalArgumentException e) {
+				// expected: the collection is listening again
+			}
 			assertTrue("formatter restored", reader().fromXML(formatterXml) instanceof CourseFormatter);
 
 			// the scalar plot attributes the view also stores
@@ -102,10 +129,10 @@ public final class XYPlotStateXml {
 
 		/** a memento naming a type outside the allow-list is refused, not instantiated */
 		public void testRefusesOtherTypes() {
-			final String xml = writer().toXML(new java.io.File("x"));
+			final String xml = writer().toXML(new NotAllowed());
 			try {
 				reader().fromXML(xml);
-				fail("java.io.File is not on the allow-list");
+				fail("NotAllowed is not on the allow-list");
 			} catch (final com.thoughtworks.xstream.XStreamException e) {
 				assertEquals("refused by the security framework", "ForbiddenClassException",
 						e.getClass().getSimpleName());
@@ -126,7 +153,7 @@ public final class XYPlotStateXml {
 			assertTrue("golden memento " + golden + " exists; regenerate with -D" + GoldenFile.REGENERATE_PROPERTY
 					+ "=true", golden.isFile());
 			final String xml = new String(Files.readAllBytes(golden.toPath()), StandardCharsets.UTF_8);
-			assertSameDataset(dataset, reader().fromXML(xml));
+			assertSameDataset(dataset, readDataset(reader(), xml));
 		}
 	}
 
@@ -140,9 +167,25 @@ public final class XYPlotStateXml {
 
 	private static final Class<?>[] ALLOWED_TYPES = { Color.class };
 
+	/**
+	 * a JFreeChart series holds its listeners in fields that aren't transient: a
+	 * Swing EventListenerList and java.beans change supports. Java 21 doesn't let
+	 * XStream reach into those, so they are left out of the memento, and
+	 * {@link #readDataset} wires the series up again after reading.
+	 */
+	private static final String[] SERIES_LISTENER_FIELDS = { "listeners", "propertyChangeSupport",
+			"vetoableChangeSupport" };
+
+	private static XStream configure(final XStream xs) {
+		for (final String field : SERIES_LISTENER_FIELDS) {
+			xs.omitField(Series.class, field);
+		}
+		return xs;
+	}
+
 	/** the XStream that reads a dataset, formatter or attribute back from the memento */
 	public static XStream reader() {
-		final XStream xs = new XStream(new DomDriver());
+		final XStream xs = configure(new XStream(new DomDriver()));
 		xs.allowTypesByWildcard(ALLOWED_WILDCARDS);
 		xs.allowTypes(ALLOWED_TYPES);
 		return xs;
@@ -150,7 +193,49 @@ public final class XYPlotStateXml {
 
 	/** the XStream that writes a dataset, formatter or attribute into the memento */
 	public static XStream writer() {
-		return new XStream(new StaxDriver());
+		return configure(new XStream(new StaxDriver()));
+	}
+
+	/**
+	 * read a dataset written by {@link #writer()}, and give each series new,
+	 * empty listener lists, listened to by its collection, as
+	 * {@code addSeries()} would have left it
+	 */
+	public static Object readDataset(final XStream reader, final String xml) {
+		final Object res = reader.fromXML(xml);
+		if (res instanceof TimeSeriesCollection) {
+			final TimeSeriesCollection tsc = (TimeSeriesCollection) res;
+			for (int i = 0; i < tsc.getSeriesCount(); i++) {
+				relink(tsc.getSeries(i), tsc);
+			}
+		} else if (res instanceof XYSeriesCollection) {
+			final XYSeriesCollection xyc = (XYSeriesCollection) res;
+			for (int i = 0; i < xyc.getSeriesCount(); i++) {
+				relink(xyc.getSeries(i), xyc);
+			}
+		}
+		return res;
+	}
+
+	private static void relink(final Series series, final Object collection) {
+		try {
+			setField(series, "listeners", new EventListenerList());
+			setField(series, "propertyChangeSupport", new PropertyChangeSupport(series));
+			setField(series, "vetoableChangeSupport", new VetoableChangeSupport(series));
+		} catch (final ReflectiveOperationException e) {
+			throw new IllegalStateException("Can't restore the listeners of series " + series.getKey(), e);
+		}
+		series.addChangeListener((SeriesChangeListener) collection);
+		if (collection instanceof VetoableChangeListener) {
+			series.addVetoableChangeListener((VetoableChangeListener) collection);
+		}
+	}
+
+	private static void setField(final Object target, final String name, final Object value)
+			throws ReflectiveOperationException {
+		final Field f = Series.class.getDeclaredField(name);
+		f.setAccessible(true);
+		f.set(target, value);
 	}
 
 	private XYPlotStateXml() {

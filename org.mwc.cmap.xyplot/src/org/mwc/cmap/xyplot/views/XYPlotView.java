@@ -1123,7 +1123,7 @@ public class XYPlotView extends ViewPart {
 			if (dataStr == null)
 				return;
 
-			_dataset = (AbstractSeriesDataset) xs.fromXML(dataStr);
+			_dataset = (AbstractSeriesDataset) XYPlotStateXml.readDataset(xs, dataStr);
 
 			// right, that's the essential bits, now open the plot
 			showPlot(_myTitle, _dataset, _myUnits, _theFormatter, _myId);
