@@ -5,7 +5,7 @@ Bundle-SymbolicName: org.mwc.cmap.core; singleton:=true
 Bundle-Version: 1.0.272
 Bundle-ClassPath: cmap_core.jar,
  WMFWriter.jar,
- xstream-1.4.12.jar,
+ xstream-1.4.21.jar,
  org.eclipse.nebula.widgets.formattedtext_1.0.0.jar,
  mockito-all-1.8.5.jar,
  imageio-ext-tiff-1.1.2.jar,

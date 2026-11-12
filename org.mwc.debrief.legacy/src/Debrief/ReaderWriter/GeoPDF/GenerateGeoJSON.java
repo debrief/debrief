@@ -91,10 +91,16 @@ public class GenerateGeoJSON {
 			final java.util.TimeZone oldZone = java.util.TimeZone.getDefault();
 			java.util.TimeZone.setDefault(java.util.TimeZone.getTimeZone("GMT"));
 			try {
+				// importing into a set of layers reads a <layers> element, so hand it
+				// just that part of the plot file (the whole plot needs a GUI session)
+				final String plot = new String(java.nio.file.Files.readAllBytes(new java.io.File(sampledpf).toPath()),
+						java.nio.charset.StandardCharsets.UTF_8);
+				final String layersXml = plot.substring(plot.indexOf("<layers"),
+						plot.indexOf("</layers>") + "</layers>".length());
 				final Layers layers = new Layers();
-				try (FileInputStream is = new FileInputStream(sampledpf)) {
-					new Debrief.ReaderWriter.XML.DebriefXMLReaderWriter(null).importThis("sample.dpf", is, layers);
-				}
+				new Debrief.ReaderWriter.XML.DebriefXMLReaderWriter(null).importThis("sample.dpf",
+						new java.io.ByteArrayInputStream(layersXml.getBytes(java.nio.charset.StandardCharsets.UTF_8)),
+						layers);
 
 				final ObjectMapper mapper = new ObjectMapper();
 				mapper.configure(com.fasterxml.jackson.databind.SerializationFeature.ORDER_MAP_ENTRIES_BY_KEYS, true);

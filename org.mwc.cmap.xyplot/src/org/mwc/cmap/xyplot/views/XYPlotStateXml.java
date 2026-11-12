@@ -100,6 +100,18 @@ public final class XYPlotStateXml {
 			assertEquals("flag", Boolean.TRUE, reader().fromXML(writer().toXML(Boolean.TRUE)));
 		}
 
+		/** a memento naming a type outside the allow-list is refused, not instantiated */
+		public void testRefusesOtherTypes() {
+			final String xml = writer().toXML(new java.io.File("x"));
+			try {
+				reader().fromXML(xml);
+				fail("java.io.File is not on the allow-list");
+			} catch (final com.thoughtworks.xstream.XStreamException e) {
+				assertEquals("refused by the security framework", "ForbiddenClassException",
+						e.getClass().getSimpleName());
+			}
+		}
+
 		/**
 		 * a memento written by the current XStream and JFreeChart is committed as a
 		 * golden file. Whatever library versions come later must still read it,
@@ -118,9 +130,22 @@ public final class XYPlotStateXml {
 		}
 	}
 
+	/**
+	 * the types a memento may hold, beyond the plain Java ones (strings, numbers,
+	 * collections) that XStream allows by default: JFreeChart's datasets and
+	 * series, Debrief's data items and formatters, and colours. Anything else in
+	 * the memento is refused rather than instantiated.
+	 */
+	private static final String[] ALLOWED_WILDCARDS = { "org.jfree.**", "MWC.GUI.JFreeChart.**" };
+
+	private static final Class<?>[] ALLOWED_TYPES = { Color.class };
+
 	/** the XStream that reads a dataset, formatter or attribute back from the memento */
 	public static XStream reader() {
-		return new XStream(new DomDriver());
+		final XStream xs = new XStream(new DomDriver());
+		xs.allowTypesByWildcard(ALLOWED_WILDCARDS);
+		xs.allowTypes(ALLOWED_TYPES);
+		return xs;
 	}
 
 	/** the XStream that writes a dataset, formatter or attribute into the memento */
