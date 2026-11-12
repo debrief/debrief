@@ -1,0 +1,113 @@
+# Dependency scan: an SBOM of the libraries committed to the repo, and a
+# vulnerability report against it.
+#
+# Debrief's third-party jars are committed, not managed by Maven, so nothing
+# else watches them. Syft identifies each jar (from the Maven metadata inside
+# it, or failing that its manifest and file name) and native library; Grype
+# matches them against known vulnerabilities.
+#
+# The RCPTT test runner and contribs/ are scanned and reported separately: they
+# are test tooling and extras, not part of the shipped products.
+#
+# REPORT ONLY for now: the job never fails on findings. Gating on new High and
+# Critical findings is switched on once the first security bump lands (see
+# docs/dependencies/plan.md, PR 3+). Exceptions live in .github/grype.yaml.
+
+name: Dependency scan
+
+on:
+  pull_request:
+    branches: [ develop ]
+  schedule:
+    - cron: '37 5 * * 1'   # Mondays, 05:37 UTC
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: dependency-scan-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+env:
+  # Pinned so a scanner upgrade shows up as its own change. Bump deliberately,
+  # and note in the PR any change in the findings it causes.
+  SYFT_VERSION: v1.57.1
+  GRYPE_VERSION: v0.121.3
+  GRYPE_CONFIG: .github/grype.yaml
+  GRYPE_CHECK_FOR_APP_UPDATE: 'false'
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  scan:
+    name: SBOM and vulnerability report
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install Syft
+        id: syft
+        uses: anchore/sbom-action/download-syft@v0
+        with:
+          syft-version: ${{ env.SYFT_VERSION }}
+
+      - name: Install Grype
+        id: grype
+        uses: anchore/scan-action/download-grype@v6
+        with:
+          grype-version: ${{ env.GRYPE_VERSION }}
+
+      - name: Build SBOMs
+        env:
+          SYFT: ${{ steps.syft.outputs.cmd }}
+        run: |
+          mkdir -p scan
+          # the shipped products: everything except the separately reported folders
+          "$SYFT" scan dir:. \
+            --exclude './.git/**' \
+            --exclude './org.mwc.debrief.ui_test/rcptt-runner/**' \
+            --exclude './contribs/**' \
+            --source-name debrief --source-version "${GITHUB_SHA}" \
+            -o syft-json=scan/sbom-debrief.syft.json \
+            -o cyclonedx-json=scan/sbom-debrief.cdx.json
+          "$SYFT" scan dir:./org.mwc.debrief.ui_test/rcptt-runner \
+            --source-name rcptt-runner -o syft-json=scan/sbom-rcptt-runner.syft.json
+          "$SYFT" scan dir:./contribs \
+            --source-name contribs -o syft-json=scan/sbom-contribs.syft.json
+
+      - name: Scan for vulnerabilities
+        env:
+          GRYPE: ${{ steps.grype.outputs.cmd }}
+        run: |
+          "$GRYPE" db update
+          "$GRYPE" db status
+          for part in debrief rcptt-runner contribs; do
+            "$GRYPE" "sbom:scan/sbom-${part}.syft.json" -c "$GRYPE_CONFIG" \
+              -o "json=scan/grype-${part}.json" \
+              -o "table=scan/grype-${part}.txt"
+          done
+
+      - name: Write the report
+        run: |
+          python3 .github/scripts/dependency_report.py --repo . \
+            --sbom scan/sbom-debrief.syft.json --grype scan/grype-debrief.json \
+            --inventory --title "Debrief and Debrief Lite" > scan/report.md
+          for part in rcptt-runner contribs; do
+            python3 .github/scripts/dependency_report.py --repo . --brief \
+              --sbom "scan/sbom-${part}.syft.json" --grype "scan/grype-${part}.json" \
+              --title "Reported separately: ${part}" >> scan/report.md
+          done
+          # the job summary has a 1 MiB limit: leave out the full inventory there
+          sed '/^### Inventory/,/^## /{/^## /!d}' scan/report.md >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload SBOMs and reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: dependency-scan
+          path: scan/
+          retention-days: 90

@@ -1,0 +1,15 @@
+# Dependabot keeps the GitHub Actions used by the workflows up to date.
+# The third-party jars are committed to the repo and not managed by Maven, so
+# Dependabot can't see them; .github/workflows/dependency-scan.yml reports their
+# vulnerabilities instead. See docs/dependencies/plan.md.
+version: 2
+updates:
+  - package-ecosystem: github-actions
+    directory: /
+    target-branch: develop
+    schedule:
+      interval: weekly
+    groups:
+      github-actions:
+        patterns:
+          - "*"

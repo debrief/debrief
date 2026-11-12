@@ -131,6 +131,7 @@ Export-Package:
    MWC.GenericData",
  Debrief.ReaderWriter.FlatFile.DopplerShift;uses:="MWC.GenericData",
  Debrief.ReaderWriter.GeoPDF,
+ Debrief.Testing;uses:="junit.framework",
  Debrief.ReaderWriter.NMEA;uses:="junit.framework,MWC.GUI",
  Debrief.ReaderWriter.Nisida,
  Debrief.ReaderWriter.PCArgos;

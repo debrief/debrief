@@ -25,6 +25,7 @@ import org.mwc.debrief.lite.LiteApplication;
 import org.mwc.debrief.lite.LiteSession;
 import org.mwc.debrief.lite.util.PlotFiles;
 
+import Debrief.Testing.GoldenFile;
 import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.TrackWrapper;
 import MWC.Utilities.ReaderWriter.ImportManager;
@@ -99,6 +100,19 @@ public class FileRoundTripTest extends TestCase {
 		return Math.min(diff, 360 - diff);
 	}
 
+	/**
+	 * the plot Lite saved matches the committed golden file, once the fields that
+	 * change from run to run are masked: the creation time, and the version date
+	 * in the details note
+	 */
+	private void assertSavedMatchesGolden(final String goldenName) throws IOException {
+		String saved = new String(Files.readAllBytes(_saved.toPath()), java.nio.charset.StandardCharsets.UTF_8);
+		saved = GoldenFile.maskAttributes(saved, "Created");
+		saved = saved.replaceAll("Saved with Debrief version dated [^\"<]*", "Saved with Debrief version dated "
+				+ java.util.regex.Matcher.quoteReplacement(GoldenFile.MASK));
+		GoldenFile.assertMatches(goldenName, saved);
+	}
+
 	private LiteApplication _app;
 	private File _saved;
 
@@ -136,6 +150,7 @@ public class FileRoundTripTest extends TestCase {
 		final List<String> layersBefore = HeadlessFixture.layerNames(session.getData());
 
 		final LiteSession reloaded = saveAndReload(session);
+		assertSavedMatchesGolden("lite/sample_dpf_saved.dpf");
 		assertSameTracks(before, summarise(reloaded));
 		assertEquals("layers survive the round trip", layersBefore,
 				HeadlessFixture.layerNames(reloaded.getData()));
@@ -202,6 +217,9 @@ public class FileRoundTripTest extends TestCase {
 		assertEquals("first fix course", 269.7, first.getCourseDegs(), 1e-6);
 		assertEquals("first fix speed", 2.0, first.getSpeed(), 1e-6);
 
-		assertSameTracks(summarise(session), summarise(saveAndReload(session)));
+		final List<TrackSummary> before = summarise(session);
+		final LiteSession reloaded = saveAndReload(session);
+		assertSavedMatchesGolden("lite/boat1_rep_saved.dpf");
+		assertSameTracks(before, summarise(reloaded));
 	}
 }

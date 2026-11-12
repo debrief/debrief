@@ -1,0 +1,32 @@
+# Grype configuration for .github/workflows/dependency-scan.yml.
+#
+# The scanner versions are pinned in the workflow (SYFT_VERSION, GRYPE_VERSION).
+# This file holds the policy: what the scan reports and what it is allowed to
+# ignore.
+#
+# EXCEPTIONS
+# An ignore rule hides a finding from the report, and (once gating is on) from
+# the gate. Every rule must say why, in `reason`, and name the tracking issue or
+# spec. Keep rules as narrow as possible: one vulnerability, one package, one
+# version. Remove a rule when the library is upgraded or removed.
+#
+#   ignore:
+#     - vulnerability: CVE-2017-7525
+#       package:
+#         name: jackson-mapper-asl
+#         version: 1.9.4
+#       reason: >-
+#         No fixed 1.x release exists. Jackson 1 is migrated to Jackson 2 in
+#         Phase D3 (docs/dependencies/plan.md). Not reachable from untrusted
+#         input because ...
+#
+# The list starts empty: the baseline reports everything. See
+# docs/dependencies/baseline-2026-11.md.
+
+check-for-app-update: false
+
+# Report every finding, fixed upstream or not. Gating (fail-on-severity) is
+# switched on in the workflow once the first security bump lands.
+only-fixed: false
+
+ignore: []

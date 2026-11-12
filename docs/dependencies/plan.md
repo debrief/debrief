@@ -27,7 +27,10 @@ The work goes in `debrief/debrief` (branch from `develop`, PRs to `develop`).
 
 - **Changing a jar in a bundle means editing 4–5 places** in step: the jar itself, `MANIFEST.MF` `Bundle-ClassPath`, `Export-Package` where packages are listed (`cmap.legacy` exports 163 POI packages; `cmap.core` exports 16 XStream ones), `build.properties`, and `.classpath`. Lite picks jars up by folder glob, so it follows automatically.
 
-## PR 1 — Baseline (no library changes)
+## PR 1 — Baseline (one library change: XStream)
+
+The new XY-plot test showed that XStream 1.4.12 can't create an `XStream` on Java 21, so saving and restoring XY plots was already broken. The owner chose to move the XStream bump (PR 3 item 1) into PR 1. See [the baseline](baseline-2026-11.md) for this and the scan's other findings.
+
 1. **Scan workflow** `.github/workflows/dependency-scan.yml`, on PRs to `develop`, weekly, and on manual dispatch.
    - Syft builds a CycloneDX SBOM from the committed jars (it reads `META-INF/maven` inside each jar), excluding `org.mwc.debrief.ui_test/rcptt-runner/**` and `contribs/**`. Those are reported separately.
    - Grype scans the SBOM. The SBOM and report are uploaded as artefacts.
@@ -37,7 +40,7 @@ The work goes in `debrief/debrief` (branch from `develop`, PRs to `develop`).
    - **Lite headless:** extend `org.mwc.debrief.lite/src/test/java/org/mwc/debrief/lite/headless/FileRoundTripTest.java` to compare the saved DPF from `sample.dpf` and `boat1.rep` with committed golden files. Volatile fields such as timestamps are masked; `HeadlessFixture.SAMPLE_DATA` is reused.
    - **RCP side**, in `org.mwc.debrief.test2` / nested `testMe` classes:
      - GeoJSON output from `GenerateGeoJSON` (sample.dpf) against a golden file, as canonical JSON.
-     - A **new** `NarrativeWriter` test: write a .docx and read it back with POI, then check the paragraphs.
+     - `NarrativeWriter.TestMe` already writes a .docx and reads it back with POI, but it wasn't in `AllTests`, so it never ran. Register it.
      - A **new** XYPlotView state round-trip that serialises through XStream and back. If the view can't be built headless, extract the XStream call into a testable helper.
      - Word import, already covered by `TestImportWord`.
      - Pepys sqlite queries, already covered.
@@ -62,7 +65,7 @@ Versions are set at implementation time from Maven Central (latest stable); the 
 
 | Order | Library | Expected target | Notes |
 |---|---|---|---|
-| 1 | XStream (`cmap.core`) | 1.4.21+ | Re-list the 16 exported packages; add the security allow-list (`XStream.allowTypes`) in `XYPlotView`. |
+| 1 | XStream (`cmap.core`) | 1.4.21 | **Done in PR 1.** The package list is unchanged; the allow-list is in `XYPlotStateXml`. |
 | 2 | postgresql (`pepys`) | 42.7.x | Drop-in replacement. |
 | 3 | sqlite-jdbc (`pepys`) | 3.4x | Native library bundle; check that the pepys tests still run on Linux and Windows. |
 | 4 | Jackson 2 (`debrief.legacy`, `geotools`) | 2.18+, one version for both | |
@@ -70,9 +73,15 @@ Versions are set at implementation time from Maven Central (latest stable); the 
 | 6 | commons-compress | 1.27+ | Needs newer commons-io and lang3; check the other copies of both. |
 | 7 | POI + xmlbeans | 5.x / 5.x | Brings in new runtime jars: log4j-api, SparseBitSet, commons-math3, collections4. Larger PR. |
 | 8 | commons-text, hsqldb (if kept) | Latest that works with GeoTools 21.2 | If GeoTools won't accept it, record the exception and defer to the GeoTools spec. |
+| 9 | h2 (`geotools`) | 2.x if GeoTools 21.2 accepts it | Found by the baseline scan: 2 Critical. Otherwise record an exception and defer to D1. |
+| 10 | logback (`cmap.media`) | 1.5.x, or remove | Found by the baseline scan: 0.9.14, Critical. |
+| 11 | Pepys native SQLite and zlib DLLs; c3p0, mchange-commons | Current | Found by the baseline scan. Check whether sqlite-jdbc's own natives make the DLLs unnecessary. |
+| 12 | zip4j, commons-io, guava | Current | Found by the baseline scan. |
 | — | Jackson 1.9.4 (codehaus), postgresql 8.3 | — | **Not bumped.** No fixed versions exist. Tracked as a follow-up spec (migrate to Jackson 2, remove the GND/ASSET Postgres code). |
 
 **Each PR:** update the jar, MANIFEST, `Export-Package`, `build.properties` and `.classpath`; then rescan, and the CVE count for that library must fall to zero (or each remaining CVE is excepted with a reason). The scan gate (fail on new High/Critical) is switched on once the first bump lands.
+
+**Native libraries.** `debrief.legacy/src/native/windows` is a bundled GDAL and MapServer toolchain (with OpenSSL 1.1, libcurl, libpq and libxml2) that ships inside `debrief_legacy.jar`. Most of it can't be identified by the scanner. It gets its own spec: replace it, remove it, or download it at first use.
 
 ## Verification for every PR
 1. `mvn clean verify -U -B -fae` under xvfb with JDK 21. If the container can't reach `download.eclipse.org`, CI is the verifier, and that is stated in the PR.
