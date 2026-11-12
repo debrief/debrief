@@ -40,6 +40,21 @@ public class ConfigurationReader {
 		public void testProcess() {
 			assertTrue("Process Test", process("_ABZabz_").equals("NOMnom"));
 		}
+
+		/** Debrief reads Pepys SQLite files only: a Postgres configuration says so */
+		public void testPostgresIsRejected() throws Exception {
+			final String postgresConfiguration = "[" + org.mwc.debrief.pepys.model.db.DatabaseConnection.CONFIGURATION_TAG
+					+ "]\n" + org.mwc.debrief.pepys.model.db.DatabaseConnection.CONFIGURATION_DATABASE_TYPE + " = "
+					+ org.mwc.debrief.pepys.model.db.DatabaseConnection.POSTGRES + "\n";
+			final org.mwc.debrief.pepys.model.ModelConfiguration model = new org.mwc.debrief.pepys.model.ModelConfiguration();
+			try {
+				model.loadDatabaseConfiguration(new ByteArrayInputStream(postgresConfiguration.getBytes()));
+				fail("a postgres configuration is refused");
+			} catch (final org.mwc.debrief.pepys.model.PepsysException e) {
+				assertTrue("says Postgres is not supported", e.getMessage().contains("PostgreSQL"));
+			}
+			assertNull("no connection made", model.getDatabaseConnection());
+		}
 	}
 
 	static final String DEMILITER = "_";

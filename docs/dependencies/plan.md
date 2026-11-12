@@ -63,7 +63,7 @@ Versions are set at implementation time from Maven Central (latest stable); the 
 | Order | Library | Expected target | Notes |
 |---|---|---|---|
 | 1 | XStream (`cmap.core`) | 1.4.21 | **Done in PR 1.** The package list is unchanged; the allow-list is in `XYPlotStateXml`. |
-| 2 | postgresql (`pepys`) | 42.7.x | Drop-in replacement. |
+| 2 | postgresql (`pepys`) | — | **Removed instead** (owner's decision): Debrief no longer connects to Postgres. Pepys reads SQLite only; the ASSET record-to-database observer and the GND demonstrator are gone, with all four Postgres/PostGIS drivers. |
 | 3 | sqlite-jdbc (`pepys`) | 3.4x | Native library bundle; check that the pepys tests still run on Linux and Windows. |
 | 4 | Jackson 2 (`debrief.legacy`, `geotools`) | 2.18+, one version for both | |
 | 5 | jsoup | 1.18+ | |
@@ -74,7 +74,7 @@ Versions are set at implementation time from Maven Central (latest stable); the 
 | 10 | logback (`cmap.media`) | 1.5.x, or remove | Found by the baseline scan: 0.9.14, Critical. |
 | 11 | Pepys native SQLite and zlib DLLs; c3p0, mchange-commons | Current | Found by the baseline scan. Check whether sqlite-jdbc's own natives make the DLLs unnecessary. |
 | 12 | zip4j, commons-io, guava | Current | Found by the baseline scan. |
-| — | Jackson 1.9.4 (codehaus), postgresql 8.3 | — | **Not bumped.** No fixed versions exist. Tracked as a follow-up spec (migrate to Jackson 2, remove the GND/ASSET Postgres code). |
+| — | Jackson 1.9.4 (codehaus) | — | **Not bumped.** No fixed versions exist. Tracked as a follow-up spec (migrate to Jackson 2). |
 
 **Each PR:** update the jar, MANIFEST, `Export-Package`, `build.properties` and `.classpath`; then rescan, and the CVE count for that library must fall to zero (or each remaining CVE is excepted with a reason). The scan gate (fail on new High/Critical) is switched on once the first bump lands.
 
@@ -130,7 +130,7 @@ Spec `specs/004-geotools/`.
 
 ## Phase D3: Jackson 1 and the old Postgres drivers (after Gate A; can run in parallel with B)
 - **Jackson 1 → Jackson 2.** Migrate the 10 codehaus imports (`cmap.legacy`, GNDManager, `asset.legacy`), then delete the 1.9.4 jars. Golden JSON tests come first.
-- **Postgres 8.3.** Remove the drivers in `asset.legacy` and `gnd.demonstrator`, or replace them with the pepys 42.x driver. If the owner says the code is unused, remove it.
+- **Postgres 8.3.** Done early, with the Pepys driver: all PostgreSQL support was removed (see PR 3+ item 2).
 
 ## Phase E: test tooling (after Phase B)
 - **JUnit 4.12 → JUnit 5** with the vintage engine. Tycho Surefire supports it, and the existing tests run unchanged.

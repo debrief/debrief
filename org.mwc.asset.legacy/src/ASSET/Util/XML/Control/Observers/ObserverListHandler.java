@@ -98,7 +98,6 @@ import ASSET.Scenario.Observers.Recording.CSV_CLog_TrackObserver;
 import ASSET.Scenario.Observers.Recording.DebriefDeployableSensorLocationObserver;
 import ASSET.Scenario.Observers.Recording.DebriefReplayObserver;
 import ASSET.Scenario.Observers.Recording.NMEAObserver;
-import ASSET.Scenario.Observers.Recording.RecordStatusToDBObserverType;
 import ASSET.Scenario.Observers.Recording.TowedArrayLocationObserver;
 import ASSET.Scenario.Observers.Summary.BatchCollator;
 import ASSET.Scenario.Observers.Summary.ElapsedTimeObserver;
@@ -165,8 +164,6 @@ abstract public class ObserverListHandler extends MWC.Utilities.ReaderWriter.XML
 				PlotInvestigationSubjectObserverHandler.exportThis(observer, sens, doc);
 			} else if (observer instanceof DetectionObserver) {
 				DetectionObserverHandler.exportThis(observer, sens, doc);
-			} else if (observer instanceof RecordStatusToDBObserverType) {
-				RecordToDatabaseObserverHandler.exportThis(observer, sens, doc);
 			}
 
 		}
@@ -233,13 +230,6 @@ abstract public class ObserverListHandler extends MWC.Utilities.ReaderWriter.XML
 		});
 
 		addHandler(new CSVExportStatusObserverHandler() {
-			@Override
-			public void setObserver(final ScenarioObserver obs) {
-				_myList.add(obs);
-			}
-		});
-
-		addHandler(new RecordToDatabaseObserverHandler() {
 			@Override
 			public void setObserver(final ScenarioObserver obs) {
 				_myList.add(obs);

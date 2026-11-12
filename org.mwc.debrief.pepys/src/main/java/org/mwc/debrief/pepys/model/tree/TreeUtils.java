@@ -31,7 +31,6 @@ import org.mwc.debrief.pepys.model.AbstractConfiguration;
 import org.mwc.debrief.pepys.model.AbstractConfiguration.QueryParameterAccumulator;
 import org.mwc.debrief.pepys.model.TypeDomain;
 import org.mwc.debrief.pepys.model.bean.AbstractBean;
-import org.mwc.debrief.pepys.model.bean.custom.Measurement;
 import org.mwc.debrief.pepys.model.db.Condition;
 import org.mwc.debrief.pepys.model.db.SqliteDatabaseConnection;
 import org.mwc.debrief.pepys.model.db.annotation.AnnotationsUtils;
@@ -171,85 +170,6 @@ public class TreeUtils {
 
 		Application.logError2(ToolParent.INFO, "Finishing building tree structure", null);
 		return root;
-	}
-
-	public static Collection<TreeStructurable> buildStructureFastMode(final AbstractConfiguration configuration)
-			throws NoSuchMethodException, SecurityException, InstantiationException, IllegalAccessException,
-			IllegalArgumentException, InvocationTargetException, PropertyVetoException, SQLException,
-			ClassNotFoundException, IOException {
-
-		Application.logError2(ToolParent.INFO, "Starting to Build Structure from Model - FAST MODE", null);
-
-		final ArrayList<TreeStructurable> allItems = new ArrayList<>();
-
-		// Let's collect the types of objects to collect
-		final QueryParameterAccumulator typeAccumulator = configuration.getParameterAccumulator();
-		for (final TypeDomain domain : configuration.getDatafileTypeFilters()) {
-			final Class<TreeStructurable> currentBeanType = domain.getDatatype();
-
-			if (AbstractBean.class.isAssignableFrom(currentBeanType) && domain.isChecked()) {
-				typeAccumulator.addPart(domain.getName().toUpperCase());
-			}
-		}
-
-		// Now we are forcing to run a custom query (measurements)
-		Scanner scanner = null;
-		try {
-			scanner = new Scanner(OSUtils.getInputStreamResource(Measurement.class,
-					configuration.getMeasurementQuery(configuration.getAlgorithmType()), Activator.PLUGIN_ID));
-			final StringBuilder builder = new StringBuilder();
-			while (scanner.hasNextLine()) {
-				builder.append(scanner.nextLine());
-				builder.append("\n");
-			}
-			final List<Object> parameters = new ArrayList<>();
-			final SimpleDateFormat sqlDateFormat = new SimpleDateFormat(SqliteDatabaseConnection.SQLITE_DATE_FORMAT);
-			// Let's add the time period filter
-			final TimePeriod timePeriod = configuration.getTimePeriod();
-			if (timePeriod != null) {
-				if (timePeriod.getStartDTG() != null && timePeriod.getStartDTG().getDate() != null) {
-					parameters.add(sqlDateFormat.format(timePeriod.getStartDTG().getDate()));
-				} else {
-					parameters.add(null);
-				}
-				if (timePeriod.getEndDTG() != null && timePeriod.getEndDTG().getDate() != null) {
-					parameters.add(sqlDateFormat.format(timePeriod.getEndDTG().getDate()));
-				} else {
-					parameters.add(null);
-				}
-			} else {
-				parameters.add(null);
-				parameters.add(null);
-			}
-			// Let's add the area filter
-			parameters.add(configuration.getCurrentAreaAsParameter());
-
-			// Let's add the data types
-			parameters.add(typeAccumulator.getAccumulated());
-
-			// Let's add the text filter
-			if (configuration.getFilter() != null) {
-				parameters.add(configuration.getFilter());
-			} else {
-				parameters.add(null);
-			}
-
-			final List<Measurement> list = configuration.getDatabaseConnection().listAll(Measurement.class,
-					builder.toString(), parameters);
-
-			for (final Measurement measurement : list) {
-				final TreeStructurable treeStructurable = measurement.export();
-				if (treeStructurable != null) {
-					allItems.add(treeStructurable);
-				}
-			}
-		} finally {
-			if (scanner != null) {
-				scanner.close();
-			}
-		}
-
-		return allItems;
 	}
 
 	private static void buildTreeSearchMap(final List<SearchTreeResult> result, final String text,

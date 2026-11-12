@@ -352,8 +352,11 @@ public class ScalePainter implements Plottable, Serializable, ExcludeFromRightCl
 
 	@Override
 	public int compareTo(final Plottable arg0) {
+		// by name first, as the other chart features do, so a layer keeps them in the
+		// same order from run to run; the hash code only breaks a tie
 		final Plottable other = arg0;
-		return Integer.valueOf(hashCode()).compareTo(other.hashCode());
+		final int byName = String.valueOf(getName()).compareTo(String.valueOf(other.getName()));
+		return byName != 0 ? byName : Integer.valueOf(hashCode()).compareTo(other.hashCode());
 	}
 
 	/**

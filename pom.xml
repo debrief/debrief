@@ -84,7 +84,6 @@
     <module>org.mwc.debrief.pepys</module>
     <module>org.mwc.debrief.multipath2</module>
     <module>org.mwc.debrief.track_shift</module>
-    <module>org.mwc.gnd.demonstrator</module>
     <module>org.qinetiq.data_feed</module>
     <module>org.mwc.debrief.test2</module>
     <module>org.mwc.debrief.editable.test</module>
