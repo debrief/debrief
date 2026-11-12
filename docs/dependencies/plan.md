@@ -54,7 +54,7 @@ The new XY-plot test showed that XStream 1.4.12 can't create an `XStream` on Jav
 - Delete `debrief.legacy/libs/poi-*-3.14*` and `xmlbeans-2.6.0`, and update `.classpath`. Lite then uses POI 4.1.2 and xmlbeans 3.1.0, the same versions as the RCP build.
 - Delete `asset.comms/libs/RestLet/lib/{com.thoughtworks.xstream,org.restlet.ext.xstream}.jar` and update `.classpath`.
 - ~~Remove `commons-text-1.6` and `jackson-core-2.9.9` from `cmap.geotools`~~ **Kept.** They are real runtime dependencies of GeoTools 21.2: `gt-main`'s `StaticGeometry` filter functions use commons-text, and `JsonPointerFunction` uses jackson-core. GeoTools loads both as plugins, and every main `gt-*` jar names them in its own `Class-Path`. They get bumped in PR 3+ instead.
-- **Generate Lite's `Class-Path`** from the jars it ships (`lite.runtime.libraries` in `org.mwc.debrief.lite/build.xml`), replacing the hand-written list. Lite then also loads the jars it shipped but never loaded (Jackson 2, commons-compress, the rest of GeoTools and others). Lite leaves out `jackson-core-2.9.9`: the GeoTools jars' own `Class-Path` put it ahead of 2.11.2, which broke `jackson-databind` 2.11.2 (`NoSuchMethodError`).
+- **Generate Lite's `Class-Path`** from the jars it ships (`lite.runtime.libraries` in `org.mwc.debrief.lite/build.xml`), replacing the hand-written list. Lite then also loads the jars it shipped but never loaded (Jackson 2, commons-compress, the rest of GeoTools and others). Lite left out `jackson-core-2.9.9` until the Jackson alignment: the GeoTools jars' own `Class-Path` put it ahead of 2.11.2, which broke `jackson-databind` 2.11.2 (`NoSuchMethodError`).
 - Fix the GNDManager `.classpath`/MANIFEST mismatch.
 
 ## PR 3+ — Security bumps, one library per PR, ordered by exposure
@@ -65,7 +65,7 @@ Versions are set at implementation time from Maven Central (latest stable); the 
 | 1 | XStream (`cmap.core`) | 1.4.21 | **Done in PR 1.** The package list is unchanged; the allow-list is in `XYPlotStateXml`. |
 | 2 | postgresql (`pepys`) | — | **Removed instead** (owner's decision): Debrief no longer connects to Postgres. Pepys reads SQLite only; the ASSET record-to-database observer and the GND demonstrator are gone, with all four Postgres/PostGIS drivers. |
 | 3 | sqlite-jdbc (`pepys`) | 3.4x | Native library bundle; check that the pepys tests still run on Linux and Windows. |
-| 4 | Jackson 2 (`debrief.legacy`, `geotools`) | 2.18+, one version for both | |
+| 4 | Jackson 2 (`debrief.legacy`, `geotools`) | 2.22.4 (annotations 2.22) | **Done.** One version in both bundles. 2.23.0 was 4 days old, so the latest 2.22 patch was used. `cmap.geotools` exports `core.exc` as well. Lite's jackson-core exclusion is gone. |
 | 5 | jsoup | 1.18+ | |
 | 6 | commons-compress | 1.27+ | Needs newer commons-io and lang3; check the other copies of both. |
 | 7 | POI + xmlbeans | 5.x / 5.x | Brings in new runtime jars: log4j-api, SparseBitSet, commons-math3, collections4. Larger PR. |
