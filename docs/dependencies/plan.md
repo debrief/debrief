@@ -1,0 +1,131 @@
+# Debrief / Debrief-Lite dependencies: baseline, then security patches
+
+## Context
+Debrief and Debrief-Lite are in the same repo (`debrief/debrief`; Lite is `org.mwc.debrief.lite`, built with Ant). The platform itself is up to date (Java 21, Tycho 5.0.4, Eclipse 2026-09). The libraries are not: 1,184 jars are committed to the repo, Maven doesn't manage them, and several have known CVE families. Nothing scans them. CodeQL is on `@v1`, there is no SBOM, and no test compares output against golden files.
+
+The owner chose **baseline + security first**. The later work is gated: Gate A → Phase B (move jars to Maven) → Phase C (automated update PRs) → Gate D → Phase D1 (GeoTools) and D2 (Lite UI libraries). D3 (Jackson 1 and the old Postgres drivers) can start after Gate A, and E (test tooling) after Phase B. Each phase gets its own spec and PRs.
+
+The work goes in `debrief/debrief` (branch from `develop`, PRs to `develop`).
+
+## Findings that shape the plan
+- Lite takes **every** jar in `cmap.legacy`, `cmap.legacy/libs`, `debrief.legacy`, `debrief.legacy/libs`, `cmap.jfreechart` and `cmap.geotools` (`org.mwc.debrief.legacy/build.xml:65-70`, `org.mwc.debrief.lite/build.xml:69-77,120-129,~212`). So it ships two versions of POI (3.14 and 4.1.2), xmlbeans (2.6 and 3.1) and jackson-core (2.9.9 and 2.11.2). The RCP build uses only the MANIFEST copies.
+- **Not referenced by the RCP build:** `debrief.legacy/libs/poi-*-3.14*`, `xmlbeans-2.6.0` (`.classpath` only), and `asset.comms/libs/RestLet/lib/*xstream*` (that module isn't an OSGi bundle).
+- **No source imports:** `commons-text-1.6`, `hsqldb-2.2.8` and `jackson-core-2.9.9`, all in `cmap.geotools`. GeoTools 21.2 probably needs them at runtime; `hsqldb` almost certainly, for `gt-epsg-hsql`.
+- **Where each library is used, and whether a test covers it:**
+
+  | Library | Used in | Tested? |
+  |---|---|---|
+  | XStream | `cmap.xyplot/.../XYPlotView.java:1112,1256` | No |
+  | POI | `cmap.legacy/.../Word/NarrativeWriter.java` (untested); `debrief.legacy/.../Word/Import*` | Word import tested |
+  | Jackson 2 | `debrief.legacy/.../GeoPDF/*` | Yes |
+  | jsoup | `debrief.legacy/.../powerPoint/*` | Yes |
+  | commons-compress | `debrief.legacy/.../csv_gz/Import_CSV_GZ.java` | Yes |
+  | sqlite-jdbc | `pepys/.../SqliteDatabaseConnection.java` | Pepys tests, skipped on macOS |
+  | postgresql 42.2.11 | `pepys/.../PostgresDatabaseConnection.java` | No |
+  | postgresql 8.3 | `asset.legacy`, `gnd.demonstrator` | No |
+  | Jackson 1.9.4 (codehaus) | 10 imports in `cmap.legacy`, GNDManager, `asset.legacy` | — |
+
+- **Changing a jar in a bundle means editing 4–5 places** in step: the jar itself, `MANIFEST.MF` `Bundle-ClassPath`, `Export-Package` where packages are listed (`cmap.legacy` exports 163 POI packages; `cmap.core` exports 16 XStream ones), `build.properties`, and `.classpath`. Lite picks jars up by folder glob, so it follows automatically.
+
+## PR 1 — Baseline (no library changes)
+1. **Scan workflow** `.github/workflows/dependency-scan.yml`, on PRs to `develop`, weekly, and on manual dispatch.
+   - Syft builds a CycloneDX SBOM from the committed jars (it reads `META-INF/maven` inside each jar), excluding `org.mwc.debrief.ui_test/rcptt-runner/**` and `contribs/**`. Those are reported separately.
+   - Grype scans the SBOM. The SBOM and report are uploaded as artefacts.
+   - **Report-only at first.** Severity gating is turned on in PR 3+.
+2. **Pin the scanner** with a scanner config file in `.github/` (Grype's ignore list, with reasons). An exception has to be justified in writing.
+3. **Golden-file tests** for the paths the upgrades will touch, in the existing tests where possible.
+   - **Lite headless:** extend `org.mwc.debrief.lite/src/test/java/org/mwc/debrief/lite/headless/FileRoundTripTest.java` to compare the saved DPF from `sample.dpf` and `boat1.rep` with committed golden files. Volatile fields such as timestamps are masked; `HeadlessFixture.SAMPLE_DATA` is reused.
+   - **RCP side**, in `org.mwc.debrief.test2` / nested `testMe` classes:
+     - GeoJSON output from `GenerateGeoJSON` (sample.dpf) against a golden file, as canonical JSON.
+     - A **new** `NarrativeWriter` test: write a .docx and read it back with POI, then check the paragraphs.
+     - A **new** XYPlotView state round-trip that serialises through XStream and back. If the view can't be built headless, extract the XStream call into a testable helper.
+     - Word import, already covered by `TestImportWord`.
+     - Pepys sqlite queries, already covered.
+   - **Golden files** go in `org.mwc.debrief.legacy/test_data/golden/` and are regenerated with a documented system property.
+4. **Baseline record:** `docs/dependencies/baseline-2026-11.md` lists every jar with its version, path and the bundles that use it, the CVE counts by severity, the duplicates and the apparently unused jars.
+5. **Dependabot** `.github/dependabot.yml`, for `github-actions` only. It also fixes `codeql-action@v1`, `checkout@v2` and `GabrielBB/xvfb-action@v1`.
+6. **Spec:** `specs/002-dependency-security/spec.md` (Spec Kit, per repo convention), covering PRs 1–5 and their acceptance criteria.
+
+## PR 2 — Remove duplicates and unused jars
+- Delete `debrief.legacy/libs/poi-*-3.14*` and `xmlbeans-2.6.0`, and update `.classpath`. Lite then uses POI 4.1.2 and xmlbeans 3.1.0, the same versions as the RCP build.
+- Delete `asset.comms/libs/RestLet/lib/{com.thoughtworks.xstream,org.restlet.ext.xstream}.jar` and update `.classpath`.
+- Remove `commons-text-1.6` and `jackson-core-2.9.9` from `cmap.geotools` **only if** the runtime checks pass:
+  - the RCP product starts;
+  - the map renders a shapefile and NaturalEarth;
+  - Lite starts and renders.
+
+  Otherwise keep them and bump them in PR 3.
+- Fix the GNDManager `.classpath`/MANIFEST mismatch.
+
+## PR 3+ — Security bumps, one library per PR, ordered by exposure
+Versions are set at implementation time from Maven Central (latest stable); the ones below are expected targets.
+
+| Order | Library | Expected target | Notes |
+|---|---|---|---|
+| 1 | XStream (`cmap.core`) | 1.4.21+ | Re-list the 16 exported packages; add the security allow-list (`XStream.allowTypes`) in `XYPlotView`. |
+| 2 | postgresql (`pepys`) | 42.7.x | Drop-in replacement. |
+| 3 | sqlite-jdbc (`pepys`) | 3.4x | Native library bundle; check that the pepys tests still run on Linux and Windows. |
+| 4 | Jackson 2 (`debrief.legacy`, `geotools`) | 2.18+, one version for both | |
+| 5 | jsoup | 1.18+ | |
+| 6 | commons-compress | 1.27+ | Needs newer commons-io and lang3; check the other copies of both. |
+| 7 | POI + xmlbeans | 5.x / 5.x | Brings in new runtime jars: log4j-api, SparseBitSet, commons-math3, collections4. Larger PR. |
+| 8 | commons-text, hsqldb (if kept) | Latest that works with GeoTools 21.2 | If GeoTools won't accept it, record the exception and defer to the GeoTools spec. |
+| — | Jackson 1.9.4 (codehaus), postgresql 8.3 | — | **Not bumped.** No fixed versions exist. Tracked as a follow-up spec (migrate to Jackson 2, remove the GND/ASSET Postgres code). |
+
+**Each PR:** update the jar, MANIFEST, `Export-Package`, `build.properties` and `.classpath`; then rescan, and the CVE count for that library must fall to zero (or each remaining CVE is excepted with a reason). The scan gate (fail on new High/Critical) is switched on once the first bump lands.
+
+## Verification for every PR
+1. `mvn clean verify -U -B -fae` under xvfb with JDK 21. If the container can't reach `download.eclipse.org`, CI is the verifier, and that is stated in the PR.
+2. The `lite-ui-tests` job passes (`-DliteUiTests=true`).
+3. The golden-file tests pass unchanged. Any regeneration has to be explained in the PR.
+4. The scan artefact shows the target CVEs gone and no new High/Critical findings.
+5. Smoke test from the CI artefacts: start the product on Linux under xvfb with a screenshot. Open `sample.dpf`, export a narrative to Word, and open the pepys sqlite file. On Windows and macOS, a manual check by the owner, listed in the PR.
+6. Lite: run `dist/debrief-lite-<version>.zip`, open a REP file, step time.
+
+## Gate A: before any restructuring
+All of the following hold:
+- PRs 1–3+ are merged.
+- No High or Critical CVE is open without a written exception.
+- Golden-file and Lite UI tests pass on `develop` for 2 consecutive weeks of scheduled runs.
+- The owner has done the manual smoke test on Windows and macOS on a `develop` build.
+
+## Phase B: move jars to Maven (after Gate A)
+Spec `specs/003-maven-dependencies/`. Move the third-party jars to Maven Central coordinates.
+- **How.** A `<location type="Maven">` in `org.mwc.debrief.targetplatforms/eclipse-latest.target` (and the `.tpd`). Bundles use `Import-Package` (or `Require-Bundle` on the wrapped bundle) instead of `Bundle-ClassPath`.
+- **Order.** One bundle per PR: `debrief.pepys` (smallest), then `debrief.legacy`, `cmap.legacy`, `cmap.core`, `cmap.jfreechart`. `cmap.geotools` waits for Phase C.
+- **Lite's Ant build.** It gets its jars from a `maven-dependency-plugin:copy-dependencies` step in a new `org.mwc.debrief.lite/pom.xml` stage, not folder globs. That removes the second classpath.
+- **Kept in the repo.** Jars with no Maven coordinates stay committed and listed in `docs/dependencies/vendored.md` with a reason: jmf, vrml97, flanagan, January, openmap, javalite.
+- **Checks.** The full verification list, plus the same set of classes in the Lite dist zip and the RCP product: before and after, the sorted list of classes in the shipped jars differs only by version.
+
+## Phase C: automated updates (after Phase B)
+- **Weekly update PR.** A scheduled workflow runs `mvn org.eclipse.tycho.extras:tycho-version-bump-plugin:update-target`, which bumps the Maven locations and the p2 release URL, and opens the PR.
+- **Dependabot or Renovate.** Renovate gets a regex manager for the `.target` file. Dependabot keeps `github-actions`.
+- **Every bot PR** runs the full CI: build, Lite UI tests, golden files and scan.
+- **No auto-merge.** We revisit this at Gate D.
+- **New CVEs.** A weekly scan raises an issue for each one.
+
+## Gate D: before the major migrations
+- Phase B is complete.
+- Golden-file coverage now includes **screenshot diffs of map rendering**. It renders a fixed set of plots and a shapefile at fixed sizes, headless, and compares against references with a per-pixel tolerance.
+- At least 4 bot update PRs have merged cleanly.
+
+## Phase D1: GeoTools 21.2 → current (after Gate D)
+Spec `specs/004-geotools/`.
+- **API change.** `org.opengis` → `org.geotools.api`, using GeoTools' migration script.
+- **Replace `gt-swt-23-SNAPSHOT`.** GeoTools no longer publishes gt-swt, so we port the classes we use into `cmap.geotools`.
+- **Align** `gt-jdbc-spatialite`.
+- **Drop the GeoTools pins.** commons-text and hsqldb are no longer pinned by GeoTools.
+- **Acceptance:** the screenshot diffs are within tolerance; coordinates are within 1 m when projected and transformed back on the sample plots; and the full verification list passes.
+
+## Phase D2: Lite UI libraries (after Gate D; can run in parallel with D1)
+- **Radiance** 3.0.0 → current: flamingo ribbon, substance, trident; packages and API change.
+- **swingx** 1.6.6-SNAPSHOT → a released fork, or remove it.
+- **Acceptance:** Lite UI tests pass and screenshot diffs of the Lite main window are within tolerance. The owner does a manual walkthrough on all three operating systems.
+
+## Phase D3: Jackson 1 and the old Postgres drivers (after Gate A; can run in parallel with B)
+- **Jackson 1 → Jackson 2.** Migrate the 10 codehaus imports (`cmap.legacy`, GNDManager, `asset.legacy`), then delete the 1.9.4 jars. Golden JSON tests come first.
+- **Postgres 8.3.** Remove the drivers in `asset.legacy` and `gnd.demonstrator`, or replace them with the pepys 42.x driver. If the owner says the code is unused, remove it.
+
+## Phase E: test tooling (after Phase B)
+- **JUnit 4.12 → JUnit 5** with the vintage engine. Tycho Surefire supports it, and the existing tests run unchanged.
+- **RCPTT runner 2.5.0** (about 600 committed jars): replace it with the current RCPTT Maven plugin, or retire it in favour of the screenshot and headless tests. **The owner decides at Gate D.**
