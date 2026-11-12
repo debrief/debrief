@@ -22,8 +22,6 @@
 	<classpathentry exported="true" kind="lib" path="gt-epsg-hsql-21.2.jar"/>
 	<classpathentry exported="true" kind="lib" path="gt-geotiff-21.2.jar"/>
 	<classpathentry exported="true" kind="lib" path="gt-image-21.2.jar"/>
-	<classpathentry exported="true" kind="lib" path="gt-jdbc-21.2.jar"/>
-	<classpathentry exported="true" kind="lib" path="gt-jdbc-h2-21.2.jar"/>
 	<classpathentry exported="true" kind="lib" path="gt-main-21.2.jar"/>
 	<classpathentry exported="true" kind="lib" path="gt-metadata-21.2.jar"/>
 	<classpathentry exported="true" kind="lib" path="gt-opengis-21.2.jar"/>
@@ -35,7 +33,6 @@
 	<classpathentry exported="true" kind="lib" path="gt-xml-21.2.jar"/>
 	<classpathentry exported="true" kind="lib" path="guava-27.0-jre.jar"/>
 	<classpathentry exported="true" kind="lib" path="hsqldb-2.2.8.jar"/>
-	<classpathentry exported="true" kind="lib" path="h2-1.4.200.jar"/>
 	<classpathentry exported="true" kind="lib" path="imageio-ext-geocore-1.2.2.jar"/>
 	<classpathentry exported="true" kind="lib" path="imageio-ext-streams-1.2.2.jar"/>
 	<classpathentry exported="true" kind="lib" path="imageio-ext-tiff-1.2.2.jar"/>
