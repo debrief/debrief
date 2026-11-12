@@ -201,5 +201,6 @@ Eclipse target platform defined in `org.mwc.debrief.targetplatforms/eclipse-late
 | [ARCHITECTURE.md](ARCHITECTURE.md) | Module dependencies, data flow, plugin relationships |
 | [KEY_CLASSES.md](KEY_CLASSES.md) | The 25 critical classes with roles and relationships |
 | [RELEASING.md](RELEASING.md) | How to cut a release: version bumping, the release tag, recovery |
+| [docs/dependencies/plan.md](docs/dependencies/plan.md) | Third-party library plan: scanning, security bumps, move to Maven |
 
 Each core plugin and key package also has a README.md with detailed documentation.
