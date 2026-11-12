@@ -21,14 +21,12 @@ import sys
 
 SEVERITIES = ["Critical", "High", "Medium", "Low", "Negligible", "Unknown"]
 
-# Folders whose top-level jars Debrief Lite's Ant build puts on its classpath
-# and ships in the Lite zip (org.mwc.debrief.lite/build.xml, the
-# debrief_lite.jar, testClasspath and dist targets).
+# Folders whose top-level jars Debrief Lite ships in lib/ and names on its
+# generated Class-Path (org.mwc.debrief.lite/build.xml, lite.runtime.libraries).
 LITE_FOLDERS = [
     "org.mwc.cmap.legacy",
     "org.mwc.cmap.legacy/libs",
     "org.mwc.debrief.legacy",
-    "org.mwc.debrief.legacy/libs",
     "org.mwc.cmap.jfreechart",
     "org.mwc.cmap.geotools",
     "org.mwc.debrief.lite",

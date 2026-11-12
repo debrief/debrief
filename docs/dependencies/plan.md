@@ -9,6 +9,7 @@ The work goes in `debrief/debrief` (branch from `develop`, PRs to `develop`).
 
 ## Findings that shape the plan
 - Lite takes **every** jar in `cmap.legacy`, `cmap.legacy/libs`, `debrief.legacy`, `debrief.legacy/libs`, `cmap.jfreechart` and `cmap.geotools` (`org.mwc.debrief.legacy/build.xml:65-70`, `org.mwc.debrief.lite/build.xml:69-77,120-129,~212`). So it ships two versions of POI (3.14 and 4.1.2), xmlbeans (2.6 and 3.1) and jackson-core (2.9.9 and 2.11.2). The RCP build uses only the MANIFEST copies.
+- **Lite's runtime classpath was a hand-written list** (`org.mwc.debrief.lite/conf/manifest.txt`), not the jars it ships. Found in PR 2: Lite actually ran POI 3.14 and xmlbeans 2.6, couldn't load Jackson 2 databind or commons-compress, and listed 20 jars that didn't exist. PR 2 generates the `Class-Path` from the shipped jars.
 - **Not referenced by the RCP build:** `debrief.legacy/libs/poi-*-3.14*`, `xmlbeans-2.6.0` (`.classpath` only), and `asset.comms/libs/RestLet/lib/*xstream*` (that module isn't an OSGi bundle).
 - **No source imports:** `commons-text-1.6`, `hsqldb-2.2.8` and `jackson-core-2.9.9`, all in `cmap.geotools`. GeoTools 21.2 probably needs them at runtime; `hsqldb` almost certainly, for `gt-epsg-hsql`.
 - **Where each library is used, and whether a test covers it:**
@@ -25,7 +26,7 @@ The work goes in `debrief/debrief` (branch from `develop`, PRs to `develop`).
   | postgresql 8.3 | `asset.legacy`, `gnd.demonstrator` | No |
   | Jackson 1.9.4 (codehaus) | 10 imports in `cmap.legacy`, GNDManager, `asset.legacy` | — |
 
-- **Changing a jar in a bundle means editing 4–5 places** in step: the jar itself, `MANIFEST.MF` `Bundle-ClassPath`, `Export-Package` where packages are listed (`cmap.legacy` exports 163 POI packages; `cmap.core` exports 16 XStream ones), `build.properties`, and `.classpath`. Lite picks jars up by folder glob, so it follows automatically.
+- **Changing a jar in a bundle means editing 4–5 places** in step: the jar itself, `MANIFEST.MF` `Bundle-ClassPath`, `Export-Package` where packages are listed (`cmap.legacy` exports 163 POI packages; `cmap.core` exports 16 XStream ones), `build.properties`, and `.classpath`. Lite picks jars up by folder glob, and since PR 2 its `Class-Path` is generated from the same set, so it follows automatically.
 
 ## PR 1 — Baseline (one library change: XStream)
 
@@ -52,12 +53,8 @@ The new XY-plot test showed that XStream 1.4.12 can't create an `XStream` on Jav
 ## PR 2 — Remove duplicates and unused jars
 - Delete `debrief.legacy/libs/poi-*-3.14*` and `xmlbeans-2.6.0`, and update `.classpath`. Lite then uses POI 4.1.2 and xmlbeans 3.1.0, the same versions as the RCP build.
 - Delete `asset.comms/libs/RestLet/lib/{com.thoughtworks.xstream,org.restlet.ext.xstream}.jar` and update `.classpath`.
-- Remove `commons-text-1.6` and `jackson-core-2.9.9` from `cmap.geotools` **only if** the runtime checks pass:
-  - the RCP product starts;
-  - the map renders a shapefile and NaturalEarth;
-  - Lite starts and renders.
-
-  Otherwise keep them and bump them in PR 3.
+- ~~Remove `commons-text-1.6` and `jackson-core-2.9.9` from `cmap.geotools`~~ **Kept.** They are real runtime dependencies of GeoTools 21.2: `gt-main`'s `StaticGeometry` filter functions use commons-text, and `JsonPointerFunction` uses jackson-core. GeoTools loads both as plugins, and every main `gt-*` jar names them in its own `Class-Path`. They get bumped in PR 3+ instead.
+- **Generate Lite's `Class-Path`** from the jars it ships (`lite.runtime.libraries` in `org.mwc.debrief.lite/build.xml`), replacing the hand-written list. Lite then also loads the jars it shipped but never loaded (Jackson 2, commons-compress, the rest of GeoTools and others).
 - Fix the GNDManager `.classpath`/MANIFEST mismatch.
 
 ## PR 3+ — Security bumps, one library per PR, ordered by exposure

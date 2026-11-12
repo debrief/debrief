@@ -67,7 +67,6 @@
 			<fileset dir="../org.mwc.cmap.legacy/libs" includes="*.jar"></fileset>
 			<fileset dir="../org.mwc.cmap.jfreechart" includes="*.jar"></fileset>
 			<fileset dir="." includes="*.jar" excludes="cmap_legacy.jar,debrief_legacy.jar"></fileset>
-			<fileset dir="libs" includes="*.jar"></fileset>
 		</path>
 		<!-- compile the source code -->
 		<javac release="21" destdir="${temp.folder}/debrief_legacy.jar.bin" failonerror="true">

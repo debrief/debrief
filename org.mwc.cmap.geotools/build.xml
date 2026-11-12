@@ -84,7 +84,6 @@
 			<fileset dir="../org.mwc.cmap.legacy/libs" includes="*.jar"></fileset>
 			<fileset dir="../org.mwc.cmap.jfreechart" includes="*.jar"></fileset>
 			<fileset dir="../org.mwc.debrief.legacy" includes="*.jar" excludes="cmap_legacy.jar,debrief_legacy.jar"></fileset>
-			<fileset dir="../org.mwc.debrief.legacy/libs" includes="*.jar"></fileset>
 			<fileset dir="." includes="*.jar"/>
 		</path>
 		<!-- compile the source code -->

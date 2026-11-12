@@ -41,6 +41,16 @@
 	<property name="bundleBootClasspath" value="${bootclasspath}"/>
 	<xmlproperty file="pom.xml"/>
 		
+	<!-- The third-party libraries Lite ships in lib/ and names on its Class-Path. -->
+	<resources id="lite.runtime.libraries">
+		<fileset dir="../org.mwc.cmap.legacy" includes="*.jar" excludes="cmap_legacy.jar,debrief_legacy.jar,cmap_geotools.jar,debrief_lite.jar"/>
+		<fileset dir="../org.mwc.cmap.legacy/libs" includes="*.jar"/>
+		<fileset dir="../org.mwc.debrief.legacy" includes="*.jar" excludes="cmap_legacy.jar,debrief_legacy.jar,cmap_geotools.jar,debrief_lite.jar"/>
+		<fileset dir="../org.mwc.cmap.jfreechart" includes="*.jar"/>
+		<fileset dir="../org.mwc.cmap.geotools" includes="*.jar" excludes="cmap_legacy.jar,debrief_legacy.jar,cmap_geotools.jar,debrief_lite.jar"/>
+		<fileset dir="." includes="*.jar" excludes="cmap_legacy.jar,debrief_legacy.jar,cmap_geotools.jar,debrief_lite.jar"/>
+	</resources>
+
 	<target name="init">
 		<condition property="pluginTemp" value="${buildTempFolder}/plugins"		>
 			<isset property="buildTempFolder"/>
@@ -71,7 +81,7 @@
 			<pathelement location="../org.mwc.debrief.legacy/debrief_legacy.jar"/>
 			<pathelement location="../org.mwc.cmap.geotools/cmap_geotools.jar"/>
 			<fileset dir="../org.mwc.cmap.legacy" includes="*.jar" excludes="cmap_legacy.jar,debrief_legacy.jar,cmap_geotools.jar,debrief_lite.jar"></fileset><fileset dir="../org.mwc.cmap.legacy/libs" includes="*.jar"></fileset>
-			<fileset dir="../org.mwc.debrief.legacy" includes="*.jar" excludes="cmap_legacy.jar,debrief_legacy.jar,cmap_geotools.jar,debrief_lite.jar"></fileset><fileset dir="../org.mwc.debrief.legacy/libs" includes="*.jar"></fileset>
+			<fileset dir="../org.mwc.debrief.legacy" includes="*.jar" excludes="cmap_legacy.jar,debrief_legacy.jar,cmap_geotools.jar,debrief_lite.jar"></fileset>
 			<fileset dir="../org.mwc.cmap.jfreechart" includes="*.jar"></fileset>
 			<fileset dir="../org.mwc.cmap.geotools" includes="*.jar" excludes="cmap_legacy.jar,debrief_legacy.jar,cmap_geotools.jar,debrief_lite.jar"></fileset>
 			<fileset dir="." includes="*.jar" excludes="cmap_legacy.jar,debrief_legacy.jar,cmap_geotools.jar,debrief_lite.jar"></fileset>
@@ -108,8 +118,23 @@
 		<antcall target="buildDate"/>
 		<!-- update a copy of the hand-maintained manifest, not the tracked file itself -->
 		<copy file="${basedir}/conf/manifest.txt" tofile="${temp.folder}/manifest.txt" overwrite="true"/>
+		<!-- Class-Path names every library the generate target copies into lib/, so what
+		     Lite ships is what it runs. Lite's own jars come first, then the rest by name.
+		     (It used to be a hand-written list in conf/manifest.txt, which fell out of step
+		     with the shipped jars: Lite ran POI 3.14 and could not load Jackson 2.) -->
+		<pathconvert property="lite.runtime.classpath" pathsep=" ">
+			<sort>
+				<name xmlns="antlib:org.apache.tools.ant.types.resources.comparators"/>
+				<resources refid="lite.runtime.libraries"/>
+			</sort>
+			<chainedmapper>
+				<flattenmapper/>
+				<globmapper from="*" to="lib/*"/>
+			</chainedmapper>
+		</pathconvert>
 		<manifest file="${temp.folder}/manifest.txt" mode="update">
 			<attribute name="Implementation-Version" value="${product.version}"/>
+			<attribute name="Class-Path" value=". lib/cmap_legacy.jar lib/debrief_legacy.jar lib/cmap_geotools.jar ${lite.runtime.classpath}"/>
 		</manifest>
 		<jar  manifest="${temp.folder}/manifest.txt" destfile="${temp.folder}/debrief_lite.jar" basedir="${temp.folder}/debrief_lite.jar.bin">
 		</jar>
@@ -122,7 +147,7 @@
 			<pathelement location="../org.mwc.debrief.legacy/debrief_legacy.jar"/>
 			<pathelement location="../org.mwc.cmap.geotools/cmap_geotools.jar"/>
 			<fileset dir="../org.mwc.cmap.legacy" includes="*.jar" excludes="cmap_legacy.jar,debrief_legacy.jar,cmap_geotools.jar,debrief_lite.jar"></fileset><fileset dir="../org.mwc.cmap.legacy/libs" includes="*.jar"></fileset>
-			<fileset dir="../org.mwc.debrief.legacy" includes="*.jar" excludes="cmap_legacy.jar,debrief_legacy.jar,cmap_geotools.jar,debrief_lite.jar"></fileset><fileset dir="../org.mwc.debrief.legacy/libs" includes="*.jar"></fileset>
+			<fileset dir="../org.mwc.debrief.legacy" includes="*.jar" excludes="cmap_legacy.jar,debrief_legacy.jar,cmap_geotools.jar,debrief_lite.jar"></fileset>
 			<fileset dir="../org.mwc.cmap.jfreechart" includes="*.jar"></fileset>
 			<fileset dir="../org.mwc.cmap.geotools" includes="*.jar" excludes="cmap_legacy.jar,debrief_legacy.jar,cmap_geotools.jar,debrief_lite.jar"></fileset>
 			<fileset dir="." includes="*.jar" excludes="cmap_legacy.jar,debrief_legacy.jar,cmap_geotools.jar,debrief_lite.jar"></fileset>
@@ -210,14 +235,10 @@
 			</fileset>
 		</copy>
 		<copy todir="${debrief-lite-lib.dir}" failonerror="true" overwrite="true">
-			<fileset dir="../org.mwc.cmap.legacy" includes="*.jar" excludes="cmap_legacy.jar,debrief_legacy.jar,cmap_geotools.jar,debrief_lite.jar"/><fileset dir="../org.mwc.cmap.legacy/libs" includes="*.jar"/>
-			<fileset dir="../org.mwc.debrief.legacy" includes="*.jar" excludes="cmap_legacy.jar,debrief_legacy.jar,cmap_geotools.jar,debrief_lite.jar"/><fileset dir="../org.mwc.debrief.legacy/libs" includes="*.jar"/>
-			<fileset dir="../org.mwc.cmap.jfreechart" includes="*.jar"/>
-			<fileset dir="../org.mwc.cmap.geotools" includes="*.jar" excludes="cmap_legacy.jar,debrief_legacy.jar,cmap_geotools.jar,debrief_lite.jar"/>
+			<resources refid="lite.runtime.libraries"/>
 			<fileset dir="../org.mwc.debrief.legacy" includes="cmap_legacy.jar"/>
 			<fileset dir="../org.mwc.cmap.geotools" includes="cmap_geotools.jar"/>
 			<fileset dir="../org.mwc.debrief.legacy" includes="debrief_legacy.jar"/>
-			<fileset dir="." includes="*.jar" excludes="cmap_legacy.jar,debrief_legacy.jar,cmap_geotools.jar,debrief_lite.jar"/>
 		</copy>
 		<copy todir="${debrief-lite-dist.dir}/${svg-symbols.dest.dir}"><fileset dir="${svg-symbols.source.dir}" includes="**/*"></fileset></copy>
 		<copy todir="${debrief-lite-dist.dir}" file="src/main/java/icons/d_lite.png" failonerror="true" overwrite="false"/>

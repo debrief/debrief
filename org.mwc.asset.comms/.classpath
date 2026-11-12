@@ -7,12 +7,10 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry exported="true" kind="lib" path="libs/RestLet/lib/org.restlet.jar" sourcepath="docs/src"/>
-	<classpathentry exported="true" kind="lib" path="libs/RestLet/lib/org.restlet.ext.xstream.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/RestLet/lib/org.restlet.ext.json.jar"/>
 	<classpathentry kind="lib" path="libs/smackx.jar"/>
 	<classpathentry kind="lib" path="libs/smackx-debug.jar"/>
 	<classpathentry kind="lib" path="libs/smackx-jingle.jar"/>
-	<classpathentry kind="lib" path="libs/RestLet/lib/com.thoughtworks.xstream.jar"/>
 	<classpathentry kind="lib" path="libs/RestLet/lib/org.codehaus.jettison.jar"/>
 	<classpathentry kind="lib" path="libs/RestLet/lib/org.json.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/org.mwc.asset.legacy"/>
