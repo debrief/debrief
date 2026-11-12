@@ -70,8 +70,8 @@ Versions are set at implementation time from Maven Central (latest stable); the 
 | 6 | commons-compress | 1.27+ | Needs newer commons-io and lang3; check the other copies of both. |
 | 7 | POI + xmlbeans | 5.x / 5.x | Brings in new runtime jars: log4j-api, SparseBitSet, commons-math3, collections4. Larger PR. |
 | 8 | commons-text, hsqldb (if kept) | Latest that works with GeoTools 21.2 | If GeoTools won't accept it, record the exception and defer to the GeoTools spec. |
-| 9 | h2 (`geotools`) | 2.x if GeoTools 21.2 accepts it | Found by the baseline scan: 2 Critical. Otherwise record an exception and defer to D1. |
-| 10 | logback (`cmap.media`) | 1.5.x, or remove | Found by the baseline scan: 0.9.14, Critical. |
+| 9 | h2 (`geotools`) | — | **Removed instead.** Nothing used it: `h2-1.4.200`, `gt-jdbc-h2` and `gt-jdbc` (also Critical) went from `cmap.geotools`, and the unused `gt-jdbc-spatialite-20.5` from Pepys. |
+| 10 | logback (`cmap.media`) | — | **Replaced.** It was only Xuggler's SLF4J binding: now slf4j-api + slf4j-simple 1.7.36 (slf4j-api 1.5.6 would fail with no binding). |
 | 11 | Pepys native SQLite and zlib DLLs; c3p0, mchange-commons | Current | Found by the baseline scan. Check whether sqlite-jdbc's own natives make the DLLs unnecessary. |
 | 12 | zip4j, commons-io, guava | Current | Found by the baseline scan. |
 | — | Jackson 1.9.4 (codehaus) | — | **Not bumped.** No fixed versions exist. Tracked as a follow-up spec (migrate to Jackson 2). |
