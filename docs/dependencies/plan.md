@@ -64,7 +64,7 @@ Versions are set at implementation time from Maven Central (latest stable); the 
 |---|---|---|---|
 | 1 | XStream (`cmap.core`) | 1.4.21 | **Done in PR 1.** The package list is unchanged; the allow-list is in `XYPlotStateXml`. |
 | 2 | postgresql (`pepys`) | — | **Removed instead** (owner's decision): Debrief no longer connects to Postgres. Pepys reads SQLite only; the ASSET record-to-database observer and the GND demonstrator are gone, with all four Postgres/PostGIS drivers. |
-| 3 | sqlite-jdbc (`pepys`) | 3.4x | Native library bundle; check that the pepys tests still run on Linux and Windows. |
+| 3 | sqlite-jdbc (`pepys`) | 3.54.1.0 | **Done** (driver only). The unused `sqlite-dialect-0.1.0` (a Hibernate dialect) is removed. The Windows SpatiaLite DLL stack in `native/win64` (SQLite 3.31.1, zlib 1.2.8, GEOS 3.5, PROJ) is unchanged: it needs a new SpatiaLite build and a Windows test, and is tracked with the native-libraries item. |
 | 4 | Jackson 2 (`debrief.legacy`, `geotools`) | 2.22.4 (annotations 2.22) | **Done.** One version in both bundles. 2.23.0 was 4 days old, so the latest 2.22 patch was used. `cmap.geotools` exports `core.exc` as well. Lite's jackson-core exclusion is gone. |
 | 5 | jsoup | 1.18+ | |
 | 6 | commons-compress | 1.27+ | Needs newer commons-io and lang3; check the other copies of both. |
