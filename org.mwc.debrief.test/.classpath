@@ -37,7 +37,6 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/org.mwc.debrief.multipath2"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/org.mwc.debrief.SensorFusion"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/org.mwc.debrief.track_shift"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/org.mwc.gnd.demonstrator"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/org.qinetiq.data_feed"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

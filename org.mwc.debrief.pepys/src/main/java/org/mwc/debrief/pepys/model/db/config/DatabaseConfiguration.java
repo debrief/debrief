@@ -3,7 +3,6 @@ package org.mwc.debrief.pepys.model.db.config;
 import java.util.HashMap;
 
 import org.mwc.debrief.pepys.model.db.DatabaseConnection;
-import org.mwc.debrief.pepys.model.db.PostgresDatabaseConnection;
 import org.mwc.debrief.pepys.model.db.SqliteDatabaseConnection;
 import org.mwc.debrief.pepys.model.db.config.LoaderOption.LoaderType;
 
@@ -33,8 +32,6 @@ public class DatabaseConfiguration {
 		final String databaseType = category.get(DatabaseConnection.CONFIGURATION_DATABASE_TYPE);
 		if (databaseType != null) {
 			switch (databaseType) {
-			case DatabaseConnection.POSTGRES:
-				return PostgresDatabaseConnection.validateDatabaseConfiguration(_config);
 			case DatabaseConnection.SQLITE:
 				return SqliteDatabaseConnection.validateDatabaseConfiguration(_config);
 			default:

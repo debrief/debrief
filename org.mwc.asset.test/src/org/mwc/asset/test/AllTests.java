@@ -110,7 +110,6 @@ import org.junit.runners.Suite;
 		ASSET.Scenario.Observers.ProximityObserver.StopOnProxObserverTest.class,
 		ASSET.Scenario.Observers.Recording.ContinuousRecordToFileObserver.RecToFileTest.class,
 		ASSET.Scenario.Observers.Recording.RecordStatusToCloudObserverType.RecToCloudTest.class,
-		ASSET.Scenario.Observers.Recording.RecordStatusToDBObserverType.recToDbTest.class,
 		ASSET.Scenario.Observers.Recording.RecordStatusToFileObserverType.recToFileTest.class,
 		ASSET.Scenario.Observers.RemoveDetectedObserver.RemDetectedTest.class,
 		ASSET.Scenario.Observers.ScenarioStatusObserver.TimeObsTest.class,

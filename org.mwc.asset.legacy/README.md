@@ -285,7 +285,6 @@ ScenarioType scenario = reader.importThis(inputStream);
 | `org.mwc.debrief.legacy` | Track wrappers, file I/O |
 
 **External Libraries**:
-- PostGIS, PostgreSQL (spatial database)
 - Jackson (JSON serialization)
 - JTS (geometry operations)
 

@@ -56,7 +56,6 @@
 		<pathelement location="../org.mwc.debrief.multipath2/bin"/>
 		<pathelement location="../org.mwc.debrief.SensorFusion/bin"/>
 		<pathelement location="../org.mwc.debrief.track_shift/bin"/>
-		<pathelement location="../org.mwc.gnd.demonstrator/bin"/>
 		<pathelement location="../org.mwc.debrief.legacy/bin"/>
 	</path>
 
