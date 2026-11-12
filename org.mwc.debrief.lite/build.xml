@@ -42,12 +42,15 @@
 	<xmlproperty file="pom.xml"/>
 		
 	<!-- The third-party libraries Lite ships in lib/ and names on its Class-Path. -->
+	<!-- jackson-core-2.9.9 (cmap.geotools) is left out: the GeoTools jars name it in their own
+	     Class-Path, which put it ahead of 2.11.2 and broke jackson-databind 2.11.2
+	     (NoSuchMethodError). 2.11.2 serves GeoTools too. Drop this when Jackson is aligned. -->
 	<resources id="lite.runtime.libraries">
 		<fileset dir="../org.mwc.cmap.legacy" includes="*.jar" excludes="cmap_legacy.jar,debrief_legacy.jar,cmap_geotools.jar,debrief_lite.jar"/>
 		<fileset dir="../org.mwc.cmap.legacy/libs" includes="*.jar"/>
 		<fileset dir="../org.mwc.debrief.legacy" includes="*.jar" excludes="cmap_legacy.jar,debrief_legacy.jar,cmap_geotools.jar,debrief_lite.jar"/>
 		<fileset dir="../org.mwc.cmap.jfreechart" includes="*.jar"/>
-		<fileset dir="../org.mwc.cmap.geotools" includes="*.jar" excludes="cmap_legacy.jar,debrief_legacy.jar,cmap_geotools.jar,debrief_lite.jar"/>
+		<fileset dir="../org.mwc.cmap.geotools" includes="*.jar" excludes="cmap_legacy.jar,debrief_legacy.jar,cmap_geotools.jar,debrief_lite.jar,jackson-core-2.9.9.jar"/>
 		<fileset dir="." includes="*.jar" excludes="cmap_legacy.jar,debrief_legacy.jar,cmap_geotools.jar,debrief_lite.jar"/>
 	</resources>
 
