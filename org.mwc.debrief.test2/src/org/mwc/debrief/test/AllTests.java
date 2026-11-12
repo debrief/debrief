@@ -45,6 +45,8 @@ import org.junit.runners.Suite;
 		Debrief.ReaderWriter.Word.ImportWordDummy.TestImportDummyWord.class,
 		Debrief.ReaderWriter.Word.ImportRiderNarrativeDocument.TestImportRider.class,
 		Debrief.ReaderWriter.Word.ImportASWDataDocument.TestImportWord.class,
+		MWC.Utilities.ReaderWriter.Word.NarrativeWriter.TestMe.class,
+		org.mwc.cmap.xyplot.views.XYPlotStateXml.TestMe.class,
 		Debrief.Tools.FilterOperations.ReformatFixes.testListOfProperties.class,
 		Debrief.Tools.Palette.BuoyPatterns.ArcBuilder.testMe.class,
 		Debrief.Tools.Palette.BuoyPatterns.BarrierBuilder.testMe.class,

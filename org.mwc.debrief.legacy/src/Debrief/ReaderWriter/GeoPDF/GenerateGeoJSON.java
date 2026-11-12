@@ -80,6 +80,48 @@ public class GenerateGeoJSON {
 
 		private final static String boat1rep = "../org.mwc.cmap.combined.feature/root_installs/sample_data/boat2.rep";
 
+		/**
+		 * the GeoJSON for each track in sample.dpf (the line, and points every 10
+		 * minutes) matches the committed golden file. Written as canonical JSON
+		 * (keys sorted, indented) so the comparison doesn't depend on how a Jackson
+		 * version orders or spaces its output. Times are formatted in GMT, so the
+		 * result doesn't depend on the machine's time zone.
+		 */
+		public void testGeoJSONGolden() throws Exception {
+			final java.util.TimeZone oldZone = java.util.TimeZone.getDefault();
+			java.util.TimeZone.setDefault(java.util.TimeZone.getTimeZone("GMT"));
+			try {
+				final Layers layers = new Layers();
+				try (FileInputStream is = new FileInputStream(sampledpf)) {
+					new Debrief.ReaderWriter.XML.DebriefXMLReaderWriter(null).importThis("sample.dpf", is, layers);
+				}
+
+				final ObjectMapper mapper = new ObjectMapper();
+				mapper.configure(com.fasterxml.jackson.databind.SerializationFeature.ORDER_MAP_ENTRIES_BY_KEYS, true);
+				mapper.configure(com.fasterxml.jackson.databind.SerializationFeature.INDENT_OUTPUT, true);
+				final ObjectNode root = mapper.createObjectNode();
+				int tracks = 0;
+				for (final String name : new String[] { "NELSON", "COLLINGWOOD" }) {
+					final TrackWrapper track = (TrackWrapper) layers.findLayer(name, true);
+					assertNotNull(name + " loaded from sample.dpf", track);
+					final ObjectNode trackNode = root.putObject(name);
+					trackNode.set("line", mapper.readTree(GenerateGeoJSON.createGeoJSONTrackLine(track,
+							new GeoJSONConfiguration(-1, false, false, null, null, null))));
+					trackNode.set("points", mapper.readTree(GenerateGeoJSON.createGeoJSONTrackPoints(track,
+							new GeoJSONConfiguration(10, true, false, null, null, null))));
+					tracks++;
+				}
+				assertEquals("both tracks exported", 2, tracks);
+
+				// a tree read back from text sorts its keys only through a Map, so go via one
+				final Object canonical = mapper.treeToValue(root, java.util.Map.class);
+				Debrief.Testing.GoldenFile.assertMatches("geojson/sample_dpf.json",
+						mapper.writeValueAsString(canonical) + "\n");
+			} finally {
+				java.util.TimeZone.setDefault(oldZone);
+			}
+		}
+
 		public void testCreateGeoJSON() throws FileNotFoundException, JsonProcessingException {
 			final Layers layers = new Layers();
 			final ImportReplay replayImporter = new ImportReplay();
