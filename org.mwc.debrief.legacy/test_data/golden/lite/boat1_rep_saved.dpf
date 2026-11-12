@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<plot Created="<masked>" Name="Debrief Plot">
+<plot Created="MASKED" Name="Debrief Plot">
     <session>
         <layers>
             <layer LineThickness="0" Name="Chart Features" Visible="true"/>
@@ -2094,4 +2094,5 @@
             </component>
         </gui>
     </session>
-    <details Text="Saved with Debrief version dated <masked></plot>
+    <details Text="Saved with Debrief version dated MASKED"/>
+</plot>
