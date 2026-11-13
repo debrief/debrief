@@ -294,12 +294,12 @@ public abstract class CoreCoordinateRecorder {
 		String exportedFile = null;
 		try {
 			exportedFile = plotTracks.export(td, masterTemplateFile, exportFile);
-		} catch (final IOException ie) {
-			errorMessage = "Error exporting to powerpoint (File access problem)";
-			Trace.trace(ie, errorMessage);
 		} catch (final ZipException ze) {
 			errorMessage = "Error exporting to powerpoint (Unable to extract ZIP)";
 			Trace.trace(ze, errorMessage);
+		} catch (final IOException ie) {
+			errorMessage = "Error exporting to powerpoint (File access problem)";
+			Trace.trace(ie, errorMessage);
 		} catch (final DebriefException de) {
 			errorMessage = "Error exporting to powerpoint (template may be corrupt).\n" + de.getMessage();
 			Trace.trace(de, errorMessage);

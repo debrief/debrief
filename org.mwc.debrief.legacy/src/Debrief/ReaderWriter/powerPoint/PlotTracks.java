@@ -852,7 +852,7 @@ public class PlotTracks {
 			returnValue = e.getMessage();
 		} catch (final AccessDeniedException ae) {
 			returnValue = "Unable to produce copy of master template";
-		} catch (IOException | ZipException e) {
+		} catch (final IOException e) {
 			returnValue = "Corrupted File";
 		}
 		if (temp_unpack_path != null) {
