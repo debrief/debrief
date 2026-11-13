@@ -147,7 +147,14 @@ public class NarrativeWriter {
 				fileInputStream = new FileInputStream(fileToBeRead);
 				document = new XWPFDocument(fileInputStream);
 				List<XWPFTable> tables = document.getTables();
+				assertEquals("one table",1,tables.size());
 				assertEquals("row count",3,tables.get(0).getNumberOfRows());
+				XWPFTableRow header = tables.get(0).getRow(0);
+				assertEquals("header cells",4,header.getTableCells().size());
+				assertEquals("Time",header.getCell(0).getText());
+				assertEquals("Source",header.getCell(1).getText());
+				assertEquals("Type",header.getCell(2).getText());
+				assertEquals("Entry",header.getCell(3).getText());
 				XWPFTableRow row1 = tables.get(0).getRow(1);
 				assertEquals(n1.getDTGString(),row1.getCell(0).getText());
 				assertEquals(n1.getSource(),row1.getCell(1).getText());
@@ -177,12 +184,16 @@ public class NarrativeWriter {
 			
 			
 		}
-		public void testWritingEmptyList() {
+		public void testWritingEmptyList() throws IOException {
 			final NarrativeWrapper narr = new NarrativeWrapper("Some title");
 			assertEquals("empty", 0, narr.size());
-			NarrativeWriter nw = new NarrativeWriter();
-			String currentDirectory = System.getProperty("user.dir");
-			nw.write(narr, true,true, new File(currentDirectory));
+			final File dir = java.nio.file.Files.createTempDirectory("narrative").toFile();
+			try {
+				new NarrativeWriter().write(narr, true, true, dir);
+				assertEquals("no document written", 0, dir.list().length);
+			} finally {
+				dir.delete();
+			}
 		}
 		public void testWritingNoType() {
 			final NarrativeWrapper narr = new NarrativeWrapper("Some title");
