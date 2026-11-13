@@ -32,7 +32,6 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/org.mwc.debrief.core"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/org.mwc.debrief.data_feed"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/org.mwc.debrief.data_feed_dummy"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/org.mwc.debrief.GNDManager"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/org.mwc.debrief.help"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/org.mwc.debrief.multipath2"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/org.mwc.debrief.SensorFusion"/>

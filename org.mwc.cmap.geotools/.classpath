@@ -11,7 +11,7 @@
 	<classpathentry exported="true" kind="lib" path="ejml-core-0.34.jar"/>
 	<classpathentry exported="true" kind="lib" path="ejml-ddense-0.34.jar"/>
 	<classpathentry exported="true" kind="lib" path="error_prone_annotations-2.2.0.jar"/>
-	<classpathentry exported="true" kind="lib" path="failureaccess-1.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="failureaccess-1.0.3.jar"/>
 	<classpathentry exported="true" kind="lib" path="FastInfoset-1.2.15.jar"/>
 	<classpathentry exported="true" kind="lib" path="GeographicLib-Java-1.49.jar"/>
 	<classpathentry exported="true" kind="lib" path="gt-coverage-21.2.jar"/>
@@ -29,7 +29,7 @@
 	<classpathentry exported="true" kind="lib" path="gt-swing-21.2.jar"/>
 	<classpathentry exported="true" kind="lib" path="gt-swt-23-SNAPSHOT.jar"/>
 	<classpathentry exported="true" kind="lib" path="gt-xml-21.2.jar"/>
-	<classpathentry exported="true" kind="lib" path="guava-27.0-jre.jar"/>
+	<classpathentry exported="true" kind="lib" path="guava-33.7.2-jre.jar"/>
 	<classpathentry exported="true" kind="lib" path="hsqldb-2.2.8.jar"/>
 	<classpathentry exported="true" kind="lib" path="imageio-ext-geocore-1.2.2.jar"/>
 	<classpathentry exported="true" kind="lib" path="imageio-ext-streams-1.2.2.jar"/>

@@ -18,13 +18,13 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.zip.ZipException;
 
 import org.apache.commons.io.FileUtils;
 
 import Debrief.GUI.Frames.Application;
 import MWC.GUI.ToolParent;
 import MWC.Utilities.ReaderWriter.SafeArchive;
-import net.lingala.zip4j.exception.ZipException;
 
 public class UnpackFunction {
 
@@ -84,8 +84,10 @@ public class UnpackFunction {
 			SafeArchive.extractZip(new File(pptx_path), new File(unpack_path),
 					new SafeArchive.Limits(MAX_TEMPLATE_ENTRIES, MAX_TEMPLATE_BYTES, MAX_TEMPLATE_BYTES));
 		} catch (final IOException e) {
-			throw new ZipException("Unable to unpack the PPTX master template " + pptx_path + ": " + e.getMessage(),
-					e);
+			final ZipException ze = new ZipException(
+					"Unable to unpack the PPTX master template " + pptx_path + ": " + e.getMessage());
+			ze.initCause(e);
+			throw ze;
 		}
 		Application.logError2(ToolParent.INFO, "File unpacked at " + unpack_path, null);
 		return unpack_path;

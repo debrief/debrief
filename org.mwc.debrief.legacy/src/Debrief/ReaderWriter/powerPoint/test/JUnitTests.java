@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Iterator;
+import java.util.zip.ZipException;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.Assert;
@@ -34,8 +35,7 @@ import Debrief.ReaderWriter.powerPoint.DebriefException;
 import Debrief.ReaderWriter.powerPoint.PlotTracks;
 import Debrief.ReaderWriter.powerPoint.TrackParser;
 import Debrief.ReaderWriter.powerPoint.model.TrackData;
-import net.lingala.zip4j.core.ZipFile;
-import net.lingala.zip4j.exception.ZipException;
+import MWC.Utilities.ReaderWriter.SafeArchive;
 
 public class JUnitTests {
 	final private String[] donorFiles = new String[] { "master_template.pptx" };
@@ -77,10 +77,9 @@ public class JUnitTests {
 					expectedPptxTemporaryFolder.mkdir();
 				}
 
-				final ZipFile generatedPptxZip = new ZipFile(pptxGenerated);
-				generatedPptxZip.extractAll(generatedPptxTemporaryFolder.getAbsolutePath());
-				final ZipFile expectedPptxZip = new ZipFile(expectedPptx);
-				expectedPptxZip.extractAll(expectedPptxTemporaryFolder.getAbsolutePath());
+				final SafeArchive.Limits limits = new SafeArchive.Limits(1000, 100_000_000, 100_000_000);
+				SafeArchive.extractZip(new File(pptxGenerated), generatedPptxTemporaryFolder, limits);
+				SafeArchive.extractZip(new File(expectedPptx), expectedPptxTemporaryFolder, limits);
 
 				// We compare the file structure first
 

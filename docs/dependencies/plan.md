@@ -24,7 +24,7 @@ The work goes in `debrief/debrief` (branch from `develop`, PRs to `develop`).
   | sqlite-jdbc | `pepys/.../SqliteDatabaseConnection.java` | Pepys tests, skipped on macOS |
   | postgresql 42.2.11 | `pepys/.../PostgresDatabaseConnection.java` | No |
   | postgresql 8.3 | `asset.legacy`, `gnd.demonstrator` | No |
-  | Jackson 1.9.4 (codehaus) | 10 imports in `cmap.legacy`, GNDManager, `asset.legacy` | — |
+  | Jackson 1.9.4 (codehaus) | imports in `cmap.legacy` and `asset.legacy` (GNDManager's went with the module) | — |
 
 - **Changing a jar in a bundle means editing 4–5 places** in step: the jar itself, `MANIFEST.MF` `Bundle-ClassPath`, `Export-Package` where packages are listed (`cmap.legacy` exports 163 POI packages; `cmap.core` exports 16 XStream ones), `build.properties`, and `.classpath`. Lite picks jars up by folder glob, and since PR 2 its `Class-Path` is generated from the same set, so it follows automatically.
 
@@ -73,7 +73,7 @@ Versions are set at implementation time from Maven Central (latest stable); the 
 | 9 | h2 (`geotools`) | — | **Removed instead.** Nothing used it: `h2-1.4.200`, `gt-jdbc-h2` and `gt-jdbc` (also Critical) went from `cmap.geotools`, and the unused `gt-jdbc-spatialite-20.5` from Pepys. |
 | 10 | logback (`cmap.media`) | — | **Replaced.** It was only Xuggler's SLF4J binding: now slf4j-api + slf4j-simple 1.7.36 (slf4j-api 1.5.6 would fail with no binding). |
 | 11 | Pepys native SQLite and zlib DLLs; c3p0, mchange-commons | — | **Removed with the Pepys plugin** (see item 3). |
-| 12 | zip4j, guava | Current | Found by the baseline scan. commons-io was done with item 6. |
+| 12 | zip4j, guava | — / 33.7.2-jre | **Done.** zip4j was only used to zip the PowerPoint export, so `PackPresentation` now uses `java.util.zip` (writing `[Content_Types].xml` first) and the jar is gone. guava 27.0 → 33.7.2-jre and failureaccess 1.0 → 1.0.3 in `cmap.geotools` (33.8.0 was 11 days old); every guava class and method GeoTools 21.2 calls exists in 33.7.2. The unbuilt `org.mwc.debrief.GNDManager` module, with guava 14-rc1, is deleted (owner's decision). commons-io was done with item 6. |
 | — | Jackson 1.9.4 (codehaus) | — | **Not bumped.** No fixed versions exist. Tracked as a follow-up spec (migrate to Jackson 2). |
 
 **Each PR:** update the jar, MANIFEST, `Export-Package`, `build.properties` and `.classpath`; then rescan, and the CVE count for that library must fall to zero (or each remaining CVE is excepted with a reason). The scan gate (fail on new High/Critical) is switched on once the first bump lands.
@@ -129,7 +129,7 @@ Spec `specs/004-geotools/`.
 - **Acceptance:** Lite UI tests pass and screenshot diffs of the Lite main window are within tolerance. The owner does a manual walkthrough on all three operating systems.
 
 ## Phase D3: Jackson 1 and the old Postgres drivers (after Gate A; can run in parallel with B)
-- **Jackson 1 → Jackson 2.** Migrate the 10 codehaus imports (`cmap.legacy`, GNDManager, `asset.legacy`), then delete the 1.9.4 jars. Golden JSON tests come first.
+- **Jackson 1 → Jackson 2.** Migrate the codehaus imports (`cmap.legacy`, `asset.legacy`), then delete the 1.9.4 jars. Golden JSON tests come first.
 - **Postgres 8.3.** Done early, with the Pepys driver: all PostgreSQL support was removed (see PR 3+ item 2).
 
 ## Phase E: test tooling (after Phase B)
