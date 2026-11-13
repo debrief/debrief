@@ -376,10 +376,6 @@ Library.
          version="0.0.0"/>
 
    <plugin
-         id="org.mwc.debrief.pepys"
-         version="0.0.0"/>
-
-   <plugin
          id="javax.xml"
          version="0.0.0"/>
 

@@ -8,10 +8,10 @@ for the debrief-future project to drive UI development using realistic maritime 
 
 | Metric | Value |
 |--------|-------|
-| Total files | 287 |
-| Total size | 86 MB |
+| Total files | 281 |
+| Total size | 73 MB |
 | Directories | 23 |
-| File types | 31 distinct extensions |
+| File types | 29 distinct extensions |
 
 ### File Count by Type
 
@@ -35,7 +35,6 @@ for the debrief-future project to drive UI development using realistic maritime 
 | `.brt` | 2 | 1.6 KB | Bearing time data |
 | `.gz` | 3 | 3.4 KB | Gzip-compressed CSV files |
 | `.tif` | 1 | 636 KB | GeoTIFF raster chart |
-| `.sqlite` | 1 | 12.4 MB | Pepys spatialite database |
 | `.mp3` | 1 | 729 KB | Audio recording |
 | `.zip` | 1 | 751 KB | Compressed DPF file |
 | `.png` | 1 | 101 KB | Gantt chart screenshot |
@@ -189,30 +188,12 @@ Simple two-column CSV format: Unix epoch timestamp and bearing in degrees.
 | Nisida | `nisida_sample.txt` | Nisida format sample |
 | CSV Exchange | `CSV_EXCHANGE_SAMPLE.csv` | Debrief CSV exchange format |
 
-### Pepys SQLite Database (`.sqlite`)
-
-A SpatiaLite database (13 MB) containing the Pepys data model with domain tables:
-
-| Table | Rows | Description |
-|-------|-----:|-------------|
-| `Platforms` | 33 | Vessels/units with type, nationality |
-| `Sensors` | 43 | Sensor definitions with type and host platform |
-| `States` | 12,239 | Time-stamped position/heading/speed observations |
-| `Contacts` | 112 | Sensor contact detections (bearing, range, freq) |
-| `Datafiles` | 25 | Source data file references |
-| `Comments` | 21 | Timestamped text entries per platform |
-| `Activations` | 13 | Sensor activation periods |
-| `Geometries` | 8 | Spatial geometry features |
-| `Nationalities` | 257 | Reference nationality table |
-| `PlatformTypes` | 5 | Fisher, Ferry, Warship, etc. |
-| `SensorTypes` | 6 | GPS, Position, Array Sonar, etc. |
-
 ---
 
 ## Directory Structure
 
 ```
-sample_data/                          86 MB total
+sample_data/                          73 MB total
   *.rep, *.dpf, *.dsf, *.xml, *.tif  (top-level files, see inventory below)
   Demo/                               153 KB - Tutorial demonstration scenarios
     Analysis/                          4 files - Track analysis workflow
@@ -657,7 +638,6 @@ Designed for time-synchronized image overlay during track playback.
 |------|-----:|-------------|
 | `control.inp` | 153 B | DIS (Distributed Interactive Simulation) control input |
 | `control_other.inp` | 152 B | Alternative DIS control input |
-| `sqlite_sample_data.ini` | 296 B | Pepys database connection configuration |
 | `lookup_test_control.xml` | 1.2 KB | Lookup control/test configuration |
 | `for_gpx.xml` | 238 KB | Debrief XML formatted for GPX export testing |
 
@@ -696,12 +676,6 @@ Eclipse P2 repository update tooling (not maritime data).
 |------|-----:|-------------|
 | `sender.sh` | 960 B | Linux script for DIS PDU generation |
 | `sender.bat` | 1.0 KB | Windows script for DIS PDU generation |
-
-#### Pepys Database
-
-| File | Size | Description |
-|------|-----:|-------------|
-| `pepys.sqlite` | 12.4 MB | SpatiaLite database with Pepys data model (33 platforms, 43 sensors, 12,239 states, 112 contacts) |
 
 ---
 
@@ -811,7 +785,6 @@ user interface development.
 | Central Atlantic | ~5N, 30E | S2R/nonsuch.rep, planning_tracks.rep |
 | North Sea area | ~60N, 0E | SATC/, TA_DUMMY_DATA/ |
 | UK coastal | ~51N, 5W | uk_track.rep |
-| West Africa | ~10N, 10-17E | pepys.sqlite |
 
 ---
 
@@ -825,8 +798,6 @@ user interface development.
 
 4. **Scale testing**: `BULK_RED_TRACKS.rep` (300 tracks), `lightweight_test_tracks.rep` (39 tracks), and `narrative_bulk.rep` (12,150 entries) provide performance benchmarks.
 
-5. **Pepys integration**: The `pepys.sqlite` database represents a modern relational data model that may inform debrief-future's data architecture.
+5. **Media synchronization**: The `TimedImages/` directory and AVI files demonstrate time-synchronized media playback requirements.
 
-6. **Media synchronization**: The `TimedImages/` directory and AVI files demonstrate time-synchronized media playback requirements.
-
-7. **Multi-format import**: The `other_formats/` directory demonstrates the breadth of import formats (NMEA, GPX, OTH-Gold, CSV, BRT, etc.) that users expect.
+6. **Multi-format import**: The `other_formats/` directory demonstrates the breadth of import formats (NMEA, GPX, OTH-Gold, CSV, BRT, etc.) that users expect.
