@@ -55,8 +55,6 @@ directory holds 287 example files; a full inventory is in the `SAMPLE_DATA.md` c
 | Narrative Documents | various | [`ImportNarrativeDocument`](org.mwc.debrief.legacy/src/Debrief/ReaderWriter/Word/ImportNarrativeDocument.java), [`ImportRiderNarrativeDocument`](org.mwc.debrief.legacy/src/Debrief/ReaderWriter/Word/ImportRiderNarrativeDocument.java) | Narrative text extraction | — |
 | C-Log | various | [`CLogFileImporter`](org.mwc.debrief.legacy/src/Debrief/ReaderWriter/FlatFile/CLogFileImporter.java) | C-Log format | — |
 
-> Pepys SpatiaLite database example: [`pepys.sqlite`](org.mwc.cmap.combined.feature/root_installs/sample_data/other_formats/pepys.sqlite).
-
 ### 1.2 REP Format Sub-Types
 
 The Replay format supports many record types via dedicated importers (all under

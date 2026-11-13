@@ -64,7 +64,7 @@ Versions are set at implementation time from Maven Central (latest stable); the 
 |---|---|---|---|
 | 1 | XStream (`cmap.core`) | 1.4.21 | **Done in PR 1.** The package list is unchanged; the allow-list is in `XYPlotStateXml`. |
 | 2 | postgresql (`pepys`) | — | **Removed instead** (owner's decision): Debrief no longer connects to Postgres. Pepys reads SQLite only; the ASSET record-to-database observer and the GND demonstrator are gone, with all four Postgres/PostGIS drivers. |
-| 3 | sqlite-jdbc (`pepys`) | 3.54.1.0 | **Done** (driver only). The unused `sqlite-dialect-0.1.0` (a Hibernate dialect) is removed. The Windows SpatiaLite DLL stack in `native/win64` (SQLite 3.31.1, zlib 1.2.8, GEOS 3.5, PROJ) is unchanged: it needs a new SpatiaLite build and a Windows test, and is tracked with the native-libraries item. |
+| 3 | sqlite-jdbc (`pepys`) | — | **Removed with the Pepys plugin** (owner's decision: the Pepys database is retired). That takes sqlite-jdbc, c3p0, mchange-commons and the Windows SpatiaLite DLLs (SQLite 3.31.1, zlib 1.2.8) with it. |
 | 4 | Jackson 2 (`debrief.legacy`, `geotools`) | 2.22.4 (annotations 2.22) | **Done.** One version in both bundles. 2.23.0 was 4 days old, so the latest 2.22 patch was used. `cmap.geotools` exports `core.exc` as well. Lite's jackson-core exclusion is gone. |
 | 5 | jsoup | 1.18+ | |
 | 6 | commons-compress | 1.27+ | Needs newer commons-io and lang3; check the other copies of both. |
@@ -72,7 +72,7 @@ Versions are set at implementation time from Maven Central (latest stable); the 
 | 8 | commons-text, hsqldb (if kept) | Latest that works with GeoTools 21.2 | If GeoTools won't accept it, record the exception and defer to the GeoTools spec. |
 | 9 | h2 (`geotools`) | — | **Removed instead.** Nothing used it: `h2-1.4.200`, `gt-jdbc-h2` and `gt-jdbc` (also Critical) went from `cmap.geotools`, and the unused `gt-jdbc-spatialite-20.5` from Pepys. |
 | 10 | logback (`cmap.media`) | — | **Replaced.** It was only Xuggler's SLF4J binding: now slf4j-api + slf4j-simple 1.7.36 (slf4j-api 1.5.6 would fail with no binding). |
-| 11 | Pepys native SQLite and zlib DLLs; c3p0, mchange-commons | Current | Found by the baseline scan. Check whether sqlite-jdbc's own natives make the DLLs unnecessary. |
+| 11 | Pepys native SQLite and zlib DLLs; c3p0, mchange-commons | — | **Removed with the Pepys plugin** (see item 3). |
 | 12 | zip4j, commons-io, guava | Current | Found by the baseline scan. |
 | — | Jackson 1.9.4 (codehaus) | — | **Not bumped.** No fixed versions exist. Tracked as a follow-up spec (migrate to Jackson 2). |
 
@@ -85,7 +85,7 @@ Versions are set at implementation time from Maven Central (latest stable); the 
 2. The `lite-ui-tests` job passes (`-DliteUiTests=true`).
 3. The golden-file tests pass unchanged. Any regeneration has to be explained in the PR.
 4. The scan artefact shows the target CVEs gone and no new High/Critical findings.
-5. Smoke test from the CI artefacts: start the product on Linux under xvfb with a screenshot. Open `sample.dpf`, export a narrative to Word, and open the pepys sqlite file. On Windows and macOS, a manual check by the owner, listed in the PR.
+5. Smoke test from the CI artefacts: start the product on Linux under xvfb with a screenshot. Open `sample.dpf` and export a narrative to Word. On Windows and macOS, a manual check by the owner, listed in the PR.
 6. Lite: run `dist/debrief-lite-<version>.zip`, open a REP file, step time.
 
 ## Gate A: before any restructuring
@@ -98,7 +98,7 @@ All of the following hold:
 ## Phase B: move jars to Maven (after Gate A)
 Spec `specs/003-maven-dependencies/`. Move the third-party jars to Maven Central coordinates.
 - **How.** A `<location type="Maven">` in `org.mwc.debrief.targetplatforms/eclipse-latest.target` (and the `.tpd`). Bundles use `Import-Package` (or `Require-Bundle` on the wrapped bundle) instead of `Bundle-ClassPath`.
-- **Order.** One bundle per PR: `debrief.pepys` (smallest), then `debrief.legacy`, `cmap.legacy`, `cmap.core`, `cmap.jfreechart`. `cmap.geotools` waits for Phase C.
+- **Order.** One bundle per PR: `debrief.legacy`, `cmap.legacy`, `cmap.core`, `cmap.jfreechart`. `cmap.geotools` waits for Phase C.
 - **Lite's Ant build.** It gets its jars from a `maven-dependency-plugin:copy-dependencies` step in a new `org.mwc.debrief.lite/pom.xml` stage, not folder globs. That removes the second classpath.
 - **Kept in the repo.** Jars with no Maven coordinates stay committed and listed in `docs/dependencies/vendored.md` with a reason: jmf, vrml97, flanagan, January, openmap, javalite.
 - **Checks.** The full verification list, plus the same set of classes in the Lite dist zip and the RCP product: before and after, the sorted list of classes in the shipped jars differs only by version.
