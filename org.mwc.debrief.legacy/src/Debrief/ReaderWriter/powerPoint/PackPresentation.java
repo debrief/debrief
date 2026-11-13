@@ -40,26 +40,32 @@ public class PackPresentation {
 
 	/**
 	 * zip the contents of a folder (not the folder itself), with
-	 * {@link #CONTENT_TYPES} first and the other files in name order.
+	 * {@link #CONTENT_TYPES} first and the other files and sub-folders in name
+	 * order. Sub-folders get their own entries, as zip4j wrote them.
 	 *
 	 * @param folder  the folder to zip
 	 * @param zipFile the zip file to create
 	 */
 	static void zipFolder(final Path folder, final Path zipFile) throws IOException {
-		final List<Path> files = new ArrayList<>();
+		final List<Path> paths = new ArrayList<>();
 		try (Stream<Path> walk = Files.walk(folder)) {
-			walk.filter(Files::isRegularFile).sorted().forEach(files::add);
+			walk.filter(p -> !p.equals(folder)).sorted().forEach(paths::add);
 		}
 		final Path contentTypes = folder.resolve(CONTENT_TYPES);
-		if (files.remove(contentTypes)) {
-			files.add(0, contentTypes);
+		if (paths.remove(contentTypes)) {
+			paths.add(0, contentTypes);
 		}
 		try (OutputStream out = Files.newOutputStream(zipFile);
 				ZipOutputStream zip = new ZipOutputStream(out)) {
 			zip.setLevel(Deflater.BEST_SPEED);
-			for (final Path file : files) {
-				zip.putNextEntry(new ZipEntry(folder.relativize(file).toString().replace(File.separatorChar, '/')));
-				Files.copy(file, zip);
+			for (final Path path : paths) {
+				final String name = folder.relativize(path).toString().replace(File.separatorChar, '/');
+				if (Files.isDirectory(path)) {
+					zip.putNextEntry(new ZipEntry(name + "/"));
+				} else {
+					zip.putNextEntry(new ZipEntry(name));
+					Files.copy(path, zip);
+				}
 				zip.closeEntry();
 			}
 		}
