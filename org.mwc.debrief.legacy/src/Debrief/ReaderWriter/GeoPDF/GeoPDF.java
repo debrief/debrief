@@ -61,13 +61,13 @@ public class GeoPDF {
 	}
 
 	public static class GeoPDFLayerBackground extends GeoPDFLayer {
-		private final ArrayList<String> rasters = new ArrayList<String>();
+		private final ArrayList<GeoPDFRaster> rasters = new ArrayList<GeoPDFRaster>();
 
-		public void addRaster(final String rasterTif) {
-			rasters.add(rasterTif);
+		public void addRaster(final GeoPDFRaster raster) {
+			rasters.add(raster);
 		}
 
-		public ArrayList<String> getRasters() {
+		public ArrayList<GeoPDFRaster> getRasters() {
 			return rasters;
 		}
 
@@ -76,14 +76,36 @@ public class GeoPDF {
 			final IXMLElement layer = new XMLElement("IfLayerOn");
 			layer.setAttribute("layerId", getId());
 
-			for (final String raster : getRasters()) {
+			for (final GeoPDFRaster raster : getRasters()) {
 				final IXMLElement rasterXML = new XMLElement("Raster");
-				rasterXML.setAttribute("dataset", raster);
+				rasterXML.setAttribute("dataset", raster.getImage().getAbsolutePath());
 				rasterXML.setAttribute("georeferencingId", geoReferenceId);
 				layer.addChild(rasterXML);
 			}
 
 			return layer;
+		}
+	}
+
+	/**
+	 * a background image, already in geographic coordinates (WGS84 lat/long), and
+	 * the area it covers
+	 */
+	public static class GeoPDFRaster {
+		private final File image;
+		private final WorldArea bounds;
+
+		public GeoPDFRaster(final File image, final WorldArea bounds) {
+			this.image = image;
+			this.bounds = bounds;
+		}
+
+		public WorldArea getBounds() {
+			return bounds;
+		}
+
+		public File getImage() {
+			return image;
 		}
 	}
 

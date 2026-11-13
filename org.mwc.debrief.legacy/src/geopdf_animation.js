@@ -1,9 +1,12 @@
     var animate = null;
     var animationRunning = false;
 
-    // Colours for the UI components
-    var redColor = new Array("RGB", 0.8, 0.0, 0.2);
-    var blueColor = new Array("RGB", 0.0, 0.0, 0.2);
+    // Colours for the UI components, chosen to sit on the plot's white page:
+    // a light panel, with a dark blue accent for text and highlights. Pressed
+    // buttons swap the two.
+    var accentColor = new Array("RGB", 0.08, 0.27, 0.55);
+    var panelColor = new Array("RGB", 0.93, 0.94, 0.96);
+    var borderColor = new Array("RGB", 0.62, 0.65, 0.70);
 
     var current_index = 0;
     var firstRun = true;
@@ -82,8 +85,8 @@
             var btn = this.getField("btnDynamicToggle");
             btn.borderStyle = border.b; // Bevelled border - looks unpressed
             // Restore Up Colors
-            btn.fillColor = redColor;
-            btn.textColor = blueColor;
+            btn.fillColor = accentColor;
+            btn.textColor = panelColor;
 
 
             unmarkSliderPart(lastSliderButtonLocation);
@@ -102,8 +105,8 @@
             var btn = this.getField("btnDynamicToggle");
             btn.borderStyle = border.i; // Inset border - looks pressed
             // Darken Down Colors
-            btn.fillColor = blueColor;
-            btn.textColor = redColor;
+            btn.fillColor = panelColor;
+            btn.textColor = accentColor;
 
             for (i = 0; i < nonInteractiveLayers.length; i += 1) {
                 getOCGByName(nonInteractiveLayers[i]).state = false;
@@ -148,8 +151,8 @@
             var btn = this.getField("btnPlayPause");
             btn.borderStyle = border.b;
             btn.buttonSetCaption(">");
-            btn.fillColor = blueColor;
-            btn.textColor = redColor;
+            btn.fillColor = panelColor;
+            btn.textColor = accentColor;
             return;
         }
 
@@ -211,16 +214,16 @@
             btn.borderStyle = border.b; // Bevelled - ie. unpressed
             btn.buttonSetCaption(">");
             // Restore Up Colors
-            btn.fillColor = blueColor;
-            btn.textColor = redColor;
+            btn.fillColor = panelColor;
+            btn.textColor = accentColor;
             playPauseAnimation();
         } else {
             // Perform Push Down Actions
             btn.borderStyle = border.i; // Inset - ie. pressed
             btn.buttonSetCaption("||");
             // Darken Down Colors
-            btn.fillColor = redColor;
-            btn.textColor = blueColor;
+            btn.fillColor = accentColor;
+            btn.textColor = panelColor;
             playPauseAnimation();
         }
     }
@@ -240,12 +243,12 @@
 
     function markSliderPart(index) {
         var btn = this.getField("btnSlider_" + index);
-        btn.fillColor = redColor;
+        btn.fillColor = accentColor;
     }
 
     function unmarkSliderPart(index) {
         var btn = this.getField("btnSlider_" + index);
-        btn.fillColor = blueColor;
+        btn.fillColor = panelColor;
     }
 
 
@@ -350,14 +353,14 @@
     }
 
     function buttonUpColor() {
-        event.target.fillColor = blueColor;
-        event.target.textColor = redColor;
+        event.target.fillColor = panelColor;
+        event.target.textColor = accentColor;
         this.dirty = false;
     }
 
     function buttonDownColor() {
-        event.target.fillColor = redColor;
-        event.target.textColor = blueColor;
+        event.target.fillColor = accentColor;
+        event.target.textColor = panelColor;
         this.dirty = false;
     }
 
@@ -376,10 +379,10 @@
         if (oFld != null) {
             oFld.buttonSetCaption(caption);
             oFld.borderStyle == border.i;
-            oFld.strokeColor = color.black;
+            oFld.strokeColor = borderColor;
             oFld.textSize = 20;
-            oFld.fillColor = blueColor;
-            oFld.textColor = redColor;
+            oFld.fillColor = panelColor;
+            oFld.textColor = accentColor;
             oFld.highlight = highlight.n // Stops Adobe changing the colours when we press the button, we do this manually
             oFld.lineWidth = 0;
             if (hidden) {
@@ -414,8 +417,8 @@
             oFld.buttonSetCaption(caption);
             oFld.borderStyle == border.s; // Solid border
             oFld.strokeColor = color.transparent;
-            oFld.textColor = redColor;
-            oFld.fillColor = blueColor;
+            oFld.textColor = accentColor;
+            oFld.fillColor = panelColor;
             oFld.lineWidth = 0;
             if (hidden) {
                 oFld.display = display.hidden;
@@ -449,9 +452,9 @@
             oFld.readonly = true;
             oFld.alignment = "center";
             oFld.borderStyle == border.i;
-            oFld.textColor = redColor;
+            oFld.textColor = accentColor;
             oFld.textSize = 16;
-            oFld.fillColor = blueColor;
+            oFld.fillColor = panelColor;
             oFld.lineWidth = 0;
             if (hidden) {
                 oFld.display = display.hidden;
@@ -551,8 +554,8 @@
     btn._origTextSize = 30;
     btn.buttonSetCaption("(");
     btn.userName = "Enter fly-through mode";
-    btn.textColor = blueColor;
-    btn.fillColor = redColor;
+    btn.textColor = panelColor;
+    btn.fillColor = accentColor;
 
     // Create many small buttons for the slider
     var smallButtonSize = 156 / timestamps.length;

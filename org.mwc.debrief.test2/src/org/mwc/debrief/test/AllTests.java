@@ -136,6 +136,7 @@ import org.junit.runners.Suite;
 		Debrief.ReaderWriter.Antares.ImportAntaresTest.class,
 		Debrief.ReaderWriter.GeoPDF.GenerateGeoJSON.GenerateGeoJSONTest.class,
 		Debrief.ReaderWriter.GeoPDF.AbstractGeoPDFBuilder.GeoPDFBuilderTest.class,
+		Debrief.ReaderWriter.GeoPDF.GeoPdfWriter.GeoPdfWriterTest.class,
 		MWC.Utilities.ReaderWriter.XML.SafeXMLFactory.SafeXMLFactoryTest.class,
 		MWC.Utilities.ReaderWriter.SafeArchive.SafeArchiveTest.class,
 		MWC.Utilities.ReaderWriter.ImportProblems.ImportProblemsTest.class,
