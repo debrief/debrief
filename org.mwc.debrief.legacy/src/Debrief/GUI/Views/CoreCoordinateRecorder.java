@@ -28,6 +28,7 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.zip.ZipException;
 
 import Debrief.ReaderWriter.powerPoint.DebriefException;
 import Debrief.ReaderWriter.powerPoint.PlotTracks;
@@ -49,7 +50,6 @@ import MWC.GenericData.WorldLocation;
 import MWC.TacticalData.NarrativeEntry;
 import MWC.Utilities.Errors.Trace;
 import MWC.Utilities.TextFormatting.GMTDateFormat;
-import net.lingala.zip4j.exception.ZipException;
 
 /**
  * @author Ayesha
@@ -294,12 +294,12 @@ public abstract class CoreCoordinateRecorder {
 		String exportedFile = null;
 		try {
 			exportedFile = plotTracks.export(td, masterTemplateFile, exportFile);
-		} catch (final IOException ie) {
-			errorMessage = "Error exporting to powerpoint (File access problem)";
-			Trace.trace(ie, errorMessage);
 		} catch (final ZipException ze) {
 			errorMessage = "Error exporting to powerpoint (Unable to extract ZIP)";
 			Trace.trace(ze, errorMessage);
+		} catch (final IOException ie) {
+			errorMessage = "Error exporting to powerpoint (File access problem)";
+			Trace.trace(ie, errorMessage);
 		} catch (final DebriefException de) {
 			errorMessage = "Error exporting to powerpoint (template may be corrupt).\n" + de.getMessage();
 			Trace.trace(de, errorMessage);

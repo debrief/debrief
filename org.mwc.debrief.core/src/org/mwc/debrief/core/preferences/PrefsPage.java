@@ -38,7 +38,6 @@ import org.mwc.cmap.core.ui_support.swt.SWTCanvasAdapter;
 
 import Debrief.ReaderWriter.powerPoint.DebriefException;
 import Debrief.ReaderWriter.powerPoint.PlotTracks;
-import net.lingala.zip4j.exception.ZipException;
 
 /**
  * This class represents a preference page that is contributed to the
@@ -179,8 +178,6 @@ public class PrefsPage extends FieldEditorPreferencePage implements IWorkbenchPr
 			final HashMap<String, String> props = exporter.retrieveMapProperties(path);
 			slideDims.setText("Width:" + props.get("cx") + " Height:" + props.get("cy"));
 		} catch (final IOException e) {
-			CorePlugin.logError(IStatus.ERROR, "Error while retrieving map dimensions", e);
-		} catch (final ZipException e) {
 			CorePlugin.logError(IStatus.ERROR, "Error while retrieving map dimensions", e);
 		} catch (final DebriefException e) {
 			CorePlugin.logError(IStatus.ERROR, "Error while retrieving map dimensions", e);

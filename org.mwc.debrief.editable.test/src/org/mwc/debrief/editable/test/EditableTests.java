@@ -504,8 +504,7 @@ public class EditableTests extends TestCase {
 				}
 				if (pathname.getName().endsWith(".test") || pathname.getName().endsWith(".tests")
 						|| pathname.getName().endsWith(".test2") || pathname.getName().endsWith(".feature")
-						|| pathname.getName().endsWith(".site") || pathname.getName().endsWith(".media")
-						|| pathname.getName().endsWith(".GNDManager")) {
+						|| pathname.getName().endsWith(".site") || pathname.getName().endsWith(".media")) {
 					return false;
 				}
 				return true;

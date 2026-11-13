@@ -18,13 +18,13 @@ import static org.junit.Assert.assertFalse;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.zip.ZipException;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.Test;
 
 import Debrief.ReaderWriter.powerPoint.DebriefException;
 import Debrief.ReaderWriter.powerPoint.PackPresentation;
-import net.lingala.zip4j.exception.ZipException;
 
 public class PackPresentationTest {
 	private final String folderToPack = Utils.testFolder + File.separator + "PackPresentation" + File.separator

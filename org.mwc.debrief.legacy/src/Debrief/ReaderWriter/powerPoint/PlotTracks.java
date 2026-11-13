@@ -27,6 +27,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.zip.ZipException;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.TrueFileFilter;
@@ -42,7 +43,6 @@ import Debrief.ReaderWriter.powerPoint.model.Track;
 import Debrief.ReaderWriter.powerPoint.model.TrackData;
 import Debrief.ReaderWriter.powerPoint.model.TrackPoint;
 import MWC.GUI.ToolParent;
-import net.lingala.zip4j.exception.ZipException;
 
 /**
  * Public API used to plot track data to PPTX donor file
@@ -852,7 +852,7 @@ public class PlotTracks {
 			returnValue = e.getMessage();
 		} catch (final AccessDeniedException ae) {
 			returnValue = "Unable to produce copy of master template";
-		} catch (IOException | ZipException e) {
+		} catch (final IOException e) {
 			returnValue = "Corrupted File";
 		}
 		if (temp_unpack_path != null) {

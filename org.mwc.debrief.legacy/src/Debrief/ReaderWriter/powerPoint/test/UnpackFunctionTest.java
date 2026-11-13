@@ -23,6 +23,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.zip.ZipEntry;
+import java.util.zip.ZipException;
 import java.util.zip.ZipOutputStream;
 
 import org.apache.commons.io.FileUtils;
@@ -30,7 +31,6 @@ import org.junit.Test;
 
 import Debrief.ReaderWriter.powerPoint.DebriefException;
 import Debrief.ReaderWriter.powerPoint.UnpackFunction;
-import net.lingala.zip4j.exception.ZipException;
 
 public class UnpackFunctionTest {
 	private final String folderToUnpack = Utils.testFolder + File.separator + "UnpackPresentation" + File.separator

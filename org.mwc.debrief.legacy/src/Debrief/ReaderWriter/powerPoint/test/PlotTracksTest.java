@@ -30,6 +30,7 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
+import java.util.zip.ZipException;
 import java.util.zip.ZipFile;
 
 import org.junit.Test;
@@ -39,7 +40,6 @@ import Debrief.ReaderWriter.powerPoint.PlotTracks;
 import Debrief.ReaderWriter.powerPoint.model.Track;
 import Debrief.ReaderWriter.powerPoint.model.TrackData;
 import Debrief.ReaderWriter.powerPoint.model.TrackPoint;
-import net.lingala.zip4j.exception.ZipException;
 
 public class PlotTracksTest {
 
