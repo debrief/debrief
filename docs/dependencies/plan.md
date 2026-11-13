@@ -66,7 +66,7 @@ Versions are set at implementation time from Maven Central (latest stable); the 
 | 2 | postgresql (`pepys`) | — | **Removed instead** (owner's decision): Debrief no longer connects to Postgres. Pepys reads SQLite only; the ASSET record-to-database observer and the GND demonstrator are gone, with all four Postgres/PostGIS drivers. |
 | 3 | sqlite-jdbc (`pepys`) | — | **Removed with the Pepys plugin** (owner's decision: the Pepys database is retired). That takes sqlite-jdbc, c3p0, mchange-commons and the Windows SpatiaLite DLLs (SQLite 3.31.1, zlib 1.2.8) with it. |
 | 4 | Jackson 2 (`debrief.legacy`, `geotools`) | 2.22.4 (annotations 2.22) | **Done.** One version in both bundles. 2.23.0 was 4 days old, so the latest 2.22 patch was used. `cmap.geotools` exports `core.exc` as well. Lite's jackson-core exclusion is gone. |
-| 5 | jsoup | 1.18+ | |
+| 5 | jsoup (`debrief.legacy`) | 1.23.2 | **Done.** 1.24.1 was 10 days old. The PowerPoint golden test caught a change: jsoup now lower-cases attribute names set on detached elements (`nodeType` became `nodetype`), so `PlotTracks` sets attributes with `attributes().put`, which keeps case. |
 | 6 | commons-compress | 1.27+ | Needs newer commons-io and lang3; check the other copies of both. |
 | 7 | POI + xmlbeans | 5.x / 5.x | Brings in new runtime jars: log4j-api, SparseBitSet, commons-math3, collections4. Larger PR. |
 | 8 | commons-text, hsqldb (if kept) | Latest that works with GeoTools 21.2 | If GeoTools won't accept it, record the exception and defer to the GeoTools spec. |

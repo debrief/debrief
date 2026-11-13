@@ -14,7 +14,7 @@
 	<classpathentry kind="lib" path="slf4j-simple-1.7.25.jar"/>
 	<classpathentry kind="lib" path="commons-cli-1.4.jar"/>
 	<classpathentry kind="lib" path="commons-io-2.6.jar"/>
-	<classpathentry kind="lib" path="jsoup-1.11.3.jar"/>
+	<classpathentry kind="lib" path="jsoup-1.23.2.jar"/>
 	<classpathentry kind="lib" path="xmlunit-core-2.6.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="zip4j-1.3.2.jar"/>
 	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
