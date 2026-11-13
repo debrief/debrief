@@ -67,13 +67,13 @@ Versions are set at implementation time from Maven Central (latest stable); the 
 | 3 | sqlite-jdbc (`pepys`) | — | **Removed with the Pepys plugin** (owner's decision: the Pepys database is retired). That takes sqlite-jdbc, c3p0, mchange-commons and the Windows SpatiaLite DLLs (SQLite 3.31.1, zlib 1.2.8) with it. |
 | 4 | Jackson 2 (`debrief.legacy`, `geotools`) | 2.22.4 (annotations 2.22) | **Done.** One version in both bundles. 2.23.0 was 4 days old, so the latest 2.22 patch was used. `cmap.geotools` exports `core.exc` as well. Lite's jackson-core exclusion is gone. |
 | 5 | jsoup (`debrief.legacy`) | 1.23.2 | **Done.** 1.24.1 was 10 days old. The PowerPoint golden test caught a change: jsoup now lower-cases attribute names set on detached elements (`nodeType` became `nodetype`), so `PlotTracks` sets attributes with `attributes().put`, which keeps case. |
-| 6 | commons-compress | 1.27+ | Needs newer commons-io and lang3; check the other copies of both. |
+| 6 | commons-compress (`cmap.legacy`) | 1.28.0 | **Done.** POI 4.1.2 needs it at runtime (Debrief itself only uses `GzipUtils` in tests). 1.28.0 needs commons-io and commons-lang3, so one copy of each now sits beside it in `cmap.legacy`, which every bundle that used them already requires: commons-io 2.22.0 replaces 2.6 (`debrief.legacy`, `geotools`), 2.1 (`media`) and a missing 2.3 entry (`cmap.core`); commons-lang3 3.21.0 replaces 3.8.1 (`geotools`). 3.22.0 was 5 days old. commons-codec, an optional import of commons-compress, is not added. |
 | 7 | POI + xmlbeans | 5.x / 5.x | Brings in new runtime jars: log4j-api, SparseBitSet, commons-math3, collections4. Larger PR. |
 | 8 | commons-text, hsqldb (if kept) | Latest that works with GeoTools 21.2 | If GeoTools won't accept it, record the exception and defer to the GeoTools spec. |
 | 9 | h2 (`geotools`) | — | **Removed instead.** Nothing used it: `h2-1.4.200`, `gt-jdbc-h2` and `gt-jdbc` (also Critical) went from `cmap.geotools`, and the unused `gt-jdbc-spatialite-20.5` from Pepys. |
 | 10 | logback (`cmap.media`) | — | **Replaced.** It was only Xuggler's SLF4J binding: now slf4j-api + slf4j-simple 1.7.36 (slf4j-api 1.5.6 would fail with no binding). |
 | 11 | Pepys native SQLite and zlib DLLs; c3p0, mchange-commons | — | **Removed with the Pepys plugin** (see item 3). |
-| 12 | zip4j, commons-io, guava | Current | Found by the baseline scan. |
+| 12 | zip4j, guava | Current | Found by the baseline scan. commons-io was done with item 6. |
 | — | Jackson 1.9.4 (codehaus) | — | **Not bumped.** No fixed versions exist. Tracked as a follow-up spec (migrate to Jackson 2). |
 
 **Each PR:** update the jar, MANIFEST, `Export-Package`, `build.properties` and `.classpath`; then rescan, and the CVE count for that library must fall to zero (or each remaining CVE is excepted with a reason). The scan gate (fail on new High/Critical) is switched on once the first bump lands.
