@@ -67,9 +67,9 @@ public class PlotTracks {
 			for (int i = 0; i < track.getPoints().size(); i++) {
 				// handle animation objs for time
 				final Element temp_time_anim = time_anim_tag_first.clone();
-				temp_time_anim.selectFirst("p|spTgt").attr("spid", initialFootprintId + "");
-				temp_time_anim.selectFirst("p|cond").attr("delay", time_delay + "");
-				temp_time_anim.selectFirst("p|cTn").attr("nodeType", "withEffect");
+				temp_time_anim.selectFirst("p|spTgt").attributes().put("spid", initialFootprintId + "");
+				temp_time_anim.selectFirst("p|cond").attributes().put("delay", time_delay + "");
+				temp_time_anim.selectFirst("p|cTn").attributes().put("nodeType", "withEffect");
 				anim_insertion_tag_upper.insertChildren(anim_insertion_tag_upper.childNodeSize(), temp_time_anim);
 				time_delay += intervalDuration;
 
@@ -89,10 +89,10 @@ public class PlotTracks {
 		for (final ArrayList<Element> track_anim_objs : all_animation_objs) {
 			final Element anim_tag_upper_temp = anim_tag_upper.clone();
 			anim_tag_upper_temp.tagName("p:seq");
-			anim_tag_upper_temp.selectFirst("p|cond").attr("delay",
+			anim_tag_upper_temp.selectFirst("p|cond").attributes().put("delay",
 					trackData.getTracks().get(track_num - 1).getStepsToSkip() * intervalDuration + "");
-			anim_tag_upper_temp.selectFirst("p|cTn").attr("nodeType", "withEffect");
-			anim_tag_upper_temp.selectFirst("p|cTn").attr("grpId", "1");
+			anim_tag_upper_temp.selectFirst("p|cTn").attributes().put("nodeType", "withEffect");
+			anim_tag_upper_temp.selectFirst("p|cTn").attributes().put("grpId", "1");
 			final Element parent_temp = anim_tag_upper_temp.selectFirst("p|animMotion").parent();
 			anim_tag_upper_temp.selectFirst("p|animMotion").remove();
 			for (final Element anim : track_anim_objs) {
@@ -101,7 +101,7 @@ public class PlotTracks {
 
 			anim_tag_upper_temp.selectFirst("p|cTn").removeAttr("accel");
 			anim_tag_upper_temp.selectFirst("p|cTn").removeAttr("decel");
-			anim_tag_upper_temp.selectFirst("p|cTn").attr("id", track_num + "");
+			anim_tag_upper_temp.selectFirst("p|cTn").attributes().put("id", track_num + "");
 			track_num++;
 			anim_insertion_tag_upper.insertChildren(anim_insertion_tag_upper.childNodeSize(), anim_tag_upper_temp);
 		}
@@ -286,7 +286,7 @@ public class PlotTracks {
 		} else {
 			final int[] scale_size_tmp = coordinateTransformation(trackData.getScaleWidth(), 0, dimensionWidth,
 					dimensionHeight, 0, 0, mapCX, mapCY, 1);
-			scaleBarTag.selectFirst("a|xfrm").selectFirst("a|ext").attr("cx", scale_size_tmp[0] + "");
+			scaleBarTag.selectFirst("a|xfrm").selectFirst("a|ext").attributes().put("cx", scale_size_tmp[0] + "");
 
 			String scaleName = trackData.getScaleUnit();
 			if (trackData.getScaleAmount() > 1) {
@@ -295,7 +295,7 @@ public class PlotTracks {
 			scaleValueTag.selectFirst("a|t").text(trackData.getScaleAmount() + " " + scaleName);
 		}
 
-		footprint_tag.selectFirst("p|cNvPr").attr("id", INITIAL_FOOTPRINT_ID + "");
+		footprint_tag.selectFirst("p|cNvPr").attributes().put("id", INITIAL_FOOTPRINT_ID + "");
 
 		// Remove all the remaining shapes.
 		// cleanSpTree(soup);
@@ -331,10 +331,10 @@ public class PlotTracks {
 		for (final Track track : trackData.getTracks()) {
 			// We add the animation to the marker.
 			final Element temp_time_anim_for_marker = time_anim_tag_first.clone();
-			temp_time_anim_for_marker.selectFirst("p|spTgt").attr("spid", current_arrow_id + "");
-			temp_time_anim_for_marker.selectFirst("p|cond").attr("delay",
+			temp_time_anim_for_marker.selectFirst("p|spTgt").attributes().put("spid", current_arrow_id + "");
+			temp_time_anim_for_marker.selectFirst("p|cond").attributes().put("delay",
 					track.getStepsToSkip() * intervalDuration + "");
-			temp_time_anim_for_marker.selectFirst("p|cTn").attr("nodeType", "withEffect");
+			temp_time_anim_for_marker.selectFirst("p|cTn").attributes().put("nodeType", "withEffect");
 			marker_appearing.add(temp_time_anim_for_marker);
 
 			final Element temp_arrow_tag = arrow_tag.clone();
@@ -382,7 +382,7 @@ public class PlotTracks {
 			arrow_ids.add(current_arrow_id);
 
 			// Assign ids to arrow shape and path shape
-			temp_arrow_tag.selectFirst("p|cNvPr").attr("id", current_arrow_id + "");
+			temp_arrow_tag.selectFirst("p|cNvPr").attributes().put("id", current_arrow_id + "");
 
 			String animation_path;
 
@@ -409,9 +409,9 @@ public class PlotTracks {
 			tempCoordinates = coordinateTransformation(first_x, first_y, dimensionWidth, dimensionHeight, mapX, mapY,
 					mapCX, mapCY, 1);
 			// Get Shape offsets and exts
-			temp_arrow_tag.selectFirst("a|off").attr("x",
+			temp_arrow_tag.selectFirst("a|off").attributes().put("x",
 					(int) (tempCoordinates[0] - arrow_ext_cx / 2 - TailXUnscalled) + "");
-			temp_arrow_tag.selectFirst("a|off").attr("y",
+			temp_arrow_tag.selectFirst("a|off").attributes().put("y",
 					(int) (tempCoordinates[1] - arrow_ext_cy / 2 - TailYUnscalled) + "");
 
 			// Adding color to the track
@@ -438,12 +438,12 @@ public class PlotTracks {
 				prev_anim_x = anim_x;
 				prev_anim_y = anim_y;
 
-				temp_anim_tag.attr("path", animation_path);
-				temp_anim_tag.selectFirst("p|spTgt").attr("spid", current_arrow_id + "");
-				temp_anim_tag.selectFirst("p|cTn").attr("id",
+				temp_anim_tag.attributes().put("path", animation_path);
+				temp_anim_tag.selectFirst("p|spTgt").attributes().put("spid", current_arrow_id + "");
+				temp_anim_tag.selectFirst("p|cTn").attributes().put("id",
 						Integer.parseInt(temp_anim_tag.selectFirst("p|cTn").attr("id")) + trackCount + coord_count
 								+ "");
-				temp_anim_tag.selectFirst("p|cTn").attr("dur", intervalDuration + "");
+				temp_anim_tag.selectFirst("p|cTn").attributes().put("dur", intervalDuration + "");
 				track_anim_objs.add(temp_anim_tag);
 				coord_count++;
 
@@ -457,11 +457,11 @@ public class PlotTracks {
 
 				final Element temp_footprint_tag = footprint_tag.clone();
 				// We substract the ellipse size from the coordinate.
-				temp_footprint_tag.selectFirst("a|off").attr("x", (x_int - footprint_x_size / 2) + "");
-				temp_footprint_tag.selectFirst("a|off").attr("y", (y_int - footprint_y_size / 2) + "");
+				temp_footprint_tag.selectFirst("a|off").attributes().put("x", (x_int - footprint_x_size / 2) + "");
+				temp_footprint_tag.selectFirst("a|off").attributes().put("y", (y_int - footprint_y_size / 2) + "");
 				// Adding color to the footprint
-				temp_footprint_tag.selectFirst("a|srgbClr").attr("val", colorHexValue);
-				temp_footprint_tag.selectFirst("p|cNvPr").attr("id", footprint_count + "");
+				temp_footprint_tag.selectFirst("a|srgbClr").attributes().put("val", colorHexValue);
+				temp_footprint_tag.selectFirst("p|cNvPr").attributes().put("id", footprint_count + "");
 				footprints_objs.add(temp_footprint_tag);
 				footprint_count++;
 
@@ -481,7 +481,7 @@ public class PlotTracks {
 			all_footprints_objs.add(footprints_objs);
 
 			// changing arrow to rect callout -
-			temp_arrow_tag.selectFirst("a|prstGeom").attr("prst", "wedgeRectCallout");
+			temp_arrow_tag.selectFirst("a|prstGeom").attributes().put("prst", "wedgeRectCallout");
 
 			// Adding border color to marker
 			final Element solidFill = temp_arrow_tag.selectFirst("p|spPr").selectFirst("a|ln")
@@ -490,7 +490,7 @@ public class PlotTracks {
 			// does marker have a solid fill?
 			if (solidFill != null) {
 				// yes - set to the correct color
-				solidFill.selectFirst("a|srgbClr").attr("val", colorHexValue);
+				solidFill.selectFirst("a|srgbClr").attributes().put("val", colorHexValue);
 			}
 
 			// We will add the shape and arrow objects in arrays for now
@@ -541,7 +541,7 @@ public class PlotTracks {
 		// one time caption per animation step, starting at the first step
 		for (final String timestampString : getStepTimes(trackData)) {
 			final Element temp_time_tag = time_tag.clone();
-			temp_time_tag.selectFirst("p|cNvPr").attr("id", current_time_id + "");
+			temp_time_tag.selectFirst("p|cNvPr").attributes().put("id", current_time_id + "");
 			temp_time_tag.selectFirst("p|txBody").selectFirst("a|p").selectFirst("a|r").selectFirst("a|t")
 					.text(timestampString);
 			time_shape_objs.add(temp_time_tag);
@@ -549,17 +549,17 @@ public class PlotTracks {
 			// handle animation objs for time
 			if (coord_num == 0) {
 				final Element temp_time_anim = time_anim_tag_first.clone();
-				temp_time_anim.selectFirst("p|spTgt").attr("spid", current_time_id + "");
-				temp_time_anim.selectFirst("p|cond").attr("delay", "0");
-				temp_time_anim.selectFirst("p|cTn").attr("nodeType", "withEffect");
+				temp_time_anim.selectFirst("p|spTgt").attributes().put("spid", current_time_id + "");
+				temp_time_anim.selectFirst("p|cond").attributes().put("delay", "0");
+				temp_time_anim.selectFirst("p|cTn").attributes().put("nodeType", "withEffect");
 				anim_insertion_tag_upper.insertChildren(anim_insertion_tag_upper.childNodeSize(), temp_time_anim);
 			} else {
 				final Element temp_time_anim = time_anim_tag_big.clone();
-				temp_time_anim.selectFirst("p|spTgt").attr("spid", current_time_id + "");
-				temp_time_anim.selectFirst("p|cond").attr("delay", time_delay + "");
+				temp_time_anim.selectFirst("p|spTgt").attributes().put("spid", current_time_id + "");
+				temp_time_anim.selectFirst("p|cond").attributes().put("delay", time_delay + "");
 				time_delay += intervalDuration;
-				temp_time_anim.selectFirst("p|cTn").attr("nodeType", "afterEffect");
-				temp_time_anim.selectFirst("p|par").child(0).selectFirst("p|par").selectFirst("p|cond").attr("delay",
+				temp_time_anim.selectFirst("p|cTn").attributes().put("nodeType", "afterEffect");
+				temp_time_anim.selectFirst("p|par").child(0).selectFirst("p|par").selectFirst("p|cond").attributes().put("delay",
 						intervalDuration + "");
 				time_anim_tag_big_insertion.insertChildren(time_anim_tag_big_insertion.childNodeSize(), temp_time_anim);
 			}
@@ -584,7 +584,7 @@ public class PlotTracks {
 
 		// Blank narrative box
 		final Element blank_narrative = narrative_tag.clone();
-		blank_narrative.selectFirst("p|cNvPr").attr("id", current_narrative_id + "");
+		blank_narrative.selectFirst("p|cNvPr").attributes().put("id", current_narrative_id + "");
 		blank_narrative.selectFirst("p|txBody").selectFirst("a|p").selectFirst("a|r").selectFirst("a|t").text("");
 		narrative_objects.add(blank_narrative);
 		current_narrative_id = 400;
@@ -593,23 +593,23 @@ public class PlotTracks {
 			time_delay += Integer.parseInt(narrative.getElapsed()) - time_delay;
 			final String time_str = narrative.getDateString();
 			final Element temp_narrative_tag = narrative_tag.clone();
-			temp_narrative_tag.selectFirst("p|cNvPr").attr("id", current_narrative_id + "");
+			temp_narrative_tag.selectFirst("p|cNvPr").attributes().put("id", current_narrative_id + "");
 			temp_narrative_tag.selectFirst("p|txBody").selectFirst("a|p").selectFirst("a|r").selectFirst("a|t")
 					.text(time_str + " " + narrative.getText());
 			narrative_objects.add(temp_narrative_tag);
 			if (num_narrative == 0) {
 				final Element temp_narrative_anim = time_anim_tag_first.clone();
-				temp_narrative_anim.selectFirst("p|spTgt").attr("spid", current_narrative_id + "");
-				temp_narrative_anim.selectFirst("p|cond").attr("delay", time_delay + "");
-				temp_narrative_anim.selectFirst("p|cTn").attr("nodeType", "withEffect");
+				temp_narrative_anim.selectFirst("p|spTgt").attributes().put("spid", current_narrative_id + "");
+				temp_narrative_anim.selectFirst("p|cond").attributes().put("delay", time_delay + "");
+				temp_narrative_anim.selectFirst("p|cTn").attributes().put("nodeType", "withEffect");
 				anim_insertion_tag_upper.insertChildren(anim_insertion_tag_upper.childNodeSize(), temp_narrative_anim);
 			} else {
 				final Element temp_narrative_anim = time_anim_tag_big.clone();
-				temp_narrative_anim.selectFirst("p|spTgt").attr("spid", current_narrative_id + "");
-				temp_narrative_anim.selectFirst("p|cond").attr("delay", time_delay + "");
-				temp_narrative_anim.selectFirst("p|cTn").attr("nodeType", "afterEffect");
+				temp_narrative_anim.selectFirst("p|spTgt").attributes().put("spid", current_narrative_id + "");
+				temp_narrative_anim.selectFirst("p|cond").attributes().put("delay", time_delay + "");
+				temp_narrative_anim.selectFirst("p|cTn").attributes().put("nodeType", "afterEffect");
 				temp_narrative_anim.selectFirst("p|par").child(0).selectFirst("p|par").selectFirst("p|cond")
-						.attr("delay", intervalDuration + "");
+						.attributes().put("delay", intervalDuration + "");
 				time_anim_tag_big_insertion.insertChildren(time_anim_tag_big_insertion.childNodeSize(),
 						temp_narrative_anim);
 			}
