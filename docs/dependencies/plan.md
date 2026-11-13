@@ -78,7 +78,7 @@ Versions are set at implementation time from Maven Central (latest stable); the 
 
 **Each PR:** update the jar, MANIFEST, `Export-Package`, `build.properties` and `.classpath`; then rescan, and the CVE count for that library must fall to zero (or each remaining CVE is excepted with a reason). The scan gate (fail on new High/Critical) is switched on once the first bump lands.
 
-**Native libraries.** `debrief.legacy/src/native/windows` is a bundled GDAL and MapServer toolchain (with OpenSSL 1.1, libcurl, libpq and libxml2) that ships inside `debrief_legacy.jar`. Most of it can't be identified by the scanner. It gets its own spec: replace it, remove it, or download it at first use.
+**Native libraries.** ~~`debrief.legacy/src/native/windows` is a bundled GDAL and MapServer toolchain~~ **Done:** GeoPDF export now writes the PDF in Java (PDFBox, `GeoPdfWriter`) and reprojects background charts with GeoTools, so the 95 MB GDAL/MapServer bundle (with OpenSSL 1.1, libcurl, libpq, libxml2 and zlib) is removed, from Lite too. Charts on NAD27-style datums may sit up to the EPSG transformation's stated accuracy (about 10 m) from where GDAL's grid-based shift put them.
 
 ## Verification for every PR
 1. `mvn clean verify -U -B -fae` under xvfb with JDK 21. If the container can't reach `download.eclipse.org`, CI is the verifier, and that is stated in the PR.

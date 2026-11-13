@@ -39,11 +39,6 @@ public class GeoPDFSegmentedBuilder extends AbstractGeoPDFBuilder {
 			throws IOException, InterruptedException, NoSuchFieldException, SecurityException, IllegalArgumentException,
 			IllegalAccessException, ClassNotFoundException {
 
-		if (!configuration.isReady()) {
-			Application.logError3(ToolParent.INFO, "GeoPDF-GDAL Temporary environment is about to be prepared.", null,
-					false);
-			configuration.prepareGdalEnvironment();
-		}
 		final GeoPDF geoPDF = new GeoPDF();
 
 		geoPDF.setAuthor(configuration.getAuthor());
@@ -71,8 +66,11 @@ public class GeoPDFSegmentedBuilder extends AbstractGeoPDFBuilder {
 		backgroundLayer.setName("Background chart");
 		backgroundLayer.setId("background");
 		for (final String background : configuration.getBackground()) {
-			final File backgroundFile = createBackgroundFile(configuration, background, geoPDF.getFilesToDelete());
-			backgroundLayer.addRaster(backgroundFile.getAbsolutePath());
+			final GeoPDF.GeoPDFRaster raster = createBackground(configuration, background);
+			if (raster != null) {
+				geoPDF.getFilesToDelete().add(raster.getImage());
+				backgroundLayer.addRaster(raster);
+			}
 		}
 		if (!backgroundLayer.getRasters().isEmpty()) {
 			mainPage.addLayer(backgroundLayer);

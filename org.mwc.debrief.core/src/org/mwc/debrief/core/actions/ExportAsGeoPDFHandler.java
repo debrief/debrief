@@ -62,6 +62,7 @@ public class ExportAsGeoPDFHandler extends CoreEditorAction {
 			final Layers theLayers = theChart.getLayers();
 			final TimePeriod period = theLayers.getTimePeriod();
 			final GeoPDFConfiguration configuration = new GeoPDFConfiguration();
+			configuration.setBackgroundProvider(new GeoTiffBackgroundProvider());
 			final IChartBasedEditor editorBasedEditor = getEditor();
 
 			if (editorBasedEditor instanceof PlotEditor) {

@@ -21,10 +21,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
@@ -49,30 +45,97 @@ public abstract class AbstractGeoPDFBuilder {
 //		private final static String boat1rep = "../org.mwc.cmap.combined.feature/root_installs/sample_data/boat1.rep";
 //		private final static String boat2rep = "../org.mwc.cmap.combined.feature/root_installs/sample_data/boat2.rep";
 
-		public void testBuild() throws IOException, InterruptedException, NoSuchFieldException, SecurityException,
-				IllegalArgumentException, IllegalAccessException, ClassNotFoundException {
+		/**
+		 * export sample.dpf as a GeoPDF, then check what a GeoPDF reader relies on:
+		 * the layer tree, the geospatial viewport and the animation script. GeoPDF
+		 * export used to need GDAL, so this couldn't run before (issue 4969).
+		 */
+		public void testBuild() throws Exception {
+			final java.util.TimeZone oldZone = java.util.TimeZone.getDefault();
+			java.util.TimeZone.setDefault(java.util.TimeZone.getTimeZone("GMT"));
+			final File pdf = File.createTempFile("geopdf-test", ".pdf");
+			try {
+				final String plot = new String(java.nio.file.Files.readAllBytes(new File(
+						"../org.mwc.cmap.combined.feature/root_installs/sample_data/sample.dpf").toPath()),
+						java.nio.charset.StandardCharsets.UTF_8);
+				final String layersXml = plot.substring(plot.indexOf("<layers"),
+						plot.indexOf("</layers>") + "</layers>".length());
+				final Layers layers = new Layers();
+				new Debrief.ReaderWriter.XML.DebriefXMLReaderWriter(null).importThis("sample.dpf",
+						new java.io.ByteArrayInputStream(layersXml.getBytes(java.nio.charset.StandardCharsets.UTF_8)),
+						layers);
 
-			/*
-			 * final Layers layers = new Layers(); final ImportReplay replayImporter = new
-			 * ImportReplay(); replayImporter.importThis("boat1.rep", new
-			 * FileInputStream(boat1rep), layers); replayImporter.importThis("boat2.rep",
-			 * new FileInputStream(boat2rep), layers);
-			 *
-			 * final GeoPDFConfiguration configuration = new GeoPDFConfiguration();
-			 * configuration.addBackground(
-			 * "../org.mwc.cmap.combined.feature/root_installs/sample_data/SP27GTIF.tif");
-			 *
-			 * final GeoPDF geoPdf = GeoPDFBuilder.build(layers, configuration);
-			 *
-			 * configuration.setPdfOutputPath(System.getProperty("java.io.tmpdir") +
-			 * File.separatorChar + "test.pdf"); GeoPDFBuilder.generatePDF(geoPdf,
-			 * configuration);
-			 *
-			 * System.out.println("PDF successfully generated at " +
-			 * configuration.getPdfOutputPath()); System.out.println(geoPdf);
-			 */
-			// We will cover this in the ticket
-			// https://github.com/debrief/debrief/issues/4969
+				final GeoPDFConfiguration configuration = new GeoPDFConfiguration();
+				final TimePeriod period = layers.getTimePeriod();
+				configuration.setStartTime(period.getStartDTG());
+				configuration.setEndTime(period.getEndDTG());
+				configuration.setStepDeltaMilliSeconds(30 * 60 * 1000L);
+				configuration.setDateFormat("ddHHmm");
+				configuration.setTempFolder("geopdf-test-" + System.currentTimeMillis());
+				configuration.setPdfOutputPath(pdf.getAbsolutePath());
+
+				final GeoPDFSegmentedBuilder builder = new GeoPDFSegmentedBuilder();
+				final GeoPDF geoPdf = builder.build(layers, configuration);
+				builder.generatePDF(geoPdf, configuration);
+
+				try (org.apache.pdfbox.pdmodel.PDDocument doc = org.apache.pdfbox.pdmodel.PDDocument.load(pdf)) {
+					assertEquals("one page", 1, doc.getNumberOfPages());
+
+					// layers: two tracks, the interactive group, 14 half-hour steps, and
+					// each track within each step
+					final java.util.List<String> names = new ArrayList<>();
+					for (final org.apache.pdfbox.pdmodel.graphics.optionalcontent.PDOptionalContentGroup group : doc
+							.getDocumentCatalog().getOCProperties().getOptionalContentGroups()) {
+						names.add(group.getName());
+					}
+					assertEquals("layers", 2 + 1 + 14 + 14 * 2, names.size());
+					assertTrue(names.contains("NELSON" + NON_INTERACTIVE_SUFFIX));
+					assertTrue(names.contains("COLLINGWOOD" + NON_INTERACTIVE_SUFFIX));
+					assertTrue(names.contains(INTERACTIVE_LAYER_NAME));
+					assertTrue("first time step", names.contains("120500"));
+
+					// the geospatial viewport covers the plot, in WGS84
+					final org.apache.pdfbox.cos.COSDictionary viewport = (org.apache.pdfbox.cos.COSDictionary) ((org.apache.pdfbox.cos.COSArray) doc
+							.getPage(0).getCOSObject().getDictionaryObject(org.apache.pdfbox.cos.COSName.getPDFName("VP")))
+									.getObject(0);
+					final org.apache.pdfbox.cos.COSDictionary measure = (org.apache.pdfbox.cos.COSDictionary) viewport
+							.getDictionaryObject(org.apache.pdfbox.cos.COSName.getPDFName("Measure"));
+					assertEquals("GEO", measure.getCOSName(org.apache.pdfbox.cos.COSName.SUBTYPE).getName());
+					final org.apache.pdfbox.cos.COSDictionary gcs = (org.apache.pdfbox.cos.COSDictionary) measure
+							.getDictionaryObject(org.apache.pdfbox.cos.COSName.getPDFName("GCS"));
+					assertEquals(4326, gcs.getInt(org.apache.pdfbox.cos.COSName.getPDFName("EPSG")));
+					final org.apache.pdfbox.cos.COSArray gpts = (org.apache.pdfbox.cos.COSArray) measure
+							.getDictionaryObject(org.apache.pdfbox.cos.COSName.getPDFName("GPTS"));
+					final WorldArea area = layers.getBounds();
+					assertEquals("first point is the bottom-left latitude", area.getBottomLeft().getLat(),
+							((org.apache.pdfbox.cos.COSNumber) gpts.getObject(0)).doubleValue(), 1e-9);
+					assertEquals("and longitude", area.getBottomLeft().getLong(),
+							((org.apache.pdfbox.cos.COSNumber) gpts.getObject(1)).doubleValue(), 1e-9);
+
+					// the animation script, with its time steps filled in
+					final String script = doc.getDocumentCatalog().getNames().getJavaScript().getNames()
+							.get("Debrief").getAction();
+					assertTrue("script has its time steps", script.contains("\"ocg_name\" : \"120500\""));
+					assertFalse("placeholders replaced", script.contains(JAVASCRIPT_TIMESTAMP_TAG));
+
+					// and something is drawn
+					final java.awt.image.BufferedImage page = new org.apache.pdfbox.rendering.PDFRenderer(doc)
+							.renderImageWithDPI(0, 36);
+					int coloured = 0;
+					for (int y = 0; y < page.getHeight(); y++) {
+						for (int x = 0; x < page.getWidth(); x++) {
+							final int rgb = page.getRGB(x, y) & 0xffffff;
+							if (rgb != 0xffffff) {
+								coloured++;
+							}
+						}
+					}
+					assertTrue("tracks drawn: " + coloured, coloured > 500);
+				}
+			} finally {
+				java.util.TimeZone.setDefault(oldZone);
+				pdf.delete();
+			}
 		}
 
 		public void testCreateTempFile() throws FileNotFoundException {
@@ -86,53 +149,16 @@ public abstract class AbstractGeoPDFBuilder {
 	}
 
 	public static class GeoPDFConfiguration {
-		public static final String SUCCESS_GDAL_DONE = "done.";
-		public static final String GDALWARP_RAW_COMMAND = "gdalwarp";
-		public static final String ECLIPSE_GDAL_BIN_NATIVE_PATH = "..\\org.mwc.debrief.legacy\\native\\";
-		public static final String GDALWARP_COMMAND_WINDOWS = ECLIPSE_GDAL_BIN_NATIVE_PATH + "windows\\gdalwarp.exe";
-		public static final String GDAL_CREATE_RAW_COMMAND = "gdal_create";
-		public static final String GDAL_CREATE_COMMAND_WINDOWS = ECLIPSE_GDAL_BIN_NATIVE_PATH
-				+ "windows\\gdal_create.exe";
-		public static final String GDAL_CREATE_COMPOSITION_KEYWORD = "COMPOSITION_FILE=";
-		public static final String PROJ_PATH_TO_REGISTER = "windows\\proj6\\share";
-		public static final String PROJ_ENV_VAR = "PROJ_LIB";
-
-		public static void createTemporaryEnvironmentWindows(final String destinationFolder,
-				final String resourceFileListPath, final GeoPDFConfiguration configuration) throws IOException {
-
-			Application.logError3(ToolParent.INFO,
-					"GeoPDF-We are creating the Gdal binaries folder in " + destinationFolder, null, false);
-			final InputStream filesToCopyStream;
-			filesToCopyStream = AbstractGeoPDFBuilder.class
-					.getResourceAsStream(GDAL_NATIVE_PREFIX_FOLDER + resourceFileListPath);
-
-			final Scanner scanner = new Scanner(filesToCopyStream);
-			while (scanner.hasNextLine()) {
-				final String line = scanner.nextLine();
-
-				final Path destinationPath = Paths.get(destinationFolder + line);
-				Files.createDirectories(destinationPath.getParent());
-
-				Files.copy(GeoPDFConfiguration.class.getResourceAsStream(GDAL_NATIVE_PREFIX_FOLDER + line),
-						destinationPath, StandardCopyOption.REPLACE_EXISTING);
-				if (line.contains(GDALWARP_RAW_COMMAND)) {
-					configuration.setGdalWarpCommand(destinationPath.toString());
-				}
-				if (line.contains(GDAL_CREATE_RAW_COMMAND)) {
-					configuration.setGdalCreateCommand(destinationPath.toString());
-				}
-			}
-
-			scanner.close();
-			Application.logError3(ToolParent.INFO, "GeoPDF-All binaries has been successfully copied.", null, false);
-			try {
-				filesToCopyStream.close();
-			} catch (final IOException e) {
-				// Nothing to do, we are just closing the resource....
-			}
+		/**
+		 * turns a background chart file into an image in geographic coordinates
+		 * (WGS84 lat/long) for the GeoPDF. The export sets one up (it needs GeoTools);
+		 * without one, backgrounds are left out.
+		 */
+		public interface BackgroundProvider {
+			GeoPDF.GeoPDFRaster prepare(String backgroundFile, File tempFolder) throws IOException;
 		}
 
-		private boolean isReady = false;
+		private BackgroundProvider backgroundProvider;
 		private int markDeltaMinutes = 10;
 		private int labelDeltaMinutes = 60;
 		private String author = "DebriefNG";
@@ -147,19 +173,17 @@ public abstract class AbstractGeoPDFBuilder {
 		private HiResDate endTime;
 		private WorldArea viewportArea;
 		private int pageDpi = 72;
-		private String gdalWarpCommand = GDALWARP_RAW_COMMAND;
-		private String[] gdalWarpParams = "-t_srs EPSG:4326 -r near -of GTiff".split(" ");
-		private String gdalCreateCommand = GDAL_CREATE_RAW_COMMAND;
-		private String[] gdalCreateParams = "-of PDF -co".split(" ");
 		private String pdfOutputPath;
 
 		private String tempFolder = new Timestamp(System.currentTimeMillis()).getTime() + "";
 		private boolean landscape = true;
 
-		private final List<String> envVariables = new ArrayList<String>();
-
 		public void addBackground(final String background) {
 			this.background.add(background);
+		}
+
+		public BackgroundProvider getBackgroundProvider() {
+			return backgroundProvider;
 		}
 
 		public String getAuthor() {
@@ -176,26 +200,6 @@ public abstract class AbstractGeoPDFBuilder {
 
 		public HiResDate getEndTime() {
 			return endTime;
-		}
-
-		public List<String> getEnvVariables() {
-			return envVariables;
-		}
-
-		public String getGdalCreateCommand() {
-			return gdalCreateCommand;
-		}
-
-		public String[] getGdalCreateParams() {
-			return gdalCreateParams;
-		}
-
-		public String getGdalWarpCommand() {
-			return gdalWarpCommand;
-		}
-
-		public String[] getGdalWarpParams() {
-			return gdalWarpParams;
 		}
 
 		public int getLabelDeltaMinutes() {
@@ -250,53 +254,8 @@ public abstract class AbstractGeoPDFBuilder {
 			return landscape;
 		}
 
-		public boolean isReady() {
-			return isReady;
-		}
-
-		public void prepareGdalEnvironment() throws IOException, NoSuchFieldException, SecurityException,
-				IllegalArgumentException, IllegalAccessException, ClassNotFoundException {
-			final String os = System.getProperty("os.name").toLowerCase();
-			if (os.indexOf("win") != -1) {
-				Application.logError3(ToolParent.INFO, "GeoPDF-Windows has been detected as the OS.", null, false);
-				// We are on Windows
-				final File createCommandPath = new File(GeoPDFConfiguration.GDAL_CREATE_COMMAND_WINDOWS);
-				Application.logError3(ToolParent.INFO,
-						"GeoPDF-We are going to check if the gdal binaries are available from a relative path.", null,
-						false);
-				if (createCommandPath.exists()) {
-					Application.logError3(ToolParent.INFO, "GeoPDF-We are running Gdal binaries from relative path.",
-							null, false);
-					// We are running from Eclipse, we let's just run the command directly
-
-					this.setGdalCreateCommand(GeoPDFConfiguration.GDAL_CREATE_COMMAND_WINDOWS);
-					this.setGdalWarpCommand(GeoPDFConfiguration.GDALWARP_COMMAND_WINDOWS);
-					final File projFile = new File(ECLIPSE_GDAL_BIN_NATIVE_PATH + PROJ_PATH_TO_REGISTER);
-					registerEnvironmentVar(PROJ_ENV_VAR, projFile.getAbsolutePath());
-				} else {
-					Application.logError3(ToolParent.INFO,
-							"GeoPDF-We didn't find the files. We need to create a temporary environment", null, false);
-					// We are inside the .jar file, we need to copy all the files to a Temporary
-					// folder.
-
-					createTemporaryEnvironmentWindows(System.getProperty("java.io.tmpdir") + File.separatorChar,
-							"/windows-files.txt", this);
-					registerEnvironmentVar(PROJ_ENV_VAR,
-							System.getProperty("java.io.tmpdir") + File.separatorChar + PROJ_PATH_TO_REGISTER);
-				}
-
-			} // we don't do the else, because by default it is Unit command.
-			else {
-				Application.logError3(ToolParent.INFO,
-						"GeoPDF-We have detected an Unix-like system. We will assume gdal is installed.", null, false);
-			}
-
-			Application.logError3(ToolParent.INFO, "GeoPDF-Temporary environment is ready.", null, false);
-			isReady = true;
-		}
-
-		private void registerEnvironmentVar(final String key, final String value) {
-			envVariables.add(key + "=" + value);
+		public void setBackgroundProvider(final BackgroundProvider backgroundProvider) {
+			this.backgroundProvider = backgroundProvider;
 		}
 
 		public void setAuthor(final String author) {
@@ -309,22 +268,6 @@ public abstract class AbstractGeoPDFBuilder {
 
 		public void setEndTime(final HiResDate endTime) {
 			this.endTime = endTime;
-		}
-
-		public void setGdalCreateCommand(final String gdalCreateCommand) {
-			this.gdalCreateCommand = gdalCreateCommand;
-		}
-
-		public void setGdalCreateParams(final String[] gdalCreateParams) {
-			this.gdalCreateParams = gdalCreateParams;
-		}
-
-		public void setGdalWarpCommand(final String gdalWarpCommand) {
-			this.gdalWarpCommand = gdalWarpCommand;
-		}
-
-		public void setGdalWarpParams(final String gdalWarpParams) {
-			this.gdalWarpParams = gdalWarpParams.split(" ");
 		}
 
 		public void setLabelDeltaMinutes(final int labelDeltaMinutes) {
@@ -385,7 +328,6 @@ public abstract class AbstractGeoPDFBuilder {
 		}
 	}
 
-	public static final String GDAL_NATIVE_PREFIX_FOLDER = "/native";
 	public static final String JAVASCRIPT_TEMPLATE_PATH = "/geopdf_animation.js";
 	public static final String JAVASCRIPT_TIMESTAMP_TAG = "!!JS_TIMESTAMPS";
 	public static final String JAVASCRIPT_STEP_SPEED = "!!STEPSPEED";
@@ -395,72 +337,19 @@ public abstract class AbstractGeoPDFBuilder {
 
 	public static final String INTERACTIVE_LAYER_NAME = "Interactive Layers";
 
-	protected static File createBackgroundFile(final GeoPDFConfiguration configuration, final String background,
-			final ArrayList<File> filesToDelete) throws IOException, InterruptedException {
-		final String originalFilefileName = Paths.get(background).getFileName().toString();
-
-		int suffixId = 1;
-
-		File tmpFile = getFile(originalFilefileName, configuration.getTempFolder());
-
-		while (tmpFile.exists()) {
-			final int lastDot = originalFilefileName.indexOf('.');
-			if (lastDot >= 0) {
-				// if we have an extension
-				tmpFile = getFile(originalFilefileName.substring(0, lastDot) + (suffixId++) + "."
-						+ originalFilefileName.substring(lastDot + 1), configuration.getTempFolder());
-			} else {
-				tmpFile = getFile(originalFilefileName + (suffixId++), configuration.getTempFolder());
-			}
+	/**
+	 * the background chart as an image in lat/long, or null if there is no
+	 * provider to prepare it
+	 */
+	protected static GeoPDF.GeoPDFRaster createBackground(final GeoPDFConfiguration configuration,
+			final String background) throws IOException {
+		final GeoPDFConfiguration.BackgroundProvider provider = configuration.getBackgroundProvider();
+		if (provider == null) {
+			Application.logError3(ToolParent.INFO,
+					"GeoPDF-No background provider, so leaving out background " + background, null, false);
+			return null;
 		}
-
-		filesToDelete.add(tmpFile);
-
-		final Runtime runtime = Runtime.getRuntime();
-		final ArrayList<String> params = new ArrayList<String>();
-		params.add(configuration.getGdalWarpCommand());
-		for (final String s : configuration.getGdalWarpParams()) {
-			params.add(s);
-		}
-		params.add(background);
-		params.add(tmpFile.getAbsolutePath());
-
-		final StringBuilder paramsLog = new StringBuilder();
-		for (final String p : params) {
-			paramsLog.append(p);
-			paramsLog.append(" ");
-		}
-		Application.logError3(ToolParent.INFO, "GeoPDF-" + paramsLog.toString(), null, false);
-		final Process process = runtime.exec(params.toArray(new String[] {}),
-				configuration.getEnvVariables().toArray(new String[] {}));
-		process.waitFor();
-		final BufferedReader gdalWarpOutputStream = new BufferedReader(new InputStreamReader(process.getInputStream()));
-
-		final BufferedReader gdalWarpErrorStream = new BufferedReader(new InputStreamReader(process.getErrorStream()));
-
-		final StringBuilder allOutput = new StringBuilder();
-		String line = null;
-		while ((line = gdalWarpOutputStream.readLine()) != null) {
-			allOutput.append(line + "\n");
-		}
-
-		Application.logError3(ToolParent.INFO, "GeoPDF-Output: " + allOutput.toString(), null, false);
-		if (allOutput.toString().trim().endsWith(GeoPDFConfiguration.SUCCESS_GDAL_DONE)) {
-			// SUCCESS
-			Application.logError3(ToolParent.INFO, "GeoPDF-Reported as a successful background conversion.", null,
-					false);
-			return tmpFile;
-		}
-		// SUCCESS
-		Application.logError3(ToolParent.INFO, "GeoPDF-Problem detected while converting the background file.", null,
-				false);
-
-		allOutput.setLength(0);
-		while ((line = gdalWarpErrorStream.readLine()) != null) {
-			allOutput.append(line + "\n");
-		}
-		Application.logError3(ToolParent.INFO, "GeoPDF-" + allOutput.toString(), null, false);
-		throw new IOException(allOutput.toString());
+		return provider.prepare(background, getFile("", configuration.getTempFolder()));
 	}
 
 	protected static String createJavascriptContent(final String javaScriptTS, final String javaScriptTSNONInteractive,
@@ -551,54 +440,15 @@ public abstract class AbstractGeoPDFBuilder {
 			final ArrayList<File> filesToDelete, final TrackWrapper currentTrack, final GeoPDFLayerTrack newTrackLayer,
 			final TimePeriod period) throws FileNotFoundException, JsonProcessingException;
 
-	public File generatePDF(final GeoPDF geoPDF, final GeoPDFConfiguration configuration)
-			throws IOException, InterruptedException {
-		final File tmpFile = createTempFile("compositionFileDebrief" + configuration.getTempFolder() + ".xml",
-				geoPDF.toString(), configuration.getTempFolder());
-
-		final Runtime runtime = Runtime.getRuntime();
-		final ArrayList<String> params = new ArrayList<String>();
-		params.add(configuration.getGdalCreateCommand());
-		for (final String s : configuration.getGdalCreateParams()) {
-			params.add(s);
-		}
-		params.add(GeoPDFConfiguration.GDAL_CREATE_COMPOSITION_KEYWORD + tmpFile.getAbsolutePath());
-		params.add(configuration.getPdfOutputPath());
-
-		final StringBuilder paramsLog = new StringBuilder();
-		for (final String p : params) {
-			paramsLog.append(p);
-			paramsLog.append(" ");
-		}
-		Application.logError3(ToolParent.INFO, "GeoPDF-" + paramsLog.toString(), null, false);
-		final Process process = runtime.exec(params.toArray(new String[] {}),
-				configuration.getEnvVariables().toArray(new String[] {}));
-		process.waitFor();
-		final BufferedReader gdalWarpOutputStream = new BufferedReader(new InputStreamReader(process.getInputStream()));
-
-		final BufferedReader gdalWarpErrorStream = new BufferedReader(new InputStreamReader(process.getErrorStream()));
-
-		final StringBuilder allOutput = new StringBuilder();
-		String line = null;
-		while ((line = gdalWarpOutputStream.readLine()) != null) {
-			allOutput.append(line + "\n");
-		}
-
-		Application.logError3(ToolParent.INFO, "GeoPDF-Output: " + allOutput.toString(), null, false);
-		if (!allOutput.toString().trim().isEmpty()) {
-			throw new IOException(allOutput.toString());
-		}
-
-		allOutput.setLength(0);
-		while ((line = gdalWarpErrorStream.readLine()) != null) {
-			allOutput.append(line + "\n");
-		}
-
-		Application.logError3(ToolParent.INFO, "GeoPDF-Error generating the PDF: " + allOutput.toString(), null, false);
-		if (!allOutput.toString().trim().isEmpty()) {
-			throw new IOException(allOutput.toString());
-		}
-
-		return tmpFile;
+	/**
+	 * write the GeoPDF to the configured output path
+	 *
+	 * @return the PDF file
+	 */
+	public File generatePDF(final GeoPDF geoPDF, final GeoPDFConfiguration configuration) throws IOException {
+		final File output = new File(configuration.getPdfOutputPath());
+		Application.logError3(ToolParent.INFO, "GeoPDF-Writing " + output.getAbsolutePath(), null, false);
+		new GeoPdfWriter().write(geoPDF, output);
+		return output;
 	}
 }
