@@ -6,7 +6,7 @@
 	<classpathentry exported="true" kind="lib" path="checker-qual-2.5.2.jar"/>
 	<classpathentry exported="true" kind="lib" path="commons-collections-3.2.2.jar"/>
 	<classpathentry exported="true" kind="lib" path="commons-pool-1.5.4.jar"/>
-	<classpathentry exported="true" kind="lib" path="commons-text-1.6.jar"/>
+	<classpathentry exported="true" kind="lib" path="commons-text-1.15.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="disruptor-1.2.13.jar"/>
 	<classpathentry exported="true" kind="lib" path="ejml-core-0.34.jar"/>
 	<classpathentry exported="true" kind="lib" path="ejml-ddense-0.34.jar"/>
@@ -30,7 +30,7 @@
 	<classpathentry exported="true" kind="lib" path="gt-swt-23-SNAPSHOT.jar"/>
 	<classpathentry exported="true" kind="lib" path="gt-xml-21.2.jar"/>
 	<classpathentry exported="true" kind="lib" path="guava-33.7.2-jre.jar"/>
-	<classpathentry exported="true" kind="lib" path="hsqldb-2.2.8.jar"/>
+	<classpathentry exported="true" kind="lib" path="hsqldb-2.7.4.jar"/>
 	<classpathentry exported="true" kind="lib" path="imageio-ext-geocore-1.2.2.jar"/>
 	<classpathentry exported="true" kind="lib" path="imageio-ext-streams-1.2.2.jar"/>
 	<classpathentry exported="true" kind="lib" path="imageio-ext-tiff-1.2.2.jar"/>
