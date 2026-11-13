@@ -56,12 +56,12 @@ public class GeoPDFSegmentedBuilder extends AbstractGeoPDFBuilder {
 	/** a unique layer name for a time step, from its start time */
 	private static String periodName(final GeoPDFConfiguration configuration, final TimePeriod period,
 			final HashSet<String> usedNames) {
-		String periodName;
-		if (configuration.getDateFormat() != null) {
-			periodName = new SimpleDateFormat(configuration.getDateFormat()).format(period.getStartDTG().getDate());
-		} else {
-			periodName = period.getStartDTG().toString();
-		}
+		// without a configured format, use the time controller's default (ddHHmm).
+		// HiResDate.toString() isn't for display: it includes the Java object's
+		// identity, which then showed in the GeoPDF's time label.
+		final String format = configuration.getDateFormat() != null ? configuration.getDateFormat()
+				: MWC.GUI.Properties.DateFormatPropertyEditor.DATE_FORMAT;
+		String periodName = new SimpleDateFormat(format).format(period.getStartDTG().getDate());
 		if (usedNames.contains(periodName)) {
 			int suffix = 2;
 			while (usedNames.contains(periodName + "_" + suffix)) {
