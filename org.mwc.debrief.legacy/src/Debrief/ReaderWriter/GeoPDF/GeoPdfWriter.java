@@ -28,6 +28,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.zip.DeflaterOutputStream;
 
 import javax.imageio.ImageIO;
@@ -288,6 +290,9 @@ public class GeoPdfWriter {
 		return res;
 	}
 
+	/** a {field} in a label */
+	private static final Pattern FIELD = Pattern.compile("\\{([^}]*)\\}");
+
 	/**
 	 * the text of a label: a quoted literal, or {field} replaced by that feature
 	 * property
@@ -296,26 +301,17 @@ public class GeoPdfWriter {
 		if (template == null) {
 			return "";
 		}
-		String t = template.trim();
-		if (t.startsWith("\"") && t.endsWith("\"") && t.length() >= 2) {
-			t = t.substring(1, t.length() - 1);
+		final String t = template.trim();
+		final String text = t.length() >= 2 && t.startsWith("\"") && t.endsWith("\"") ? t.substring(1, t.length() - 1)
+				: t;
+		final Matcher field = FIELD.matcher(text);
+		final StringBuffer res = new StringBuffer();
+		while (field.find()) {
+			final JsonNode value = properties == null ? null : properties.get(field.group(1));
+			final String replacement = value == null || value.isNull() ? "" : value.asText();
+			field.appendReplacement(res, Matcher.quoteReplacement(replacement));
 		}
-		final StringBuilder res = new StringBuilder();
-		int i = 0;
-		while (i < t.length()) {
-			final int open = t.indexOf('{', i);
-			final int close = open < 0 ? -1 : t.indexOf('}', open);
-			if (open < 0 || close < 0) {
-				res.append(t.substring(i));
-				break;
-			}
-			res.append(t, i, open);
-			final JsonNode value = properties == null ? null : properties.get(t.substring(open + 1, close));
-			if (value != null && !value.isNull()) {
-				res.append(value.asText());
-			}
-			i = close + 1;
-		}
+		field.appendTail(res);
 		return res.toString();
 	}
 
@@ -476,53 +472,51 @@ public class GeoPdfWriter {
 		content.closeAndFillAndStrokeEvenOdd();
 	}
 
+	/** draw one feature with one style tool */
+	private void drawFeature(final PDPageContentStream content, final StyleTool tool, final String type,
+			final JsonNode coords, final JsonNode properties, final PageMap map) throws IOException {
+		if ("PEN".equals(tool.name)) {
+			for (final JsonNode line : lines(type, coords)) {
+				drawLine(content, tool, line, map);
+			}
+		} else if ("SYMBOL".equals(tool.name) || "LABEL".equals(tool.name)) {
+			for (final JsonNode point : points(type, coords)) {
+				final float x = map.x(point.get(0).asDouble());
+				final float y = map.y(point.get(1).asDouble());
+				if ("SYMBOL".equals(tool.name)) {
+					drawSymbol(content, tool, x, y);
+				} else {
+					drawLabel(content, tool, properties, x, y, map);
+				}
+			}
+		}
+	}
+
 	private void drawVector(final PDPageContentStream content, final GeoPDFLayerVector vector, final PageMap map)
 			throws IOException {
 		final List<StyleTool> style = parseStyle(vector.getStyle());
 		if (vector.getData() == null || style.isEmpty()) {
 			return;
 		}
-		final JsonNode root = mapper.readTree(new File(vector.getData()));
-		final JsonNode features = root.get("features");
-		if (features == null) {
-			return;
-		}
+		final JsonNode features = mapper.readTree(new File(vector.getData())).path("features");
 		for (final JsonNode feature : features) {
-			final JsonNode geometry = feature.get("geometry");
-			if (geometry == null || geometry.isNull()) {
-				continue;
-			}
+			final JsonNode geometry = feature.path("geometry");
 			final String type = geometry.path("type").asText();
-			final JsonNode coords = geometry.get("coordinates");
-			final JsonNode properties = feature.get("properties");
 			for (final StyleTool tool : style) {
-				switch (tool.name) {
-				case "PEN":
-					if ("LineString".equals(type)) {
-						drawLine(content, tool, coords, map);
-					} else if ("MultiLineString".equals(type)) {
-						for (final JsonNode line : coords) {
-							drawLine(content, tool, line, map);
-						}
-					}
-					break;
-				case "SYMBOL":
-				case "LABEL":
-					for (final JsonNode point : points(type, coords)) {
-						final float x = map.x(point.get(0).asDouble());
-						final float y = map.y(point.get(1).asDouble());
-						if ("SYMBOL".equals(tool.name)) {
-							drawSymbol(content, tool, x, y);
-						} else {
-							drawLabel(content, tool, properties, x, y, map);
-						}
-					}
-					break;
-				default:
-					break;
-				}
+				drawFeature(content, tool, type, geometry.get("coordinates"), feature.get("properties"), map);
 			}
 		}
+	}
+
+	/** the lines of a line geometry */
+	private static List<JsonNode> lines(final String type, final JsonNode coords) {
+		final List<JsonNode> res = new ArrayList<>();
+		if ("LineString".equals(type)) {
+			res.add(coords);
+		} else if ("MultiLineString".equals(type) && coords != null) {
+			coords.forEach(res::add);
+		}
+		return res;
 	}
 
 	private static List<JsonNode> points(final String type, final JsonNode coords) {
