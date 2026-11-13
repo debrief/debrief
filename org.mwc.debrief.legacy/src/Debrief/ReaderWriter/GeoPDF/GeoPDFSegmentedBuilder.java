@@ -8,6 +8,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashSet;
+import java.util.List;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -34,6 +35,70 @@ import MWC.Utilities.TextFormatting.FormatRNDateTime;
 
 public class GeoPDFSegmentedBuilder extends AbstractGeoPDFBuilder {
 
+	/** the background charts, as one layer, if there are any */
+	private static void addBackgroundLayer(final GeoPDFConfiguration configuration, final GeoPDF geoPDF,
+			final GeoPDFPage page) throws IOException {
+		final GeoPDFLayerBackground backgroundLayer = new GeoPDFLayerBackground();
+		backgroundLayer.setName("Background chart");
+		backgroundLayer.setId("background");
+		for (final String background : configuration.getBackground()) {
+			final GeoPDF.GeoPDFRaster raster = createBackground(configuration, background);
+			if (raster != null) {
+				geoPDF.getFilesToDelete().add(raster.getImage());
+				backgroundLayer.addRaster(raster);
+			}
+		}
+		if (!backgroundLayer.getRasters().isEmpty()) {
+			page.addLayer(backgroundLayer);
+		}
+	}
+
+	/** a unique layer name for a time step, from its start time */
+	private static String periodName(final GeoPDFConfiguration configuration, final TimePeriod period,
+			final HashSet<String> usedNames) {
+		String periodName;
+		if (configuration.getDateFormat() != null) {
+			periodName = new SimpleDateFormat(configuration.getDateFormat()).format(period.getStartDTG().getDate());
+		} else {
+			periodName = period.getStartDTG().toString();
+		}
+		if (usedNames.contains(periodName)) {
+			int suffix = 2;
+			while (usedNames.contains(periodName + "_" + suffix)) {
+				++suffix;
+			}
+			periodName = periodName + "_" + suffix;
+		}
+		usedNames.add(periodName);
+		return periodName;
+	}
+
+	/** the tracks to export: the visible ones */
+	private static List<TrackWrapper> visibleTracks(final Layers layers) {
+		final List<TrackWrapper> tracks = new ArrayList<>();
+		final Enumeration<Editable> enumeration = layers.elements();
+		while (enumeration.hasMoreElements()) {
+			final Editable currentEditable = enumeration.nextElement();
+			if (currentEditable instanceof TrackWrapper && ((TrackWrapper) currentEditable).getVisible()) {
+				tracks.add((TrackWrapper) currentEditable);
+			}
+		}
+		return tracks;
+	}
+
+	/**
+	 * a track's line, time ticks, time labels and name, for the whole track (null
+	 * period) or one time step
+	 */
+	private void addTrackContent(final GeoPDFConfiguration configuration, final GeoPDF geoPDF,
+			final TrackWrapper currentTrack, final GeoPDFLayerTrack trackLayer, final TimePeriod period)
+			throws FileNotFoundException, JsonProcessingException {
+		createTrackLine(configuration, geoPDF.getFilesToDelete(), currentTrack, trackLayer, period);
+		createTicksLayer(configuration, geoPDF.getFilesToDelete(), currentTrack, trackLayer, period);
+		createLabelsLayer(configuration, geoPDF.getFilesToDelete(), currentTrack, trackLayer, period);
+		createTrackNameLayer(configuration, geoPDF.getFilesToDelete(), currentTrack, trackLayer, period);
+	}
+
 	@Override
 	public GeoPDF build(final Layers layers, final GeoPDFConfiguration configuration)
 			throws IOException, InterruptedException, NoSuchFieldException, SecurityException, IllegalArgumentException,
@@ -59,122 +124,46 @@ public class GeoPDFSegmentedBuilder extends AbstractGeoPDFBuilder {
 			mainPage.setArea(configuration.getViewportArea());
 		}
 
-		/**
-		 * Let's create the BackGroundLayer;
-		 */
-		final GeoPDFLayerBackground backgroundLayer = new GeoPDFLayerBackground();
-		backgroundLayer.setName("Background chart");
-		backgroundLayer.setId("background");
-		for (final String background : configuration.getBackground()) {
-			final GeoPDF.GeoPDFRaster raster = createBackground(configuration, background);
-			if (raster != null) {
-				geoPDF.getFilesToDelete().add(raster.getImage());
-				backgroundLayer.addRaster(raster);
-			}
-		}
-		if (!backgroundLayer.getRasters().isEmpty()) {
-			mainPage.addLayer(backgroundLayer);
-		}
+		addBackgroundLayer(configuration, geoPDF, mainPage);
+
+		final List<TrackWrapper> tracks = visibleTracks(layers);
 
 		/**
-		 * Let's add now the non-interactive layers
+		 * the non-interactive layers: each whole track
 		 */
-		final ObjectMapper mapper = new ObjectMapper();
 		final StringBuilder javascriptNonInteractiveLayerIndex = new StringBuilder();
 		javascriptNonInteractiveLayerIndex.append("var nonInteractiveLayers = [");
-
-		/**
-		 * Let's iterate over all the layers to find the Tracks to export
-		 */
-		final Enumeration<Editable> enumerationNonInteractive = layers.elements();
-		while (enumerationNonInteractive.hasMoreElements()) {
-			final Editable currentEditable = enumerationNonInteractive.nextElement();
-			if (currentEditable instanceof TrackWrapper) {
-				/**
-				 * Ok, at this point we have a TrackWrapper. Now, let's create a Geometry of the
-				 * type Simple Features Geotools Library.
-				 */
-				final TrackWrapper currentTrack = (TrackWrapper) currentEditable;
-
-				/**
-				 * Let's draw only visible tracks.
-				 */
-				if (currentTrack.getVisible()) {
-
-					final GeoPDFLayerTrack newTrackLayer = new GeoPDFLayerTrack();
-					mainPage.addLayer(newTrackLayer);
-
-					newTrackLayer.setId(currentTrack.getName());
-					newTrackLayer.setName(currentTrack.getName() + NON_INTERACTIVE_SUFFIX);
-					javascriptNonInteractiveLayerIndex
-							.append('\'' + currentTrack.getName() + NON_INTERACTIVE_SUFFIX + '\'' + ',');
-
-					/**
-					 * TrackLine
-					 */
-					createTrackLine(configuration, geoPDF.getFilesToDelete(), currentTrack, newTrackLayer, null);
-
-					// Let's create now the point-type vectors
-					/**
-					 * Minutes difference Layer
-					 */
-					createTicksLayer(configuration, geoPDF.getFilesToDelete(), currentTrack, newTrackLayer, null);
-
-					/**
-					 * Label Layer
-					 */
-
-					createLabelsLayer(configuration, geoPDF.getFilesToDelete(), currentTrack, newTrackLayer, null);
-
-					/**
-					 * One point layer
-					 */
-					createTrackNameLayer(configuration, geoPDF.getFilesToDelete(), currentTrack, newTrackLayer, null);
-
-				}
-
-			}
-
+		for (final TrackWrapper currentTrack : tracks) {
+			final GeoPDFLayerTrack newTrackLayer = new GeoPDFLayerTrack();
+			mainPage.addLayer(newTrackLayer);
+			newTrackLayer.setId(currentTrack.getName());
+			newTrackLayer.setName(currentTrack.getName() + NON_INTERACTIVE_SUFFIX);
+			javascriptNonInteractiveLayerIndex.append('\'' + currentTrack.getName() + NON_INTERACTIVE_SUFFIX + '\'' + ',');
+			addTrackContent(configuration, geoPDF, currentTrack, newTrackLayer, null);
 		}
 		javascriptNonInteractiveLayerIndex.append("];");
 
 		/**
-		 * Now the interactive Layers
+		 * the interactive layers: each track within each time step
 		 */
 		final GeoPDFLayerTrack interactiveLayer = new GeoPDFLayerTrack();
 		interactiveLayer.setId(INTERACTIVE_LAYER_NAME);
 		interactiveLayer.setName(INTERACTIVE_LAYER_NAME);
 		mainPage.addLayer(interactiveLayer);
 
-		final StringBuilder javaScriptReplacementJsTimestamps = new StringBuilder();
-		javaScriptReplacementJsTimestamps.append("var timestamps = ");
+		final ObjectMapper mapper = new ObjectMapper();
 		final ArrayNode jsonTimestamps = mapper.createArrayNode();
-
-		HiResDate currentTime = configuration.getStartTime();
 		final HashSet<String> usedNames = new HashSet<>();
 
+		HiResDate currentTime = configuration.getStartTime();
 		while (currentTime.lessThan(configuration.getEndTime())) {
 			final HiResDate topCurrentPeriod = HiResDate.min(
 					new HiResDate(currentTime.getMicros() / 1000 + configuration.getStepDeltaMilliSeconds()),
 					configuration.getEndTime());
 			final TimePeriod period = new TimePeriod.BaseTimePeriod(currentTime, topCurrentPeriod);
+			final String periodName = periodName(configuration, period, usedNames);
 
 			final GeoPDFLayerTrack periodTrack = new GeoPDFLayerTrack();
-			String periodName;
-			if (configuration.getDateFormat() != null) {
-				periodName = new SimpleDateFormat(configuration.getDateFormat()).format(period.getStartDTG().getDate());
-			} else {
-				periodName = period.getStartDTG().toString();
-			}
-			if (usedNames.contains(periodName)) {
-				int suffix = 2;
-				while (usedNames.contains(periodName + "_" + suffix)) {
-					++suffix;
-				}
-				periodName = periodName + "_" + suffix;
-			}
-			usedNames.add(periodName);
-
 			interactiveLayer.addChild(periodTrack);
 			periodTrack.setId(periodName);
 			periodTrack.setName(periodName);
@@ -184,70 +173,20 @@ public class GeoPDFSegmentedBuilder extends AbstractGeoPDFBuilder {
 			timeStampNode.put("ocg_name", periodName);
 			jsonTimestamps.add(timeStampNode);
 
-			/**
-			 * Let's iterate over all the layers to find the Tracks to export
-			 */
-			final Enumeration<Editable> enumeration = layers.elements();
-			while (enumeration.hasMoreElements()) {
-				final Editable currentEditable = enumeration.nextElement();
-				if (currentEditable instanceof TrackWrapper) {
-					/**
-					 * Ok, at this point we have a TrackWrapper. Now, let's create a Geometry of the
-					 * type Simple Features Geotools Library.
-					 */
-					final TrackWrapper currentTrack = (TrackWrapper) currentEditable;
-
-					/**
-					 * Let's draw only visible tracks.
-					 */
-					if (currentTrack.getVisible()) {
-
-						final GeoPDFLayerTrack newTrackLayer = new GeoPDFLayerTrack();
-						periodTrack.addChild(newTrackLayer);
-
-						newTrackLayer.setId(currentTrack.getName() + " " + periodName);
-						newTrackLayer.setName(currentTrack.getName());
-
-						/**
-						 * Let's create the different parts of the layer
-						 */
-						/**
-						 * TrackLine
-						 */
-						createTrackLine(configuration, geoPDF.getFilesToDelete(), currentTrack, newTrackLayer, period);
-
-						// Let's create now the point-type vectors
-						/**
-						 * Minutes difference Layer
-						 */
-						createTicksLayer(configuration, geoPDF.getFilesToDelete(), currentTrack, newTrackLayer, period);
-
-						/**
-						 * Label Layer
-						 */
-
-						createLabelsLayer(configuration, geoPDF.getFilesToDelete(), currentTrack, newTrackLayer,
-								period);
-
-						/**
-						 * One point layer
-						 */
-						createTrackNameLayer(configuration, geoPDF.getFilesToDelete(), currentTrack, newTrackLayer,
-								period);
-
-					}
-
-				}
-
+			for (final TrackWrapper currentTrack : tracks) {
+				final GeoPDFLayerTrack newTrackLayer = new GeoPDFLayerTrack();
+				periodTrack.addChild(newTrackLayer);
+				newTrackLayer.setId(currentTrack.getName() + " " + periodName);
+				newTrackLayer.setName(currentTrack.getName());
+				addTrackContent(configuration, geoPDF, currentTrack, newTrackLayer, period);
 			}
 			currentTime = topCurrentPeriod;
 		}
 
-		final String jsonTimestampsContent = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(jsonTimestamps);
-		javaScriptReplacementJsTimestamps.append(jsonTimestampsContent);
-		javaScriptReplacementJsTimestamps.append(";");
+		final String javaScriptReplacementJsTimestamps = "var timestamps = "
+				+ mapper.writerWithDefaultPrettyPrinter().writeValueAsString(jsonTimestamps) + ";";
 
-		geoPDF.setJavascript(createJavascriptContent(javaScriptReplacementJsTimestamps.toString(),
+		geoPDF.setJavascript(createJavascriptContent(javaScriptReplacementJsTimestamps,
 				javascriptNonInteractiveLayerIndex.toString(), configuration.getStepSpeedMilliSeconds() + "",
 				JAVASCRIPT_TEMPLATE_PATH));
 
