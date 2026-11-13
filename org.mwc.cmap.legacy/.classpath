@@ -6,7 +6,9 @@
 	<classpathentry exported="true" kind="lib" path="poi-ooxml-4.1.2.jar"/>
 	<classpathentry exported="true" kind="lib" path="poi-ooxml-schemas-4.1.2.jar"/>
 	<classpathentry exported="true" kind="lib" path="poi-scratchpad-4.1.2.jar"/>
-	<classpathentry exported="true" kind="lib" path="commons-compress-1.19.jar"/>
+	<classpathentry exported="true" kind="lib" path="commons-compress-1.28.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="commons-io-2.22.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="commons-lang3-3.21.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="commons-csv-1.2.jar"/>
 	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
 	<classpathentry kind="src" path="src"/>

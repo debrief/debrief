@@ -21,7 +21,6 @@ Bundle-ClassPath: commons-cli.jar,
  .,
  jai_imageio.jar,
  jni_helper.jar,
- commons-io-2.1.jar,
  xuggle-xuggler.jar
 Export-Package: org.mwc.cmap.media,
  org.mwc.cmap.media.time,
