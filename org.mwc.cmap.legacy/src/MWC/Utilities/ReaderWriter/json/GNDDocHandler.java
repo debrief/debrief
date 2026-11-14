@@ -28,13 +28,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Vector;
 
-import org.codehaus.jackson.JsonNode;
-import org.codehaus.jackson.JsonParseException;
-import org.codehaus.jackson.JsonParser.Feature;
-import org.codehaus.jackson.map.JsonMappingException;
-import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.node.ArrayNode;
-import org.codehaus.jackson.node.ObjectNode;
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.core.JsonParser.Feature;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.TimePeriod;
@@ -221,6 +221,81 @@ public class GNDDocHandler {
 			assertNotNull("geo bounds wrong", metadata.get("geo_bounds"));
 			assertNotNull("time bounds wrong", metadata.get("time_bounds"));
 		}
+
+		/** a fixed track (getTestTrack is random and uses local time) */
+		private static Track goldenTrack() {
+			final Vector<Fix> fixes = new Vector<Fix>();
+			for (int i = 0; i < 3; i++) {
+				fixes.add(new Fix(new HiResDate(1341576300000L + i * 25000L),
+						new WorldLocation(4d + i / 100d, 5d + i / 100d, 2.5 * i), 135 + i, 5 + i * 0.5));
+			}
+			final Track track = new Track(fixes);
+			track.setName("golden");
+			return track;
+		}
+
+		/** the expected strings were written by the Jackson 1.9.4 version of this class */
+		public void testTrackJsonGolden() throws IOException {
+			final String expected = "{\"location\":{\"type\":\"MultiPoint\",\"coordinates\":[[5.0,4.0],[5.01,4.01],[5.02,4.02]]"
+				+ "},\"time\":[\"2012-07-06T12:05:00Z\",\"2012-07-06T12:05:25Z\",\"2012-07-06T12:05:50Z\"],\""
+				+ "elevation\":[-0.0,-2.5,-5.0],\"heading\":[135.0,136.0,137.0],\"speed\":[4.572000000000001,"
+				+ "5.0292,5.4864000000000015],\"metadata\":{\"name\":\"NAME\",\"platform\":\"PLATFORM\",\"pla"
+				+ "tform_type\":\"P_TYPE\",\"sensor\":\"SENS\",\"sensor_type\":\"S_TYPE\",\"trial\":\"TRIAL\""
+				+ ",\"type\":\"track\",\"data_type\":[\"location\",\"time\",\"elevation\",\"heading\",\"speed"
+				+ "\"],\"geo_bounds\":{\"coordinates\":[[4.02,5.0],[4.0,5.02]],\"type\":\"envelope\"},\"time_"
+				+ "bounds\":{\"start\":\"2012-07-06T12:05:00Z\",\"end\":\"2012-07-06T12:05:50Z\"}}}";
+			assertEquals(expected, asString(new GNDDocHandler().toJson("NAME", goldenTrack(), "PLATFORM", "P_TYPE",
+					"SENS", "S_TYPE", "TRIAL")));
+		}
+
+		public void testNarrativeJsonGolden() throws IOException {
+			final List<NarrativeEntry> entries = new ArrayList<NarrativeEntry>();
+			entries.add(new NarrativeEntry("trk", "obs-type", new HiResDate(1341576300000L), "first entry"));
+			entries.add(new NarrativeEntry("trk", "obs-type", new HiResDate(1341576325000L),
+					"second \"quoted\" entry"));
+			final String expected = "{\"metadata\":{\"name\":\"NARR\",\"platform\":\"PLATFORM\",\"platform_type\":\"P_TYPE\",\""
+				+ "sensor\":\"SENS\",\"sensor_type\":\"S_TYPE\",\"trial\":\"TRIAL\",\"type\":\"narrative\",\""
+				+ "data_type\":[\"obs\",\"obs_type\"],\"time_bounds\":{\"start\":\"2012-07-06T12:05:00Z\",\"e"
+				+ "nd\":\"2012-07-06T12:05:25Z\"}},\"obs\":[\"first entry\",\"second \\\"quoted\\\" entry\"],"
+				+ "\"obs_type\":[\"obs-type\",\"obs-type\"],\"time\":[\"2012-07-06T12:05:00Z\",\"2012-07-06T1"
+				+ "2:05:25Z\"]}";
+			assertEquals(expected, asString(new GNDDocHandler().toJson("NARR", entries, "PLATFORM", "P_TYPE", "SENS",
+					"S_TYPE", "TRIAL")));
+		}
+
+		/** the reader takes the older lat/lon layout, not the GeoJSON one toJson writes */
+		private static final String LAT_LON_DOC = "{'metadata':{'name':'reader','platform':'plat',"
+				+ "'data_type':['lat','lon','time','elevation','course','speed']},"
+				+ "'lat':[4.0,4.5],'lon':[5.0,5.5],'time':['2012-07-06T12:05:00Z','2012-07-06T12:05:25Z'],"
+				+ "'elevation':[-10.0,-20.0],'course':[1.5,2.5],'speed':[3.0,4.0]}";
+
+		public void testReadDocument() throws Exception {
+			final GNDDocument doc = new GNDDocument(LAT_LON_DOC.replace('\'', '"'));
+			assertEquals("reader", doc.getName());
+			final Track track = doc.getTrack();
+			final Enumeration<Fix> fixes = track.getFixes();
+			final Fix first = fixes.nextElement();
+			assertEquals(4.0, first.getLocation().getLat(), 1e-9);
+			assertEquals(5.0, first.getLocation().getLong(), 1e-9);
+			assertEquals("depth is minus elevation", 10.0, first.getLocation().getDepth(), 1e-9);
+			assertEquals(1.5, first.getCourse(), 1e-9);
+			assertEquals(1341576300000L, first.getTime().getDate().getTime());
+			final Fix second = fixes.nextElement();
+			assertEquals(5.5, second.getLocation().getLong(), 1e-9);
+			assertEquals(4.0, second.getSpeed(), 1e-9);
+			assertFalse(fixes.hasMoreElements());
+		}
+
+		public void testReadDataset() throws Exception {
+			final JsonNode node = new ObjectMapper().readTree(LAT_LON_DOC.replace('\'', '"'));
+			final MWC.TacticalData.GND.GDataset data = new MWC.TacticalData.GND.GDataset(node, null);
+			assertEquals("reader", data.getName());
+			assertEquals("plat", data.getPlatform());
+			assertEquals(6, data.getDataTypes().size());
+			assertEquals(2, data.size());
+			assertEquals(4.5, data.getDataset("lat")[1], 1e-9);
+			assertEquals(1341576325000L, data.getTimes()[1].getTime());
+		}
 	}
 
 	public static String asString(final JsonNode root) throws IOException {
@@ -280,14 +355,14 @@ public class GNDDocHandler {
 		final ObjectNode metadata = doMetadata(name, platform, platformType, sensor, sensorType, trial, mapper);
 
 		// store the metadata
-		root.put("metadata", metadata);
+		root.set("metadata", metadata);
 
 		// now the type specific stuff
 		metadata.put("type", "narrative");
 		final ArrayNode types = mapper.createArrayNode();
 		types.add("obs");
 		types.add("obs_type");
-		metadata.put("data_type", types);
+		metadata.set("data_type", types);
 
 		// now the data arrays
 		final ArrayNode obsArr = mapper.createArrayNode();
@@ -318,16 +393,16 @@ public class GNDDocHandler {
 			last = Math.max(last, t);
 		}
 
-		root.put("obs", obsArr);
+		root.set("obs", obsArr);
 		if (obsTypeArr.size() > 0)
-			root.put("obs_type", obsTypeArr);
-		root.put("time", timeArr);
+			root.set("obs_type", obsTypeArr);
+		root.set("time", timeArr);
 
 		// store the time bounds
 		final ObjectNode times = mapper.createObjectNode();
 		times.put("start", timeFor(new Date(first)));
 		times.put("end", timeFor(new Date(last)));
-		metadata.put("time_bounds", times);
+		metadata.set("time_bounds", times);
 
 		return root;
 	}
@@ -375,19 +450,19 @@ public class GNDDocHandler {
 
 		final ObjectNode locHolder = mapper.createObjectNode();
 		locHolder.put("type", "MultiPoint");
-		locHolder.put("coordinates", locationArr);
+		locHolder.set("coordinates", locationArr);
 
-		root.put("location", locHolder);
-		root.put("time", timeArr);
-		root.put("elevation", eleArr);
-		root.put("heading", headArr);
-		root.put("speed", speedArr);
+		root.set("location", locHolder);
+		root.set("time", timeArr);
+		root.set("elevation", eleArr);
+		root.set("heading", headArr);
+		root.set("speed", speedArr);
 
 		// sort out the metadata
 		final ObjectNode metadata = doMetadata(name, platform, platformType, sensor, sensorType, trial, mapper);
 
 		// store the metadata
-		root.put("metadata", metadata);
+		root.set("metadata", metadata);
 
 		// now the type specific stuff
 		metadata.put("type", "track");
@@ -397,19 +472,19 @@ public class GNDDocHandler {
 		types.add("elevation");
 		types.add("heading");
 		types.add("speed");
-		metadata.put("data_type", types);
+		metadata.set("data_type", types);
 
 		// now the location bounds
 		final ObjectNode gBounds = mapper.createObjectNode();
 		final ArrayNode coords = mapper.createArrayNode();
 		coords.add(locationFor(area.getTopLeft(), mapper));
 		coords.add(locationFor(area.getBottomRight(), mapper));
-		gBounds.put("coordinates", coords);
+		gBounds.set("coordinates", coords);
 		gBounds.put("type", "envelope");
-		metadata.put("geo_bounds", gBounds);
+		metadata.set("geo_bounds", gBounds);
 
 		// and the time bounds
-		metadata.put("time_bounds", timeBoundsFor(track, mapper));
+		metadata.set("time_bounds", timeBoundsFor(track, mapper));
 
 		return root;
 	}

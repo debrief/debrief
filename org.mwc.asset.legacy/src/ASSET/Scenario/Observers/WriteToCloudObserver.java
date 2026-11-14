@@ -24,11 +24,11 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
 
-import org.codehaus.jackson.JsonGenerationException;
-import org.codehaus.jackson.map.JsonMappingException;
-import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.node.ArrayNode;
-import org.codehaus.jackson.node.ObjectNode;
+import com.fasterxml.jackson.core.JsonGenerationException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import ASSET.ParticipantType;
 import ASSET.ScenarioType;
@@ -265,7 +265,7 @@ public class WriteToCloudObserver extends RecordToFileObserverType implements AS
 		final ObjectMapper mapper = new ObjectMapper();
 		final ObjectNode root = mapper.createObjectNode();
 		final ObjectNode metadata = mapper.createObjectNode();
-		root.put("metadata", metadata);
+		root.set("metadata", metadata);
 
 		// sort out the metadata
 		metadata.put("Platform", theTrack.getName());
@@ -292,10 +292,10 @@ public class WriteToCloudObserver extends RecordToFileObserverType implements AS
 
 		}
 
-		root.put("lat", lat);
-		root.put("lon", lon);
-		root.put("depth", altitude);
-		root.put("time", time);
+		root.set("lat", lat);
+		root.set("lon", lon);
+		root.set("depth", altitude);
+		root.set("time", time);
 
 		try {
 			final StringWriter sw = new StringWriter();

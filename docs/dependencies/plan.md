@@ -74,7 +74,7 @@ Versions are set at implementation time from Maven Central (latest stable); the 
 | 10 | logback (`cmap.media`) | — | **Replaced.** It was only Xuggler's SLF4J binding: now slf4j-api + slf4j-simple 1.7.36 (slf4j-api 1.5.6 would fail with no binding). |
 | 11 | Pepys native SQLite and zlib DLLs; c3p0, mchange-commons | — | **Removed with the Pepys plugin** (see item 3). |
 | 12 | zip4j, guava | — / 33.7.2-jre | **Done.** zip4j was only used to zip the PowerPoint export, so `PackPresentation` now uses `java.util.zip` (writing `[Content_Types].xml` first) and the jar is gone. guava 27.0 → 33.7.2-jre and failureaccess 1.0 → 1.0.3 in `cmap.geotools` (33.8.0 was 11 days old); every guava class and method GeoTools 21.2 calls exists in 33.7.2. The unbuilt `org.mwc.debrief.GNDManager` module, with guava 14-rc1, is deleted (owner's decision). commons-io was done with item 6. |
-| — | Jackson 1.9.4 (codehaus) | — | **Not bumped.** No fixed versions exist. Tracked as a follow-up spec (migrate to Jackson 2). |
+| — | Jackson 1.9.4 (codehaus) | — | **Removed** (Phase D3, done early): the code moved to Jackson 2. |
 
 **Each PR:** update the jar, MANIFEST, `Export-Package`, `build.properties` and `.classpath`; then rescan, and the CVE count for that library must fall to zero (or each remaining CVE is excepted with a reason). The scan gate (fail on new High/Critical) is switched on once the first bump lands.
 
@@ -137,7 +137,7 @@ Spec `specs/004-geotools/`.
 - **Acceptance:** Lite UI tests pass and screenshot diffs of the Lite main window are within tolerance. The owner does a manual walkthrough on all three operating systems.
 
 ## Phase D3: Jackson 1 and the old Postgres drivers (after Gate A; can run in parallel with B)
-- **Jackson 1 → Jackson 2.** Migrate the codehaus imports (`cmap.legacy`, `asset.legacy`), then delete the 1.9.4 jars. Golden JSON tests come first.
+- **Jackson 1 → Jackson 2. Done.** The GND JSON code (`cmap.legacy`: `GDataset`, `GPackage`, `GNDDocHandler`, `GNDStore`) and the ASSET cloud observers now use Jackson 2, with no deprecated calls. The Jackson 2 jars (2.22.4) moved down from `debrief.legacy` to `cmap.legacy`, which exports them to every layer; `cmap.geotools` drops its duplicate jackson-core. Golden tests in `GNDDocHandler.TestJSON` pin the track and narrative JSON to the exact strings Jackson 1 wrote, and two new tests cover the reader (`GNDDocument`, `GDataset`), which had none. All four 1.9.4 jars are deleted.
 - **Postgres 8.3.** Done early, with the Pepys driver: all PostgreSQL support was removed (see PR 3+ item 2).
 
 ## Phase E: test tooling (after Phase B)

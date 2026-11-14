@@ -24,10 +24,10 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 
-import org.codehaus.jackson.JsonNode;
-import org.codehaus.jackson.JsonParseException;
-import org.codehaus.jackson.map.JsonMappingException;
-import org.codehaus.jackson.map.ObjectMapper;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.joda.time.format.ISODateTimeFormat;
 
 import MWC.GUI.SupportsPropertyListeners;
@@ -166,7 +166,7 @@ public class GDataset implements IDataset, Serializable, SupportsPropertyListene
 
 			nodes = new ArrayList<String>();
 			for (int i = 0; i < types.size(); i++) {
-				nodes.add(types.get(i).getTextValue());
+				nodes.add(types.get(i).textValue());
 			}
 		}
 		return nodes;
@@ -177,9 +177,9 @@ public class GDataset implements IDataset, Serializable, SupportsPropertyListene
 		final JsonNode node = getNode();
 		if (_name == null) {
 			final JsonNode metadata = node.get(METADATA);
-			_name = metadata.get(NAME).getTextValue();
+			_name = metadata.get(NAME).textValue();
 			if ((_name == null) || (_name.length() == 0))
-				_name = metadata.get(PLATFORM).getTextValue();
+				_name = metadata.get(PLATFORM).textValue();
 		}
 		return _name;
 	}
@@ -189,7 +189,7 @@ public class GDataset implements IDataset, Serializable, SupportsPropertyListene
 		if (_myNode == null) {
 			final ObjectMapper mapper = new ObjectMapper();
 			try {
-				_myNode = mapper.readValue(_source, JsonNode.class);
+				_myNode = mapper.readTree(_source.openStream());
 			} catch (final JsonParseException e) {
 				e.printStackTrace();
 			} catch (final JsonMappingException e) {
@@ -206,7 +206,7 @@ public class GDataset implements IDataset, Serializable, SupportsPropertyListene
 		if (_platform == null) {
 			final JsonNode metadata = node.get(METADATA);
 			final JsonNode platNode = metadata.get(PLATFORM);
-			_platform = platNode.getTextValue();
+			_platform = platNode.textValue();
 		}
 		return _platform;
 	}
