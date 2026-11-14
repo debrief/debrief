@@ -26,7 +26,6 @@
 	</path>
 	
 	<path id="classpathsuite.path">
-		<pathelement location="../org.mwc.asset.comms/bin"/>
 		<pathelement location="../org.mwc.asset.core/bin"/>
 		<pathelement location="../org.mwc.asset.help/bin"/>
 		<pathelement location="..org.mwc.asset.legacy/bin"/>

@@ -80,6 +80,14 @@ Versions are set at implementation time from Maven Central (latest stable); the 
 
 **Native libraries.** ~~`debrief.legacy/src/native/windows` is a bundled GDAL and MapServer toolchain~~ **Done:** GeoPDF export now writes the PDF in Java (PDFBox, `GeoPdfWriter`) and reprojects background charts with GeoTools, so the 95 MB GDAL/MapServer bundle (with OpenSSL 1.1, libcurl, libpq, libxml2 and zlib) is removed, from Lite too. Charts on NAD27-style datums may sit up to the EPSG transformation's stated accuracy (about 10 m) from where GDAL's grid-based shift put them.
 
+**Tidy after the November rescan.** The rescan after item 8 left 1 Critical, 6 High, 5 Medium and 1 Low (from 15 / 120 / 79 / 15). This tidy removes everything except Jackson 1 and build or test tooling:
+- `org.mwc.asset.comms` deleted (owner's decision). It was in no pom, had no manifest, and carried jettison 1.2 (4 High, 1 Medium), RestLet, Smack and a committed `bin/`.
+- `asset.NetCore/libs/kryonet-1.04` deleted: an unused copy of the kryonet distribution, shipped in the bundle through `bin.includes`. The bundle's own kryo, minlog, asm and reflectasm jars stay.
+- `asset.legacy/libs/xercesImpl-2.7.1.jar` (no imports) and the stale `debrief.lite/1.5/lib/debrief-lite.jar` deleted.
+- junit 4.12 → 4.13.2 and hamcrest-core 1.2 → 1.3 in `cmap.legacy/libs` (Lite ships that folder); xmlunit-core 2.6.0 → 2.14.0.
+- `actions/download-artifact` pinned to v4.3.0: the floating `v4` tag read as older than the 4.1.3 fix.
+- Kept: jsch (the old release Ant scripts use it for `scp`), checkstyle 5.6, commons-net and `debrief.test`'s junit 4.11, which are build, help and test tooling and not shipped.
+
 ## Verification for every PR
 1. `mvn clean verify -U -B -fae` under xvfb with JDK 21. If the container can't reach `download.eclipse.org`, CI is the verifier, and that is stated in the PR.
 2. The `lite-ui-tests` job passes (`-DliteUiTests=true`).
