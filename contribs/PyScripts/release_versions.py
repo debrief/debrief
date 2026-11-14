@@ -8,9 +8,14 @@ syncs the Maven poms via the Tycho versions plugin.
 
 Usage:
 
-    release_versions.py plan  [--since TAG] [--json]
+    release_versions.py plan  [--since TAG] [--json] [--marketing-version X.Y.Z]
     release_versions.py apply [--since TAG] [--date YYYYMMDD] [--skip-pom]
+                              [--marketing-version X.Y.Z]
     release_versions.py tag-name [--date YYYYMMDD]
+
+The marketing version normally moves by one in its last segment (3.1.46 to
+3.1.47).  ``--marketing-version`` sets it instead, for a minor or major bump
+such as 3.2.0.  Bundle versions still move by one in their last segment.
 
 ``plan`` is read only.  ``apply`` performs the edits.  Nothing happens at
 import time, so the module can be exercised from tests.
@@ -348,7 +353,29 @@ def release_tag(marketing_version, release_date):
 # planning
 # ---------------------------------------------------------------------------
 
-def build_plan(root=".", since=None, release_date=None):
+def next_marketing_version(current, requested=None):
+    """The new marketing version: ``requested`` if given, else ``bump``.
+
+    A requested version must be plain numbers with the same number of
+    segments, and must be later than ``current``.
+    """
+    if requested is None:
+        return bump(current)
+    if not re.fullmatch(r"\d+(\.\d+)*", requested):
+        raise ReleaseError("marketing version %r is not plain numbers, "
+                           "such as 3.2.0" % requested)
+    old = [int(x) for x in current.split(".")]
+    new = [int(x) for x in requested.split(".")]
+    if len(new) != len(old):
+        raise ReleaseError("marketing version %s has %d segments; %s has %d"
+                           % (requested, len(new), current, len(old)))
+    if new <= old:
+        raise ReleaseError("marketing version %s is not later than %s"
+                           % (requested, current))
+    return requested
+
+
+def build_plan(root=".", since=None, release_date=None, marketing_version=None):
     release_date = release_date or date_cls.today()
     since = since or latest_release_tag(root)
 
@@ -396,7 +423,7 @@ def build_plan(root=".", since=None, release_date=None):
             "product version (%s) and about.mappings version (%s) disagree - "
             "fix that by hand before releasing" % (product_version, marketing))
 
-    new_marketing = bump(marketing)
+    new_marketing = next_marketing_version(marketing, marketing_version)
     changes.append({"kind": "product", "id": "DebriefNG", "file": PRODUCT_FILE,
                     "old": product_version, "new": new_marketing})
     changes.append({"kind": "mappings", "id": "about.mappings",
@@ -520,6 +547,9 @@ def main(argv=None):
                           help="release date as YYYYMMDD (default: today)")
     plan_cmd.add_argument("--json", action="store_true",
                           help="emit the plan as JSON")
+    plan_cmd.add_argument("--marketing-version",
+                          help="new Debrief version, such as 3.2.0 "
+                               "(default: bump the last segment)")
 
     apply_cmd = sub.add_parser("apply", help="perform the version bumps")
     apply_cmd.add_argument("--since", help="baseline release tag")
@@ -527,9 +557,13 @@ def main(argv=None):
                            help="release date as YYYYMMDD (default: today)")
     apply_cmd.add_argument("--skip-pom", action="store_true",
                            help="do not run the Tycho pom sync (testing only)")
+    apply_cmd.add_argument("--marketing-version",
+                           help="new Debrief version, such as 3.2.0 "
+                                "(default: bump the last segment)")
 
     tag_cmd = sub.add_parser("tag-name",
-                             help="print the tag for the NEXT release")
+                             help="print the tag for the version on this branch, "
+                                  "once the version PR has merged")
     tag_cmd.add_argument("--date", type=_parse_date,
                          help="release date as YYYYMMDD (default: today)")
 
@@ -540,10 +574,13 @@ def main(argv=None):
             release_date = args.date or date_cls.today()
             current = read_marketing_version(
                 os.path.join(args.root, MAPPINGS_FILE))
-            print(release_tag(bump(current), release_date))
+            # run once the version PR has merged: the version on develop
+            # is the one being released
+            print(release_tag(current, release_date))
             return 0
 
-        plan = build_plan(args.root, args.since, args.date)
+        plan = build_plan(args.root, args.since, args.date,
+                          args.marketing_version)
 
         if args.command == "plan":
             if args.json:
