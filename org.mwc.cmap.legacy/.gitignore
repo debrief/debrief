@@ -1,1 +1,23 @@
 /cmap_legacy.jar
+# fetched from Maven Central by org.mwc.debrief.thirdparty
+/SparseBitSet.jar
+/commons-codec.jar
+/commons-collections4.jar
+/commons-compress.jar
+/commons-csv.jar
+/commons-io.jar
+/commons-lang3.jar
+/commons-math3.jar
+/curvesapi.jar
+/jackson-annotations.jar
+/jackson-core.jar
+/jackson-databind.jar
+/joda-time.jar
+/log4j-api.jar
+/poi-ooxml-lite.jar
+/poi-ooxml.jar
+/poi-scratchpad.jar
+/poi.jar
+/xmlbeans.jar
+/libs/hamcrest-core.jar
+/libs/junit.jar
