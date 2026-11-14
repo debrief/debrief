@@ -106,7 +106,7 @@ All of the following hold:
 - The owner has done the manual smoke test on Windows and macOS on a `develop` build.
 
 ## Phase B: move jars to Maven (after Gate A)
-**Started** (owner's decision): Gate A was waived. The owner also chose a different mechanism from the one below. A build-only module, `org.mwc.debrief.thirdparty`, lists the jars as Maven dependencies and copies them into each plugin under version-free names. That keeps `Bundle-ClassPath`, the Ant compiles and Lite unchanged. See [maven-jars.md](maven-jars.md). `org.mwc.debrief.legacy` is done.
+**Started** (owner's decision): Gate A was waived. The owner also chose a different mechanism from the one below. A build-only module, `org.mwc.debrief.thirdparty`, lists the jars as Maven dependencies and copies them into each plugin under version-free names. That keeps `Bundle-ClassPath`, the Ant compiles and Lite unchanged. See [maven-jars.md](maven-jars.md). `org.mwc.debrief.legacy` and `org.mwc.cmap.legacy` are done.
 
 Spec `specs/003-maven-dependencies/`. Move the third-party jars to Maven Central coordinates.
 - **How.** A `<location type="Maven">` in `org.mwc.debrief.targetplatforms/eclipse-latest.target` (and the `.tpd`). Bundles use `Import-Package` (or `Require-Bundle` on the wrapped bundle) instead of `Bundle-ClassPath`.
