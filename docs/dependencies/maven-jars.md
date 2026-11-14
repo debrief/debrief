@@ -20,6 +20,9 @@ build fetches them instead.
   the plugin folders, as it always has.
 - **Changing a version** means editing `org.mwc.debrief.thirdparty/pom.xml`
   only. The file name stays the same.
+- **Dependabot** watches that pom weekly (`.github/dependabot.yml`). It
+  groups minor and patch bumps into one PR and opens a separate PR for each
+  major bump. CI checks every PR, and nothing merges automatically.
 
 ## Building
 
