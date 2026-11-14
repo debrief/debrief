@@ -1,7 +1,16 @@
-# Dependabot keeps the GitHub Actions used by the workflows up to date.
-# The third-party jars are committed to the repo and not managed by Maven, so
-# Dependabot can't see them; .github/workflows/dependency-scan.yml reports their
-# vulnerabilities instead. See docs/dependencies/plan.md.
+# Dependabot keeps two things up to date. No PR is merged automatically:
+# each one runs the full CI (build, Lite UI tests, golden files, scan).
+#
+# 1. The GitHub Actions used by the workflows.
+# 2. The third-party jars that org.mwc.debrief.thirdparty fetches from Maven
+#    Central into the plugins. Bumping a version there changes nothing else:
+#    the jars keep their version-free file names. See
+#    docs/dependencies/maven-jars.md.
+#
+# Jars that are still committed (no matching artifact on Central, and
+# everything in org.mwc.cmap.geotools) are invisible to Dependabot.
+# .github/workflows/dependency-scan.yml reports their vulnerabilities instead.
+# See docs/dependencies/plan.md.
 version: 2
 updates:
   - package-ecosystem: github-actions
@@ -13,3 +22,18 @@ updates:
       github-actions:
         patterns:
           - "*"
+
+  - package-ecosystem: maven
+    directory: /org.mwc.debrief.thirdparty
+    target-branch: develop
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 10
+    groups:
+      # minor and patch bumps together, in one weekly PR
+      third-party-jars:
+        update-types:
+          - minor
+          - patch
+    # major bumps (POI 6, PDFBox 3, slf4j 2 and so on) arrive one per PR,
+    # because each can need code changes

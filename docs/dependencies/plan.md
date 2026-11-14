@@ -116,6 +116,8 @@ Spec `specs/003-maven-dependencies/`. Move the third-party jars to Maven Central
 - **Checks.** The full verification list, plus the same set of classes in the Lite dist zip and the RCP product: before and after, the sorted list of classes in the shipped jars differs only by version.
 
 ## Phase C: automated updates (after Phase B)
+**Started** (owner's decision: Dependabot). `.github/dependabot.yml` now watches `org.mwc.debrief.thirdparty/pom.xml` weekly. Minor and patch bumps come grouped in one PR; each major bump gets its own PR. No PR is merged automatically. Still to do: the target-platform bump, and raising an issue for each new CVE the weekly scan finds.
+
 - **Weekly update PR.** A scheduled workflow runs `mvn org.eclipse.tycho.extras:tycho-version-bump-plugin:update-target`, which bumps the Maven locations and the p2 release URL, and opens the PR.
 - **Dependabot or Renovate.** Renovate gets a regex manager for the `.target` file. Dependabot keeps `github-actions`.
 - **Every bot PR** runs the full CI: build, Lite UI tests, golden files and scan.
