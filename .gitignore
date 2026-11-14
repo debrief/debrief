@@ -85,8 +85,6 @@ org.mwc.asset.help/temp.folder
 org.mwc.asset.help/javaCompiler.help_content.jar.args
 
 
-org.mwc.debrief.test/test_reports
-org.mwc.debrief.test/test_reports/trace.txt
 trace.txt
 problems.html
 bin/
