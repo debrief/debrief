@@ -86,7 +86,9 @@ Versions are set at implementation time from Maven Central (latest stable); the 
 - `asset.legacy/libs/xercesImpl-2.7.1.jar` (no imports) and the stale `debrief.lite/1.5/lib/debrief-lite.jar` deleted.
 - junit 4.12 → 4.13.2 and hamcrest-core 1.2 → 1.3 in `cmap.legacy/libs` (Lite ships that folder); xmlunit-core 2.6.0 → 2.14.0.
 - `actions/download-artifact` pinned to v4.3.0: the floating `v4` tag read as older than the 4.1.3 fix.
-- Kept: jsch (the old release Ant scripts use it for `scp`), checkstyle 5.6, commons-net and `debrief.test`'s junit 4.11, which are build, help and test tooling and not shipped.
+- Kept: jsch (the old release Ant scripts use it for `scp`).
+
+**Medium clean-up (owner's decisions).** The last four findings were all unshipped tooling, now removed: `debrief.build/cleanup.xml` and its checkstyle 5.6 setup (CodeFactor lints PRs); the help FTP upload to debrief.info (`docbook_to_internet`, `upload_help.sh`) with both commons-net jars, and Lite's unused commons-net 1.4.1 Ant dependency; and the Eclipse-only `org.mwc.debrief.test` project with its junit 4.11 (`debrief.test2` is the suite). The scan now reports no vulnerabilities in the scanned tree.
 
 ## Verification for every PR
 1. `mvn clean verify -U -B -fae` under xvfb with JDK 21. If the container can't reach `download.eclipse.org`, CI is the verifier, and that is stated in the PR.

@@ -56,11 +56,6 @@
                     <version>4.13.2</version>
                     <!--scope>test</scope -->
                 </dependency>
-                <dependency>
-                    <groupId>commons-net</groupId>
-                    <artifactId>commons-net</artifactId>
-                    <version>1.4.1</version>
-                </dependency>
                 </dependencies>
         <executions>
           <execution>
