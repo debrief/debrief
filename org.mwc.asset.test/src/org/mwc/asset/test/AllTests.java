@@ -129,7 +129,6 @@ import org.junit.runners.Suite;
 		ASSET.Util.SupportTesting.class,
 		ASSET.Util.XML.Decisions.Responses.ManoeuvreToCourseHandler.ManToCourseHandlerTest.class,
 		ASSET.Util.XML.Decisions.Responses.ManoeuvreToLocationHandler.ManToLocationHandlerTest.class,
-		// org.mwc.asset.comms.restlet.test.CommsTest.class,
 		org.mwc.asset.netCore.test.CoreTest.class,
 		// org.mwc.asset.scenariocontroller2.MultiScenarioPresenter.TestMe.class,
 
