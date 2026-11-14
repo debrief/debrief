@@ -225,6 +225,32 @@
       <version>1.3</version>
       <exclusions><exclusion><groupId>*</groupId><artifactId>*</artifactId></exclusion></exclusions>
     </dependency>
+    <!-- org.mwc.cmap.core -->
+    <dependency>
+      <groupId>com.thoughtworks.xstream</groupId>
+      <artifactId>xstream</artifactId>
+      <version>1.4.21</version>
+      <exclusions><exclusion><groupId>*</groupId><artifactId>*</artifactId></exclusion></exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.mockito</groupId>
+      <artifactId>mockito-all</artifactId>
+      <version>1.8.5</version>
+      <exclusions><exclusion><groupId>*</groupId><artifactId>*</artifactId></exclusion></exclusions>
+    </dependency>
+    <!-- org.mwc.cmap.jfreechart -->
+    <dependency>
+      <groupId>org.jfree</groupId>
+      <artifactId>jcommon</artifactId>
+      <version>1.0.23</version>
+      <exclusions><exclusion><groupId>*</groupId><artifactId>*</artifactId></exclusion></exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.jfree</groupId>
+      <artifactId>jfreechart</artifactId>
+      <version>1.0.19</version>
+      <exclusions><exclusion><groupId>*</groupId><artifactId>*</artifactId></exclusion></exclusions>
+    </dependency>
   </dependencies>
 
   <build>
@@ -295,6 +321,32 @@
               <artifactItems>
                 <artifactItem><groupId>junit</groupId><artifactId>junit</artifactId><destFileName>junit.jar</destFileName></artifactItem>
                 <artifactItem><groupId>org.hamcrest</groupId><artifactId>hamcrest-core</artifactId><destFileName>hamcrest-core.jar</destFileName></artifactItem>
+              </artifactItems>
+            </configuration>
+          </execution>
+          <execution>
+            <id>org.mwc.cmap.core</id>
+            <phase>generate-resources</phase>
+            <goals><goal>copy</goal></goals>
+            <configuration>
+              <outputDirectory>${project.basedir}/../org.mwc.cmap.core</outputDirectory>
+              <overWriteReleases>true</overWriteReleases>
+              <artifactItems>
+                <artifactItem><groupId>com.thoughtworks.xstream</groupId><artifactId>xstream</artifactId><destFileName>xstream.jar</destFileName></artifactItem>
+                <artifactItem><groupId>org.mockito</groupId><artifactId>mockito-all</artifactId><destFileName>mockito-all.jar</destFileName></artifactItem>
+              </artifactItems>
+            </configuration>
+          </execution>
+          <execution>
+            <id>org.mwc.cmap.jfreechart</id>
+            <phase>generate-resources</phase>
+            <goals><goal>copy</goal></goals>
+            <configuration>
+              <outputDirectory>${project.basedir}/../org.mwc.cmap.jfreechart</outputDirectory>
+              <overWriteReleases>true</overWriteReleases>
+              <artifactItems>
+                <artifactItem><groupId>org.jfree</groupId><artifactId>jcommon</artifactId><destFileName>jcommon.jar</destFileName></artifactItem>
+                <artifactItem><groupId>org.jfree</groupId><artifactId>jfreechart</artifactId><destFileName>jfreechart.jar</destFileName></artifactItem>
               </artifactItems>
             </configuration>
           </execution>

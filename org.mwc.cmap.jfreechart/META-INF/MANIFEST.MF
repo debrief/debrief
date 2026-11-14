@@ -10,10 +10,10 @@ Bundle-RequiredExecutionEnvironment: JavaSE-21
 Bundle-ActivationPolicy: lazy
 Bundle-Vendor: MWC
 Bundle-ClassPath: .,
- jcommon-1.0.23.jar,
+ jcommon.jar,
  jfreechart-1.0.19-experimental.jar,
  jfreechart-1.0.19-swt.jar,
- jfreechart-1.0.19.jar
+ jfreechart.jar
 Export-Package: com.keypoint,
  org.jfree,
  org.jfree.base,
@@ -24,7 +24,6 @@ Export-Package: com.keypoint,
  org.jfree.chart.annotations,
  org.jfree.chart.axis,
  org.jfree.chart.block,
- org.jfree.chart.demo,
  org.jfree.chart.editor,
  org.jfree.chart.encoders,
  org.jfree.chart.entity,

@@ -38,6 +38,8 @@ build fetches them instead.
 |---|---|
 | `org.mwc.debrief.legacy` | pdfbox, fontbox 2.0.37; commons-logging 1.2; commons-cli 1.4; jsoup 1.23.2; xmlunit-core 2.14.0; Eclipse January 2.0.2; slf4j-api, slf4j-simple 1.7.36 |
 | `org.mwc.cmap.legacy` | POI 5.5.1 (poi, poi-ooxml, poi-ooxml-lite, poi-scratchpad); xmlbeans 5.3.0; commons-codec 1.20.0, collections4 4.5.0, compress 1.28.0, csv 1.2, io 2.22.0, lang3 3.21.0, math3 3.6.1; curvesapi 1.08; SparseBitSet 1.3; log4j-api 2.26.1; Jackson 2.22.4 (annotations 2.22); joda-time 2.1; and in `libs/`, junit 4.13.2 and hamcrest-core 1.3 |
+| `org.mwc.cmap.core` | xstream 1.4.21; mockito-all 1.8.5 |
+| `org.mwc.cmap.jfreechart` | jfreechart 1.0.19; jcommon 1.0.23 |
 
 Notes on `org.mwc.debrief.legacy`:
 
@@ -49,7 +51,9 @@ Notes on `org.mwc.debrief.legacy`:
 - **`sf` jars.** The manifest listed `sf-2.0.3.jar` and `sf-geojson-2.0.4.jar`,
   which did not exist and that nothing imports. Those entries are gone.
 
-Still to move, one plugin per PR: `cmap.core` and `cmap.jfreechart`. `cmap.geotools` waits for the GeoTools upgrade.
+Notes on `org.mwc.cmap.jfreechart`: the committed `jfreechart-1.0.19.jar` was Central's build plus three demo classes (`org.jfree.chart.demo`), which nothing used. The other 635 classes were byte-identical. The demo package's export is gone.
+
+All four plugins planned for Phase B are done. `cmap.geotools` waits for the GeoTools upgrade.
 
 ## Kept in the repo
 
@@ -64,3 +68,8 @@ committed:
 | `jmf.jar` | `cmap.legacy` | A different JMF build from Central's `javax.media:jmf` 2.1.1e (1,114 classes against 993; only 22 are byte-identical) |
 | `vrml97.jar` | `cmap.legacy` | Java3D VRML97 loader; no artifact on Central matches it |
 | `flanagan.jar` | `cmap.legacy` | Michael Flanagan's maths library; no artifact on Central matches it |
+| `jai_core`, `jai_codec` 1.1.3; `jai_imageio` 1.1 | `cmap.core` | Java Advanced Imaging: Central has POMs only, no jars |
+| `imageio-ext-tiff`, `imageio-ext-utilities` 1.1.2 | `cmap.core` | Not on Central (imageio-ext is published to the OSGeo repository) |
+| `WMFWriter.jar` | `cmap.core` | No artifact on Central |
+| `org.eclipse.nebula.widgets.formattedtext_1.0.0.jar` | `cmap.core` | An old Nebula build; no matching artifact on Central |
+| `jfreechart-1.0.19-swt.jar`, `jfreechart-1.0.19-experimental.jar` | `cmap.jfreechart` | No matching artifacts on Central |
