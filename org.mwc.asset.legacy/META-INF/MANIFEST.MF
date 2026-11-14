@@ -433,7 +433,5 @@ Export-Package: ASSET;
  ASSET.Util.jip.tools
 Bundle-ClassPath: .,
  jaxen-1.2.0.jar,
- jackson-core-asl-1.9.4.jar,
- jackson-mapper-asl-1.9.4.jar,
  resty-0.3.1.jar
 Bundle-RequiredExecutionEnvironment: JavaSE-21

@@ -24,15 +24,14 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import org.codehaus.jackson.JsonGenerationException;
-import org.codehaus.jackson.JsonNode;
-import org.codehaus.jackson.JsonParseException;
-import org.codehaus.jackson.JsonParser;
-import org.codehaus.jackson.map.JsonMappingException;
-import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.node.ArrayNode;
-import org.codehaus.jackson.node.ObjectNode;
-import org.codehaus.jackson.node.TextNode;
+import com.fasterxml.jackson.core.JsonGenerationException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.fasterxml.jackson.databind.node.TextNode;
 import org.javalite.http.Get;
 import org.javalite.http.Http;
 import org.javalite.http.Post;
@@ -154,7 +153,7 @@ public class GNDStore {
 			}
 
 			// trackArray.addAll(theTracks);
-			root.put("docs", trackArray);
+			root.set("docs", trackArray);
 
 			// ok, now formulate the URL
 			final String THE_URL = _url + "/" + _dbName + "/_bulk_docs";
@@ -166,8 +165,7 @@ public class GNDStore {
 
 			if (post.responseCode() == 201) {
 				System.out.println("PUT complete");
-				final JsonParser jp = mapper.getJsonFactory().createJsonParser(post.text());
-				final ArrayNode docs = (ArrayNode) mapper.readTree(jp);
+				final ArrayNode docs = (ArrayNode) mapper.readTree(post.text());
 				for (int k = 0; k < docs.size(); k++) {
 					final JsonNode thisD = docs.get(k);
 					final TextNode reason = (TextNode) thisD.get("reason");

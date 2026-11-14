@@ -21,12 +21,12 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Iterator;
 
-import org.codehaus.jackson.JsonNode;
-import org.codehaus.jackson.JsonParseException;
-import org.codehaus.jackson.map.JsonMappingException;
-import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.node.ArrayNode;
-import org.codehaus.jackson.node.ObjectNode;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.javalite.http.Post;
 
 import MWC.GUI.BaseLayer;
@@ -83,7 +83,7 @@ public class GPackage extends BaseLayer {
 			final String id = iter.next();
 			keys.add(id);
 		}
-		root.put("keys", keys);
+		root.set("keys", keys);
 
 		try {
 			final String uri = dbUrl + "/_all_docs?include_docs=true";
