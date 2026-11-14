@@ -37,6 +37,7 @@ build fetches them instead.
 | Plugin | Jars fetched from Maven Central |
 |---|---|
 | `org.mwc.debrief.legacy` | pdfbox, fontbox 2.0.37; commons-logging 1.2; commons-cli 1.4; jsoup 1.23.2; xmlunit-core 2.14.0; Eclipse January 2.0.2; slf4j-api, slf4j-simple 1.7.36 |
+| `org.mwc.cmap.legacy` | POI 5.5.1 (poi, poi-ooxml, poi-ooxml-lite, poi-scratchpad); xmlbeans 5.3.0; commons-codec 1.20.0, collections4 4.5.0, compress 1.28.0, csv 1.2, io 2.22.0, lang3 3.21.0, math3 3.6.1; curvesapi 1.08; SparseBitSet 1.3; log4j-api 2.26.1; Jackson 2.22.4 (annotations 2.22); joda-time 2.1; and in `libs/`, junit 4.13.2 and hamcrest-core 1.3 |
 
 Notes on `org.mwc.debrief.legacy`:
 
@@ -48,8 +49,7 @@ Notes on `org.mwc.debrief.legacy`:
 - **`sf` jars.** The manifest listed `sf-2.0.3.jar` and `sf-geojson-2.0.4.jar`,
   which did not exist and that nothing imports. Those entries are gone.
 
-Still to move, one plugin per PR: `cmap.legacy`, `cmap.core` and
-`cmap.jfreechart`. `cmap.geotools` waits for the GeoTools upgrade.
+Still to move, one plugin per PR: `cmap.core` and `cmap.jfreechart`. `cmap.geotools` waits for the GeoTools upgrade.
 
 ## Kept in the repo
 
@@ -59,3 +59,8 @@ committed:
 | Jar | Plugin | Why |
 |---|---|---|
 | `nanoxml-2.2.1.jar` | `debrief.legacy` | NanoXML 2.2.1 (2002) was never published to Central |
+| `javalite-common-1.2-20120312.200900-220.jar` | `cmap.legacy` | A 2012 snapshot build; no matching release on Central |
+| `openmap.jar` | `cmap.legacy` | An unversioned OpenMap build; no artifact on Central matches it |
+| `jmf.jar` | `cmap.legacy` | A different JMF build from Central's `javax.media:jmf` 2.1.1e (1,114 classes against 993; only 22 are byte-identical) |
+| `vrml97.jar` | `cmap.legacy` | Java3D VRML97 loader; no artifact on Central matches it |
+| `flanagan.jar` | `cmap.legacy` | Michael Flanagan's maths library; no artifact on Central matches it |
