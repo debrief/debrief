@@ -30,10 +30,17 @@ updates:
       interval: weekly
     open-pull-requests-limit: 10
     ignore:
-      # build plugins live in the parent pom, which Dependabot reads through
-      # this module's <parent>: Tycho and plugin updates are done by hand
+      # build plugins and test tooling live in the parent pom, which
+      # Dependabot reads through this module's <parent>: these are updated
+      # by hand
       - dependency-name: "org.apache.maven.plugins:*"
       - dependency-name: "org.eclipse.tycho:*"
+      - dependency-name: "org.jmock:*"
+      # JFreeChart 1.5 moved org.jfree.ui into org.jfree.chart.ui and dropped
+      # the *Base* renderer methods and jcommon: that is a code migration,
+      # not a version bump
+      - dependency-name: "org.jfree:jfreechart"
+        versions: [">= 1.5"]
       # junit 4 needs hamcrest-core 1.3; 2.x and 3.x are empty stubs
       - dependency-name: "org.hamcrest:hamcrest-core"
         update-types: ["version-update:semver-major"]

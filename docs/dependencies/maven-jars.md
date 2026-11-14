@@ -25,8 +25,9 @@ build fetches them instead.
     PR, majors included: POI with xmlbeans, PDFBox, slf4j and Jackson.
   - Other minor and patch bumps come together in one PR. Other major bumps
     come one per PR.
-  - Build plugins in the parent pom are ignored, and so are hamcrest-core
-    majors (junit 4 needs 1.3).
+  - Ignored: build plugins and jmock in the parent pom; hamcrest-core
+    majors (junit 4 needs 1.3); and JFreeChart 1.5 and later, whose package
+    and API changes break 9 call sites in `cmap.legacy`.
   - CI checks every PR, and nothing merges automatically.
 
 ## Building
