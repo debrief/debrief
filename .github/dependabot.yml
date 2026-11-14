@@ -29,11 +29,29 @@ updates:
     schedule:
       interval: weekly
     open-pull-requests-limit: 10
+    ignore:
+      # build plugins live in the parent pom, which Dependabot reads through
+      # this module's <parent>: Tycho and plugin updates are done by hand
+      - dependency-name: "org.apache.maven.plugins:*"
+      - dependency-name: "org.eclipse.tycho:*"
+      # junit 4 needs hamcrest-core 1.3; 2.x and 3.x are empty stubs
+      - dependency-name: "org.hamcrest:hamcrest-core"
+        update-types: ["version-update:semver-major"]
+    # Jars that must move together share a group, majors included, so one PR
+    # bumps the whole family. Dependabot uses the first group that matches.
     groups:
-      # minor and patch bumps together, in one weekly PR
+      poi:
+        patterns: ["org.apache.poi:*", "org.apache.xmlbeans:*"]
+      pdfbox:
+        patterns: ["org.apache.pdfbox:*"]
+      slf4j:
+        patterns: ["org.slf4j:*"]
+      jackson:
+        patterns: ["com.fasterxml.jackson.core:*"]
+      # everything else: minor and patch bumps together, in one weekly PR.
+      # Other major bumps arrive one per PR, because each can need code
+      # changes.
       third-party-jars:
         update-types:
           - minor
           - patch
-    # major bumps (POI 6, PDFBox 3, slf4j 2 and so on) arrive one per PR,
-    # because each can need code changes
