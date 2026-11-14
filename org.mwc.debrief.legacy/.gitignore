@@ -1,3 +1,13 @@
 /debrief_legacy.jar
 /dist/
 /cmap_legacy.jar
+# fetched from Maven Central by org.mwc.debrief.thirdparty
+/commons-cli.jar
+/commons-logging.jar
+/fontbox.jar
+/jsoup.jar
+/org.eclipse.january.jar
+/pdfbox.jar
+/slf4j-api.jar
+/slf4j-simple.jar
+/xmlunit-core.jar
