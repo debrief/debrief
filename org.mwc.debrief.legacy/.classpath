@@ -6,15 +6,15 @@
 			<accessrule kind="accessible" pattern="**"/>
 		</accessrules>
 	</classpathentry>
-	<classpathentry exported="true" kind="lib" path="fontbox-2.0.37.jar"/>
-	<classpathentry exported="true" kind="lib" path="commons-logging-1.2.jar"/>
-	<classpathentry exported="true" kind="lib" path="pdfbox-2.0.37.jar"/>
-	<classpathentry exported="true" kind="lib" path="January.jar"/>
+	<classpathentry exported="true" kind="lib" path="fontbox.jar"/>
+	<classpathentry exported="true" kind="lib" path="commons-logging.jar"/>
+	<classpathentry exported="true" kind="lib" path="pdfbox.jar"/>
+	<classpathentry exported="true" kind="lib" path="org.eclipse.january.jar"/>
 	<classpathentry kind="lib" path="slf4j-api.jar"/>
-	<classpathentry kind="lib" path="slf4j-simple-1.7.25.jar"/>
-	<classpathentry kind="lib" path="commons-cli-1.4.jar"/>
-	<classpathentry kind="lib" path="jsoup-1.23.2.jar"/>
-	<classpathentry kind="lib" path="xmlunit-core-2.14.0.jar"/>
+	<classpathentry kind="lib" path="slf4j-simple.jar"/>
+	<classpathentry kind="lib" path="commons-cli.jar"/>
+	<classpathentry kind="lib" path="jsoup.jar"/>
+	<classpathentry kind="lib" path="xmlunit-core.jar"/>
 	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
 	<classpathentry kind="lib" path="/org.mwc.cmap.legacy/flanagan.jar"/>
 	<classpathentry kind="lib" path="/org.mwc.cmap.legacy/commons-math3-3.3.jar" sourcepath="/contribs/commons-math3-3.3-src.zip"/>

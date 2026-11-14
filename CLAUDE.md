@@ -78,12 +78,14 @@ mvn clean install
 # Build without tests
 mvn clean install -DskipTests
 
-# Build specific module
-mvn clean install -pl org.mwc.debrief.core
+# Build specific module (thirdparty first: it fetches the third-party jars)
+mvn clean install -pl org.mwc.debrief.thirdparty,org.mwc.debrief.core
 
 # Run tests for specific module
 mvn test -pl org.mwc.debrief.test2
 ```
+
+Third-party jars that are on Maven Central are not committed: `org.mwc.debrief.thirdparty` (first in the reactor) copies them into each plugin folder under version-free names such as `pdfbox.jar`, and they are git-ignored. After a fresh clone, and before building one plugin or opening the projects in Eclipse, run `mvn -pl org.mwc.debrief.thirdparty generate-resources`. To change a version, edit that module's `pom.xml` only. See [docs/dependencies/maven-jars.md](docs/dependencies/maven-jars.md).
 
 Keep library jars named on a plugin's `Bundle-ClassPath` at the bundle root, not in a subfolder such as `libs/`. Tycho turns each one into a dependency whose classifier is its path, and Maven 3.10 rejects a classifier containing `/` (`Invalid Collect Request: null`).
 

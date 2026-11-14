@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    Debrief - the Open Source Maritime Analysis Application
+    http://debrief.info
+
+    (C) 2000-2026, Deep Blue C Technology Ltd
+
+    This library is free software; you can redistribute it and/or
+    modify it under the terms of the Eclipse Public License v1.0
+    (http://www.eclipse.org/legal/epl-v10.html)
+
+    This library is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ -->
+<!--
+  Third-party jars from Maven Central, copied into the plugins that use them.
+
+  Each jar is a <dependency> below, so Dependabot can raise version bumps.
+  The copy step gives each one a fixed, version-free file name in its
+  plugin folder (for example org.mwc.debrief.legacy/pdfbox.jar), so the
+  plugin's MANIFEST.MF, build.properties and .classpath don't change when
+  a version does. The copied jars are git-ignored.
+
+  This module is first in the reactor, so a full build always fetches them.
+  To build one plugin on its own, or after a fresh clone for the Eclipse
+  IDE, run:
+      mvn -pl org.mwc.debrief.thirdparty generate-resources
+  See docs/dependencies/maven-jars.md.
+ -->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>org.mwc.debrief</groupId>
+    <artifactId>parent</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+  </parent>
+  <artifactId>org.mwc.debrief.thirdparty</artifactId>
+  <packaging>pom</packaging>
+
+  <!-- The jars, one per entry. Only the jar itself is copied: the
+       exclusions keep Maven from fetching transitive dependencies, which
+       the plugins don't take this way. -->
+  <dependencies>
+    <!-- org.mwc.debrief.legacy -->
+    <dependency>
+      <groupId>org.apache.pdfbox</groupId>
+      <artifactId>pdfbox</artifactId>
+      <version>2.0.37</version>
+      <exclusions><exclusion><groupId>*</groupId><artifactId>*</artifactId></exclusion></exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.pdfbox</groupId>
+      <artifactId>fontbox</artifactId>
+      <version>2.0.37</version>
+      <exclusions><exclusion><groupId>*</groupId><artifactId>*</artifactId></exclusion></exclusions>
+    </dependency>
+    <dependency>
+      <groupId>commons-logging</groupId>
+      <artifactId>commons-logging</artifactId>
+      <version>1.2</version>
+      <exclusions><exclusion><groupId>*</groupId><artifactId>*</artifactId></exclusion></exclusions>
+    </dependency>
+    <dependency>
+      <groupId>commons-cli</groupId>
+      <artifactId>commons-cli</artifactId>
+      <version>1.4</version>
+      <exclusions><exclusion><groupId>*</groupId><artifactId>*</artifactId></exclusion></exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.jsoup</groupId>
+      <artifactId>jsoup</artifactId>
+      <version>1.23.2</version>
+      <exclusions><exclusion><groupId>*</groupId><artifactId>*</artifactId></exclusion></exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.xmlunit</groupId>
+      <artifactId>xmlunit-core</artifactId>
+      <version>2.14.0</version>
+      <exclusions><exclusion><groupId>*</groupId><artifactId>*</artifactId></exclusion></exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.eclipse.january</groupId>
+      <artifactId>org.eclipse.january</artifactId>
+      <version>2.0.2</version>
+      <exclusions><exclusion><groupId>*</groupId><artifactId>*</artifactId></exclusion></exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
+      <version>1.7.36</version>
+      <exclusions><exclusion><groupId>*</groupId><artifactId>*</artifactId></exclusion></exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-simple</artifactId>
+      <version>1.7.36</version>
+      <exclusions><exclusion><groupId>*</groupId><artifactId>*</artifactId></exclusion></exclusions>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <version>3.8.1</version>
+        <executions>
+          <execution>
+            <id>org.mwc.debrief.legacy</id>
+            <phase>generate-resources</phase>
+            <goals><goal>copy</goal></goals>
+            <configuration>
+              <outputDirectory>${project.basedir}/../org.mwc.debrief.legacy</outputDirectory>
+              <overWriteReleases>true</overWriteReleases>
+              <!-- versions come from <dependencies> above -->
+              <artifactItems>
+                <artifactItem><groupId>org.apache.pdfbox</groupId><artifactId>pdfbox</artifactId><destFileName>pdfbox.jar</destFileName></artifactItem>
+                <artifactItem><groupId>org.apache.pdfbox</groupId><artifactId>fontbox</artifactId><destFileName>fontbox.jar</destFileName></artifactItem>
+                <artifactItem><groupId>commons-logging</groupId><artifactId>commons-logging</artifactId><destFileName>commons-logging.jar</destFileName></artifactItem>
+                <artifactItem><groupId>commons-cli</groupId><artifactId>commons-cli</artifactId><destFileName>commons-cli.jar</destFileName></artifactItem>
+                <artifactItem><groupId>org.jsoup</groupId><artifactId>jsoup</artifactId><destFileName>jsoup.jar</destFileName></artifactItem>
+                <artifactItem><groupId>org.xmlunit</groupId><artifactId>xmlunit-core</artifactId><destFileName>xmlunit-core.jar</destFileName></artifactItem>
+                <artifactItem><groupId>org.eclipse.january</groupId><artifactId>org.eclipse.january</artifactId><destFileName>org.eclipse.january.jar</destFileName></artifactItem>
+                <artifactItem><groupId>org.slf4j</groupId><artifactId>slf4j-api</artifactId><destFileName>slf4j-api.jar</destFileName></artifactItem>
+                <artifactItem><groupId>org.slf4j</groupId><artifactId>slf4j-simple</artifactId><destFileName>slf4j-simple.jar</destFileName></artifactItem>
+              </artifactItems>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+</project>
