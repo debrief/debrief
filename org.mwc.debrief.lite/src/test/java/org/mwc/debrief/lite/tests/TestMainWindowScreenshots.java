@@ -15,6 +15,8 @@
 
 package org.mwc.debrief.lite.tests;
 
+import java.awt.Component;
+import java.awt.Container;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -23,7 +25,11 @@ import java.util.concurrent.atomic.AtomicReference;
 import javax.swing.JRootPane;
 import javax.swing.SwingUtilities;
 
+import org.geotools.geometry.DirectPosition2D;
+import org.geotools.geometry.Envelope2D;
 import org.mwc.debrief.lite.DebriefLiteApp;
+import org.mwc.debrief.lite.map.LiteMapPane;
+import org.opengis.referencing.operation.MathTransform;
 import org.pushingpixels.flamingo.api.ribbon.JRibbon;
 import org.pushingpixels.flamingo.api.ribbon.JRibbonFrame;
 
@@ -87,8 +93,60 @@ public class TestMainWindowScreenshots extends BaseTestCase {
 		return res.get();
 	}
 
-	private static void check(final String name, final BufferedImage image) throws Exception {
-		GoldenImage.assertMatches("lite-window/" + name + ".png", image, CHANNEL_TOLERANCE, MAX_DIFFERENT);
+	/** failures so far: every image is compared, so CI uploads all the actual images */
+	private final StringBuilder _failures = new StringBuilder();
+
+	private void check(final String name, final BufferedImage image) throws Exception {
+		try {
+			GoldenImage.assertMatches("lite-window/" + name + ".png", image, CHANNEL_TOLERANCE, MAX_DIFFERENT);
+		} catch (final junit.framework.AssertionFailedError e) {
+			_failures.append(e.getMessage()).append('\n');
+		}
+	}
+
+	private static LiteMapPane findMapPane(final Container parent) {
+		for (final Component c : parent.getComponents()) {
+			if (c instanceof LiteMapPane) {
+				return (LiteMapPane) c;
+			}
+			if (c instanceof Container) {
+				final LiteMapPane res = findMapPane((Container) c);
+				if (res != null) {
+					return res;
+				}
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * size the window, then show Lite's default area (overlooking Europe) again.
+	 * Lite sets that area when it starts, at 80% of the screen, so on a
+	 * different screen the map would start at a different scale.
+	 */
+	private static void fixWindowAndMap() throws Exception {
+		SwingUtilities.invokeAndWait(() -> {
+			final JRibbonFrame frame = frame();
+			frame.setSize(WIDTH, HEIGHT);
+			frame.validate();
+		});
+		// the map pane handles its resize event later: let that happen first, or it
+		// rescales the area set below
+		Thread.sleep(SETTLE_MILLIS);
+		SwingUtilities.invokeAndWait(() -> {
+			final LiteMapPane map = findMapPane(frame().getContentPane());
+			assertNotNull("map pane", map);
+			try {
+				final MathTransform degsToMap = DebriefLiteApp.getInstance().getProjection().getDataTransform();
+				final DirectPosition2D tl = new DirectPosition2D(-22, 59.75);
+				final DirectPosition2D br = new DirectPosition2D(37, 36.5);
+				degsToMap.transform(tl, tl);
+				degsToMap.transform(br, br);
+				map.setDisplayArea(new Envelope2D(tl, br));
+			} catch (final Exception e) {
+				throw new RuntimeException(e);
+			}
+		});
 	}
 
 	/**
@@ -96,6 +154,8 @@ public class TestMainWindowScreenshots extends BaseTestCase {
 	 * tests in the same JVM, and JUnit does not fix the order of test methods
 	 */
 	public void testMainWindow() throws Exception {
+		fixWindowAndMap();
+
 		// the window as Lite starts: Lite tab, empty plot over the coastline
 		check("startup_lite_tab", capture(0));
 
@@ -110,5 +170,9 @@ public class TestMainWindowScreenshots extends BaseTestCase {
 		final File rep = new File("../org.mwc.cmap.combined.feature/root_installs/sample_data/boat1.rep");
 		SwingUtilities.invokeAndWait(() -> DebriefLiteApp.openRepFile(rep));
 		check("boat1_rep_time_tab", capture(4));
+
+		if (_failures.length() > 0) {
+			fail(_failures.toString());
+		}
 	}
 }
