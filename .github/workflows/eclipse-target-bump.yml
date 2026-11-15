@@ -1,0 +1,92 @@
+# Target platform bump: open a PR when a new Eclipse release goes GA.
+#
+# The target platform pins one build of one Eclipse simultaneous release
+# (org.mwc.debrief.targetplatforms/eclipse-latest.target and .tpd). Dependabot
+# cannot read .target files, so this workflow checks weekly for a newer GA
+# release (.github/scripts/eclipse_target.py) and, when there is one, opens a
+# PR to develop that points the target files (and CLAUDE.md) at it.
+#
+# A PR opened with the workflow's own token does not start other workflows, so
+# this one starts the CI build on the PR branch itself (workflow_dispatch is
+# the exception to that rule). Its results show on the PR's commit. Nothing
+# merges automatically.
+#
+# Needs "Allow GitHub Actions to create and approve pull requests" in the
+# repository's Settings > Actions > General.
+
+name: Eclipse target platform bump
+
+on:
+  schedule:
+    - cron: '17 6 * * 2'   # Tuesdays, 06:17 UTC
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: eclipse-target-bump
+  cancel-in-progress: false
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  bump:
+    name: Check for a new Eclipse release
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: write        # push the branch
+      pull-requests: write   # open the PR
+      actions: write         # start CI on the branch
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+        with:
+          ref: develop
+
+      - name: Find the latest release
+        id: check
+        run: python3 .github/scripts/eclipse_target.py --apply --github-output "$GITHUB_OUTPUT"
+
+      - name: Open the PR
+        if: steps.check.outputs.changed == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE: ${{ steps.check.outputs.release }}
+          PLATFORM: ${{ steps.check.outputs.platform }}
+          CURRENT: ${{ steps.check.outputs.current }}
+          LATEST: ${{ steps.check.outputs.latest }}
+        run: |
+          branch="eclipse-target/${LATEST#https://download.eclipse.org/releases/}"
+          branch="${branch%/}"
+          if git ls-remote --exit-code --heads origin "$branch" >/dev/null; then
+            echo "Branch $branch already exists: its PR is open or was closed on purpose."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git switch -c "$branch"
+          git commit -am "Target platform: Eclipse ${RELEASE} (platform ${PLATFORM})"
+          git push -u origin "$branch"
+          gh pr create --base develop --head "$branch" \
+            --title "Target platform: Eclipse ${RELEASE}" \
+            --body "$(cat <<EOF
+          Eclipse ${RELEASE} (platform ${PLATFORM}) has gone GA. This PR points the target platform at it.
+
+          - From: ${CURRENT}
+          - To: ${LATEST}
+
+          Changed: \`eclipse-latest.target\`, \`eclipse-latest.tpd\` and the version named in \`CLAUDE.md\`.
+
+          **Before merging**
+          - CI was started on this branch by the bump workflow; check it is green on the PR's commit.
+          - Run Debrief from a review build and open a plot.
+          - If the build fails to resolve, a bundle has been dropped or renamed in this release: fix it on this branch.
+          - Update other docs that name the Eclipse version (e.g. \`docs/dependencies/plan.md\`), if still relevant.
+
+          Opened by \`.github/workflows/eclipse-target-bump.yml\`. To skip this release, close the PR and keep the branch; deleting the branch makes the next weekly run open it again.
+          EOF
+          )"
+          gh workflow run main.yml --ref "$branch"
