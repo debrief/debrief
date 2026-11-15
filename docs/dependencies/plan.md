@@ -157,7 +157,7 @@ Spec `specs/004-geotools/`.
 - **Replace `gt-swt-23-SNAPSHOT`.** GeoTools no longer publishes gt-swt, so we port the classes we use into `cmap.geotools`.
 - **Align** `gt-jdbc-spatialite`.
 - **Drop the GeoTools pins.** commons-text and hsqldb are no longer pinned by GeoTools.
-- **Acceptance:** the screenshot diffs are within tolerance; coordinates are within 1 m when projected and transformed back on the sample plots; and the full verification list passes.
+- **Acceptance:** the screenshot diffs are within tolerance; coordinates are within 1 m when projected and transformed back on the sample plots; and the full verification list passes. The coordinate check is ready: `ProjectionAccuracyTest` in Lite's headless tests (round trip within 1 m, agreement with an independent EPSG:3395 formula within 1 m, and a screen round trip within one pixel, for every fix in `sample.dpf`, `boat1.rep` and `uk_track.rep`).
 
 ## Phase D2: Lite UI libraries (after Gate D; can run in parallel with D1)
 - **Radiance** 3.0.0 → current: flamingo ribbon, substance, trident; packages and API change.
