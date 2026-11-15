@@ -9,9 +9,10 @@
 # The RCPTT test runner and contribs/ are scanned and reported separately: they
 # are test tooling and extras, not part of the shipped products.
 #
-# REPORT ONLY for now: the job never fails on findings. Gating on new High and
-# Critical findings is switched on once the first security bump lands (see
-# docs/dependencies/plan.md, PR 3+). Exceptions live in .github/grype.yaml.
+# The scan never fails a build on findings. Instead, the weekly (and manual)
+# run opens a GitHub issue, labelled dependency-vulnerability, for each new
+# finding in the shipped products (.github/scripts/scan_issues.py). Pull
+# request runs only report. Exceptions live in .github/grype.yaml.
 
 name: Dependency scan
 
@@ -111,3 +112,32 @@ jobs:
           name: dependency-scan
           path: scan/
           retention-days: 90
+
+  raise-issues:
+    name: Open issues for new vulnerabilities
+    needs: scan
+    # the weekly and manual runs only: a pull request run reports, and its
+    # token cannot write issues
+    if: github.event_name != 'pull_request'
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+      issues: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          sparse-checkout: .github/scripts
+
+      - name: Download the scan
+        uses: actions/download-artifact@v4
+        with:
+          name: dependency-scan
+          path: scan
+
+      - name: Open issues
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          python3 .github/scripts/scan_issues.py \
+            --grype scan/grype-debrief.json --repo "${GITHUB_REPOSITORY}"

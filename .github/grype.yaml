@@ -5,10 +5,9 @@
 # ignore.
 #
 # EXCEPTIONS
-# An ignore rule hides a finding from the report, and (once gating is on) from
-# the gate. Every rule must say why, in `reason`, and name the tracking issue or
-# spec. Keep rules as narrow as possible: one vulnerability, one package, one
-# version. Remove a rule when the library is upgraded or removed.
+# An ignore rule hides a finding from the report and from the weekly issues.
+# Every rule must say why, in `reason`, and name the tracking issue or spec.
+# Keep rules as narrow as possible: one vulnerability, one package, one version. Remove a rule when the library is upgraded or removed.
 #
 #   ignore:
 #     - vulnerability: CVE-2017-7525
@@ -25,8 +24,7 @@
 
 check-for-app-update: false
 
-# Report every finding, fixed upstream or not. Gating (fail-on-severity) is
-# switched on in the workflow once the first security bump lands.
+# Report every finding, fixed upstream or not.
 only-fixed: false
 
 ignore: []

@@ -138,13 +138,13 @@ All of the following hold:
 - **Scan coverage.** The jars are no longer committed, but Syft reads their versions from the module's `pom.xml`, so the dependency scan still covers them.
 
 ## Phase C: automated updates (after Phase B)
-**Started** (owner's decision: Dependabot). `.github/dependabot.yml` now watches `org.mwc.debrief.thirdparty/pom.xml` weekly. Minor and patch bumps come grouped in one PR; each major bump gets its own PR. No PR is merged automatically. Still to do: the target-platform bump, and raising an issue for each new CVE the weekly scan finds.
+**Started** (owner's decision: Dependabot). `.github/dependabot.yml` now watches `org.mwc.debrief.thirdparty/pom.xml` weekly. Minor and patch bumps come grouped in one PR; each major bump gets its own PR. No PR is merged automatically. The weekly scan now raises an issue for each new finding. Still to do: the target-platform bump.
 
 - **Weekly update PR.** A scheduled workflow runs `mvn org.eclipse.tycho.extras:tycho-version-bump-plugin:update-target`, which bumps the Maven locations and the p2 release URL, and opens the PR.
 - **Dependabot or Renovate.** Renovate gets a regex manager for the `.target` file. Dependabot keeps `github-actions`.
 - **Every bot PR** runs the full CI: build, Lite UI tests, golden files and scan.
 - **No auto-merge.** We revisit this at Gate D.
-- **New CVEs.** A weekly scan raises an issue for each one.
+- **New CVEs. Done.** The weekly (and manual) run of `dependency-scan.yml` opens one issue per vulnerability and package in the shipped products, labelled `dependency-vulnerability` (`.github/scripts/scan_issues.py`). A finding with an open issue is not raised again; at most 20 new issues per run. Pull request runs only report. To accept a finding instead of fixing it, add an ignore rule to `.github/grype.yaml` naming the issue, then close it.
 
 ## Gate D: before the major migrations
 - Phase B is complete.
