@@ -6,8 +6,8 @@
 #
 # EXCEPTIONS
 # An ignore rule hides a finding from the report and from the weekly issues.
-# Every rule must say why, in `reason`, and name the tracking issue or spec. Keep rules as narrow as possible: one vulnerability, one package, one
-# version. Remove a rule when the library is upgraded or removed.
+# Every rule must say why, in `reason`, and name the tracking issue or spec.
+# Keep rules as narrow as possible: one vulnerability, one package, one version. Remove a rule when the library is upgraded or removed.
 #
 #   ignore:
 #     - vulnerability: CVE-2017-7525
