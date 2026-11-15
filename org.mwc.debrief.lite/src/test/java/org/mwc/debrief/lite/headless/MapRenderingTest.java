@@ -57,7 +57,9 @@ import junit.framework.TestCase;
  * <p>
  * The comparison allows small differences (font rasterising and antialiasing
  * vary between machines): see {@link #CHANNEL_TOLERANCE} and
- * {@link #MAX_DIFFERENT}. The references were made on CI's Linux runner.
+ * {@link #MAX_DIFFERENT}. The references were made on CI's Linux runner
+ * (Ubuntu 24.04): fonts differ between machines, so text-heavy images made
+ * elsewhere fail.
  * Regenerate them as described in
  * {@code org.mwc.debrief.legacy/test_data/golden/README.md}.
  */
