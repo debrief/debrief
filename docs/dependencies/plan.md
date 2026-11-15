@@ -148,8 +148,8 @@ All of the following hold:
 
 ## Gate D: before the major migrations
 - Phase B is complete.
-- Golden-file coverage now includes **screenshot diffs of map rendering**. It renders a fixed set of plots and a shapefile at fixed sizes, headless, and compares against references with a per-pixel tolerance.
-- At least 4 bot update PRs have merged cleanly.
+- Golden-file coverage now includes **screenshot diffs of map rendering**. It renders a fixed set of plots and a shapefile at fixed sizes, headless, and compares against references with a per-pixel tolerance. **Done:** `MapRenderingTest` in Lite's headless tests (see `org.mwc.debrief.legacy/test_data/golden/README.md`).
+- At least 4 bot update PRs have merged cleanly. (1 so far: the GitHub Actions group, #5287.)
 
 ## Phase D1: GeoTools 21.2 → current (after Gate D)
 Spec `specs/004-geotools/`.

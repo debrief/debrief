@@ -185,6 +185,16 @@ jobs:
               working-directory: ./
               run: mvn clean verify -U -B -fae
 
+      - name: Upload golden image failures
+        # the actual and diff images of a failed screenshot test
+        # (Debrief.Testing.GoldenImage)
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: golden-failures-build
+          path: org.mwc.debrief.lite/target/golden-failures/
+          if-no-files-found: ignore
+
       - name: Save Maven / Tycho cache
         # Single writer, so PRs have one warm cache to restore from.
         if: always() && github.ref == 'refs/heads/develop'
@@ -372,6 +382,16 @@ jobs:
         run: >-
           xvfb-run -a mvn -B verify -DliteUiTests=true -pl
           org.mwc.debrief.thirdparty,org.mwc.debrief.targetplatforms,org.mwc.cmap.jfreechart,org.mwc.cmap.legacy,org.mwc.debrief.legacy,org.mwc.cmap.geotools,org.mwc.debrief.lite
+      - name: Upload golden image failures
+        # the actual and diff images of a failed screenshot test
+        # (Debrief.Testing.GoldenImage)
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: golden-failures-lite-ui
+          path: org.mwc.debrief.lite/target/golden-failures/
+          if-no-files-found: ignore
+
       - name: Upload Lite UI test reports
         if: always()
         uses: actions/upload-artifact@v7
