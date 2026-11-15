@@ -42,7 +42,7 @@ jobs:
       actions: write         # start CI on the branch
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           ref: develop
 
