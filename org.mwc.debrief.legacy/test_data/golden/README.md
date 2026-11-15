@@ -9,6 +9,7 @@ Committed output that tests compare against, so that a library upgrade which cha
 | `geojson/sample_dpf.json` | `GenerateGeoJSON.GenerateGeoJSONTest.testGeoJSONGolden` | GeoJSON (Jackson 2) for the tracks in `sample.dpf`, as canonical JSON |
 | `xyplot/time_series_memento.xml` | `XYPlotStateXml.TestMe.testSavedMementoStillLoads` | An XY plot memento (XStream) that later library versions must still read |
 | `rendering/*.png` | `org.mwc.debrief.lite` `MapRenderingTest` | Map rendering, headless: the coastline shapefile (GeoTools), `uk_track.rep` over it, `sample.dpf` at two sizes and `shapes.rep`, drawn as Lite's map pane draws them. Compared with `Debrief.Testing.GoldenImage`, with a per-pixel tolerance |
+| `lite-window/*.png` | `org.mwc.debrief.lite` `TestMainWindowScreenshots` (Lite UI tests: only with `-DliteUiTests=true`, under a display) | Lite's main window at 1280x800: at startup, on each ribbon tab, and with `boat1.rep` loaded on the Time tab. Up to 0.5% of pixels may differ |
 
 Fields that change from run to run are replaced with `MASKED`: the plot's `Created` time and the version date in its details note.
 

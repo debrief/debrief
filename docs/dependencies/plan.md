@@ -162,7 +162,7 @@ Spec `specs/004-geotools/`.
 ## Phase D2: Lite UI libraries (after Gate D; can run in parallel with D1)
 - **Radiance** 3.0.0 → current: flamingo ribbon, substance, trident; packages and API change.
 - **swingx** 1.6.6-SNAPSHOT → a released fork, or remove it.
-- **Acceptance:** Lite UI tests pass and screenshot diffs of the Lite main window are within tolerance. The owner does a manual walkthrough on all three operating systems.
+- **Acceptance:** Lite UI tests pass and screenshot diffs of the Lite main window are within tolerance. The owner does a manual walkthrough on all three operating systems. The window screenshots are ready: `TestMainWindowScreenshots` in the Lite UI tests (startup, each ribbon tab, and a loaded plot).
 
 ## Phase D3: Jackson 1 and the old Postgres drivers (after Gate A; can run in parallel with B)
 - **Jackson 1 → Jackson 2. Done.** The GND JSON code (`cmap.legacy`: `GDataset`, `GPackage`, `GNDDocHandler`, `GNDStore`) and the ASSET cloud observers now use Jackson 2, with no deprecated calls. The Jackson 2 jars (2.22.4) moved down from `debrief.legacy` to `cmap.legacy`, which exports them to every layer; `cmap.geotools` drops its duplicate jackson-core. Golden tests in `GNDDocHandler.TestJSON` pin the track and narrative JSON to the exact strings Jackson 1 wrote, and two new tests cover the reader (`GNDDocument`, `GDataset`), which had none. All four 1.9.4 jars are deleted.
