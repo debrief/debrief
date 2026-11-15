@@ -8,8 +8,17 @@ Committed output that tests compare against, so that a library upgrade which cha
 | `lite/boat1_rep_saved.dpf` | `FileRoundTripTest.testRepRoundTrip` | Lite's save after importing `boat1.rep` |
 | `geojson/sample_dpf.json` | `GenerateGeoJSON.GenerateGeoJSONTest.testGeoJSONGolden` | GeoJSON (Jackson 2) for the tracks in `sample.dpf`, as canonical JSON |
 | `xyplot/time_series_memento.xml` | `XYPlotStateXml.TestMe.testSavedMementoStillLoads` | An XY plot memento (XStream) that later library versions must still read |
+| `rendering/*.png` | `org.mwc.debrief.lite` `MapRenderingTest` | Map rendering, headless: the coastline shapefile (GeoTools), `uk_track.rep` over it, `sample.dpf` at two sizes and `shapes.rep`, drawn as Lite's map pane draws them. Compared with `Debrief.Testing.GoldenImage`, with a per-pixel tolerance |
 
 Fields that change from run to run are replaced with `MASKED`: the plot's `Created` time and the version date in its details note.
+
+## Images
+
+A screenshot test passes when few enough pixels differ: a pixel differs when a colour channel is off by more than 48 (of 255), and up to 0.2% of pixels may differ (`MapRenderingTest.testDetectsSmallShift` checks that a 3-pixel pan still fails). That absorbs font rasterising and antialiasing differences between machines, but not a moved track, a missing layer or a changed style.
+
+On a failure the test writes the actual image and a diff (different pixels in red) to `org.mwc.debrief.lite/target/golden-failures/`. CI uploads them as the `golden-failures-*` artifact.
+
+The references are made on CI's Linux runner, because fonts differ between machines. To regenerate them, take the actual images from that artifact, or run the regeneration below on Ubuntu 24.04.
 
 ## Regenerating
 
