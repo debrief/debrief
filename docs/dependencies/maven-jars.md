@@ -20,9 +20,15 @@ build fetches them instead.
   the plugin folders, as it always has.
 - **Changing a version** means editing `org.mwc.debrief.thirdparty/pom.xml`
   only. The file name stays the same.
-- **Dependabot** watches that pom weekly (`.github/dependabot.yml`). It
-  groups minor and patch bumps into one PR and opens a separate PR for each
-  major bump. CI checks every PR, and nothing merges automatically.
+- **Dependabot** watches that pom weekly (`.github/dependabot.yml`).
+  - Jars that must move together are grouped, so each family arrives as one
+    PR, majors included: POI with xmlbeans, PDFBox, slf4j and Jackson.
+  - Other minor and patch bumps come together in one PR. Other major bumps
+    come one per PR.
+  - Ignored: build plugins and jmock in the parent pom; hamcrest-core
+    majors (junit 4 needs 1.3); and JFreeChart 1.5 and later, whose package
+    and API changes break 9 call sites in `cmap.legacy`.
+  - CI checks every PR, and nothing merges automatically.
 
 ## Building
 
