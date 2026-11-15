@@ -138,11 +138,11 @@ All of the following hold:
 - **Scan coverage.** The jars are no longer committed, but Syft reads their versions from the module's `pom.xml`, so the dependency scan still covers them.
 
 ## Phase C: automated updates (after Phase B)
-**Started** (owner's decision: Dependabot). `.github/dependabot.yml` now watches `org.mwc.debrief.thirdparty/pom.xml` weekly. Minor and patch bumps come grouped in one PR; each major bump gets its own PR. No PR is merged automatically. The weekly scan now raises an issue for each new finding. Still to do: the target-platform bump.
+**Done** (owner's decision: Dependabot). `.github/dependabot.yml` now watches `org.mwc.debrief.thirdparty/pom.xml` weekly. Minor and patch bumps come grouped in one PR; each major bump gets its own PR. No PR is merged automatically. The weekly scan raises an issue for each new finding, and a weekly workflow opens a PR when a new Eclipse release goes GA.
 
-- **Weekly update PR.** A scheduled workflow runs `mvn org.eclipse.tycho.extras:tycho-version-bump-plugin:update-target`, which bumps the Maven locations and the p2 release URL, and opens the PR.
-- **Dependabot or Renovate.** Renovate gets a regex manager for the `.target` file. Dependabot keeps `github-actions`.
-- **Every bot PR** runs the full CI: build, Lite UI tests, golden files and scan.
+- **Target platform. Done.** The target has no Maven locations, only one pinned simultaneous-release build, so `tycho-version-bump-plugin:update-target` has nothing to bump. Instead `.github/workflows/eclipse-target-bump.yml` runs weekly: `.github/scripts/eclipse_target.py` reads EPP's `release.xml` for the newest GA release and that release's newest build, and if it differs, the workflow opens a PR to `develop` that updates `eclipse-latest.target`, `.tpd` and `CLAUDE.md`, then starts CI on the branch. It needs "Allow GitHub Actions to create and approve pull requests" in the repository settings.
+- **Dependabot**, not Renovate (owner's decision). It watches the GitHub Actions and `org.mwc.debrief.thirdparty/pom.xml`.
+- **Every bot PR** runs the full CI: build, Lite UI tests, golden files and scan. The target-platform PR gets the build only, which the bump workflow starts itself; the scan does not cover the target platform.
 - **No auto-merge.** We revisit this at Gate D.
 - **New CVEs. Done.** The weekly (and manual) run of `dependency-scan.yml` opens one issue per vulnerability and package in the shipped products, labelled `dependency-vulnerability` (`.github/scripts/scan_issues.py`). A finding with an open issue is not raised again; at most 20 new issues per run. Pull request runs only report. To accept a finding instead of fixing it, add an ignore rule to `.github/grype.yaml` naming the issue, then close it.
 
