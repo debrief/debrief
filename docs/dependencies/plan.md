@@ -99,21 +99,43 @@ Versions are set at implementation time from Maven Central (latest stable); the 
 6. Lite: run `dist/debrief-lite-<version>.zip`, open a REP file, step time.
 
 ## Gate A: before any restructuring
+**Waived** by the owner to start Phase B. Two conditions are still open: two weeks of green scheduled runs, and the owner's manual smoke test on Windows and macOS.
+
 All of the following hold:
 - PRs 1–3+ are merged.
 - No High or Critical CVE is open without a written exception.
 - Golden-file and Lite UI tests pass on `develop` for 2 consecutive weeks of scheduled runs.
 - The owner has done the manual smoke test on Windows and macOS on a `develop` build.
 
-## Phase B: move jars to Maven (after Gate A)
-**Started** (owner's decision): Gate A was waived. The owner also chose a different mechanism from the one below. A build-only module, `org.mwc.debrief.thirdparty`, lists the jars as Maven dependencies and copies them into each plugin under version-free names. That keeps `Bundle-ClassPath`, the Ant compiles and Lite unchanged. See [maven-jars.md](maven-jars.md). `debrief.legacy`, `cmap.legacy`, `cmap.core` and `cmap.jfreechart` are done; `cmap.geotools` waits for the GeoTools upgrade.
+## Phase B: move jars to Maven (done)
+**Done** for the four planned plugins (debrief/debrief#5302–#5304). The owner waived Gate A and chose a different mechanism from the one first planned. The full detail is in [maven-jars.md](maven-jars.md).
 
-Spec `specs/003-maven-dependencies/`. Move the third-party jars to Maven Central coordinates.
-- **How.** A `<location type="Maven">` in `org.mwc.debrief.targetplatforms/eclipse-latest.target` (and the `.tpd`). Bundles use `Import-Package` (or `Require-Bundle` on the wrapped bundle) instead of `Bundle-ClassPath`.
-- **Order.** One bundle per PR: `debrief.legacy`, `cmap.legacy`, `cmap.core`, `cmap.jfreechart`. `cmap.geotools` waits for Phase C.
-- **Lite's Ant build.** It gets its jars from a `maven-dependency-plugin:copy-dependencies` step in a new `org.mwc.debrief.lite/pom.xml` stage, not folder globs. That removes the second classpath.
-- **Kept in the repo.** Jars with no Maven coordinates stay committed and listed in `docs/dependencies/vendored.md` with a reason: jmf, vrml97, flanagan, January, openmap, javalite.
-- **Checks.** The full verification list, plus the same set of classes in the Lite dist zip and the RCP product: before and after, the sorted list of classes in the shipped jars differs only by version.
+- **How.** A build-only module, `org.mwc.debrief.thirdparty`, is first in the reactor.
+  - Its `pom.xml` lists each jar as a Maven dependency, with transitive dependencies excluded.
+  - `maven-dependency-plugin:copy` puts each jar in its plugin folder under a fixed, version-free name such as `pdfbox.jar`. The copied jars are git-ignored.
+  - `Bundle-ClassPath`, `build.properties`, `.classpath`, the Ant compiles and Lite's folder globs all work unchanged. A version bump edits only that pom.
+- **Why not the original plan.** The original plan used a `<location type="Maven">` in the target platform, with `Import-Package`. That would have needed a second mechanism for the Ant-built inner jars and for Lite's classpath.
+- **Trade-off.** After a fresh clone, or before building one plugin on its own, run `mvn -pl org.mwc.debrief.thirdparty generate-resources`. `CLAUDE.md` says so.
+- **Moved.** 34 jars across four plugins:
+
+  | Plugin | Jars moved |
+  |---|---|
+  | `debrief.legacy` | 9 |
+  | `cmap.legacy` | 21 |
+  | `cmap.core` | 2 |
+  | `cmap.jfreechart` | 2 |
+
+  Each committed copy was byte-identical to Maven Central's, with three exceptions:
+  - `January.jar` had the same classes as Eclipse January 2.0.2.
+  - JFreeChart 1.0.19 was Central's build plus three unused demo classes.
+  - The mismatched slf4j pair became a matched 1.7.36 pair.
+- **Kept in the repo.** Jars with no matching artifact on Central stay committed. [maven-jars.md](maven-jars.md) lists each one with its reason: nanoxml, openmap, jmf, vrml97, flanagan, javalite-common, JAI, imageio-ext, WMFWriter, the Nebula formattedtext widget, and JFreeChart's swt and experimental jars.
+- **Not moved.** `cmap.geotools` waits for the GeoTools upgrade (Phase D1).
+- **Checks, run on every PR.**
+  - The full build with tests passed.
+  - Each RCP bundle holds every jar on its `Bundle-ClassPath`.
+  - The sorted class list of the Lite dist zip was compared before and after. It differed only by the version changes listed above.
+- **Scan coverage.** The jars are no longer committed, but Syft reads their versions from the module's `pom.xml`, so the dependency scan still covers them.
 
 ## Phase C: automated updates (after Phase B)
 **Started** (owner's decision: Dependabot). `.github/dependabot.yml` now watches `org.mwc.debrief.thirdparty/pom.xml` weekly. Minor and patch bumps come grouped in one PR; each major bump gets its own PR. No PR is merged automatically. Still to do: the target-platform bump, and raising an issue for each new CVE the weekly scan finds.
