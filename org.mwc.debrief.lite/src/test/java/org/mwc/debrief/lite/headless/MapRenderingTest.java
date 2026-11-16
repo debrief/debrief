@@ -109,6 +109,10 @@ public class MapRenderingTest {
 	private static BufferedImage render(final Layers layers, final boolean coastline, final WorldArea area,
 			final int width, final int height) throws Exception {
 		final MapContent map = new MapContent();
+		// held until the image is drawn: GeoToolsLayer.finalize() disposes its
+		// GeoTools layer (which nulls the layer's style), so if the wrapper were
+		// collected mid-render, the renderer would fail on a null style
+		ShapeFileLayer coast = null;
 		try {
 			final MapViewport viewport = map.getViewport();
 			viewport.setMatchingAspectRatio(true);
@@ -118,7 +122,7 @@ public class MapRenderingTest {
 			// as Lite: the map in Mercator, data in WGS84 degrees
 			final GeoToolMapProjection projection = new GeoToolMapProjection(map, layers);
 			if (coastline) {
-				final ShapeFileLayer coast = new ShapeFileLayer("Background coastline", COASTLINE);
+				coast = new ShapeFileLayer("Background coastline", COASTLINE);
 				projection.addGeoToolsLayer(coast);
 				assertEquals(1, map.layers().size(), "coastline loaded into the map");
 			}
@@ -158,6 +162,9 @@ public class MapRenderingTest {
 			}
 			return image;
 		} finally {
+			if (coast != null) {
+				coast.clearMap();
+			}
 			map.dispose();
 		}
 	}
