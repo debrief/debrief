@@ -6,7 +6,7 @@ For the owner's decision at Gate D (see [plan.md](plan.md), Phase E). Facts are 
 
 1. **RCPTT: retire the runner, keep the scripts as a checklist, and plan a new small automated RCP UI suite** (SWTBot or current RCPTT) covering the main paths, written against the current product. It should be in place before the GeoTools upgrade (Phase D1), which changes the RCP map.
 2. **JUnit: full migration to JUnit 5.** This means moving the inline tests out of production classes first, then converting about 280 test classes. It is done in stages (below).
-3. **Stale test libraries:** delete jmock; remove or replace mockito-all 1.8.5.
+3. **Stale test libraries: done.** jmock deleted; mockito-all removed, with its two users rewritten. The RCPTT runner is deleted and its scripts are now [a manual checklist](../testing/debrief-ng-smoke-checklist.md).
 
 ### JUnit 5 migration: stages
 
@@ -106,7 +106,7 @@ Moving the inline tests out of production classes would be a separate, worthwhil
 ## 3. Stale test libraries
 
 - **jmock 2.5.1** (`jmock-legacy`, `jmock-junit4`) is declared in the parent `pom.xml` for Tycho Surefire, but no Java file imports `org.jmock`. Delete both, and drop the Dependabot ignore rule for `org.jmock:*`.
-- **mockito-all 1.8.5** (2010), fetched into `cmap.core`, has two users:
+- **mockito-all** (1.8.5 when this was written; Dependabot later took it to 1.10.19, from 2014), fetched into `cmap.core`, has two users:
   - `track_shift/.../magic/OptimiseTest.java` (a test);
   - `asset.ScenarioController2/.../MultiScenarioPresenter.java`, which is production code in ASSET (no longer released).
   
