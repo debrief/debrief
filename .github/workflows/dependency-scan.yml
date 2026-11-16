@@ -6,8 +6,8 @@
 # it, or failing that its manifest and file name) and native library; Grype
 # matches them against known vulnerabilities.
 #
-# The RCPTT test runner and contribs/ are scanned and reported separately: they
-# are test tooling and extras, not part of the shipped products.
+# contribs/ is scanned and reported separately: it holds extras, not part of
+# the shipped products.
 #
 # The scan never fails a build on findings. Instead, the weekly (and manual)
 # run opens a GitHub issue, labelled dependency-vulnerability, for each new
@@ -67,16 +67,13 @@ jobs:
           SYFT: ${{ steps.syft.outputs.cmd }}
         run: |
           mkdir -p scan
-          # the shipped products: everything except the separately reported folders
+          # the shipped products: everything except the separately reported contribs/
           "$SYFT" scan dir:. \
             --exclude './.git/**' \
-            --exclude './org.mwc.debrief.ui_test/rcptt-runner/**' \
             --exclude './contribs/**' \
             --source-name debrief --source-version "${GITHUB_SHA}" \
             -o syft-json=scan/sbom-debrief.syft.json \
             -o cyclonedx-json=scan/sbom-debrief.cdx.json
-          "$SYFT" scan dir:./org.mwc.debrief.ui_test/rcptt-runner \
-            --source-name rcptt-runner -o syft-json=scan/sbom-rcptt-runner.syft.json
           "$SYFT" scan dir:./contribs \
             --source-name contribs -o syft-json=scan/sbom-contribs.syft.json
 
@@ -86,7 +83,7 @@ jobs:
         run: |
           "$GRYPE" db update
           "$GRYPE" db status
-          for part in debrief rcptt-runner contribs; do
+          for part in debrief contribs; do
             "$GRYPE" "sbom:scan/sbom-${part}.syft.json" -c "$GRYPE_CONFIG" \
               -o "json=scan/grype-${part}.json" \
               -o "table=scan/grype-${part}.txt"
@@ -97,11 +94,9 @@ jobs:
           python3 .github/scripts/dependency_report.py --repo . \
             --sbom scan/sbom-debrief.syft.json --grype scan/grype-debrief.json \
             --inventory --title "Debrief and Debrief Lite" > scan/report.md
-          for part in rcptt-runner contribs; do
-            python3 .github/scripts/dependency_report.py --repo . --brief \
-              --sbom "scan/sbom-${part}.syft.json" --grype "scan/grype-${part}.json" \
-              --title "Reported separately: ${part}" >> scan/report.md
-          done
+          python3 .github/scripts/dependency_report.py --repo . --brief \
+            --sbom scan/sbom-contribs.syft.json --grype scan/grype-contribs.json \
+            --title "Reported separately: contribs" >> scan/report.md
           # the job summary has a 1 MiB limit: leave out the full inventory there
           sed '/^### Inventory/,/^## /{/^## /!d}' scan/report.md >> "$GITHUB_STEP_SUMMARY"
 
