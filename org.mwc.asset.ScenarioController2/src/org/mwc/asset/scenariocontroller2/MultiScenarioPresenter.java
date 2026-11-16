@@ -15,15 +15,6 @@
 
 package org.mwc.asset.scenariocontroller2;
 
-import static org.mockito.Matchers.anyObject;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.doAnswer;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.text.SimpleDateFormat;
@@ -39,8 +30,6 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
 import org.mwc.asset.scenariocontroller2.views.MultiScenarioView.UIDisplay;
 import org.mwc.asset.scenariocontroller2.views.ScenarioWrapper;
 import org.mwc.cmap.core.CorePlugin;
@@ -50,7 +39,6 @@ import ASSET.ScenarioType;
 import ASSET.GUI.CommandLine.CommandLine.ASSETProgressMonitor;
 import ASSET.GUI.CommandLine.MultiScenarioCore;
 import ASSET.GUI.CommandLine.MultiScenarioCore.InstanceWrapper;
-import ASSET.GUI.Workbench.Plotters.ScenarioLayer;
 import ASSET.Scenario.ScenarioRunningListener;
 import ASSET.Scenario.ScenarioSteppedListener;
 import ASSET.Scenario.Observers.RecordToFileObserverType;
@@ -59,7 +47,6 @@ import ASSET.Util.XML.ASSETReaderWriter;
 import ASSET.Util.XML.ScenarioHandler;
 import ASSET.Util.XML.Control.StandaloneObserverListHandler;
 import ASSET.Util.XML.Control.Observers.ScenarioControllerHandler;
-import MWC.GUI.Layer;
 import MWC.Utilities.TextFormatting.GMTDateFormat;
 import junit.framework.TestCase;
 
@@ -120,269 +107,46 @@ public class MultiScenarioPresenter extends CoreControllerPresenter {
 
 	public static class TestMe extends TestCase {
 
-		private static class RunnablePresenter extends MultiScenarioPresenter {
-
-			public RunnablePresenter(final MultiScenarioDisplay display, final MultiScenarioCore model) {
-				super(display, model);
-			}
-
-			@Override
-			protected void runThisJob(final JobWithProgress theJob) {
-				final ASSETProgressMonitor monitor = new ASSETProgressMonitor() {
-					@Override
-					public void beginTask(final String name, final int totalWork) {
-					}
-
-					@Override
-					public void worked(final int work) {
-					}
-				};
-				theJob.run(monitor);
-			}
-
+		/**
+		 * a stand-in for an interface: every method does nothing and returns null,
+		 * false or zero, except getUI(), which returns the given value
+		 */
+		@SuppressWarnings("unchecked")
+		private static <T> T stub(final Class<T> type, final Object getUIResult) {
+			return (T) java.lang.reflect.Proxy.newProxyInstance(type.getClassLoader(), new Class<?>[] { type },
+					(proxy, method, args) -> {
+						if ("getUI".equals(method.getName())) {
+							return getUIResult;
+						}
+						final Class<?> r = method.getReturnType();
+						if (r == boolean.class) {
+							return false;
+						} else if (r.isPrimitive() && r != void.class) {
+							return 0;
+						}
+						return null;
+					});
 		}
-
-		static public final String TEST_ALL_TEST_TYPE = "UNIT";
-
-		protected static String _controlfile;
-		final String controlPath = "src/org/mwc/asset/scenariocontroller2/tests/trial1.xml";
-		final String control_multiP_Path = "src/org/mwc/asset/scenariocontroller2/tests/trial_multi_part.xml";
-		final String control_multiS_Path = "src/org/mwc/asset/scenariocontroller2/tests/trial_multi_scen.xml";
-
-		final String scenarioPath = "src/org/mwc/asset/scenariocontroller2/tests/trial1.asset";
 
 		public TestMe(final String val) {
 			super(val);
 		}
 
-		public final void NtestHandleBothFiles() {
-			final MultiScenarioDisplay display = mock(MultiScenarioDisplay.class);
-			final MultiScenarioCore model = mock(MultiScenarioCore.class);
-			final UIDisplay ui = mock(UIDisplay.class);
-			when(display.getUI()).thenReturn(ui);
-			final MultiScenarioPresenter pres = new MultiScenarioPresenter(display, model);
-
-			// ok, try for the scenario first
-			final String[] files = { controlPath, scenarioPath };
-
-			pres.handleTheseFiles(files);
-
-			// ok, check the display got set
-			verify(display).setControlName("trial1.xml");
-			verify(display).setScenarioName("trial1.asset");
-			verify(display).activate();
-		}
-
-		// @Test
-		// TODO FIX-TEST
-		public final void NtestHandleControlFile() {
-			final MultiScenarioDisplay display = mock(MultiScenarioDisplay.class);
-			final MultiScenarioCore model = mock(MultiScenarioCore.class);
-			final UIDisplay ui = mock(UIDisplay.class);
-			when(display.getUI()).thenReturn(ui);
-			final MultiScenarioPresenter pres = new MultiScenarioPresenter(display, model);
-
-			// ok, try for the scenario first
-			final String[] files = { controlPath };
-
-			pres.handleTheseFiles(files);
-
-			// ok, check the display got set
-			verify(display).setControlName("trial1.xml");
-			verify(display).activate();
-
-			// and the scenario wasn't set
-			verify(display, never()).setScenarioName(anyString());
-		}
-
-		// @Test
-		// TODO FIX-TEST
-		public final void NtestHandleScenarioFile() {
-			final MultiScenarioDisplay display = mock(MultiScenarioDisplay.class);
-			final UIDisplay ui = mock(UIDisplay.class);
-			when(display.getUI()).thenReturn(ui);
-			final MultiScenarioCore model = mock(MultiScenarioCore.class);
-			final MultiScenarioPresenter pres = new MultiScenarioPresenter(display, model);
-
-			// ok, try for the scenario first
-			final String[] files = { scenarioPath };
-
-			assertTrue("scenario file exists", new File(scenarioPath).exists());
-
-			pres.handleTheseFiles(files);
-
-			// ok, check the display got set
-			verify(display).setScenarioName("trial1.asset");
-			verify(display).activate();
-
-			// aah, and check the control wasn't set
-			verify(display, never()).setControlName(anyString());
-		}
-
-		// TODO FIX-TEST
-		public void NtestRealDataMultiPart() {
-
-			// check we can see the files
-			assertTrue("can't find scenario", new File(scenarioPath).exists());
-			assertTrue("can't find control", new File(control_multiP_Path).exists());
-
-			final MultiScenarioDisplay display = mock(MultiScenarioDisplay.class);
-			final MultiScenarioCore model = new MultiScenarioCore();
-			final UIDisplay ui = mock(UIDisplay.class);
-			when(display.getUI()).thenReturn(ui);
-			final MultiScenarioPresenter pres = new RunnablePresenter(display, model);
-
-			// just add support for a couple of methods that we need to work
-			when(display.getProjectPathFor(new File("results"))).thenReturn(new File("results"));
-
-			doAnswer(new Answer<Object>() {
-				@Override
-				public Object answer(final InvocationOnMock invocation) {
-
-					final ScenarioType theScenario = (ScenarioType) model.getSimulations().firstElement();
-
-					// better wrap it
-					final ScenarioLayer sl = new ScenarioLayer();
-					sl.setScenario(theScenario);
-
-					final ScenarioWrapper sw = new ScenarioWrapper(pres, sl);
-
-					// tell it about any backdrop data
-					final Layer theBackdrop = theScenario.getBackdrop();
-					if (theBackdrop != null)
-						sw.addThisLayer(theBackdrop);
-
-					// also tell it about any observers
-					sw.fireNewController();
-
-					pres.selectThis(sw);
-					return null;
-				}
-			}).when(display).selectFirstRow();
-
-			pres.handleTheseFiles(new String[] { scenarioPath, control_multiP_Path });
-
-			// ok, check they loaded
-			verify(display).setScenarioName(anyString());
-			verify(display).setControlName(anyString());
-
-			// and that the UI looks right
-			verify(ui, times(2)).setGenerateEnabled(false);
-			verify(ui).setRunAllEnabled(false);
-
-			verify(ui).setInitEnabled(true);
-			verify(ui, times(2)).setPlayEnabled(false);
-			verify(ui, times(2)).setStepEnabled(false);
-			verify(ui).setPlayLabel(UIDisplay.PLAY_LABEL);
-
-			// and check the controller bits are done
-			assertNotNull("controller loaded", pres._scenarioController);
-			verify(display).activate();
-		}
-
-		// TODO FIX-TEST
-		public void NtestRealDataSinglePart() {
-
-			// check we can see the files
-			assertTrue("can't find scenario", new File(scenarioPath).exists());
-			assertTrue("can't find control", new File(controlPath).exists());
-
-			final MultiScenarioDisplay display = mock(MultiScenarioDisplay.class);
-			final UIDisplay ui = mock(UIDisplay.class);
-			when(display.getUI()).thenReturn(ui);
-			final MultiScenarioCore model = new MultiScenarioCore();
-			final MultiScenarioPresenter pres = new RunnablePresenter(display, model);
-
-			// just add support for a couple of methods that we need to work
-			when(display.getProjectPathFor(new File("results"))).thenReturn(new File("results"));
-
-			doAnswer(new Answer<Object>() {
-				@Override
-				public Object answer(final InvocationOnMock invocation) {
-
-					final ScenarioType theScenario = (ScenarioType) model.getSimulations().firstElement();
-
-					// better wrap it
-					final ScenarioLayer sl = new ScenarioLayer();
-					sl.setScenario(theScenario);
-
-					final ScenarioWrapper sw = new ScenarioWrapper(pres, sl);
-
-					// tell it about any backdrop data
-					final Layer theBackdrop = theScenario.getBackdrop();
-					if (theBackdrop != null)
-						sw.addThisLayer(theBackdrop);
-
-					// also tell it about any observers
-					sw.fireNewController();
-
-					pres.selectThis(sw);
-					return null;
-				}
-			}).when(display).selectFirstRow();
-
-			pres.handleTheseFiles(new String[] { scenarioPath, controlPath });
-
-			// check scenarios cleared
-			verify(display).clearScenarios();
-
-			// check the list of scenarios got set
-			verify(display).setScenarios((MultiScenarioCore) anyObject());
-
-			// check the UI is correctly enabled
-			verify(ui, times(2)).setGenerateEnabled(false);
-			verify(ui).setRunAllEnabled(false);
-			verify(ui).setInitEnabled(true);
-			verify(ui, times(2)).setStepEnabled(false);
-			verify(ui, times(2)).setPlayEnabled(false);
-		}
-
-		// TODO FIX-TEST
-		public void NtestReloadDatafiles() {
-			final MultiScenarioDisplay display = mock(MultiScenarioDisplay.class);
-			final MultiScenarioCore model = mock(MultiScenarioCore.class);
-			final UIDisplay ui = mock(UIDisplay.class);
-			when(display.getUI()).thenReturn(ui);
-			final MultiScenarioPresenter pres = new MultiScenarioPresenter(display, model);
-
-			pres._controlFileName = controlPath;
-			pres._scenarioFileName = scenarioPath;
-
-			// ok, try for the scenario first
-			pres.reloadDataFiles();
-
-			// ok, check the display got set
-			verify(display).setControlName("trial1.xml");
-			verify(display).setScenarioName("trial1.asset");
-			verify(display).activate();
-			verify(display).clearScenarios();
-		}
-
-		// TODO FIX-TEST
-		// @Test
-
 		@SuppressWarnings("synthetic-access")
 		public final void testRelativePathMethod() {
-			final MultiScenarioDisplay mockDisplay = mock(MultiScenarioDisplay.class);
-			final UIDisplay ui = mock(UIDisplay.class);
-			when(mockDisplay.getUI()).thenReturn(ui);
-			final MultiScenarioPresenter pres = new MultiScenarioPresenter(mockDisplay, null);
+			final UIDisplay ui = stub(UIDisplay.class, null);
+			final MultiScenarioDisplay display = stub(MultiScenarioDisplay.class, ui);
+			final MultiScenarioPresenter pres = new MultiScenarioPresenter(display, null);
 
-			super.assertEquals("failed to recognise drive", false, pres.isRelativePath(new File("c:\\test.rep")));
-			super.assertEquals("failed to root designator", false, pres.isRelativePath(new File("\\test.rep")));
-			super.assertEquals("failed to root designator", false, pres.isRelativePath(new File("\\\\test.rep")));
-			super.assertEquals("failed to root designator", false, pres.isRelativePath(new File("//test.rep")));
-			super.assertEquals("failed to root designator", false, pres.isRelativePath(new File("////test.rep")));
-			super.assertEquals("failed to recognise absolute ref", true, pres.isRelativePath(new File("test.rep")));
-			super.assertEquals("failed to recognise relative ref", true, pres.isRelativePath(new File("./test.rep")));
-			super.assertEquals("failed to recognise parent ref", true, pres.isRelativePath(new File("../test.rep")));
+			assertEquals("failed to recognise drive", false, pres.isRelativePath(new File("c:\\test.rep")));
+			assertEquals("failed to root designator", false, pres.isRelativePath(new File("\\test.rep")));
+			assertEquals("failed to root designator", false, pres.isRelativePath(new File("\\\\test.rep")));
+			assertEquals("failed to root designator", false, pres.isRelativePath(new File("//test.rep")));
+			assertEquals("failed to root designator", false, pres.isRelativePath(new File("////test.rep")));
+			assertEquals("failed to recognise absolute ref", true, pres.isRelativePath(new File("test.rep")));
+			assertEquals("failed to recognise relative ref", true, pres.isRelativePath(new File("./test.rep")));
+			assertEquals("failed to recognise parent ref", true, pres.isRelativePath(new File("../test.rep")));
 		}
-
-		public void testTrackingSelection() {
-			// TODO: test that we remove ourselves from unselected scenarios
-
-		}
-
 	}
 
 	/**

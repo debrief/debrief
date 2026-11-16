@@ -25,7 +25,7 @@ build fetches them instead.
     PR, majors included: POI with xmlbeans, PDFBox, slf4j and Jackson.
   - Other minor and patch bumps come together in one PR. Other major bumps
     come one per PR.
-  - Ignored: build plugins and jmock in the parent pom; hamcrest-core
+  - Ignored: build plugins in the parent pom; hamcrest-core
     majors (junit 4 needs 1.3); and JFreeChart 1.5 and later, whose package
     and API changes break 9 call sites in `cmap.legacy`.
   - CI checks every PR, and nothing merges automatically.
@@ -47,7 +47,7 @@ build fetches them instead.
 |---|---|
 | `org.mwc.debrief.legacy` | pdfbox, fontbox 2.0.37; commons-logging 1.2; commons-cli 1.4; jsoup 1.23.2; xmlunit-core 2.14.0; Eclipse January 2.0.2; slf4j-api, slf4j-simple 1.7.36 |
 | `org.mwc.cmap.legacy` | POI 5.5.1 (poi, poi-ooxml, poi-ooxml-lite, poi-scratchpad); xmlbeans 5.3.0; commons-codec 1.20.0, collections4 4.5.0, compress 1.28.0, csv 1.2, io 2.22.0, lang3 3.21.0, math3 3.6.1; curvesapi 1.08; SparseBitSet 1.3; log4j-api 2.26.1; Jackson 2.22.4 (annotations 2.22); joda-time 2.1; and in `libs/`, junit 4.13.2 and hamcrest-core 1.3 |
-| `org.mwc.cmap.core` | xstream 1.4.21; mockito-all 1.8.5 |
+| `org.mwc.cmap.core` | xstream 1.4.21 (mockito-all was removed in Phase E) |
 | `org.mwc.cmap.jfreechart` | jfreechart 1.0.19; jcommon 1.0.23 |
 
 Notes on `org.mwc.debrief.legacy`:

@@ -99,9 +99,6 @@
     <module>org.mwc.debrief.satc.integration</module>
     <module>org.mwc.debrief.limpet_integration</module>
     -->
-<!--
-    <module>org.mwc.debrief.ui_test</module>
--->
   </modules>
 
   <build>
@@ -174,17 +171,6 @@
 			<type>p2-installable-unit</type>
 			<artifactId>org.eclipse.platform</artifactId>
 			<version>0.0.0</version>
-		</dependency>
-	<!-- http://www.jmock.org/maven.html -->
-		<dependency>
-			<groupId>org.jmock</groupId>
-			<artifactId>jmock-legacy</artifactId>
-			<version>2.5.1</version>
-		</dependency>
-		<dependency>
-			<groupId>org.jmock</groupId>
-			<artifactId>jmock-junit4</artifactId>
-			<version>2.5.1</version>
 		</dependency>
 	  </dependencies>
 	  <includes>

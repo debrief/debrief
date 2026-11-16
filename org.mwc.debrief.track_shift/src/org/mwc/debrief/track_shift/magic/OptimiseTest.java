@@ -27,13 +27,10 @@ import java.util.Vector;
 
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.StructuredSelection;
-import org.mockito.Mockito;
-import org.mwc.cmap.core.interfaces.IControllableViewport;
 import org.mwc.cmap.core.property_support.EditableWrapper;
-import org.mwc.debrief.core.editors.PlotEditor;
-import org.mwc.debrief.core.loaders.xml_handlers.DebriefEclipseXMLReaderWriter;
 import org.mwc.debrief.track_shift.views.StackedDotHelper;
 
+import Debrief.ReaderWriter.XML.DebriefXMLReaderWriter;
 import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.SensorContactWrapper;
 import Debrief.Wrappers.SensorWrapper;
@@ -557,14 +554,13 @@ public class OptimiseTest {
 	}
 
 	private static Layers getTheData() throws FileNotFoundException {
-		final DebriefEclipseXMLReaderWriter reader = new DebriefEclipseXMLReaderWriter();
+		// the plain (non-Eclipse) reader: it needs no plot editor or viewport
+		final DebriefXMLReaderWriter reader = new DebriefXMLReaderWriter(null);
 		final Layers res = new Layers();
 		final String path = "../org.mwc.debrief.track_shift/src/org/mwc/debrief/track_shift/magic/";
 		final String fName = "midflow2.xml";
 		final InputStream is = new FileInputStream(path + fName);
-		final IControllableViewport view = Mockito.mock(IControllableViewport.class);
-		final PlotEditor plot = Mockito.mock(PlotEditor.class);
-		reader.importThis(fName, is, res, view, plot);
+		reader.importThis(fName, is, res);
 		return res;
 	}
 }

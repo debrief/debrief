@@ -32,8 +32,8 @@ LITE_FOLDERS = [
     "org.mwc.debrief.lite",
 ]
 
-# reported separately: test tooling and contributed extras, not shipped
-SEPARATE = ("org.mwc.debrief.ui_test/rcptt-runner/", "contribs/")
+# reported separately: contributed extras, not shipped
+SEPARATE = ("contribs/",)
 
 
 def git_files(repo, pattern):

@@ -101,7 +101,7 @@ Unit tests use JUnit and are organized in test suites:
 
 Tests run via Tycho Surefire with UI harness. Test classes follow pattern `**/AllTests.class` or `**/*TestSuite*.class`.
 
-UI tests use RCPTT (RCP Testing Tool) in `org.mwc.debrief.ui_test/`.
+There are no automated UI tests of Debrief NG (the RCP product): the RCPTT suite was retired in Phase E. Use the manual checklist in [docs/testing/debrief-ng-smoke-checklist.md](docs/testing/debrief-ng-smoke-checklist.md); a new small RCP UI suite is planned (see [docs/dependencies/phase-e-options.md](docs/dependencies/phase-e-options.md)).
 
 ## Project Structure
 
