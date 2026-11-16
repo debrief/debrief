@@ -62,7 +62,6 @@ import org.jfree.data.xy.XYSeries;
 
 import Debrief.GUI.Frames.Application;
 import Debrief.GUI.Tote.StepControl;
-import Debrief.Tools.Tote.Calculations.DeltaRateToteCalcImplementation;
 import Debrief.Tools.Tote.Calculations.atbCalc;
 import Debrief.Tools.Tote.Calculations.bearingCalc;
 import Debrief.Tools.Tote.Calculations.bearingRateCalc;
@@ -850,7 +849,7 @@ public final class ShowTimeVariablePlot3 implements FilterOperation {
 							if (theCalculation instanceof TimeWindowRateCalculation) {
 								timeWindow = ((TimeWindowRateCalculation) deltaRateCalc).getWindowSizeMillis();
 							} else {
-								timeWindow = DeltaRateToteCalcImplementation.DeltaRateToteCalcImplementationTest.TIME_WINDOW;
+								timeWindow = Debrief.Tools.Tote.Calculations.DeltaRateToteCalcImplementation.TIME_WINDOW;
 							}
 							final double[] values = deltaRateCalc.calculate(items, times, timeWindow);
 

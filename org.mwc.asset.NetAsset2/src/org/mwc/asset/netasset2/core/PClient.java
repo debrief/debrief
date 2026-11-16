@@ -39,7 +39,7 @@ import org.mwc.asset.netCore.common.Network.LightScenario;
 import org.mwc.asset.netCore.common.Network.ScenControl;
 import org.mwc.asset.netCore.core.AServer;
 import org.mwc.asset.netCore.core.IMClient;
-import org.mwc.asset.netCore.test.CoreTest;
+import org.mwc.asset.netCore.test.SampleScenarios;
 import org.mwc.asset.netasset2.Activator;
 import org.mwc.asset.netasset2.connect.IVConnect;
 import org.mwc.asset.netasset2.connect.IVConnect.ClickHandler;
@@ -522,7 +522,7 @@ public class PClient implements ScenarioSteppedListener {
 
 					@Override
 					public Vector<ScenarioType> getScenarios() {
-						return CoreTest.getScenarioList();
+						return SampleScenarios.getScenarioList();
 					}
 				};
 				_selfHostServer.setDataProvider(lister);

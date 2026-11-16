@@ -35,59 +35,6 @@ import flanagan.interpolation.LinearInterpolation;
  */
 public class RangeValues {
 
-	// /////////////////////////////////////////////////
-	// and the testing goes here
-	// /////////////////////////////////////////////////
-	public static class RangesTest extends junit.framework.TestCase {
-		public static final String TEST_RANGES_FILE = "src/org/mwc/debrief/multipath2/model/TestRangeValues.csv";
-
-		// TODO FIX-TEST
-		public void NtestMe() {
-			final RangeValues times = new RangeValues();
-
-			assertEquals("not got data", null, times._times);
-			assertEquals("not got data", null, times._ranges);
-
-			// and missing file
-			try {
-				times.load("src/org/mwc/debrief/multipath/model2/test_times_bad.csv");
-				fail("should not have found file");
-			} catch (final ParseException e) {
-				fail("wrong number format");
-			} catch (final IOException e) {
-				// ok - this should have been thrown
-			} catch (final DataFormatException e) {
-				fail("bad data");
-			}
-
-			assertEquals("still not got data", null, times._ranges);
-
-			try {
-				times.load(TEST_RANGES_FILE);
-			} catch (final ParseException e) {
-				fail("wrong number format");
-			} catch (final IOException e) {
-				fail("unable to read lines");
-			} catch (final DataFormatException e) {
-				fail("bad data");
-			}
-
-			assertEquals("got correct num entries", 801, times._times.length);
-
-			assertEquals("got correct range", 2530.96, times.valueAt(10000), 0.0001);
-			assertEquals("got correct range", 2529.144, times.valueAt(11000), 0.0001);
-			assertTrue("correct time checking", times.hasValueAt(0));
-			assertTrue("correct time checking", times.hasValueAt(2000));
-			assertTrue("correct time checking", !times.hasValueAt(36000000));
-
-		}
-
-		public void testDummy() {
-
-		}
-
-	}
-
 	double[] _times;
 	double[] _ranges;
 

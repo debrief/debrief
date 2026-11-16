@@ -15,19 +15,21 @@
 
 package org.mwc.debrief.lite.headless;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 import javax.swing.JSlider;
 import javax.swing.SwingUtilities;
 import javax.swing.plaf.basic.BasicSliderUI;
 
 import org.mwc.debrief.lite.custom.JRibbonSlider;
 
-import junit.framework.TestCase;
+import org.junit.jupiter.api.Test;
 
 /**
  * The ribbon sliders draw their own, more visible, thumb: it must sit where the
  * look and feel puts the real thumb, at every value.
  */
-public class SliderThumbTest extends TestCase {
+public class SliderThumbTest {
 
 	private static JSlider slider(final int value) throws Exception {
 		final JSlider slider = new JSlider(0, 1000, value);
@@ -44,11 +46,12 @@ public class SliderThumbTest extends TestCase {
 	/** where the look and feel itself maps x to the slider's value */
 	private static void assertOnValue(final JSlider slider) {
 		final int x = JRibbonSlider.thumbCentreX(slider);
-		assertTrue("thumb inside the slider, got " + x, x > 0 && x < slider.getWidth());
+		assertTrue(x > 0 && x < slider.getWidth(), "thumb inside the slider, got " + x);
 		final BasicSliderUI ui = (BasicSliderUI) slider.getUI();
-		assertEquals("value under the drawn thumb", slider.getValue(), ui.valueForXPosition(x), 3);
+		assertEquals(slider.getValue(), ui.valueForXPosition(x), 3, "value under the drawn thumb");
 	}
 
+	@Test
 	public void testThumbFollowsTheValue() throws Exception {
 		final JSlider start = slider(0);
 		final JSlider middle = slider(500);
@@ -61,25 +64,27 @@ public class SliderThumbTest extends TestCase {
 		final int right = JRibbonSlider.thumbCentreX(end);
 		// at the start the thumb is at the track's left end, not the slider's edge,
 		// which is where every x before the track would put it
-		assertTrue("start thumb is on the track, got " + left, left > 0);
-		assertTrue("start is left of middle", left < JRibbonSlider.thumbCentreX(middle));
-		assertTrue("middle is left of end", JRibbonSlider.thumbCentreX(middle) < right);
-		assertEquals("middle is half way", (left + right) / 2.0, JRibbonSlider.thumbCentreX(middle), 1);
+		assertTrue(left > 0, "start thumb is on the track, got " + left);
+		assertTrue(left < JRibbonSlider.thumbCentreX(middle), "start is left of middle");
+		assertTrue(JRibbonSlider.thumbCentreX(middle) < right, "middle is left of end");
+		assertEquals((left + right) / 2.0, JRibbonSlider.thumbCentreX(middle), 1, "middle is half way");
 	}
 
+	@Test
 	public void testTrackSpansTheRange() throws Exception {
 		final JSlider slider = slider(300);
 		final int[] ends = JRibbonSlider.trackEnds(slider);
 		assertNotNull(ends);
-		assertTrue("track runs left to right, got " + ends[0] + ".." + ends[1], 0 < ends[0] && ends[0] < ends[1]
-				&& ends[1] < slider.getWidth());
+		assertTrue(0 < ends[0] && ends[0] < ends[1]
+				&& ends[1] < slider.getWidth(), "track runs left to right, got " + ends[0] + ".." + ends[1]);
 		final BasicSliderUI ui = (BasicSliderUI) slider.getUI();
-		assertEquals("left end is the minimum", slider.getMinimum(), ui.valueForXPosition(ends[0]));
-		assertEquals("right end is the maximum", slider.getMaximum(), ui.valueForXPosition(ends[1]));
+		assertEquals(slider.getMinimum(), ui.valueForXPosition(ends[0]), "left end is the minimum");
+		assertEquals(slider.getMaximum(), ui.valueForXPosition(ends[1]), "right end is the maximum");
 		final int x = JRibbonSlider.thumbCentreX(slider);
-		assertTrue("thumb is on the track", ends[0] <= x && x <= ends[1]);
+		assertTrue(ends[0] <= x && x <= ends[1], "thumb is on the track");
 	}
 
+	@Test
 	public void testNothingDrawnWithoutARange() throws Exception {
 		final JSlider empty = new JSlider(5, 5, 5);
 		empty.setSize(400, 20);

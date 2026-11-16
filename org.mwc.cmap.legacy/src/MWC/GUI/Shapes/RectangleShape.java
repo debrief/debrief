@@ -200,24 +200,6 @@ public class RectangleShape extends PlainShape implements Editable, HasDraggable
 		}
 	}
 
-	// ////////////////////////////////////////////////////////////////////////////////////////////////
-	// testing for this class
-	// ////////////////////////////////////////////////////////////////////////////////////////////////
-	static public class RectangleTest extends junit.framework.TestCase {
-		static public final String TEST_ALL_TEST_TYPE = "UNIT";
-
-		public RectangleTest(final String val) {
-			super(val);
-		}
-
-		public void testMyParams() {
-			final WorldLocation scrap = new WorldLocation(2d, 2d, 2d);
-			MWC.GUI.Editable ed = new RectangleShape(scrap, scrap);
-			MWC.GUI.Editable.editableTesterSupport.testParams(ed, this);
-			ed = null;
-		}
-	}
-
 	/**
 	 *
 	 */

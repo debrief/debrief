@@ -23,10 +23,8 @@ import java.util.Vector;
 import ASSET.ScenarioType;
 import ASSET.Scenario.ScenarioRunningListener;
 import ASSET.Scenario.LiveScenario.ISimulation;
-import ASSET.Util.SupportTesting;
 import MWC.Algorithms.LiveData.DataDoublet;
 import MWC.Algorithms.LiveData.IAttribute;
-import MWC.GUI.Editable;
 
 /**
  * controller observer that stops running after indicated period
@@ -63,25 +61,6 @@ public class ScenarioStatusObserver extends CoreObserver implements ASSET.Scenar
 				e.printStackTrace();
 				return super.getPropertyDescriptors();
 			}
-		}
-	}
-
-	/***************************************************************
-	 * member variables
-	 ***************************************************************/
-
-	//////////////////////////////////////////////////
-	// property testing
-	//////////////////////////////////////////////////
-	public static class TimeObsTest extends SupportTesting.EditableTesting {
-		/**
-		 * get an object which we can test
-		 *
-		 * @return Editable object which we can check the properties for
-		 */
-		@Override
-		public Editable getEditable() {
-			return new ScenarioStatusObserver();
 		}
 	}
 

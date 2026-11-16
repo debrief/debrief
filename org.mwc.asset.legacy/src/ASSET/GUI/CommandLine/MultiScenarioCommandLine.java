@@ -16,7 +16,6 @@
 package ASSET.GUI.CommandLine;
 
 import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -33,7 +32,6 @@ import ASSET.Scenario.Observers.CoreObserver;
 import ASSET.Scenario.Observers.InterScenarioObserverType;
 import ASSET.Scenario.Observers.RecordToFileObserverType;
 import ASSET.Scenario.Observers.ScenarioObserver;
-import ASSET.Util.SupportTesting;
 import ASSET.Util.MonteCarlo.ScenarioGenerator;
 import ASSET.Util.XML.ASSETReaderWriter;
 
@@ -43,134 +41,6 @@ import ASSET.Util.XML.ASSETReaderWriter;
  */
 
 public class MultiScenarioCommandLine {
-	////////////////////////////////////////////////////////////
-	// testing stuff
-	////////////////////////////////////////////////////////////
-	public static class MultiServerTest extends SupportTesting {
-		public MultiServerTest(final String val) {
-			super(val);
-		}
-
-		public void testCommandLineMainProcessing() {
-			final String[] args = new String[2];
-			args[0] = "../org.mwc.asset.legacy/src/ASSET/Util/MonteCarlo/test_variance_scenario.xml";
-			args[1] = "../org.mwc.asset.legacy/src/ASSET/Util/MonteCarlo/test_variance_realistic.xml";
-
-			CommandLine.main(args);
-		}
-
-		public void testInvalidStartups() {
-			final ByteArrayOutputStream bos = new ByteArrayOutputStream();
-			final ByteArrayOutputStream bes = new ByteArrayOutputStream();
-
-			final PrintStream out = new PrintStream(bos);
-			final PrintStream err = new PrintStream(bes);
-			final InputStream in = new ByteArrayInputStream(new byte[] {});
-
-			////////////////////////////////////////////////////////////
-			// first with null args
-			////////////////////////////////////////////////////////////
-			bos.reset();
-			bes.reset();
-			String[] args = null;
-			MultiScenarioCommandLine scen = new MultiScenarioCommandLine();
-			int res = 0;
-			try {
-				res = scen.processThis(args, out, err, in);
-			} catch (final XPathExpressionException e) {
-				e.printStackTrace();
-			}
-			assertEquals("wrong num args error returned", WRONG_PARAMETERS, res);
-
-			////////////////////////////////////////////////////////////
-			// now with zero args
-			////////////////////////////////////////////////////////////
-			bos.reset();
-			bes.reset();
-			args = new String[0];
-			scen = new MultiScenarioCommandLine();
-			try {
-				res = scen.processThis(args, out, err, in);
-			} catch (final XPathExpressionException e) {
-				e.printStackTrace();
-			}
-			assertEquals("wrong num args error returned", WRONG_PARAMETERS, res);
-
-			////////////////////////////////////////////////////////////
-			// now with only 1 args
-			////////////////////////////////////////////////////////////
-			bos.reset();
-			bes.reset();
-			args = new String[1];
-			args[0] = "../org.mwc.asset.legacy/src/ASSET/Util/MonteCarlo/small_test_scenario.xml";
-
-			scen = new MultiScenarioCommandLine();
-			try {
-				res = scen.processThis(args, out, err, in);
-			} catch (final XPathExpressionException e) {
-				e.printStackTrace();
-			}
-
-			assertEquals("wrong num args error returned", WRONG_PARAMETERS, res);
-
-			final String errStr = bes.toString();
-			assertTrue("correct error message",
-					errStr.indexOf("Sorry, both a scenario file and command file are required") >= 0);
-
-			////////////////////////////////////////////////////////////
-			// and now with an invalid control file
-			////////////////////////////////////////////////////////////
-			bos.reset();
-			bes.reset();
-			args = new String[2];
-			args[0] = "../org.mwc.asset.legacy/src/ASSET/Util/MonteCarlo/small_test_scenario.xml";
-			args[1] = "../org.mwc.asset.legacy/src/ASSET/Util/MonteCarlo/test_variance_invalid.xml";
-			scen = new MultiScenarioCommandLine();
-			try {
-				res = scen.processThis(args, out, err, in);
-			} catch (final XPathExpressionException e) {
-				e.printStackTrace();
-			}
-
-			assertEquals("wrong num args error returned", PROBLEM_LOADING, res);
-
-			// check the contents of the error message
-			final String str = bes.toString();
-			assertTrue("contains some error message", str.indexOf("Problem loading multi-scenario generator:") >= 0);
-		}
-
-		public void testValidStartup() {
-			final ByteArrayOutputStream bos = new ByteArrayOutputStream();
-			final ByteArrayOutputStream bes = new ByteArrayOutputStream();
-
-			final PrintStream out = new PrintStream(bos);
-			final PrintStream err = new PrintStream(bes);
-			final InputStream in = new ByteArrayInputStream(new byte[] {});
-
-			bos.reset();
-			bes.reset();
-			final String[] args = new String[2];
-			args[0] = "../org.mwc.asset.legacy/src/ASSET/Util/MonteCarlo/test_variance_scenario.xml";
-			args[1] = "../org.mwc.asset.legacy/src/ASSET/Util/MonteCarlo/test_variance1.xml";
-			// args[1] =
-			// "..\\src\\java\\ASSET_SRC\\ASSET\\Util\\MonteCarlo\\test_variance1.xml";
-			final MultiScenarioCommandLine scen = new MultiScenarioCommandLine();
-			int res = 0;
-			try {
-				res = scen.processThis(args, out, err, in);
-			} catch (final XPathExpressionException e) {
-				e.printStackTrace();
-			}
-			assertEquals("ran ok", SUCCESS, res);
-
-			// check the contents of the error message
-			assertEquals("no error reported", 0, bes.size());
-
-			// check the scenarios got created
-			final Vector<Document> scenarios = scen._myScenarios;
-			assertEquals("scenarios got created", 3, scenarios.size());
-		}
-	}
 
 	/**
 	 * success code to prove it ran ok
@@ -197,16 +67,6 @@ public class MultiScenarioCommandLine {
 	 */
 	static int TROUBLE_MAKING_FILES = 4;
 
-	/**
-	 * main method, of course - decides whether to handle this ourselves, or to pass
-	 * it on to the command line
-	 *
-	 * @param args
-	 */
-	public static void main(final String[] args) {
-		final MultiServerTest tm = new MultiServerTest("me");
-		SupportTesting.callTestMethods(tm);
-	}
 
 	/**
 	 * the scenario generator that does all the work

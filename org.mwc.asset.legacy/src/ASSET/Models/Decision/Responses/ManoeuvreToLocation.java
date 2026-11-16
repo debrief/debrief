@@ -20,7 +20,6 @@ import ASSET.Models.Movement.SimpleDemandedStatus;
 import ASSET.Participants.DemandedStatus;
 import ASSET.Participants.Status;
 import ASSET.Scenario.ScenarioActivityMonitor;
-import ASSET.Util.SupportTesting;
 import MWC.GUI.Editable;
 import MWC.GenericData.WorldLocation;
 import MWC.GenericData.WorldSpeed;
@@ -62,57 +61,6 @@ public class ManoeuvreToLocation extends Response.CoreResponse {
 				return super.getPropertyDescriptors();
 			}
 		}
-	}
-
-	////////////////////////////////////////////////////
-	// testing support
-	////////////////////////////////////////////////////
-	public static class ManToLocationTest extends SupportTesting.EditableTesting {
-		static public final String TEST_ALL_TEST_TYPE = "UNIT";
-
-		public ManToLocationTest(final String name) {
-			super(name);
-		}
-
-		/**
-		 * get an object which we can test
-		 *
-		 * @return Editable object which we can check the properties for
-		 */
-		@Override
-		public Editable getEditable() {
-			final WorldLocation newLoc = new WorldLocation(0.4, 0.4, 40);
-			final WorldLocation origin = new WorldLocation(0, 0, 40);
-			final Status currentStat = new Status(12, 200);
-			currentStat.setLocation(origin);
-			currentStat.setSpeed(new WorldSpeed(12, WorldSpeed.M_sec));
-
-			final ManoeuvreToLocation ml = new ManoeuvreToLocation(newLoc, null);
-			return ml;
-		}
-
-		public void testIt() {
-			final WorldLocation newLoc = new WorldLocation(0.4, 0.4, 40);
-			final WorldLocation origin = new WorldLocation(0, 0, 40);
-			final Status currentStat = new Status(12, 200);
-			currentStat.setLocation(origin);
-			currentStat.setSpeed(new WorldSpeed(12, WorldSpeed.M_sec));
-
-			final ManoeuvreToLocation ml = new ManoeuvreToLocation(newLoc, null);
-			DemandedStatus ds = ml.direct(null, currentStat, null, null, null, -1);
-			// check we are at the same speed
-			assertEquals("maintain speed", 12, ((SimpleDemandedStatus) ds).getSpeed(), 0.001);
-			assertEquals("on correct course", 45, ((SimpleDemandedStatus) ds).getCourse(), 1);
-
-			// now provide a speed value
-			ml.setSpeed(new WorldSpeed(20, WorldSpeed.M_sec));
-			ds = ml.direct(null, currentStat, null, null, null, -1);
-			// check we are at the same speed
-			assertEquals("maintain speed", 20, ((SimpleDemandedStatus) ds).getSpeed(), 0.001);
-			assertEquals("on correct course", 45, ((SimpleDemandedStatus) ds).getCourse(), 1);
-
-		}
-
 	}
 
 	////////////////////////////////////////////////////

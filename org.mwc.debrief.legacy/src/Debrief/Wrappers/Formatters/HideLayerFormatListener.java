@@ -18,18 +18,12 @@ import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
 import java.io.Serializable;
 
-import Debrief.Wrappers.FixWrapper;
-import Debrief.Wrappers.TrackWrapper;
 import MWC.GUI.CanvasType;
 import MWC.GUI.Editable;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers.INewItemListener;
 import MWC.GUI.PlainWrapper;
-import MWC.GenericData.HiResDate;
 import MWC.GenericData.WorldArea;
-import MWC.GenericData.WorldLocation;
-import MWC.TacticalData.Fix;
-import junit.framework.TestCase;
 
 public class HideLayerFormatListener extends PlainWrapper implements INewItemListener {
 
@@ -57,65 +51,6 @@ public class HideLayerFormatListener extends PlainWrapper implements INewItemLis
 			} catch (final IntrospectionException e) {
 				return super.getPropertyDescriptors();
 			}
-		}
-	}
-
-	public static class TestMe extends TestCase {
-		private FixWrapper createFix(final int time) {
-			final Fix newF = new Fix(new HiResDate(time), new WorldLocation(2, 2, 0), 22, 33);
-			final FixWrapper fw = new FixWrapper(newF);
-			return fw;
-
-		}
-
-		public void testNameMatch() {
-			final HideLayerFormatListener cf = new HideLayerFormatListener("Test", new String[] { "Name4" });
-			final TrackWrapper tw = new TrackWrapper();
-			tw.setName("Name4");
-
-			cf.newItem(tw, null, null);
-
-			assertFalse("not visible", tw.getVisible());
-
-		}
-
-		public void testNameNotMatch() {
-			final HideLayerFormatListener cf = new HideLayerFormatListener("Test", new String[] { "Name" });
-			final TrackWrapper tw = new TrackWrapper();
-			tw.setName("JamJar");
-			final FixWrapper f1 = createFix(4000);
-			final FixWrapper f2 = createFix(5000);
-			final FixWrapper f3 = createFix(9000);
-			final FixWrapper f4 = createFix(10000);
-			final FixWrapper f5 = createFix(14100);
-
-			cf.newItem(tw, f1, null);
-			cf.newItem(tw, f2, null);
-			cf.newItem(tw, f3, null);
-			cf.newItem(tw, f4, null);
-			cf.newItem(tw, f5, null);
-
-			assertTrue("is visible", tw.getVisible());
-
-		}
-
-		public void testNoNames() {
-			final HideLayerFormatListener cf = new HideLayerFormatListener("Test", null);
-			final TrackWrapper tw = new TrackWrapper();
-			tw.setName("Name");
-			final FixWrapper f1 = createFix(4000);
-			final FixWrapper f2 = createFix(5000);
-			final FixWrapper f3 = createFix(9000);
-			final FixWrapper f4 = createFix(10000);
-			final FixWrapper f5 = createFix(14100);
-
-			cf.newItem(tw, f1, null);
-			cf.newItem(tw, f2, null);
-			cf.newItem(tw, f3, null);
-			cf.newItem(tw, f4, null);
-			cf.newItem(tw, f5, null);
-
-			assertTrue("is visible", tw.getVisible());
 		}
 	}
 

@@ -1,7 +1,6 @@
 
 package ASSET.Models.Mediums;
 
-import ASSET.Util.SupportTesting;
 import MWC.GUI.Editable;
 import MWC.GenericData.WorldSpeed;
 
@@ -21,21 +20,6 @@ import MWC.GenericData.WorldSpeed;
 
 public class BroadbandRadNoise implements ASSET.Models.Vessels.Radiated.RadiatedCharacteristics.Medium,
 		java.io.Serializable, MWC.GUI.Editable {
-	//////////////////////////////////////////////////
-	// testing
-	//////////////////////////////////////////////////
-	public static class BBRadNoiseTest extends SupportTesting.EditableTesting {
-
-		/**
-		 * get an object which we can test
-		 *
-		 * @return Editable object which we can check the properties for
-		 */
-		@Override
-		public Editable getEditable() {
-			return new BroadbandRadNoise(12);
-		}
-	}
 
 	//////////////////////////////////////////////////
 	// editable info

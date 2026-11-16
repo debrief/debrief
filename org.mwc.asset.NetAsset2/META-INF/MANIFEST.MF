@@ -7,7 +7,6 @@ Bundle-Activator: org.mwc.asset.netasset2.Activator
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
  org.mwc.asset.NetCore,
- org.junit,
  org.mwc.asset.legacy,
  org.mwc.cmap.legacy,
  org.mwc.cmap.core,

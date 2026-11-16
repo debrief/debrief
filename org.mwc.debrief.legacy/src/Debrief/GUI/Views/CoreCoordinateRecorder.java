@@ -188,6 +188,11 @@ public abstract class CoreCoordinateRecorder {
 	private final Layers _myLayers;
 	private final PlainProjection _projection;
 	final protected Map<String, Track> _tracks = new HashMap<>();
+
+	/** the tracks recorded so far, by name (for tests) */
+	public Map<String, Track> getTracks() {
+		return _tracks;
+	}
 	final private List<HiResDate> _times = new ArrayList<>();
 
 	private boolean _running = false;

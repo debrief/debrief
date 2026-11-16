@@ -15,6 +15,11 @@
 
 package org.mwc.debrief.lite.headless;
 
+import static org.junit.jupiter.api.Assertions.*;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+
 import org.mwc.debrief.lite.DebriefLiteApp;
 import org.mwc.debrief.lite.util.PlotState;
 
@@ -27,13 +32,14 @@ import MWC.GenericData.HiResDate;
 import MWC.GenericData.WorldLocation;
 import MWC.TacticalData.NarrativeEntry;
 import MWC.TacticalData.NarrativeWrapper;
-import junit.framework.TestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * How the loaded data sets Lite's time controls (inactive, time-enabled or
  * active) and whether it asks to save before discarding the plot.
  */
-public class PlotStateTest extends TestCase {
+public class PlotStateTest {
 
 	private static final long T0 = 1767225600000L;
 
@@ -48,19 +54,21 @@ public class PlotStateTest extends TestCase {
 
 	private void assertState(final String expectedState, final boolean expectedDirty) {
 		final PlotState state = PlotState.of(_layers);
-		assertEquals("state", expectedState, state.getState());
-		assertEquals("dirty", expectedDirty, state.isDirty());
+		assertEquals(expectedState, state.getState(), "state");
+		assertEquals(expectedDirty, state.isDirty(), "dirty");
 	}
 
-	@Override
-	protected void setUp() {
+	@BeforeEach
+	public void setUp() {
 		_layers = new Layers();
 	}
 
+	@Test
 	public void testEmptyPlot() {
 		assertState(DebriefLiteApp.INACTIVE_STATE, false);
 	}
 
+	@Test
 	public void testNarratives() {
 		final NarrativeWrapper narrative = new NarrativeWrapper("Narratives");
 		_layers.addThisLayer(narrative);
@@ -70,6 +78,7 @@ public class PlotStateTest extends TestCase {
 		assertState(DebriefLiteApp.TIME_ENABLED_STATE, true);
 	}
 
+	@Test
 	public void testTimedShapes() {
 		final BaseLayer shapes = new BaseLayer();
 		shapes.setName("Shapes");
@@ -86,6 +95,7 @@ public class PlotStateTest extends TestCase {
 		assertState("a timed shape enables the time controls", DebriefLiteApp.TIME_ENABLED_STATE, true);
 	}
 
+	@Test
 	public void testLabels() {
 		final BaseLayer labels = new BaseLayer();
 		labels.setName("Labels");
@@ -96,12 +106,14 @@ public class PlotStateTest extends TestCase {
 		assertState("a label is worth saving", DebriefLiteApp.INACTIVE_STATE, true);
 	}
 
+	@Test
 	public void testTracks() {
 		_layers.addThisLayer(
 				HeadlessFixture.stationaryTrack("OWNSHIP", new WorldLocation(0, 0, 0), 90, 10, T0, 3));
 		assertState(DebriefLiteApp.ACTIVE_STATE, true);
 	}
 
+	@Test
 	public void testTracksOutrankNarratives() {
 		final NarrativeWrapper narrative = new NarrativeWrapper("Narratives");
 		narrative.add(new NarrativeEntry("OWNSHIP", new HiResDate(T0), "contact gained"));
@@ -113,7 +125,7 @@ public class PlotStateTest extends TestCase {
 
 	private void assertState(final String message, final String expectedState, final boolean expectedDirty) {
 		final PlotState state = PlotState.of(_layers);
-		assertEquals(message + ": state", expectedState, state.getState());
-		assertEquals(message + ": dirty", expectedDirty, state.isDirty());
+		assertEquals(expectedState, state.getState(), message + ": state");
+		assertEquals(expectedDirty, state.isDirty(), message + ": dirty");
 	}
 }

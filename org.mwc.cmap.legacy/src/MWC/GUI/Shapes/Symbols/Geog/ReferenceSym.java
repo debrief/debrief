@@ -107,23 +107,6 @@ public class ReferenceSym extends PlainSymbol {
 
 	}
 
-	//////////////////////////////////////////////////////////////////////////////////////////////////
-	// testing for this class
-	//////////////////////////////////////////////////////////////////////////////////////////////////
-	static public class ReferenceTest extends junit.framework.TestCase {
-		static public final String TEST_ALL_TEST_TYPE = "UNIT";
-
-		public ReferenceTest(final String val) {
-			super(val);
-		}
-
-		public void testMyParams() {
-			MWC.GUI.Editable ed = new ReferenceSym();
-			editableTesterSupport.testParams(ed, this);
-			ed = null;
-		}
-	}
-
 	/**
 	 *
 	 */

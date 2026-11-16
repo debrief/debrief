@@ -16,20 +16,10 @@
 package ASSET.Models.Decision.Movement;
 
 import ASSET.Models.Movement.SimpleDemandedStatus;
-import ASSET.Models.Movement.SurfaceMovementCharacteristics;
-import ASSET.Models.Vessels.Surface;
-import ASSET.Participants.Category;
-import ASSET.Participants.DemandedStatus;
 import ASSET.Participants.Status;
-import ASSET.Scenario.CoreScenario;
-import ASSET.Util.RandomGenerator;
-import ASSET.Util.SupportTesting;
 import MWC.GUI.Editable;
 import MWC.GenericData.WorldArea;
-import MWC.GenericData.WorldDistance;
 import MWC.GenericData.WorldLocation;
-import MWC.GenericData.WorldSpeed;
-import MWC.GenericData.WorldVector;
 
 /**
  * Created by IntelliJ IDEA. User: Ian Date: 04-Mar-2004 Time: 21:02:00 To
@@ -68,104 +58,6 @@ public class RectangleWander extends Wander {
 			} catch (final java.beans.IntrospectionException e) {
 				return super.getPropertyDescriptors();
 			}
-		}
-	}
-
-	public static final class WanderTest extends SupportTesting.EditableTesting {
-		public WanderTest(final String val) {
-			super(val);
-		}
-
-		/**
-		 * get an object which we can test
-		 *
-		 * @return Editable object which we can check the properties for
-		 */
-		@Override
-		public Editable getEditable() {
-			final WorldLocation topLeft = SupportTesting.createLocation(0, 10000);
-			final WorldLocation bottomRight = SupportTesting.createLocation(10000, 0);
-			final WorldArea theArea = new WorldArea(topLeft, bottomRight);
-			final RectangleWander tw = new RectangleWander(theArea, "rect wander");
-			return tw;
-		}
-
-		public final void testNoDemCourseSpeed() {
-			final WorldLocation topLeft = SupportTesting.createLocation(0, 10000);
-			final WorldLocation bottomRight = SupportTesting.createLocation(10000, 0);
-			final WorldArea theArea = new WorldArea(topLeft, bottomRight);
-			final RectangleWander tw = new RectangleWander(theArea, "rect wander");
-
-			final int seed = (int) (RandomGenerator.nextRandom() * 1000d);
-			System.out.println("seed:" + seed);
-
-			final Status stat = new Status(1, 0);
-			stat.setLocation(SupportTesting.createLocation(3000, 3000));
-			stat.setCourse(RandomGenerator.nextRandom() * 180);
-			stat.setSpeed(new WorldSpeed(12, WorldSpeed.Kts));
-
-			final DemandedStatus dem = null;
-
-			final SimpleDemandedStatus ds = (SimpleDemandedStatus) tw.decide(stat, null, dem, null, null, 100);
-
-			assertNotNull("dem returned", ds);
-			// assertEquals("still on old course", 22, ds.getCourse(), 0);
-			// assertEquals("still on old speed", MWC.Algorithms.Conversions.Kts2Mps(12),
-			// ds.getSpeed(),
-			// 0);
-
-			final Surface fisher = new Surface(23);
-			fisher.setName("Fisher");
-			fisher.setCategory(
-					new Category(Category.Force.BLUE, Category.Environment.SURFACE, Category.Type.FISHING_VESSEL));
-			fisher.setStatus(stat);
-			fisher.setDecisionModel(tw);
-			fisher.setMovementChars(SurfaceMovementCharacteristics.getSampleChars());
-
-			final CoreScenario cs = new CoreScenario();
-			cs.setScenarioStepTime(10000);
-			cs.addParticipant(fisher.getId(), fisher);
-
-			// DebriefReplayObserver dro = new DebriefReplayObserver("c:/temp",
-			// "rect_wander_search.rep",
-			// false);
-			// TrackPlotObserver tpo = new TrackPlotObserver("c:/temp", 300, 300,
-			// "rect_wander_search.png", null, false, true);
-			// dro.setup(cs);
-			// tpo.setup(cs);
-			//
-			// dro.outputThisArea(theArea);
-
-			// now run through to completion
-			while (cs.getTime() < 8000000) {
-				cs.step();
-			}
-
-			// dro.tearDown(cs);
-			// tpo.tearDown(cs);
-
-		}
-
-		public final void testWithDemCourseSpeed() {
-			final WorldLocation topLeft = SupportTesting.createLocation(0, 10000);
-			final WorldLocation bottomRight = SupportTesting.createLocation(10000, 0);
-			final WorldArea theArea = new WorldArea(topLeft, bottomRight);
-			final RectangleWander tw = new RectangleWander(theArea, "rect wander");
-			tw.setSpeed(new WorldSpeed(44, WorldSpeed.M_sec));
-			tw.setHeight(new WorldDistance(45, WorldDistance.METRES));
-
-			final Status stat = new Status(1, 0);
-			stat.setLocation(theArea.getCentre().add(new WorldVector(100, WorldDistance.METRES, 0)));
-			stat.setCourse(22);
-			stat.setSpeed(new WorldSpeed(12, WorldSpeed.M_sec));
-
-			final DemandedStatus dem = null;
-
-			final SimpleDemandedStatus ds = (SimpleDemandedStatus) tw.decide(stat, null, dem, null, null, 100);
-
-			assertNotNull("dem returned", ds);
-			assertEquals("new demanded Height", 45, ds.getHeight(), 0);
-			assertEquals("new demanded speed", 44, ds.getSpeed(), 0);
 		}
 	}
 

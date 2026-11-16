@@ -16,14 +16,10 @@
 package ASSET.Models.Decision;
 
 import ASSET.Models.Decision.Conditions.Condition;
-import ASSET.Models.Decision.Conditions.TimePoint;
-import ASSET.Models.Decision.Responses.ManoeuvreToLocation;
 import ASSET.Models.Decision.Responses.Response;
 import ASSET.Participants.DemandedStatus;
 import ASSET.Participants.Status;
-import ASSET.Util.SupportTesting;
 import MWC.GUI.Editable;
-import MWC.GenericData.WorldSpeed;
 
 /**
  * Our implementation of evasion behaviour. Our vessel will attempt to evade any
@@ -68,45 +64,6 @@ public class Composite extends CoreDecision implements java.io.Serializable {
 			} catch (final java.beans.IntrospectionException e) {
 				return super.getPropertyDescriptors();
 			}
-		}
-	}
-
-	////////////////////////////////////////////////////
-	// testing support
-	////////////////////////////////////////////////////
-	static public class CompositeTest extends SupportTesting.EditableTesting {
-		static public final String TEST_ALL_TEST_TYPE = "UNIT";
-
-		/**
-		 * get an object which we can test
-		 *
-		 * @return Editable object which we can check the properties for
-		 */
-		@Override
-		public Editable getEditable() {
-			return new Composite(null, null);
-		}
-
-		public void testIt() {
-			// create the condition
-			final TimePoint tp = new TimePoint(1200);
-
-			// create the response
-			final ManoeuvreToLocation gl = new ManoeuvreToLocation(new MWC.GenericData.WorldLocation(0, 1, 2), null);
-
-			final Composite cs = new Composite(tp, gl);
-			final ASSET.Participants.Status st = new ASSET.Participants.Status(12, 200);
-			st.setLocation(new MWC.GenericData.WorldLocation(0, 0, 0));
-			st.setSpeed(new WorldSpeed(12, WorldSpeed.Kts));
-			DemandedStatus ds = cs.decide(null, null, null, null, null, 800);
-
-			// check nothing returned
-			assertNull("nothing returned", ds);
-
-			// move forward in time
-			ds = cs.decide(st, null, null, null, null, 1400);
-			assertNotNull("something returned", ds);
-
 		}
 	}
 

@@ -1,0 +1,59 @@
+/*******************************************************************************
+ * Debrief - the Open Source Maritime Analysis Application
+ * http://debrief.info
+ *
+ * (C) 2000-2020, Deep Blue C Technology Ltd
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the Eclipse Public License v1.0
+ * (http://www.eclipse.org/legal/epl-v10.html)
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *******************************************************************************/
+
+package MWC.GUI.Shapes.Symbols.SVG;
+
+import static MWC.GUI.Shapes.Symbols.SVG.SVGRectangle.*;
+import static org.junit.jupiter.api.Assertions.*;
+
+import MWC.GUI.Shapes.Symbols.SVG.SVGRectangle.*;
+import org.junit.jupiter.api.Test;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import MWC.GUI.CanvasType;
+
+public class SVGRectangleTest {
+	static public final String TEST_ALL_TEST_TYPE = "UNIT";
+
+	@Test
+	public void testBasicRectangle() {
+		try {
+			final String contentToLoad = "<rect id=\"Rectangle-2\" fill=\"#000000\" x=\"24.5\" y=\"23\" width=\"52\" height=\"21\"/>";
+			final DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+			final DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+			final Document doc = dBuilder.parse(new java.io.ByteArrayInputStream(
+					contentToLoad.getBytes(java.nio.charset.StandardCharsets.UTF_8)));
+
+			final SVGRectangle newRectangle = new SVGRectangle(doc.getDocumentElement());
+			assertTrue(newRectangle._intX.length == 4);
+			assertTrue(newRectangle._intY.length == 4);
+			assertTrue(newRectangle._originalCoordinates.length == 4);
+			assertEquals(24.5, newRectangle._originalCoordinates[0].getX(), 1e-5);
+			assertEquals(23.0, newRectangle._originalCoordinates[0].getY(), 1e-5);
+			assertEquals(76.5, newRectangle._originalCoordinates[1].getX(), 1e-5);
+			assertEquals(23.0, newRectangle._originalCoordinates[1].getY(), 1e-5);
+			assertEquals(76.5, newRectangle._originalCoordinates[2].getX(), 1e-5);
+			assertEquals(44.0, newRectangle._originalCoordinates[2].getY(), 1e-5);
+			assertEquals(24.5, newRectangle._originalCoordinates[3].getX(), 1e-5);
+			assertEquals(44.0, newRectangle._originalCoordinates[3].getY(), 1e-5);
+		} catch (final Exception e) {
+			fail("failed to load a basic rectangle.");
+		}
+	}
+
+}

@@ -16,7 +16,6 @@
 package ASSET.Models.Movement;
 
 import ASSET.Participants.DemandedStatus;
-import ASSET.Util.SupportTesting;
 import MWC.GenericData.WorldLocation;
 import MWC.GenericData.WorldPath;
 import MWC.GenericData.WorldSpeed;
@@ -26,113 +25,6 @@ import MWC.GenericData.WorldSpeed;
  * change this template use Options | File Templates.
  */
 public class HighLevelDemandedStatus extends DemandedStatus {
-
-	/**********************************************************************
-	 * member variables
-	 *********************************************************************/
-
-	//////////////////////////////////////////////////////////////////////////////////////////////////
-	// testing for this class
-	//////////////////////////////////////////////////////////////////////////////////////////////////
-	static public class HighLevelDemStatTest extends SupportTesting {
-		static public final String TEST_ALL_TEST_TYPE = "UNIT";
-
-		public HighLevelDemStatTest(final String val) {
-			super(val);
-		}
-
-		public void testNextTarget() {
-			final WorldLocation wa = new WorldLocation(1, 0, 0);
-			final WorldLocation wb = new WorldLocation(2, 0, 0);
-			final WorldLocation wc = new WorldLocation(3, 0, 0);
-			final WorldLocation wd = new WorldLocation(4, 0, 0);
-			final WorldLocation we = new WorldLocation(5, 0, 0);
-			final WorldLocation wf = new WorldLocation(6, 0, 0);
-			final WorldLocation wg = new WorldLocation(7, 0, 0);
-
-			final WorldPath wp = new WorldPath();
-			wp.addPoint(wa);
-			wp.addPoint(wb);
-			wp.addPoint(wc);
-			wp.addPoint(wd);
-			wp.addPoint(we);
-			wp.addPoint(wf);
-			wp.addPoint(wg);
-
-			final HighLevelDemandedStatus hl = new HighLevelDemandedStatus(12, 0, 2, wp, null, null);
-			hl.setRunInReverse(false);
-
-			WorldLocation res = hl.getCurrentTarget();
-			assertEquals("returned current target", wc, res);
-
-			res = hl.getNextTarget();
-			assertEquals("returned next target", wd, res);
-
-			// switch us into reverse
-			hl.setRunInReverse(true);
-			res = hl.getNextTarget();
-			assertEquals("returned next target", wb, res);
-
-			// and forwards again
-			hl.setRunInReverse(false);
-
-			// do the next waypoint
-			hl.nextWaypointVisited();
-
-			res = hl.getCurrentTarget();
-			assertEquals("returned current target", wd, res);
-
-			res = hl.getNextTarget();
-			assertEquals("returned next target", we, res);
-
-			// do the next few waypoint
-			hl.nextWaypointVisited();
-			hl.nextWaypointVisited();
-			hl.nextWaypointVisited();
-
-			res = hl.getCurrentTarget();
-			assertEquals("returned current target", wg, res);
-
-			res = hl.getNextTarget();
-			assertEquals("returned next target", null, res);
-
-			// and fall of fthe plot
-			hl.nextWaypointVisited();
-
-			res = hl.getCurrentTarget();
-			assertEquals("returned current target", null, res);
-			res = hl.getNextTarget();
-			assertEquals("returned next target", null, res);
-
-			// now go into reverse
-			hl.setCurrentTargetIndex(3);
-			hl.setRunInReverse(true);
-
-			res = hl.getCurrentTarget();
-			assertEquals("returned current target", wd, res);
-			res = hl.getNextTarget();
-			assertEquals("returned next target", wc, res);
-
-			// do the next few waypoint
-			hl.nextWaypointVisited();
-			hl.nextWaypointVisited();
-			hl.nextWaypointVisited();
-
-			res = hl.getCurrentTarget();
-			assertEquals("returned current target", wa, res);
-			res = hl.getNextTarget();
-			assertEquals("returned next target", null, res);
-
-			// and fall of fthe plot
-			hl.nextWaypointVisited();
-
-			res = hl.getCurrentTarget();
-			assertEquals("returned current target", null, res);
-			res = hl.getNextTarget();
-			assertEquals("returned next target", null, res);
-
-		}
-	}
 
 	/**
 	 * location index to mark that path is complete

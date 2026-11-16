@@ -45,105 +45,11 @@ import MWC.GUI.GeoToolsHandler;
 import MWC.GUI.ToolParent;
 import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldLocation;
-import junit.framework.TestCase;
 
 public class GtProjection extends PlainProjection implements GeoToolsHandler {
 
-	public static class TestProj extends TestCase {
-		public void testOne() throws NoSuchAuthorityCodeException, FactoryException, NoninvertibleTransformException {
-			final MapContent mc = new MapContent();
-
-			// set a coordinate reference system
-			final CoordinateReferenceSystem crs = CRS.decode(DATA_PROJECTION);
-			mc.getViewport().setCoordinateReferenceSystem(crs);
-
-			// set a data area
-			final DirectPosition2D tlDegs = new DirectPosition2D(5, 1);
-			final DirectPosition2D brDegs = new DirectPosition2D(1, 5);
-			final Envelope2D env = new Envelope2D(tlDegs, brDegs);
-			final ReferencedEnvelope rEnv = new ReferencedEnvelope(env, crs);
-			mc.getViewport().setBounds(rEnv);
-
-			// set a screen area
-			mc.getViewport().setScreenArea(new Rectangle(0, 0, 800, 400));
-
-			// sort out the aspect ration
-			mc.getViewport().setMatchingAspectRatio(true);
-
-			// create a point to test
-			final DirectPosition2D degs = new DirectPosition2D(5, 4);
-
-			// and results object
-			final DirectPosition2D pixels = new DirectPosition2D();
-			final DirectPosition2D rDegs = new DirectPosition2D();
-
-			// transform the test point
-			mc.getViewport().getWorldToScreen().transform(degs, pixels);
-
-			System.out.println("pixels:" + pixels);
-			assertEquals("correct x", 600, (int) pixels.x);
-			assertEquals("correct y", 600, (int) pixels.x);
-
-			// and the reverse transform
-			mc.getViewport().getWorldToScreen().inverseTransform(pixels, rDegs);
-
-			System.out.println("degs:" + rDegs);
-			assertEquals("correct x", 5, (int) rDegs.x);
-			assertEquals("correct y", 4, (int) rDegs.y);
-		}
-
-		public void testTwo() throws NoSuchAuthorityCodeException, FactoryException, NoninvertibleTransformException {
-			final MapContent mc = new MapContent();
-
-			// set a coordinate reference system
-			final CoordinateReferenceSystem crs = CRS.decode(DATA_PROJECTION);
-			mc.getViewport().setCoordinateReferenceSystem(crs);
-
-			// set a data area
-			final DirectPosition2D tlDegs = new DirectPosition2D(45, -5);
-			final DirectPosition2D brDegs = new DirectPosition2D(41, -1);
-			final Envelope2D env = new Envelope2D(tlDegs, brDegs);
-			final ReferencedEnvelope rEnv = new ReferencedEnvelope(env, crs);
-			mc.getViewport().setBounds(rEnv);
-
-			// set a screen area
-			mc.getViewport().setScreenArea(new Rectangle(0, 0, 800, 200));
-
-			// sort out the aspect ration
-			mc.getViewport().setMatchingAspectRatio(true);
-
-			// try with series of points
-			System.out.println(
-					"test 2:" + mc.getViewport().getWorldToScreen().transform(new DirectPosition2D(45, -4), null));
-			System.out.println(
-					"test 2:" + mc.getViewport().getWorldToScreen().transform(new DirectPosition2D(44, -4), null));
-			System.out.println(
-					"test 2:" + mc.getViewport().getWorldToScreen().transform(new DirectPosition2D(43, -4), null));
-			System.out.println(
-					"test 2:" + mc.getViewport().getWorldToScreen().transform(new DirectPosition2D(42, -4), null));
-			System.out.println(
-					"test 2:" + mc.getViewport().getWorldToScreen().transform(new DirectPosition2D(41, -4), null));
-
-			// try with series of points
-			System.out.println(
-					"test 3:" + mc.getViewport().getWorldToScreen().transform(new DirectPosition2D(45, -5), null));
-			System.out.println(
-					"test 3:" + mc.getViewport().getWorldToScreen().transform(new DirectPosition2D(45, -4), null));
-			System.out.println(
-					"test 3:" + mc.getViewport().getWorldToScreen().transform(new DirectPosition2D(45, -3), null));
-			System.out.println(
-					"test 3:" + mc.getViewport().getWorldToScreen().transform(new DirectPosition2D(45, -2), null));
-			System.out.println(
-					"test 3:" + mc.getViewport().getWorldToScreen().transform(new DirectPosition2D(45, -1), null));
-			System.out.println(
-					"test 3:" + mc.getViewport().getWorldToScreen().transform(new DirectPosition2D(45, 0), null));
-
-		}
-
-	}
-
 	private static final String WORLD_PROJECTION = "EPSG:3395"; // 3395 for Mercator proj
-	private static final String DATA_PROJECTION = "EPSG:4326";
+	static final String DATA_PROJECTION = "EPSG:4326";
 	/**
 		 *
 		 */

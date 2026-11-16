@@ -54,9 +54,7 @@ import MWC.GenericData.WatchableList;
 import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldDistance;
 import MWC.GenericData.WorldLocation;
-import MWC.TacticalData.Fix;
 import MWC.Utilities.Errors.Trace;
-import junit.framework.TestCase;
 
 public class LightweightTrackWrapper extends PlainWrapper
 		implements WatchableList, Plottable, Layer, IsTransientForChildren, ICantContainLayers {
@@ -129,128 +127,6 @@ public class LightweightTrackWrapper extends PlainWrapper
 		}
 	}
 
-	public static class TestLightweight extends TestCase {
-		private static interface IsValid {
-			boolean isValid(FixWrapper fix);
-		}
-
-		private static FixWrapper create(final long date, final double lat, final double lon) {
-			return new FixWrapper(new Fix(new HiResDate(date), new WorldLocation(lat, lon, 0), 0d, 0d));
-		}
-
-		private static int doCount(final LightweightTrackWrapper track, final IsValid aTest) {
-			int ctr = 0;
-			final Enumeration<Editable> pIter = track.getPositionIterator();
-			while (pIter.hasMoreElements()) {
-				final FixWrapper fix = (FixWrapper) pIter.nextElement();
-				if (aTest.isValid(fix)) {
-					ctr++;
-				}
-			}
-			return ctr;
-		}
-
-		private static LightweightTrackWrapper getTrack() {
-			final LightweightTrackWrapper track = new LightweightTrackWrapper();
-			track.setName("light");
-			track.addFix(create(10000, 2d, 2d));
-			track.addFix(create(20000, 2d, 2d));
-			track.addFix(create(30000, 2d, 2d));
-			track.addFix(create(40000, 2d, 2d));
-			track.addFix(create(50000, 2d, 2d));
-			track.addFix(create(60000, 2d, 2d));
-			track.addFix(create(70000, 2d, 2d));
-			track.addFix(create(80000, 2d, 2d));
-			track.addFix(create(90000, 2d, 2d));
-			track.addFix(create(100000, 2d, 2d));
-			return track;
-		}
-
-		public final void testMyParams1() {
-			Editable ed = new LightweightTrackWrapper("name", true, true, Color.red, 1);
-			editableTesterSupport.testParams(ed, this);
-			ed = null;
-		}
-
-		public final void testMyParams2() {
-			Editable ed = new LightweightTrackWrapper();
-			editableTesterSupport.testParams(ed, this);
-			ed = null;
-		}
-
-		public void testResampleDown() {
-			final LightweightTrackWrapper track = getTrack();
-			track.setResampleDataAt(new HiResDate(5000));
-			assertEquals("correct size", 19, track._thePositions.size());
-		}
-
-		public void testResampleUp() {
-			final LightweightTrackWrapper track = getTrack();
-			track.setResampleDataAt(new HiResDate(20000));
-			assertEquals("correct size", 5, track._thePositions.size());
-		}
-
-		public void testSetFreq() {
-			final LightweightTrackWrapper track = getTrack();
-
-			final IsValid aTest = new IsValid() {
-				@Override
-				public boolean isValid(final FixWrapper fix) {
-					return fix.getArrowShowing();
-				}
-			};
-			final IsValid lTest = new IsValid() {
-				@Override
-				public boolean isValid(final FixWrapper fix) {
-					return fix.getLabelShowing();
-				}
-			};
-			final IsValid sTest = new IsValid() {
-				@Override
-				public boolean isValid(final FixWrapper fix) {
-					return fix.getSymbolShowing();
-				}
-			};
-
-			track.setArrowFrequency(new HiResDate(20000));
-			int ctr = doCount(track, aTest);
-			assertEquals("correct arrows", 5, ctr);
-
-			track.setArrowFrequency(new HiResDate(0, TimePeriod.INVALID_TIME));
-			ctr = doCount(track, aTest);
-			assertEquals("correct arrows", 10, ctr);
-
-			track.setArrowFrequency(new HiResDate(15000));
-			ctr = doCount(track, aTest);
-			assertEquals("correct arrows", 6, ctr);
-
-			track.setSymbolFrequency(new HiResDate(10000));
-			ctr = doCount(track, sTest);
-			assertEquals("correct symbols", 10, ctr);
-
-			track.setSymbolFrequency(new HiResDate(0, TimePeriod.INVALID_TIME));
-			ctr = doCount(track, sTest);
-			assertEquals("correct symbols", 10, ctr);
-
-			track.setSymbolFrequency(new HiResDate(20000));
-			ctr = doCount(track, sTest);
-			assertEquals("correct symbols", 5, ctr);
-
-			track.setLabelFrequency(new HiResDate(12000));
-			ctr = doCount(track, lTest);
-			assertEquals("correct labels", 8, ctr);
-
-			track.setLabelFrequency(new HiResDate(0, TimePeriod.INVALID_TIME));
-			ctr = doCount(track, lTest);
-			assertEquals("correct labels", 10, ctr);
-
-			track.setLabelFrequency(new HiResDate(20000));
-			ctr = doCount(track, lTest);
-			assertEquals("correct labels", 5, ctr);
-
-		}
-	}
-
 	/**
 	 *
 	 */
@@ -295,7 +171,7 @@ public class LightweightTrackWrapper extends PlainWrapper
 
 	private int _lineStyle;
 
-	private final Plottables _thePositions = new Plottables();
+	final Plottables _thePositions = new Plottables();
 
 	/**
 	 * the width of this track

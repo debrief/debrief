@@ -69,44 +69,15 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
 
-import org.junit.Test;
-
 import Debrief.Wrappers.LabelWrapper;
 import Debrief.Wrappers.Formatters.TrackNameAtEndFormatListener;
 import MWC.GUI.PlainWrapper;
 import MWC.Utilities.ReaderWriter.AbstractPlainLineImporter;
-import junit.framework.TestCase;
 
 /**
  * class to parse a label from a line of text
  */
 final class ImportNameAtEndFormatter extends AbstractPlainLineImporter {
-
-	/*
-	 * example: ;FORMAT_FIX: 10_sec_sym SYMBOL NULL NULL TRUE 600000
-	 */
-
-	public static class TestMe extends TestCase {
-		@Test
-		public void testRead() {
-			/*
-			 * example:
-			 */
-
-			final ImportNameAtEndFormatter iff = new ImportNameAtEndFormatter();
-			TrackNameAtEndFormatListener res = (TrackNameAtEndFormatListener) iff
-					.readThisLine(";FORMAT_TRACK_NAME_AT_END: end TRACK_A TRACK_B");
-			assertNotNull(res);
-			assertEquals("has correct name", "end", res.getName());
-			assertEquals("has correct freq", 2, res.getTracks().length);
-
-			res = (TrackNameAtEndFormatListener) iff.readThisLine(";FORMAT_TRACK_NAME_AT_END: end ");
-			assertNotNull(res);
-			assertEquals("has correct name", "end", res.getName());
-			assertEquals("has correct freq", 0, res.getTracks().length);
-
-		}
-	}
 
 	/**
 	 * the type for this string

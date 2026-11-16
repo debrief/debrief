@@ -15,6 +15,8 @@
 
 package org.mwc.debrief.lite.headless;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 import java.io.File;
 import java.nio.file.Files;
 import java.util.ArrayList;
@@ -53,13 +55,14 @@ import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldDistance;
 import MWC.GenericData.WorldLocation;
 import MWC.GenericData.WorldVector;
-import junit.framework.TestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Shapes made with Lite's Insert actions: where they go, their geometry and
  * defaults, undo and redo, and that they survive a save and reload.
  */
-public class ShapeInsertionTest extends TestCase {
+public class ShapeInsertionTest {
 
 	/** the layer picked in the Insert ribbon's layer drop-down */
 	private static final String SHAPES = "Shapes";
@@ -67,8 +70,8 @@ public class ShapeInsertionTest extends TestCase {
 	private static final double TOLERANCE_DEGS = 1e-9;
 
 	private static void assertLocation(final String what, final WorldLocation expected, final WorldLocation actual) {
-		assertEquals(what + " lat", expected.getLat(), actual.getLat(), TOLERANCE_DEGS);
-		assertEquals(what + " long", expected.getLong(), actual.getLong(), TOLERANCE_DEGS);
+		assertEquals(expected.getLat(), actual.getLat(), TOLERANCE_DEGS, what + " lat");
+		assertEquals(expected.getLong(), actual.getLong(), TOLERANCE_DEGS, what + " long");
 	}
 
 	private LiteApplication _app;
@@ -99,7 +102,7 @@ public class ShapeInsertionTest extends TestCase {
 		final int before = shapes().size();
 		action.execute();
 		final List<ShapeWrapper> after = shapes();
-		assertEquals("one shape added", before + 1, after.size());
+		assertEquals(before + 1, after.size(), "one shape added");
 		return after.get(after.size() - 1);
 	}
 
@@ -116,8 +119,8 @@ public class ShapeInsertionTest extends TestCase {
 		return res;
 	}
 
-	@Override
-	protected void setUp() {
+	@BeforeEach
+	public void setUp() {
 		_app = HeadlessFixture.newApp();
 		_session = HeadlessFixture.newSession(_app);
 		_layers = _session.getData();
@@ -129,37 +132,41 @@ public class ShapeInsertionTest extends TestCase {
 		_centre = visible.getCentreAtSurface();
 	}
 
+	@Test
 	public void testArc() {
 		final ShapeWrapper wrapper = insert(new ArcShapeCommandAction(_app, null, _layers, "Arc", null, _bounds));
 		assertEquals("new arc", wrapper.getName());
 		final ArcShape arc = (ArcShape) wrapper.getShape();
 		assertLocation("centre", _centre, arc.getCentre());
-		assertEquals("radius (yds)", 4000, arc.getRadius().getValueIn(WorldDistance.YARDS), 1e-6);
-		assertEquals("centre bearing", 135, arc.getCentreBearing(), 1e-9);
-		assertEquals("arc width", 90, arc.getArcWidth(), 1e-9);
+		assertEquals(4000, arc.getRadius().getValueIn(WorldDistance.YARDS), 1e-6, "radius (yds)");
+		assertEquals(135, arc.getCentreBearing(), 1e-9, "centre bearing");
+		assertEquals(90, arc.getArcWidth(), 1e-9, "arc width");
 	}
 
+	@Test
 	public void testCircle() {
 		final ShapeWrapper wrapper = insert(
 				new CircleShapeCommandAction(_app, null, _layers, "Circle", null, _bounds));
 		assertEquals("new circle", wrapper.getName());
-		assertEquals("default colour", DebriefColors.RED, wrapper.getColor());
+		assertEquals(DebriefColors.RED, wrapper.getColor(), "default colour");
 		final CircleShape circle = (CircleShape) wrapper.getShape();
 		assertLocation("centre is the middle of the view", _centre, circle.getCentre());
-		assertEquals("radius (yds)", 4000, circle.getRadius().getValueIn(WorldDistance.YARDS), 1e-6);
+		assertEquals(4000, circle.getRadius().getValueIn(WorldDistance.YARDS), 1e-6, "radius (yds)");
 	}
 
+	@Test
 	public void testEllipse() {
 		final ShapeWrapper wrapper = insert(
 				new EllipseShapeCommandAction(_app, null, _layers, "Ellipse", null, _bounds));
 		assertEquals("new ellipse", wrapper.getName());
 		final EllipseShape ellipse = (EllipseShape) wrapper.getShape();
 		assertLocation("centre", _centre, ellipse.getCentre());
-		assertEquals("orientation", 30, ellipse.getOrientation(), 1e-9);
-		assertEquals("maxima (km)", 5, ellipse.getMaxima().getValueIn(WorldDistance.KM), 1e-9);
-		assertEquals("minima (km)", 3, ellipse.getMinima().getValueIn(WorldDistance.KM), 1e-9);
+		assertEquals(30, ellipse.getOrientation(), 1e-9, "orientation");
+		assertEquals(5, ellipse.getMaxima().getValueIn(WorldDistance.KM), 1e-9, "maxima (km)");
+		assertEquals(3, ellipse.getMinima().getValueIn(WorldDistance.KM), 1e-9, "minima (km)");
 	}
 
+	@Test
 	public void testLineAndRectangle() {
 		// both run from the centre to a point 0.05 degs away on a bearing of 045
 		final WorldLocation northEast = _centre.add(new WorldVector(Math.toRadians(45), 0.05, 0));
@@ -176,6 +183,7 @@ public class ShapeInsertionTest extends TestCase {
 		assertLocation("rectangle bottom right", expected.getBottomRight(), rect.getCornerBottomRight());
 	}
 
+	@Test
 	public void testSavedAndReloaded() throws Exception {
 		insert(new CircleShapeCommandAction(_app, null, _layers, "Circle", null, _bounds));
 		insert(new EllipseShapeCommandAction(_app, null, _layers, "Ellipse", null, _bounds));
@@ -191,13 +199,14 @@ public class ShapeInsertionTest extends TestCase {
 		}
 
 		final List<ShapeWrapper> shapes = shapes();
-		assertEquals("both shapes reloaded", 2, shapes.size());
+		assertEquals(2, shapes.size(), "both shapes reloaded");
 		final CircleShape circle = (CircleShape) shapes.get(0).getShape();
 		assertLocation("reloaded circle centre", _centre, circle.getCentre());
-		assertEquals("reloaded circle radius (yds)", 4000, circle.getRadius().getValueIn(WorldDistance.YARDS), 1e-3);
-		assertEquals("reloaded ellipse", "new ellipse", shapes.get(1).getName());
+		assertEquals(4000, circle.getRadius().getValueIn(WorldDistance.YARDS), 1e-3, "reloaded circle radius (yds)");
+		assertEquals("new ellipse", shapes.get(1).getName(), "reloaded ellipse");
 	}
 
+	@Test
 	public void testUndoAndRedo() {
 		final UndoAction undo = new UndoAction(_session.getUndoBuffer());
 		final RedoAction redo = new RedoAction(_session.getUndoBuffer());
@@ -209,15 +218,15 @@ public class ShapeInsertionTest extends TestCase {
 		assertEquals(List.of(circle, ellipse), shapes());
 
 		undo.execute();
-		assertEquals("undo removes the last shape", List.of(circle), shapes());
+		assertEquals(List.of(circle), shapes(), "undo removes the last shape");
 		undo.execute();
-		assertTrue("and then the one before", shapes().isEmpty());
+		assertTrue(shapes().isEmpty(), "and then the one before");
 
 		redo.execute();
-		assertEquals("redo puts the circle back", List.of(circle), shapes());
+		assertEquals(List.of(circle), shapes(), "redo puts the circle back");
 		redo.execute();
-		assertEquals("then the ellipse", List.of(circle, ellipse), shapes());
+		assertEquals(List.of(circle, ellipse), shapes(), "then the ellipse");
 
-		assertFalse("nothing left to redo", _session.getUndoBuffer().canRedo());
+		assertFalse(_session.getUndoBuffer().canRedo(), "nothing left to redo");
 	}
 }

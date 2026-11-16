@@ -20,7 +20,6 @@ import java.util.Date;
 import ASSET.Models.Detection.DetectionList;
 import ASSET.Participants.Status;
 import ASSET.Scenario.ScenarioActivityMonitor;
-import ASSET.Util.SupportTesting;
 import MWC.GUI.Editable;
 
 /**
@@ -64,47 +63,6 @@ public class TimePoint extends Condition.CoreCondition {
 				return super.getPropertyDescriptors();
 			}
 		}
-	}
-
-	////////////////////////////////////////////////////
-	// constructor
-	////////////////////////////////////////////////////
-
-	/**
-	 * ************************************************* testing
-	 * *************************************************
-	 */
-	static public class TimePointTest extends SupportTesting.EditableTesting {
-		static public final String TEST_ALL_TEST_TYPE = "UNIT";
-
-		public TimePointTest(final String name) {
-			super(name);
-		}
-
-		/**
-		 * get an object which we can test
-		 *
-		 * @return Editable object which we can check the properties for
-		 */
-		@Override
-		public Editable getEditable() {
-			return new TimePoint(300);
-		}
-
-		public void testIt() {
-			// build it
-			final TimePoint loc = new TimePoint(300);
-			Object res = loc.test(null, null, 0, null);
-			// test it
-			assertNull("we are before time", res);
-
-			res = loc.test(null, null, 300, null);
-			assertNotNull("we are at time", res);
-
-			res = loc.test(null, null, 400, null);
-			assertNotNull("we are after time", res);
-		}
-
 	}
 
 	////////////////////////////////////////////////////

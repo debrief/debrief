@@ -170,50 +170,10 @@ package Debrief.GUI.Tote.Painters;
 //
 
 import Debrief.GUI.Tote.AnalysisTote;
-import MWC.GUI.Editable;
 import MWC.GUI.Layers;
 import MWC.GUI.PlainChart;
 
 public final class RelativePainter extends SnailPainter {
-	///////////////////////////////////
-	// member variables
-	//////////////////////////////////
-
-	/**
-	 * NON-STANDARD implementation, we are returning the editor for our snail
-	 * plotter object, not ourself
-	 */
-//  public Editable.EditorType getInfo()
-//  {
-//    return new RelativePainterInfo(this);
-//  }
-
-	/////////////////////////////////////////
-	// accessors for the beaninfo
-	////////////////////////////////////////
-	//////////////////////////////////////////////////////////
-	// accessors for editable parameters
-	/////////////////////////////////////////////////////////
-	////////////////////////////////////////////////////////////
-	// nested class describing how to edit this class
-	////////////////////////////////////////////////////////////
-
-	//////////////////////////////////////////////////////////////////////////////////////////////////
-	// testing for this class
-	//////////////////////////////////////////////////////////////////////////////////////////////////
-	static public final class testMe extends junit.framework.TestCase {
-		static public final String TEST_ALL_TEST_TYPE = "UNIT";
-
-		public testMe(final String val) {
-			super(val);
-		}
-
-		public final void testMyParams() {
-			Editable ed = new SnailPainter(null, null, null);
-			Editable.editableTesterSupport.testParams(ed, this);
-			ed = null;
-		}
-	}
 
 	///////////////////////////////////
 	// constructorsna

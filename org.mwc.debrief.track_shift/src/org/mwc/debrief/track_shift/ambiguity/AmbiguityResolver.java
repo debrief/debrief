@@ -14,19 +14,12 @@
  *******************************************************************************/
 package org.mwc.debrief.track_shift.ambiguity;
 
-import java.awt.Color;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Enumeration;
-import java.util.Iterator;
 import java.util.List;
-import java.util.logging.ConsoleHandler;
-import java.util.logging.LogRecord;
 import java.util.logging.Logger;
 
 import org.jfree.data.time.FixedMillisecond;
@@ -35,23 +28,19 @@ import org.jfree.data.time.TimeSeriesDataItem;
 import org.mwc.cmap.core.CorePlugin;
 import org.mwc.debrief.track_shift.ambiguity.LegOfCuts.WhichBearing;
 import org.mwc.debrief.track_shift.ambiguity.LegOfCuts.WhichPeriod;
-import org.mwc.debrief.track_shift.controls.ZoneChart.Zone;
-import org.mwc.debrief.track_shift.views.BearingResidualsView;
 
-import Debrief.ReaderWriter.Replay.ImportReplay;
 import Debrief.Wrappers.SensorContactWrapper;
 import Debrief.Wrappers.SensorWrapper;
 import Debrief.Wrappers.TrackWrapper;
 import MWC.Algorithms.Conversions;
 import MWC.GUI.BaseLayer;
 import MWC.GUI.Editable;
-import MWC.GUI.Layers;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.TimePeriod;
 import MWC.GenericData.Watchable;
 
 public class AmbiguityResolver {
-	private static class LegPermutation {
+	static class LegPermutation {
 		final private double[] coreSlopeEarly;
 		final private double[] ambigSlopeEarly;
 		final private double[] coreSlopeLate;
@@ -76,8 +65,8 @@ public class AmbiguityResolver {
 	}
 
 	public static class LegsAndZigs {
-		private final List<LegOfCuts> legs;
-		private final LegOfCuts zigCuts;
+		final List<LegOfCuts> legs;
+		final LegOfCuts zigCuts;
 
 		public LegsAndZigs(final List<LegOfCuts> legs, final LegOfCuts zigCuts) {
 			this.legs = legs;
@@ -94,11 +83,11 @@ public class AmbiguityResolver {
 
 	}
 
-	private static class PermScore {
+	static class PermScore {
 
 		final private WhichBearing lastB;
 		final private WhichBearing thisB;
-		final private double thisScore;
+		final double thisScore;
 		private final LegOfCuts lastLeg;
 		private final LegOfCuts thisLeg;
 
@@ -220,728 +209,9 @@ public class AmbiguityResolver {
 
 	}
 
-	static public final class TestResolveAmbig extends junit.framework.TestCase {
+	static final long OS_TURN_MIN_TIME_INTERVAL = 180l;
 
-		/**
-		 * algorithm to quickly generate large quantities of lists of boolean
-		 * permutations. Taken from here: https://stackoverflow.com/a/27994579/92441
-		 *
-		 * @param n number of boolean perms
-		 * @return iterator delivers series of boolean arrays, each providing different
-		 *         permutation on the possibles
-		 */
-		public static Iterator<Boolean[]> bool(final int n) {
-			return new Iterator<Boolean[]>() {
-				final long max = (long) Math.pow(2, n);
-				long next = 0L;
-
-				@Override
-				public boolean hasNext() {
-					return next < max;
-				}
-
-				@Override
-				public Boolean[] next() {
-					final Boolean[] b = new Boolean[n];
-					for (int i = 0; i < n; i++) {
-						b[i] = (next & (1 << i)) != 0;
-					}
-					next++;
-					return b;
-				}
-
-				@Override
-				public void remove() {
-					// placeholder, to allow JAva8 compile
-
-				}
-
-			};
-		}
-
-		private static TrackWrapper getData(final String name, final String trackName) throws FileNotFoundException {
-			// get our sample data-file
-			final ImportReplay importer = new ImportReplay();
-			final Layers theLayers = new Layers();
-			final String fName = "../org.mwc.cmap.combined.feature/root_installs/sample_data/S2R/" + name;
-			final File inFile = new File(fName);
-			assertTrue("input file exists", inFile.exists());
-			final FileInputStream is = new FileInputStream(fName);
-			importer.importThis(fName, is, theLayers);
-
-			// sort out the sensors
-			importer.storePendingSensors();
-
-			// get the sensor track
-			final TrackWrapper track = (TrackWrapper) theLayers.findLayer(trackName);
-
-			assertNotNull("found sensor track", track);
-
-			return track;
-		}
-
-		public static void testChunkFor() {
-			final int minRemainder = 9;
-			for (int i = minRemainder; i < 50; i++) {
-				System.out.println(i + " " + chunkFor(i, 9) + " - " + (i % chunkFor(i, 9)));
-				assertTrue(i % chunkFor(i, 9) > minRemainder || i % chunkFor(i, 9) == 0);
-			}
-		}
-
-		public static void testGetCurve() throws FileNotFoundException {
-			final LegOfCuts leg4 = new LegOfCuts();
-			final SensorWrapper sensor = new SensorWrapper("name");
-			leg4.add(wrapMe(sensor, 80, 92d, 260d));
-			leg4.add(wrapMe(sensor, 90, 82d, 280d));
-			leg4.add(wrapMe(sensor, 100, 72d, 300d));
-			leg4.add(wrapMe(sensor, 110, 62d, 320d));
-			leg4.add(wrapMe(sensor, 120, 52d, 340d));
-			leg4.add(wrapMe(sensor, 130, 42d, 360d));
-			leg4.add(wrapMe(sensor, 140, 32d, 380d));
-
-			final double[] curve = leg4.getCurve(WhichPeriod.ALL, WhichBearing.AMBIGUOUS);
-			assertNotNull("produced curve", curve);
-			assertEquals("curve correct length", 3, curve.length);
-			assertEquals("correct offset", 100d, curve[0], 0.001);
-
-			leg4.set(5, wrapMe(sensor, 130, 42d, 0d));
-			leg4.set(6, wrapMe(sensor, 140, 32d, 20d));
-
-			final double[] curve2Ambig = leg4.getCurve(WhichPeriod.ALL, WhichBearing.AMBIGUOUS);
-			final double[] curve2 = leg4.getCurve(WhichPeriod.ALL, WhichBearing.CORE);
-			assertNotNull("produced curve", curve2Ambig);
-			assertEquals("curve correct length", 3, curve2Ambig.length);
-			assertEquals("correct offset", 100d, curve2Ambig[0], 0.001);
-
-			double beforeValue = valueAt(60, curve2Ambig);
-			assertEquals("correct next value", beforeValue, 220d, 0.001);
-
-			double afterValue = valueAt(150, curve2Ambig);
-			assertEquals("correct next value", afterValue, 400d, 0.001);
-
-			beforeValue = valueAt(60, curve2);
-			assertEquals("correct next value", beforeValue, 112d, 0.001);
-
-			afterValue = valueAt(150, curve2);
-			assertEquals("correct next value", afterValue, 22d, 0.001);
-		}
-
-		public static void testGetCurveSector() throws FileNotFoundException {
-			final LegOfCuts leg4 = new LegOfCuts();
-			final SensorWrapper sensor = new SensorWrapper("name");
-			leg4.add(wrapMe(sensor, 80, 92d, 260d));
-			leg4.add(wrapMe(sensor, 90, 82d, 280d));
-			leg4.add(wrapMe(sensor, 100, 72d, 300d));
-			leg4.add(wrapMe(sensor, 110, 62d, 320d));
-			leg4.add(wrapMe(sensor, 120, 52d, 340d));
-
-			// start off with it too short
-			List<SensorContactWrapper> leg = leg4.extractPortion(WhichPeriod.EARLY);
-			assertNotNull("leg retrieved", leg);
-			assertEquals("correct length", 5, leg.size());
-
-			// ok, add more data, so that we need to trim the data
-			leg4.add(wrapMe(sensor, 130, 42d, 0d));
-			leg4.add(wrapMe(sensor, 140, 32d, 20d));
-			leg4.add(wrapMe(sensor, 150, 22d, 40d));
-			leg4.add(wrapMe(sensor, 160, 12d, 60d));
-			leg4.add(wrapMe(sensor, 170, 2d, 80d));
-			leg4.add(wrapMe(sensor, 180, 12d, 60d));
-			leg4.add(wrapMe(sensor, 190, 22d, 40d));
-			leg4.add(wrapMe(sensor, 200, 32d, 20d));
-			leg4.add(wrapMe(sensor, 210, 42d, 0d));
-			leg4.add(wrapMe(sensor, 220, 52d, 340d));
-			leg4.add(wrapMe(sensor, 230, 62d, 320d));
-			leg4.add(wrapMe(sensor, 240, 72d, 300d));
-
-			// check we retrieve the expected data
-			leg = leg4.extractPortion(WhichPeriod.ALL);
-			assertNotNull("leg retrieved", leg);
-			assertEquals("correct length", 17, leg.size());
-			assertEquals("correct start", 80, leg.get(0).getDTG().getDate().getTime());
-			assertEquals("correct end", 240, leg.get(leg.size() - 1).getDTG().getDate().getTime());
-
-			leg = leg4.extractPortion(WhichPeriod.EARLY);
-			assertNotNull("leg retrieved", leg);
-			assertEquals("correct length", 8, LegOfCuts.LEG_LENGTH);
-			assertEquals("correct start", 80, leg.get(0).getDTG().getDate().getTime());
-			assertEquals("correct end", 150, leg.get(leg.size() - 1).getDTG().getDate().getTime());
-
-			leg = leg4.extractPortion(WhichPeriod.LATE);
-			assertNotNull("leg retrieved", leg);
-			assertEquals("correct length", 8, LegOfCuts.LEG_LENGTH);
-			assertEquals("correct start", 170, leg.get(0).getDTG().getDate().getTime());
-			assertEquals("correct end", 240, leg.get(leg.size() - 1).getDTG().getDate().getTime());
-
-			// try the calculated values
-			double[] curve = leg4.getCurve(WhichPeriod.ALL, WhichBearing.CORE);
-			assertEquals("correct value (since we can't fit good curve)", 119.20, valueAt(80, curve), 0.01);
-			assertEquals("correct value (since we can't fit good curve)", 78.79, valueAt(240, curve), 0.01);
-
-			curve = leg4.getCurve(WhichPeriod.EARLY, WhichBearing.CORE);
-			assertEquals("correct value", 92, valueAt(80, curve), 0.01);
-
-			curve = leg4.getCurve(WhichPeriod.EARLY, WhichBearing.AMBIGUOUS);
-			assertEquals("correct value", 260, valueAt(80, curve), 0.01);
-
-			curve = leg4.getCurve(WhichPeriod.LATE, WhichBearing.CORE);
-			assertEquals("correct value", 72, valueAt(240, curve), 0.01);
-
-			curve = leg4.getCurve(WhichPeriod.LATE, WhichBearing.AMBIGUOUS);
-			assertEquals("correct value", -60, valueAt(240, curve), 0.01);
-		}
-
-		public static void testHandleWiggle() throws FileNotFoundException {
-			final TrackWrapper track = getData("Ambig_tracks_hover_north.rep", "SENSOR");
-			assertNotNull("found track", track);
-
-			// has sensors
-			assertEquals("has sensors", 2, track.getSensors().size());
-
-			final Enumeration<Editable> sensorList = track.getSensors().elements();
-			@SuppressWarnings("unused")
-			final SensorWrapper hmSensor = (SensorWrapper) sensorList.nextElement();
-			// make the sensor visible
-
-			final SensorWrapper sensor = (SensorWrapper) sensorList.nextElement();
-			sensor.setVisible(true);
-			final TimePeriod timePeriod = new TimePeriod.BaseTimePeriod(sensor.getStartDTG(), sensor.getEndDTG());
-
-			// check we have the correct sensor
-			assertEquals("correct name", "TA", sensor.getName());
-
-			final Logger logger = Logger.getLogger("Logger");
-			// try to get zones using ambiguity delta
-			final LegsAndZigs res = AmbiguityResolver.sliceTrackIntoLegsUsingAmbiguity(track, 0.2, 0.2, 240, logger,
-					null, OS_TURN_MIN_COURSE_CHANGE, OS_TURN_MIN_TIME_INTERVAL, timePeriod, null);
-			final List<LegOfCuts> legs = res.legs;
-			final LegOfCuts zigs = res.zigCuts;
-
-			assertNotNull("found zones", legs);
-			assertEquals("found correct number of zones", 3, legs.size());
-
-			assertNotNull("found zigs", zigs);
-			assertEquals("found correct number of zig cuts", 10, zigs.size());
-		}
-
-		public static void testMaxLegs() throws FileNotFoundException {
-			final TrackWrapper track = getData("Ambig_tracks2.rep", "SENSOR");
-			assertNotNull("found track", track);
-
-			// has sensors
-			assertEquals("has sensors", 1, track.getSensors().size());
-
-			final Enumeration<Editable> sensorList = track.getSensors().elements();
-
-			// make the sensor visible
-			final SensorWrapper sensor = (SensorWrapper) sensorList.nextElement();
-			sensor.setVisible(true);
-			final TimePeriod timePeriod = new TimePeriod.BaseTimePeriod(sensor.getStartDTG(), sensor.getEndDTG());
-
-			// check we have the correct sensor
-			assertEquals("correct name", "TA", sensor.getName());
-
-			final Logger logger = Logger.getLogger("Logger");
-			// try to get zones using ambiguity delta
-			final LegsAndZigs res = AmbiguityResolver.sliceTrackIntoLegsUsingAmbiguity(track, 0.2, 0.2, 240, logger,
-					null, OS_TURN_MIN_COURSE_CHANGE, OS_TURN_MIN_TIME_INTERVAL, timePeriod, 4);
-			final List<LegOfCuts> legs = res.legs;
-			final LegOfCuts zigs = res.zigCuts;
-
-			assertNotNull("found zones", legs);
-			assertEquals("found correct number of zones", 4, legs.size());
-
-			assertNotNull("found zigs", zigs);
-			assertEquals("found correct number of zig cuts", 8, zigs.size());
-
-			assertEquals("cuts present", 121, sensor.size());
-
-			// ok, simulate moving along. Now delete the cuts.
-			final HiResDate firstLegStart = legs.get(0).getStartDTG();
-			final HiResDate lastLegEnd = legs.get(legs.size() - 1).getEndDTG();
-			final TimePeriod period = new TimePeriod.BaseTimePeriod(firstLegStart, lastLegEnd);
-			final List<Zone> zones = new ArrayList<Zone>();
-			for (final LegOfCuts leg : legs) {
-				final long startT = leg.getStartDTG().getDate().getTime();
-				final long endT = leg.getEndDTG().getDate().getTime();
-				final Zone newZone = new Zone(startT, endT, null);
-				zones.add(newZone);
-			}
-			final LegOfCuts toDelete = BearingResidualsView.findCutsNotInZones(zones, period, track);
-
-			// and delete them
-			for (final SensorContactWrapper cut : toDelete) {
-				cut.getSensor().removeElement(cut);
-			}
-
-			// check the cuts got deleted Note - this isn't the same as cuts.size() -
-			// zigs.size(),
-			// since I suspect we're constraining the cut period to the period of the
-			// identified legs, which may ignore a period of zig cuts are the
-			// last leg
-			assertEquals("cuts deleted", 115, sensor.size());
-
-			// now we run the slicer gain
-
-		}
-
-		public static void testMaxLegsUnspecified() throws FileNotFoundException {
-			final TrackWrapper track = getData("Ambig_tracks2.rep", "SENSOR");
-			assertNotNull("found track", track);
-
-			// has sensors
-			assertEquals("has sensors", 1, track.getSensors().size());
-
-			final Enumeration<Editable> sensorList = track.getSensors().elements();
-
-			// make the sensor visible
-			final SensorWrapper sensor = (SensorWrapper) sensorList.nextElement();
-			sensor.setVisible(true);
-			final TimePeriod timePeriod = new TimePeriod.BaseTimePeriod(sensor.getStartDTG(), sensor.getEndDTG());
-
-			// check we have the correct sensor
-			assertEquals("correct name", "TA", sensor.getName());
-
-			final Logger logger = Logger.getLogger("Logger");
-			// try to get zones using ambiguity delta
-			final LegsAndZigs res = AmbiguityResolver.sliceTrackIntoLegsUsingAmbiguity(track, 0.2, 0.2, 240, logger,
-					null, OS_TURN_MIN_COURSE_CHANGE, OS_TURN_MIN_TIME_INTERVAL, timePeriod, null);
-			final List<LegOfCuts> legs = res.legs;
-			final LegOfCuts zigs = res.zigCuts;
-
-			assertNotNull("found zones", legs);
-			assertEquals("found correct number of zones", 12, legs.size());
-
-			assertNotNull("found zigs", zigs);
-			assertEquals("found correct number of zig cuts", 22, zigs.size());
-		}
-
-		public static void testOnlyDitchVisible() throws FileNotFoundException {
-			final TrackWrapper track = getData("Ambig_tracks2.rep", "SENSOR");
-			assertNotNull("found track", track);
-
-			// has sensors
-			assertEquals("has sensor", 1, track.getSensors().size());
-
-			// make the sensor visible
-			final SensorWrapper sensor = (SensorWrapper) track.getSensors().elements().nextElement();
-			sensor.setVisible(true);
-			final TimePeriod timePeriod = new TimePeriod.BaseTimePeriod(sensor.getStartDTG(), sensor.getEndDTG());
-
-			// set some cuts to hidden
-			int ctr = 0;
-			final Enumeration<Editable> numer = sensor.elements();
-			while (numer.hasMoreElements()) {
-				final SensorContactWrapper scw = (SensorContactWrapper) numer.nextElement();
-				if (ctr > 20 && ctr < 50) {
-					scw.setVisible(false);
-				}
-
-				ctr++;
-			}
-
-			// try to get zones using ambiguity delta
-			final LegsAndZigs res = AmbiguityResolver.sliceTrackIntoLegsUsingAmbiguity(track, 0.2, 0.2, 240, null, null,
-					OS_TURN_MIN_COURSE_CHANGE, OS_TURN_MIN_TIME_INTERVAL, timePeriod, null);
-			final List<LegOfCuts> legs = res.legs;
-			final LegOfCuts zigs = res.zigCuts;
-
-			assertNotNull("found zones", legs);
-			assertEquals("found correct number of zones", 9, legs.size());
-
-			assertNotNull("found zigs", zigs);
-			assertEquals("found correct number of zig cuts", 16, zigs.size());
-		}
-
-		public static void testOver20Legs() throws FileNotFoundException {
-			final TrackWrapper track = getData("legs_20.rep", "T23");
-			assertNotNull("found track", track);
-
-			// has sensors
-			assertEquals("has sensors", 2, track.getSensors().size());
-
-			final Enumeration<Editable> sensorList = track.getSensors().elements();
-
-			// skip the first sensor
-			sensorList.nextElement();
-
-			// make the sensor visible
-			final SensorWrapper sensor = (SensorWrapper) sensorList.nextElement();
-			sensor.setVisible(true);
-			final TimePeriod timePeriod = new TimePeriod.BaseTimePeriod(sensor.getStartDTG(), sensor.getEndDTG());
-
-			// check we have the correct sensor
-			assertEquals("correct name", "TA", sensor.getName());
-
-			final Logger logger = null;// Logger.getLogger("Logger");
-			// try to get zones using ambiguity delta
-			final LegsAndZigs res = AmbiguityResolver.sliceTrackIntoLegsUsingAmbiguity(track, 0.2, 0.2, 240, logger,
-					null, OS_TURN_MIN_COURSE_CHANGE, OS_TURN_MIN_TIME_INTERVAL, timePeriod, null);
-			final List<LegOfCuts> legs = res.legs;
-			final LegOfCuts zigs = res.zigCuts;
-
-			assertNotNull("found zigs", zigs);
-			// note: before the (ambig - core) domain fold was corrected (CR-033) this
-			// produced 6 zig cuts and 25 legs, including two spurious leg breaks
-			// (13th, 22:43 & 23:23) while ownship was steady on 303.5
-			assertEquals("found correct number of zig cuts", 4, zigs.size());
-
-			assertNotNull("found zones", legs);
-			assertEquals("found correct number of zones", 23, legs.size());
-
-			final List<ResolvedLeg> resolved = AmbiguityResolver.resolve(legs);
-			assertEquals("resolved", 23, resolved.size());
-
-			// check they're all resolved
-			for (final ResolvedLeg leg : resolved) {
-				for (final SensorContactWrapper cut : leg.leg) {
-					assertFalse("ambig cut silenced", cut.getHasAmbiguousBearing());
-				}
-			}
-		}
-
-		public static void testResolve() throws FileNotFoundException {
-			final List<LegOfCuts> legs = new ArrayList<LegOfCuts>();
-			final SensorWrapper sensor = new SensorWrapper("name");
-			final LegOfCuts leg1 = new LegOfCuts();
-			leg1.add(wrapMe(sensor, 100, 180d, 270d));
-			leg1.add(wrapMe(sensor, 110, 170d, 280d));
-			leg1.add(wrapMe(sensor, 120, 160d, 290d));
-			leg1.add(wrapMe(sensor, 130, 150d, 300d));
-			leg1.add(wrapMe(sensor, 140, 140d, 310d));
-			legs.add(leg1);
-
-			final LegOfCuts leg2 = new LegOfCuts();
-			leg2.add(wrapMe(sensor, 160, 182d, 220d));
-			leg2.add(wrapMe(sensor, 170, 183d, 221d));
-			leg2.add(wrapMe(sensor, 180, 184d, 222d));
-			leg2.add(wrapMe(sensor, 190, 185d, 223d));
-			leg2.add(wrapMe(sensor, 200, 186d, 224d));
-			legs.add(leg2);
-
-			final LegOfCuts leg3 = new LegOfCuts();
-			leg3.add(wrapMe(sensor, 220, 92d, 200d));
-			leg3.add(wrapMe(sensor, 230, 83d, 210d));
-			leg3.add(wrapMe(sensor, 240, 74d, 220d));
-			leg3.add(wrapMe(sensor, 250, 65d, 230d));
-			leg3.add(wrapMe(sensor, 260, 56d, 240d));
-			legs.add(leg3);
-
-			final LegOfCuts leg4 = new LegOfCuts();
-			leg4.add(wrapMe(sensor, 280, 92d, 260d));
-			leg4.add(wrapMe(sensor, 290, 73d, 280d));
-			leg4.add(wrapMe(sensor, 300, 54d, 300d));
-			leg4.add(wrapMe(sensor, 310, 35d, 320d));
-			leg4.add(wrapMe(sensor, 320, 16d, 340d));
-			leg4.add(wrapMe(sensor, 330, 9d, 0d));
-			leg4.add(wrapMe(sensor, 340, 355d, 20d));
-			legs.add(leg4);
-
-			// put the good cut in the wrong domain
-			final LegOfCuts leg5 = new LegOfCuts();
-			leg5.add(wrapMe(sensor, 360, 41d, 260d));
-			leg5.add(wrapMe(sensor, 370, 43d, 240d));
-			leg5.add(wrapMe(sensor, 380, 45d, 220d));
-			leg5.add(wrapMe(sensor, 390, 47d, 200d));
-			leg5.add(wrapMe(sensor, 400, 49d, 180d));
-			leg5.add(wrapMe(sensor, 410, 51d, 160d));
-			leg5.add(wrapMe(sensor, 420, 53d, 140d));
-			legs.add(leg5);
-
-			// make the first cuts very wonky
-			final LegOfCuts leg6 = new LegOfCuts();
-			leg6.add(wrapMe(sensor, 440, 141d, 350d));
-			leg6.add(wrapMe(sensor, 450, 143d, 20d));
-			leg6.add(wrapMe(sensor, 460, 145d, 70d));
-			leg6.add(wrapMe(sensor, 470, 147d, 80d));
-			leg6.add(wrapMe(sensor, 480, 149d, 90d));
-			leg6.add(wrapMe(sensor, 490, 151d, 100d));
-			leg6.add(wrapMe(sensor, 500, 153d, 110d));
-			legs.add(leg6);
-
-			final List<ResolvedLeg> resolvedLegs = AmbiguityResolver.resolve(legs);
-
-			assertNotNull("have list of resolved", resolvedLegs);
-			assertEquals("correct num legs", 6, resolvedLegs.size());
-
-			// ok, check the legs
-			assertFalse("not ambig", leg1.get(0).getHasAmbiguousBearing());
-			assertFalse("not ambig", leg2.get(0).getHasAmbiguousBearing());
-			assertFalse("not ambig", leg3.get(0).getHasAmbiguousBearing());
-			// assertFalse("not ambig", leg4.get(0).getHasAmbiguousBearing());
-			// assertFalse("not ambig", leg5.get(0).getHasAmbiguousBearing());
-			// assertFalse("not ambig", leg6.get(0).getHasAmbiguousBearing());
-			//
-			// assertEquals("correct bearing", 180d, leg1.get(0).getBearing());
-			// assertEquals("correct bearing", 182d, leg2.get(0).getBearing());
-			// assertEquals("correct bearing", 200d, leg3.get(0).getBearing());
-			// assertEquals("correct bearing", 260d, leg4.get(0).getBearing());
-			// assertEquals("correct bearing", 41d, leg5.get(0).getBearing());
-			// assertEquals("correct bearing", 350d, leg6.get(0).getBearing());
-
-		}
-
-		/**
-		 * check that we allow a couple of apparently steady cuts during a turn
-		 *
-		 * @throws FileNotFoundException
-		 */
-		public static void testSteadyInTurn() throws FileNotFoundException {
-			final SensorWrapper sensor = new SensorWrapper("name");
-			sensor.add(wrapMe(sensor, 100000, 180d, 270d));
-			sensor.add(wrapMe(sensor, 110000, 170d, 280d));
-			sensor.add(wrapMe(sensor, 120000, 160d, 290d));
-			sensor.add(wrapMe(sensor, 130000, 150d, 300d));
-			sensor.add(wrapMe(sensor, 140000, 140d, 310d));
-			sensor.add(wrapMe(sensor, 150000, 130d, 310d));
-			sensor.add(wrapMe(sensor, 160000, 122d, 220d));
-			sensor.add(wrapMe(sensor, 170000, 113d, 221d));
-			sensor.add(wrapMe(sensor, 180000, 104d, 222d));
-			sensor.add(wrapMe(sensor, 190000, 095d, 223d));
-			sensor.add(wrapMe(sensor, 200000, 086d, 224d));
-			sensor.add(wrapMe(sensor, 210000, 076d, 224d));
-			sensor.add(wrapMe(sensor, 220000, 62d, 200d));
-			sensor.add(wrapMe(sensor, 230000, 53d, 210d));
-			sensor.add(wrapMe(sensor, 240000, 44d, 220d));
-			sensor.add(wrapMe(sensor, 250000, 35d, 230d));
-			sensor.add(wrapMe(sensor, 260000, 26d, 240d));
-			sensor.add(wrapMe(sensor, 270000, 36d, 240d));
-			sensor.add(wrapMe(sensor, 280000, 42d, 260d));
-			sensor.add(wrapMe(sensor, 290000, 53d, 280d));
-			sensor.add(wrapMe(sensor, 300000, 64d, 300d));
-			sensor.add(wrapMe(sensor, 310000, 75d, 320d));
-			sensor.add(wrapMe(sensor, 320000, 66d, 340d));
-			sensor.add(wrapMe(sensor, 330000, 56d, 0d));
-			sensor.add(wrapMe(sensor, 340000, 45d, 20d));
-			sensor.add(wrapMe(sensor, 350000, 35d, 30d));
-			sensor.add(wrapMe(sensor, 360000, 35d, 30d));
-			sensor.add(wrapMe(sensor, 370000, 15d, 70d));
-			sensor.add(wrapMe(sensor, 380000, 355d, 20d));
-			sensor.add(wrapMe(sensor, 390000, 355d, 20d));
-			sensor.add(wrapMe(sensor, 400000, 345d, 20d));
-			// sensor.add(wrapMe(sensor, 410000, 345d, 20d));
-
-			sensor.setVisible(true);
-			final TimePeriod timePeriod = new TimePeriod.BaseTimePeriod(sensor.getStartDTG(), sensor.getEndDTG());
-
-			final TrackWrapper host = new TrackWrapper();
-			host.setName("Host");
-			host.add(sensor);
-
-			final Logger logger = Logger.getLogger("Test output");
-			logger.setUseParentHandlers(false);
-			logger.addHandler(new ConsoleHandler() {
-
-				@Override
-				public void publish(final LogRecord record) {
-					System.out.println(record.getMessage());
-				}
-			});
-
-			final LegsAndZigs sliced = AmbiguityResolver.sliceTrackIntoLegsUsingAmbiguity(host, 2.2, 0.2, 22, logger,
-					null, OS_TURN_MIN_COURSE_CHANGE, OS_TURN_MIN_TIME_INTERVAL, timePeriod, null);
-
-			assertNotNull("produced slices", sliced);
-			assertEquals("correct legs", 4, sliced.legs.size());
-			assertEquals("correct turning cuts", 13, sliced.zigCuts.size());
-		}
-
-		/**
-		 * ambiguous bearing passes through north (and out of the 'near north' zone)
-		 * on a steady leg. The (ambig - core) delta changes domain, which shouldn't
-		 * be treated as a zig.
-		 */
-		public static void testSteadyAmbigThroughNorth() {
-			final SensorWrapper sensor = new SensorWrapper("name");
-			for (int i = 0; i <= 24; i++) {
-				final double core = 100d + i;
-				final double ambig = Conversions.normaliseDegs(60d - 5d * i);
-				sensor.add(wrapMe(sensor, 100000 + i * 10000, core, ambig));
-			}
-
-			sensor.setVisible(true);
-			final TimePeriod timePeriod = new TimePeriod.BaseTimePeriod(sensor.getStartDTG(), sensor.getEndDTG());
-
-			final TrackWrapper host = new TrackWrapper();
-			host.setName("Host");
-			host.add(sensor);
-
-			final LegsAndZigs sliced = AmbiguityResolver.sliceTrackIntoLegsUsingAmbiguity(host, 2.2, 0.2, 22, null,
-					null, OS_TURN_MIN_COURSE_CHANGE, OS_TURN_MIN_TIME_INTERVAL, timePeriod, null);
-
-			assertNotNull("produced slices", sliced);
-			assertEquals("no turning cuts", 0, sliced.zigCuts.size());
-			assertEquals("single leg", 1, sliced.legs.size());
-		}
-
-		/**
-		 * the permutation score should be the smallest angle between the bearings,
-		 * even if the curves have unwrapped a long way
-		 */
-		public static void testPermScoreFold() {
-			final LegPermutation last = new LegPermutation(null, null, null, null, null);
-			final LegPermutation next = new LegPermutation(null, null, null, null, null);
-			last.coreAfter = 10;
-			last.ambigAfter = 10;
-
-			next.coreBefore = 10 + 720 + 5;
-			next.ambigBefore = 10 - 720 - 5;
-			assertEquals("core folded", 5d, new PermScore(last, next, WhichBearing.CORE, WhichBearing.CORE).thisScore,
-					0.0001);
-			assertEquals("ambig folded", 5d,
-					new PermScore(last, next, WhichBearing.AMBIGUOUS, WhichBearing.AMBIGUOUS).thisScore, 0.0001);
-
-			next.coreBefore = 10 + 350;
-			assertEquals("simple fold", 10d,
-					new PermScore(last, next, WhichBearing.CORE, WhichBearing.CORE).thisScore, 0.0001);
-		}
-
-		public static void testTrim() {
-			assertEquals("trim as normal", 5d, trim(365, null));
-			assertEquals("trim as normal", -5d, trim(-365, null));
-			assertEquals("trim as normal", 65d, trim(65, null));
-			assertEquals("trim as normal", -65d, trim(-65, null));
-			assertEquals("trim as normal", -10d, trim(-370, null));
-
-			// ok, give it a target value, and check we're in the correct domain
-			assertEquals("trim as normal", 365d, trim(365, 340d));
-			assertEquals("trim as normal", -300d, trim(-300, -340d));
-
-			// ooh, what if we're looking for a high value,
-			// but only receive a low value
-			assertEquals("trim as normal", 365d, trim(5, 340d));
-			assertEquals("trim as normal", -370d, trim(-10, -340d));
-		}
-
-		public static void testWeighting() {
-			final SensorWrapper sensor = new SensorWrapper("name");
-			final List<LegOfCuts> legs = new ArrayList<LegOfCuts>();
-
-			final LegOfCuts leg1 = new LegOfCuts();
-			leg1.add(wrapMe(sensor, 280, 92d, 260d));
-			leg1.add(wrapMe(sensor, 290, 73d, 280d));
-			leg1.add(wrapMe(sensor, 300, 54d, 300d));
-			leg1.add(wrapMe(sensor, 310, 35d, 320d));
-			leg1.add(wrapMe(sensor, 320, 16d, 340d));
-			leg1.add(wrapMe(sensor, 330, 9d, 0d));
-			leg1.add(wrapMe(sensor, 340, 355d, 20d));
-			legs.add(leg1);
-
-			// put the good cut in the wrong domain
-			final LegOfCuts leg2 = new LegOfCuts();
-			leg2.add(wrapMe(sensor, 360, 42d, 260d));
-			leg2.add(wrapMe(sensor, 370, 43d, 240d));
-			leg2.add(wrapMe(sensor, 380, 45d, 220d));
-			leg2.add(wrapMe(sensor, 390, 47d, 200d));
-			leg2.add(wrapMe(sensor, 400, 49d, 180d));
-			leg2.add(wrapMe(sensor, 410, 51d, 160d));
-			leg2.add(wrapMe(sensor, 420, 53d, 140d));
-			legs.add(leg2);
-
-			// make the first cuts very wonky
-			final LegOfCuts leg3 = new LegOfCuts();
-			leg3.add(wrapMe(sensor, 440, 141d, 350d));
-			leg3.add(wrapMe(sensor, 450, 143d, 20d));
-			leg3.add(wrapMe(sensor, 460, 145d, 70d));
-			leg3.add(wrapMe(sensor, 470, 147d, 80d));
-			leg3.add(wrapMe(sensor, 480, 149d, 90d));
-			leg3.add(wrapMe(sensor, 490, 151d, 100d));
-			leg3.add(wrapMe(sensor, 500, 153d, 110d));
-			legs.add(leg3);
-
-			final List<ResolvedLeg> resolvedLegs = AmbiguityResolver.resolve(legs);
-
-			assertNotNull("have legs", resolvedLegs);
-			assertEquals("correct bearing", 260d, leg1.get(0).getBearing());
-			assertEquals("correct bearing", 42d, leg2.get(0).getBearing());
-			assertEquals("correct bearing", 350d, leg3.get(0).getBearing());
-		}
-
-		private static SensorContactWrapper wrapMe(final SensorWrapper sensor, final long dtg, final double bearing1,
-				final double bearing2) {
-			return new SensorContactWrapper("track", new HiResDate(dtg), null, bearing1, bearing2, null, null,
-					Color.RED, "label", 0, sensor.getName());
-		}
-
-		private void getPerms(final List<ArrayList<WhichBearing>> results, final int ctr,
-				final List<WhichBearing> thisList, final WhichBearing newPerm) {
-			final ArrayList<WhichBearing> newList = new ArrayList<WhichBearing>();
-
-			if (thisList != null) {
-				newList.addAll(thisList);
-			}
-
-			if (newPerm != null) {
-				newList.add(newPerm);
-			}
-
-			if (ctr > 0) {
-				// ok, add the two new perms
-				final int thisCtr = ctr - 1;
-				getPerms(results, thisCtr, newList, WhichBearing.CORE);
-				getPerms(results, thisCtr, newList, WhichBearing.AMBIGUOUS);
-			} else {
-				// ok, finished. store the results
-				results.add(newList);
-			}
-		}
-
-		public void testGenPerms() {
-			final List<ArrayList<WhichBearing>> results = new ArrayList<ArrayList<WhichBearing>>();
-			final int ctr = 6;
-			final List<WhichBearing> thisList = null;
-			final WhichBearing newPerm = null;
-
-			getPerms(results, ctr, thisList, newPerm);
-			System.out.println(results.size());
-			assertEquals("enough perms", (int) Math.pow(2, ctr), results.size());
-
-			results.clear();
-
-			final ArrayList<WhichBearing> starter = new ArrayList<WhichBearing>();
-			starter.add(WhichBearing.CORE);
-			starter.add(WhichBearing.AMBIGUOUS);
-
-			results.add(starter);
-
-			// try another way
-			for (int i = 0; i < ctr; i++) {
-				final ArrayList<ArrayList<WhichBearing>> newList = new ArrayList<ArrayList<WhichBearing>>();
-				for (final ArrayList<WhichBearing> list : results) {
-					final ArrayList<WhichBearing> permA = new ArrayList<WhichBearing>();
-					permA.addAll(list);
-					final ArrayList<WhichBearing> permB = new ArrayList<WhichBearing>();
-					permB.addAll(list);
-					permA.add(WhichBearing.CORE);
-					permB.add(WhichBearing.AMBIGUOUS);
-
-					newList.add(permA);
-					newList.add(permB);
-				}
-
-				results.clear();
-				results.addAll(newList);
-			}
-
-			System.out.println(results.size());
-			assertEquals("enough perms", (int) Math.pow(2, ctr), results.size());
-
-			final Iterator<Boolean[]> iter = bool(ctr);
-			int numGenerated = 0;
-			while (iter.hasNext()) {
-				@SuppressWarnings("unused")
-				final Boolean[] perm = iter.next();
-				numGenerated++;
-			}
-
-			assertEquals("enough perms", (int) Math.pow(2, ctr), numGenerated);
-
-		}
-	}
-
-	private static final long OS_TURN_MIN_TIME_INTERVAL = 180l;
-
-	private static final double OS_TURN_MIN_COURSE_CHANGE = 10d;
+	static final double OS_TURN_MIN_COURSE_CHANGE = 10d;
 
 	/**
 	 * come up with a chunk size that doesn't leave to few iterations at the end
@@ -949,7 +219,7 @@ public class AmbiguityResolver {
 	 * @param len
 	 * @return
 	 */
-	private static int chunkFor(final int len, final int minChunk) {
+	static int chunkFor(final int len, final int minChunk) {
 		// improve this - so they're always at least 10, but less than 20
 
 		final int MAX_CHUNK_SIZE = 20;
@@ -1508,7 +778,7 @@ public class AmbiguityResolver {
 	 *
 	 * @return
 	 */
-	private static double trim(final double val, final Double target) {
+	static double trim(final double val, final Double target) {
 		double res = val;
 
 		// ok, get trimming
@@ -1530,7 +800,7 @@ public class AmbiguityResolver {
 		return res;
 	}
 
-	private static double valueAt(final long time, final double[] slope) {
+	static double valueAt(final long time, final double[] slope) {
 		return slope[0] + slope[1] * time + slope[2] * Math.pow(time, 2);
 	}
 

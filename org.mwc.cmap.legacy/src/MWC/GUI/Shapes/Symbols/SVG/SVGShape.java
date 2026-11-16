@@ -51,21 +51,6 @@ import MWC.GenericData.WorldLocation;
 import MWC.Utilities.Errors.Trace;
 
 public class SVGShape extends PlainSymbol {
-	public static class SVGShapeTest extends junit.framework.TestCase {
-		static public final String TEST_ALL_TEST_TYPE = "UNIT";
-
-		public SVGShapeTest(final String val) {
-			super(val);
-		}
-
-		public void testLoadingFileDoesntExit() {
-			final String fileDoesntExist = "fileDoesntExit";
-			final SVGShape svgShape = new SVGShape(fileDoesntExist);
-			svgShape.paint(null, null, 0);
-
-			assertTrue(svgShape.getElements() == null);
-		}
-	}
 
 	private static final String SVG_SYMBOL_FOLDER = "svg_symbols";
 

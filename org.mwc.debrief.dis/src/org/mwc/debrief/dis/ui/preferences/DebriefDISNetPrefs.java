@@ -8,24 +8,13 @@ import org.eclipse.jface.preference.IPreferenceStore;
 import org.mwc.debrief.dis.DisActivator;
 import org.mwc.debrief.dis.providers.network.IDISNetworkPrefs;
 
-import junit.framework.TestCase;
-
 /**
  * @author ian
  *
  */
 public class DebriefDISNetPrefs implements IDISNetworkPrefs {
 
-	public static class TestMe extends TestCase {
-		public void testArgs() {
-			final DebriefDISNetPrefs prefs = new DebriefDISNetPrefs();
-			assertNull("didn't find it", prefs.getArg(new String[] { "aa", "bb" }, "val"));
-			assertNotNull("found it", prefs.getArg(new String[] { "aa", "-Dval=23" }, "val"));
-			assertEquals("found it", "23", prefs.getArg(new String[] { "aa", "-Dval=23" }, "val"));
-		}
-	}
-
-	private String getArg(final String[] args, final String name) {
+	String getArg(final String[] args, final String name) {
 		for (int i = 0; i < args.length; i++) {
 			final String thisArg = args[i];
 			if (thisArg.contains(name)) {

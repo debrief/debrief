@@ -21,8 +21,6 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.regex.Pattern;
 
-import junit.framework.AssertionFailedError;
-
 /**
  * Compares output against a committed golden file, so that a library upgrade
  * which changes what Debrief writes shows up as a test failure.
@@ -36,7 +34,7 @@ import junit.framework.AssertionFailedError;
  * To regenerate the golden files, run the tests with the system property
  * {@value #REGENERATE_PROPERTY}{@code =true}, or the environment variable
  * {@value #REGENERATE_ENV}{@code =true} (the environment variable reaches the
- * forked test JVMs of both Tycho Surefire and Ant's junit task). Each test then
+ * forked test JVMs of both Surefire and Ant's junitlauncher task). Each test then
  * writes its output as the new golden file and passes. Review the diff and
  * explain it in the pull request. See
  * {@code org.mwc.debrief.legacy/test_data/golden/README.md}.
@@ -75,7 +73,7 @@ public final class GoldenFile {
 			return;
 		}
 		if (!golden.isFile()) {
-			throw new AssertionFailedError("Golden file " + golden.getCanonicalPath()
+			throw new AssertionError("Golden file " + golden.getCanonicalPath()
 					+ " is missing. Run the test with -D" + REGENERATE_PROPERTY + "=true (or " + REGENERATE_ENV
 					+ "=true) to create it.");
 		}
@@ -83,7 +81,7 @@ public final class GoldenFile {
 		if (!expected.equals(normalised)) {
 			final File actualFile = File.createTempFile("golden-actual-", "-" + golden.getName());
 			Files.write(actualFile.toPath(), normalised.getBytes(StandardCharsets.UTF_8));
-			throw new AssertionFailedError("Output differs from golden file " + golden.getCanonicalPath() + " "
+			throw new AssertionError("Output differs from golden file " + golden.getCanonicalPath() + " "
 					+ firstDifference(expected, normalised) + ". Actual output written to "
 					+ actualFile.getCanonicalPath() + ". If the change is intended, regenerate with -D"
 					+ REGENERATE_PROPERTY + "=true and explain why in the pull request.");

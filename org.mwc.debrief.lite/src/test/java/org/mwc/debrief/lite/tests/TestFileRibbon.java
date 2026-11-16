@@ -14,6 +14,8 @@
  *******************************************************************************/
 package org.mwc.debrief.lite.tests;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 import java.awt.AWTException;
 import java.awt.Robot;
 import java.awt.event.KeyEvent;
@@ -34,6 +36,7 @@ import org.mwc.debrief.lite.DebriefLiteApp;
 import org.mwc.debrief.lite.gui.custom.JXCollapsiblePaneWithTitle;
 import org.mwc.debrief.lite.menu.DebriefRibbonFile;
 import org.mwc.debrief.lite.utils.TestUtils;
+import org.junit.jupiter.api.Test;
 import org.pushingpixels.flamingo.api.common.JCommandButton;
 import org.pushingpixels.flamingo.api.ribbon.JRibbonFrame;
 import org.pushingpixels.flamingo.internal.ui.ribbon.JBandControlPanel;
@@ -65,8 +68,9 @@ public class TestFileRibbon extends BaseTestCase
     });
   }
 
-  
-  public void testClose() throws InterruptedException, InvocationTargetException
+
+	@Test
+	public void testClose() throws InterruptedException, InvocationTargetException
   {
     System.out.println("Starting test close");
     openRepFile(
@@ -122,7 +126,8 @@ public class TestFileRibbon extends BaseTestCase
     System.out.println("Done test close");
   }
 
-  public void testImportRepFile() throws InvocationTargetException,
+	@Test
+	public void testImportRepFile() throws InvocationTargetException,
       InterruptedException
   {
     
@@ -130,7 +135,7 @@ public class TestFileRibbon extends BaseTestCase
     JFrame ribbonFrame = DebriefLiteApp.getInstance().getApplicationFrame();
     openRepFile(
         "../org.mwc.cmap.combined.feature/root_installs/sample_data/boat1.rep");
-    assertTrue("expected boat1.rep found "+ribbonFrame.getTitle(),ribbonFrame.getTitle().contains("boat1.rep"));
+    assertTrue(ribbonFrame.getTitle().contains("boat1.rep"),"expected boat1.rep found "+ribbonFrame.getTitle());
     //do assertions here
     //outline view should have track nelson and by default should have layers chart features and background
     JXCollapsiblePaneWithTitle outlinePanel = (JXCollapsiblePaneWithTitle)TestUtils.getChildNamed(ribbonFrame,"Outline");
@@ -155,8 +160,8 @@ public class TestFileRibbon extends BaseTestCase
     assertTrue(node.isLeaf());
     assertNotNull(node);
   }
-  
-  public void testNewFile() throws InvocationTargetException,
+	@Test
+	public void testNewFile() throws InvocationTargetException,
       InterruptedException
   {
 
@@ -168,7 +173,7 @@ public class TestFileRibbon extends BaseTestCase
     Thread.sleep(200);
     final JRibbonFrame ribbonFrame = DebriefLiteApp.getInstance()
         .getApplicationFrame();
-    assertTrue("expected boat1.rep found "+ribbonFrame.getTitle(),ribbonFrame.getTitle().contains("boat1.rep"));
+    assertTrue(ribbonFrame.getTitle().contains("boat1.rep"),"expected boat1.rep found "+ribbonFrame.getTitle());
     assertTrue(ribbonFrame.getTitle().contains("boat1.rep"));
     final JXCollapsiblePaneWithTitle outlinePanel =
         (JXCollapsiblePaneWithTitle) TestUtils.getChildNamed(ribbonFrame,
@@ -205,7 +210,7 @@ public class TestFileRibbon extends BaseTestCase
     {
       Thread.sleep(200);
       ok = (JButton) TestUtils.getChildIndexed(ribbonFrame, "JButton", 1, true);
-      assertTrue("no save-changes dialog after " + (i * 200) + " ms, dirty=" + DebriefLiteApp.isDirty(), i < 10);
+      assertTrue(i < 10, "no save-changes dialog after " + (i * 200) + " ms, dirty=" + DebriefLiteApp.isDirty());
     }
     assertEquals("No", ok.getText());
     final JButton no = ok;
@@ -343,8 +348,8 @@ public class TestFileRibbon extends BaseTestCase
     f.delete();
     System.out.println("Done deleting created file");
   }
-  
-  public void testImportNMEAFile() throws InterruptedException,InvocationTargetException
+	@Test
+	public void testImportNMEAFile() throws InterruptedException,InvocationTargetException
   {
     SwingUtilities.invokeAndWait(new Runnable()
     {
@@ -366,20 +371,20 @@ public class TestFileRibbon extends BaseTestCase
     assertEquals(tree.getModel().getChildCount(tree.getModel().getRoot()),6);
     DefaultMutableTreeNode node = (DefaultMutableTreeNode)tree.getModel().getChild(tree.getModel().getRoot(), 5);
     assertNotNull(node);
-    assertEquals("contacts validation failed",14,node.getChildCount());
+    assertEquals(14,node.getChildCount(),"contacts validation failed");
     node = (DefaultMutableTreeNode)tree.getModel().getChild(tree.getModel().getRoot(), 2);
-    assertTrue("didnt find a track object",node.getUserObject() instanceof TrackWrapper);
-    assertEquals("invalid childcount for :"+node,node.getFirstChild().getChildCount(),1395);
+    assertTrue(node.getUserObject() instanceof TrackWrapper,"didnt find a track object");
+    assertEquals(node.getFirstChild().getChildCount(),1395,"invalid childcount for :"+node);
     node = (DefaultMutableTreeNode)tree.getModel().getChild(tree.getModel().getRoot(), 3);
-    assertTrue("didnt find a track object",node.getUserObject() instanceof TrackWrapper);
-    assertEquals("invalid childcount for :"+node,node.getFirstChild().getChildCount(),1327);
+    assertTrue(node.getUserObject() instanceof TrackWrapper,"didnt find a track object");
+    assertEquals(node.getFirstChild().getChildCount(),1327,"invalid childcount for :"+node);
     node = (DefaultMutableTreeNode)tree.getModel().getChild(tree.getModel().getRoot(), 4);
-    assertTrue("didnt find a track object",node.getUserObject() instanceof TrackWrapper);
-    assertEquals("invalid childcount for :"+node,node.getFirstChild().getChildCount(),9);
+    assertTrue(node.getUserObject() instanceof TrackWrapper,"didnt find a track object");
+    assertEquals(node.getFirstChild().getChildCount(),9,"invalid childcount for :"+node);
     System.out.println("done opening file");
   }
-  
-  public void testImportMultipleFiles()throws InterruptedException,InvocationTargetException
+	@Test
+	public void testImportMultipleFiles() throws InterruptedException,InvocationTargetException
   {
     //when you import more than one file it should just import to the same file.
     //try adding boat1.rep and nmea file and verify all the elements are added in the outlline panel.
@@ -424,16 +429,16 @@ public class TestFileRibbon extends BaseTestCase
     assertEquals(tree.getModel().getChildCount(tree.getModel().getRoot()),7);
     node = (DefaultMutableTreeNode)tree.getModel().getChild(tree.getModel().getRoot(), 6);
     assertNotNull(node);
-    assertEquals("contacts validation failed",14,node.getChildCount());
+    assertEquals(14,node.getChildCount(),"contacts validation failed");
     node = (DefaultMutableTreeNode)tree.getModel().getChild(tree.getModel().getRoot(), 3);
-    assertTrue("didnt find a track object",node.getUserObject() instanceof TrackWrapper);
-    assertEquals("invalid childcount for :"+node,node.getFirstChild().getChildCount(),1395);
+    assertTrue(node.getUserObject() instanceof TrackWrapper,"didnt find a track object");
+    assertEquals(node.getFirstChild().getChildCount(),1395,"invalid childcount for :"+node);
     node = (DefaultMutableTreeNode)tree.getModel().getChild(tree.getModel().getRoot(), 4);
-    assertTrue("didnt find a track object",node.getUserObject() instanceof TrackWrapper);
-    assertEquals("invalid childcount for :"+node,node.getFirstChild().getChildCount(),1327);
+    assertTrue(node.getUserObject() instanceof TrackWrapper,"didnt find a track object");
+    assertEquals(node.getFirstChild().getChildCount(),1327,"invalid childcount for :"+node);
     node = (DefaultMutableTreeNode)tree.getModel().getChild(tree.getModel().getRoot(), 5);
-    assertTrue("didnt find a track object",node.getUserObject() instanceof TrackWrapper);
-    assertEquals("invalid childcount for :"+node,node.getFirstChild().getChildCount(),9);
+    assertTrue(node.getUserObject() instanceof TrackWrapper,"didnt find a track object");
+    assertEquals(node.getFirstChild().getChildCount(),9,"invalid childcount for :"+node);
     System.out.println("done opening file");
     JBandControlPanel panel = (JBandControlPanel)TestUtils.getRibbonBand(1, 0).getComponent(0);
     final JCommandButton closeButton = (JCommandButton)panel.getComponent(3);
@@ -485,8 +490,8 @@ public class TestFileRibbon extends BaseTestCase
     }
     
   }
-  
-  public void testOpenDpfFile()throws InterruptedException,InvocationTargetException
+	@Test
+	public void testOpenDpfFile() throws InterruptedException,InvocationTargetException
   {
     JBandControlPanel liteBand = (JBandControlPanel)TestUtils.getRibbonBand(1,0).getComponent(0);
     final JCommandButton openButton = (JCommandButton)liteBand.getComponent(1);
@@ -586,7 +591,7 @@ public class TestFileRibbon extends BaseTestCase
     final JRibbonFrame ribbonFrame = DebriefLiteApp.getInstance()
         .getApplicationFrame();
     System.out.println("Title:"+ribbonFrame.getTitle());
-    assertTrue("expected boat1.rep found "+ribbonFrame.getTitle(),ribbonFrame.getTitle().contains("boat1.rep"));
+    assertTrue(ribbonFrame.getTitle().contains("boat1.rep"),"expected boat1.rep found "+ribbonFrame.getTitle());
     assertEquals(ribbonFrame.getRibbon().getTask(1).getTitle(), "File");
     /// ribbonFrame.getRibbon().setSelectedTask(DebriefRibbonFile.getFileTask());
     // insert a new shape.System.out.println("Title:"+ribbonFrame.getTitle());

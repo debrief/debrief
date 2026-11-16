@@ -18,9 +18,6 @@ package MWC.Utilities.ReaderWriter.json;
 import java.io.IOException;
 import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.Date;
-import java.util.Enumeration;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -37,96 +34,9 @@ import org.javalite.http.Http;
 import org.javalite.http.Post;
 
 import MWC.GUI.ErrorLogger;
-import MWC.TacticalData.Fix;
-import MWC.TacticalData.Track;
 import MWC.Utilities.ReaderWriter.json.GNDDocHandler.GNDDocument;
-import junit.framework.TestCase;
 
 public class GNDStore {
-	public static class TestDatabase extends TestCase {
-		// TODO FIX-TEST
-		public void NtestBulkPost1() throws JsonGenerationException, JsonMappingException, IOException {
-			final ArrayList<ObjectNode> tracks = new ArrayList<ObjectNode>();
-
-			for (int i = 0; i < 10; i++) {
-				// get a track
-				final Track trk = GNDDocHandler.TestJSON.getTestTrack("test_-" + i);
-
-				final ObjectNode js = new GNDDocHandler().toJson(trk.getName(), trk, "tst_platform2", "test_plat_type",
-						"test_sensor", "test_sensor_type", "test_put_1");
-				tracks.add(js);
-			}
-			final String url = "http://gnd.iriscouch.com";
-			final String db = "tracks";
-			final GNDStore store = new GNDStore(url, db);
-
-			System.out.println("before put:" + new Date());
-
-			for (final Iterator<ObjectNode> iterator = tracks.iterator(); iterator.hasNext();) {
-				final ObjectNode objectNode = iterator.next();
-				store.put(objectNode);
-			}
-
-			System.out.println("after put:" + new Date());
-		}
-
-		// TODO FIX-TEST
-		public void NtestBulkPost2() throws JsonGenerationException, JsonMappingException, IOException {
-			final ArrayList<JsonNode> nodes = new ArrayList<JsonNode>();
-			for (int i = 0; i < 10; i++) {
-				// get a track
-				final Track trk = GNDDocHandler.TestJSON.getTestTrack("test2-" + i);
-				final ObjectNode js = new GNDDocHandler().toJson(trk.getName(), trk, "tst_platform2", "test_plat_type",
-						"test_sensor", "test_sensor_type", "test_bulk_put");
-				nodes.add(js);
-			}
-			final String url = "http://gnd.iriscouch.com";
-			final String db = "tracks";
-			final GNDStore store = new GNDStore(url, db);
-
-			System.out.println("before bulk put:" + new Date());
-
-			store.bulkPut(nodes, 10);
-
-			System.out.println("after bulk put:" + new Date());
-
-		}
-
-		// TODO FIX-TEST
-		public void NtestGet() throws JsonParseException, JsonMappingException, IOException, ParseException {
-			final String url = "http://gnd.iriscouch.com";
-			final String db = "tracks";
-
-			final GNDStore store = new GNDStore(url, db);
-
-			final String anId = store.getAnId();
-			assertNotNull("found an id", anId);
-			final GNDDocument doc = store.get(anId);
-			assertNotNull(doc);
-			final String theName = doc.getName();
-			assertNotNull("name found", theName);
-
-			// and the track?
-			final Track trk = doc.getTrack();
-			assertNotNull("track found", trk);
-			final Enumeration<Fix> fixes = trk.getFixes();
-			assertNotNull("has some fixes", fixes.hasMoreElements());
-		}
-
-		@SuppressWarnings("unused")
-		public void testPost() throws JsonGenerationException, JsonMappingException, IOException {
-			// get a track
-			final Track trk = GNDDocHandler.TestJSON.getTestTrack("tester");
-			final String url = "http://gnd.iriscouch.com";
-			final String db = "tracks";
-
-			final GNDStore store = new GNDStore(url, db);
-			final JsonNode theDoc = new GNDDocHandler().toJson(trk.getName(), trk, "tst_platform2", "test_plat_type",
-					"test_sensor", "test_sensor_type", "test_trial");
-			// store.put(theDoc);
-		}
-
-	}
 
 	private final String _url;
 

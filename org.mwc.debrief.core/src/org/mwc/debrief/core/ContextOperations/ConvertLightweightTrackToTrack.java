@@ -35,15 +35,10 @@ import org.mwc.cmap.core.property_support.RightClickSupport.RightClickContextIte
 import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.TrackWrapper;
 import Debrief.Wrappers.Track.LightweightTrackWrapper;
-import MWC.GUI.BaseLayer;
 import MWC.GUI.Editable;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
 import MWC.GUI.Properties.DebriefColors;
-import MWC.GUI.Properties.LineStylePropertyEditor;
-import MWC.GenericData.HiResDate;
-import MWC.GenericData.WorldLocation;
-import MWC.TacticalData.Fix;
 
 /**
  * @author ian.mayo
@@ -51,7 +46,7 @@ import MWC.TacticalData.Fix;
  */
 public class ConvertLightweightTrackToTrack implements RightClickContextItemGenerator {
 
-	private static class ConvertIt extends CMAPOperation {
+	static class ConvertIt extends CMAPOperation {
 
 		private final Layers _layers;
 		private final Editable[] _subjects;
@@ -137,76 +132,6 @@ public class ConvertLightweightTrackToTrack implements RightClickContextItemGene
 			return Status.OK_STATUS;
 		}
 
-	}
-
-	// ////////////////////////////////////////////////////////////////////////////////////////////////
-	// testing for this class
-	// ////////////////////////////////////////////////////////////////////////////////////////////////
-	static public final class testMe extends junit.framework.TestCase {
-		static public final String TEST_ALL_TEST_TYPE = "UNIT";
-
-		public final static void testIWork() {
-			final Layers theLayers = new Layers();
-			final BaseLayer holder = new BaseLayer();
-			holder.setName("Trk");
-			theLayers.addThisLayer(holder);
-
-			final int NUM_TRACKS = 4;
-			final int NUM_POSITIONS = 5;
-			final Editable[] selection = new Editable[NUM_TRACKS];
-
-			LightweightTrackWrapper firstTrack = null;
-
-			for (int j = 0; j < NUM_TRACKS; j++) {
-				final LightweightTrackWrapper light = new LightweightTrackWrapper("track:" + j, true, true, Color.RED,
-						LineStylePropertyEditor.DOTTED);
-
-				for (int i = 0; i < NUM_POSITIONS; i++) {
-					final Fix theFix = new Fix(new HiResDate(i * 1000), new WorldLocation(1, i, 0), 12d, 12d);
-					light.addFix(new FixWrapper(theFix));
-				}
-
-				holder.add(light);
-				selection[j] = light;
-
-				if (firstTrack == null) {
-					firstTrack = light;
-				}
-
-			}
-
-			assertEquals("have single layer before operation", 1, theLayers.size());
-
-			// ok, now do the interpolation
-			final ConvertIt ct = new ConvertIt("convert it", theLayers, selection);
-
-			try {
-				ct.execute(null, null);
-			} catch (final ExecutionException e) {
-				fail("Exception thrown");
-			}
-
-			assertEquals("have new layers", 5, theLayers.size());
-
-			// check the track got generated
-			final TrackWrapper tw = (TrackWrapper) theLayers.findLayer("track:0");
-
-			// did we find it?
-			assertNotNull("track generated", tw);
-
-			// check we've got the right number of fixes
-
-			assertEquals("correct name", "track:0", tw.getName());
-			assertEquals("correct size", firstTrack.numFixes(), tw.numFixes());
-			assertEquals("correct size", NUM_POSITIONS, tw.numFixes());
-			assertEquals("correct color", firstTrack.getColor(), tw.getColor());
-			assertEquals("correct name", firstTrack.getName(), tw.getName());
-
-		}
-
-		public testMe(final String val) {
-			super(val);
-		}
 	}
 
 	/**

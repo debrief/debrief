@@ -18,47 +18,11 @@ package MWC.GenericData;
 import java.io.Serializable;
 
 import MWC.Algorithms.Conversions;
-import MWC.Algorithms.EarthModels.FlatEarth;
-import junit.framework.TestCase;
 
 /**
  * class which represents a vector offset in 3 dimensions
  */
 public final class WorldVector implements Serializable, Cloneable {
-
-	static public final class VectorTest extends TestCase {
-		static public final String TEST_ALL_TEST_TYPE = "UNIT";
-		private WorldVector wv1 = null;
-
-		public VectorTest(final String val) {
-			super(val);
-		}
-
-		@Override
-		public final void setUp() {
-			// set the earth model we are expecting
-			WorldLocation.setModel(new FlatEarth());
-			wv1 = new WorldVector(4.3, 12.0, 45.0);
-		}
-
-		@Override
-		public final void tearDown() {
-			wv1 = null;
-		}
-
-		public final void testConstructor() {
-			assertEquals("check bearing rads", wv1.getBearing(), 4.3, 0.00001);
-			assertEquals("check range degs", wv1.getRange(), 12.0, 0.0001);
-			assertEquals("check depth m", wv1.getDepth(), 45.0, 0.0001);
-		}
-
-		public final void testSetter() {
-			wv1.setValues(33.0, 44.0, 55.0);
-			assertEquals("check bearing rads", wv1.getBearing(), 33.0, 0.00001);
-			assertEquals("check range degs", wv1.getRange(), 44.0, 0.0001);
-			assertEquals("check depth m", wv1.getDepth(), 55.0, 0.0001);
-		}
-	}
 
 	// keep track of versions
 	static final long serialVersionUID = 1L;

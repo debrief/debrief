@@ -16,7 +16,7 @@ public class speedDeltaAverageCalc extends speedRateCalc implements TimeWindowRa
 
 	public speedDeltaAverageCalc() {
 		super(new DecimalFormat("00.00"), "Average Speed Delta Rate (abs)", "Knots/secs");
-		windowSizeInMilli = DeltaRateToteCalcImplementation.DeltaRateToteCalcImplementationTest.TIME_WINDOW;
+		windowSizeInMilli = DeltaRateToteCalcImplementation.TIME_WINDOW;
 	}
 	/////////////////////////////////////////////////////////////
 	// member functions
@@ -24,7 +24,7 @@ public class speedDeltaAverageCalc extends speedRateCalc implements TimeWindowRa
 
 	public speedDeltaAverageCalc(final DecimalFormat decimalFormat, final String description, final String units) {
 		super(decimalFormat, description, units);
-		windowSizeInMilli = DeltaRateToteCalcImplementation.DeltaRateToteCalcImplementationTest.TIME_WINDOW;
+		windowSizeInMilli = DeltaRateToteCalcImplementation.TIME_WINDOW;
 	}
 
 	@Override

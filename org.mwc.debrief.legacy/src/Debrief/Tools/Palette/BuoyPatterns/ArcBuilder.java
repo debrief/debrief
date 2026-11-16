@@ -132,23 +132,6 @@ public final class ArcBuilder extends PatternBuilderType {
 		}
 	}
 
-	//////////////////////////////////////////////////////////////////////////////////////////////////
-	// testing for this class
-	//////////////////////////////////////////////////////////////////////////////////////////////////
-	static public final class testMe extends junit.framework.TestCase {
-		static public final String TEST_ALL_TEST_TYPE = "UNIT";
-
-		public testMe(final String val) {
-			super(val);
-		}
-
-		public final void testMyParams() {
-			MWC.GUI.Editable ed = new ArcBuilder(null, null, null);
-			MWC.GUI.Editable.editableTesterSupport.testParams(ed, this);
-			ed = null;
-		}
-	}
-
 	/**
 	 * radius of this barrier (nm)
 	 */

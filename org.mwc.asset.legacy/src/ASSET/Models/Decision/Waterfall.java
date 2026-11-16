@@ -20,7 +20,6 @@ import java.util.Vector;
 
 import ASSET.Models.DecisionType;
 import ASSET.Participants.Status;
-import ASSET.Util.SupportTesting;
 import MWC.GUI.Editable;
 
 /**
@@ -85,21 +84,6 @@ public class Waterfall extends CoreDecision implements java.io.Serializable, Beh
 			} catch (final java.beans.IntrospectionException e) {
 				return super.getPropertyDescriptors();
 			}
-		}
-	}
-
-	//////////////////////////////////////////////////
-	// property testnig
-	//////////////////////////////////////////////////
-	public static class WaterfallTest extends SupportTesting.EditableTesting {
-		/**
-		 * get an object which we can test
-		 *
-		 * @return Editable object which we can check the properties for
-		 */
-		@Override
-		public Editable getEditable() {
-			return new Waterfall("my name");
 		}
 	}
 

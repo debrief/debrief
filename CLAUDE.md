@@ -81,8 +81,8 @@ mvn clean install -DskipTests
 # Build specific module (thirdparty first: it fetches the third-party jars)
 mvn clean install -pl org.mwc.debrief.thirdparty,org.mwc.debrief.core
 
-# Run tests for specific module
-mvn test -pl org.mwc.debrief.test2
+# Run one plugin's tests (thirdparty first, then the plugins it needs)
+mvn verify -pl org.mwc.debrief.thirdparty,org.mwc.cmap.jfreechart,org.mwc.cmap.legacy
 ```
 
 Third-party jars that are on Maven Central are not committed: `org.mwc.debrief.thirdparty` (first in the reactor) copies them into each plugin folder under version-free names such as `pdfbox.jar`, and they are git-ignored. After a fresh clone, and before building one plugin or opening the projects in Eclipse, run `mvn -pl org.mwc.debrief.thirdparty generate-resources`. To change a version, edit that module's `pom.xml` only. See [docs/dependencies/maven-jars.md](docs/dependencies/maven-jars.md).
@@ -93,13 +93,12 @@ Build with **JDK 21** and **Maven 3.9 or later**: Tycho 5 needs both. Bundles de
 
 ## Test Architecture
 
-Unit tests use JUnit and are organized in test suites:
-- **Main test suite**: `org.mwc.debrief.test2/src/org/mwc/debrief/test/AllTests.java`
-- **Asset tests**: `org.mwc.asset.test/src/org/mwc/asset/test/AllTests.java`
-- **Lite headless tests**: `org.mwc.debrief.lite/src/test/java/org/mwc/debrief/lite/headless/`, run by Ant's `<junit>` in every build (skipped with `-DskipTests`) with `java.awt.headless=true`: file round-trips, time stepping and the tote, plot state, shape insertion with undo/redo. They drive Lite's own non-UI code (`org.mwc.debrief.lite.util.PlotFiles`, `PlotState`, `LiteTote`, `LiteStepControl`, the shape actions).
-- **Lite UI tests**: Swing tests in `org.mwc.debrief.lite/src/test/java/org/mwc/debrief/lite/tests/`, run by Ant's `<junit>` only with `-DliteUiTests=true` (CI's separate `lite-ui-tests` job does this under xvfb). The main build also produces `org.mwc.debrief.lite/dist/debrief-lite-<version>.zip`.
+Tests use **JUnit 6 (Jupiter)**: `@Test`, `org.junit.jupiter.api.Assertions` (message last). There is no JUnit 4 or hamcrest anywhere.
 
-Tests run via Tycho Surefire with UI harness. Test classes follow pattern `**/AllTests.class` or `**/*TestSuite*.class`.
+- **Plugin tests**: each plugin keeps its tests in a `test/` folder beside `src/`, in the same packages as the code they test (so package-private members are visible). `maven-surefire-plugin`, configured in the root `pom.xml`, runs every `*Test`, `*_Test` and `Test*` class in each plugin's `test` phase, with the plugin's OSGi classpath that Tycho computes, under `-DbuildMode=true` (which suppresses dialogs). JUnit is a test-scope dependency only: production bundles and Lite don't contain it. A test needing the Eclipse runtime belongs in an `eclipse-test-plugin` such as `org.mwc.debrief.editable.test`, which Tycho Surefire runs in an OSGi UI harness.
+- **Test support in production code**: `Editable.editableTesterSupport` and `WatchableList.TestWatchables` are shared by tests in several plugins, so they stay in production code and check with `MWC.Utilities.Errors.Testing.Checks` (plain `AssertionError`), not JUnit. The golden-file helpers (`Debrief.Testing.GoldenFile`, `GoldenImage`) do the same.
+- **Lite headless tests**: `org.mwc.debrief.lite/src/test/java` (every `*Test` outside `tests/`), run by Ant's `<junitlauncher>` in every build (skipped with `-DskipTests`) with `java.awt.headless=true`: file round-trips, time stepping and the tote, plot state, shape insertion with undo/redo, map and projection checks. They drive Lite's own non-UI code (`org.mwc.debrief.lite.util.PlotFiles`, `PlotState`, `LiteTote`, `LiteStepControl`, the shape actions). Lite's tests compile apart from `debrief_lite.jar`, against JUnit jars that `org.mwc.debrief.thirdparty` fetches into `org.mwc.debrief.lite/test-libs/`.
+- **Lite UI tests**: Swing tests in `org.mwc.debrief.lite/src/test/java/org/mwc/debrief/lite/tests/`, run by `<junitlauncher>` only with `-DliteUiTests=true` (CI's separate `lite-ui-tests` job does this under xvfb). The main build also produces `org.mwc.debrief.lite/dist/debrief-lite-<version>.zip`.
 
 There are no automated UI tests of Debrief NG (the RCP product): the RCPTT suite was retired in Phase E. Use the manual checklist in [docs/testing/debrief-ng-smoke-checklist.md](docs/testing/debrief-ng-smoke-checklist.md); a new small RCP UI suite is planned (see [docs/dependencies/phase-e-options.md](docs/dependencies/phase-e-options.md)).
 

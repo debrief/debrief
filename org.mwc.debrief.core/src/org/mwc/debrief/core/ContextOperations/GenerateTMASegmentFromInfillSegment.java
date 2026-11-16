@@ -55,21 +55,6 @@ import MWC.GenericData.WorldSpeed;
  */
 public class GenerateTMASegmentFromInfillSegment implements RightClickContextItemGenerator {
 
-	// ////////////////////////////////////////////////////////////////////////////////////////////////
-	// testing for this class
-	// ////////////////////////////////////////////////////////////////////////////////////////////////
-	static public final class testMe extends junit.framework.TestCase {
-		static public final String TEST_ALL_TEST_TYPE = "UNIT";
-
-		public testMe(final String val) {
-			super(val);
-		}
-
-		public final void testIWork() {
-
-		}
-	}
-
 	private static class TMAfromInfill extends CMAPOperation {
 
 		private final Layers _layers;

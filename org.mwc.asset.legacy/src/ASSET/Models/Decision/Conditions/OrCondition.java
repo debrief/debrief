@@ -20,10 +20,7 @@ import java.util.Vector;
 import ASSET.Models.Detection.DetectionList;
 import ASSET.Participants.Status;
 import ASSET.Scenario.ScenarioActivityMonitor;
-import ASSET.Util.SupportTesting;
 import MWC.GUI.Editable;
-import MWC.GenericData.WorldDistance;
-import MWC.GenericData.WorldLocation;
 
 /**
  * condition which is successful when the scenario is equal or after the
@@ -31,24 +28,6 @@ import MWC.GenericData.WorldLocation;
  */
 
 public class OrCondition extends Condition.CoreCondition {
-	////////////////////////////////////////////////////
-	// member objects
-	////////////////////////////////////////////////////
-
-	//////////////////////////////////////////////////
-	// property testing
-	//////////////////////////////////////////////////
-	public static class Or2Test extends SupportTesting.EditableTesting {
-		/**
-		 * get an object which we can test
-		 *
-		 * @return Editable object which we can check the properties for
-		 */
-		@Override
-		public Editable getEditable() {
-			return new OrCondition();
-		}
-	}
 
 	////////////////////////////////////////////////////
 	// constructor
@@ -84,77 +63,6 @@ public class OrCondition extends Condition.CoreCondition {
 				return super.getPropertyDescriptors();
 			}
 		}
-	}
-
-	/**
-	 * ************************************************* testing
-	 * *************************************************
-	 */
-	public static class OrTest extends SupportTesting.EditableTesting {
-		static public final String TEST_ALL_TEST_TYPE = "UNIT";
-
-		public OrTest(final String name) {
-			super(name);
-		}
-
-		/**
-		 * get an object which we can test
-		 *
-		 * @return Editable object which we can check the properties for
-		 */
-		@Override
-		public Editable getEditable() {
-			return new OrCondition();
-		}
-
-		public void testIt() {
-			// build it
-
-			// create our real conditions
-
-			// time elapsed first
-			final TimePoint tpa = new TimePoint(2000);
-			final TimePoint tpb = new TimePoint(3000);
-
-			// now for the location
-			final Location theLoc = new Location(new WorldLocation(1, 1, 1), new WorldDistance(4, WorldDistance.DEGS));
-			theLoc.setSucceedIfCloser(false);
-
-			// build up the condition
-			final OrCondition or = new OrCondition();
-			or.addCondition(tpb);
-			or.addCondition(theLoc);
-
-			// and now the test
-			final Status newStat = new Status(12, 300);
-			newStat.setLocation(new WorldLocation(2, 2, 2));
-
-			Object res = or.test(newStat, null, 300, null);
-			// check it failed
-			assertNull("no tests passed", res);
-
-			// see if we pass the first time test
-			newStat.setTime(3200);
-			res = or.test(newStat, null, 3200, null);
-			// check it failed
-			assertNotNull("passed time test", res);
-
-			// check the correct time was identified
-			java.util.Date val = (java.util.Date) res;
-			assertEquals("correct time returned", val.getTime(), 3000);
-
-			or.addCondition(tpa);
-			newStat.setTime(3200);
-			res = or.test(newStat, null, 3200, null);
-			// check it failed
-			assertNotNull("passed time test", res);
-
-			// check that we didn't continue through the tests
-			val = (java.util.Date) res;
-			assertEquals("correct time returned", val.getTime(), 3000);
-
-		}
-
 	}
 
 	////////////////////////////////////////////////////

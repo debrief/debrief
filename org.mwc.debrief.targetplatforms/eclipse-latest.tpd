@@ -160,6 +160,12 @@ location "https://download.eclipse.org/releases/2026-09/202609091000/" {
 	org.eclipse.wst.xsd.ui
 	org.eclipse.xsd
 	org.eclipse.xsd.edit
-	org.hamcrest.core
-	org.junit
+	// JUnit 6, for org.mwc.debrief.editable.test (an OSGi test plugin)
+	junit-jupiter-api
+	junit-jupiter-engine
+	junit-platform-commons
+	junit-platform-engine
+	junit-platform-launcher
+	org.opentest4j
+	org.apiguardian.api
 }

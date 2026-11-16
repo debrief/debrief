@@ -34,7 +34,7 @@ public class XMLChoice implements XMLOperation {
 	 * the list of values to choose from
 	 *
 	 */
-	private final HashMap<List<Element>, String> _myList;
+	final HashMap<List<Element>, String> _myList;
 
 	/**
 	 * the element we will use for this permutation

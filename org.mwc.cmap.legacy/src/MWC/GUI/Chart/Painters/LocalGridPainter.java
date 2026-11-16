@@ -72,24 +72,6 @@ public class LocalGridPainter extends GridPainter {
 		}
 	}
 
-	// ////////////////////////////////////////////////////////////////////////////////////////////////
-	// testing for this class
-	// ////////////////////////////////////////////////////////////////////////////////////////////////
-	static public class LocalGridPainterTest extends junit.framework.TestCase {
-		static public final String TEST_ALL_TEST_TYPE = "UNIT";
-
-		public LocalGridPainterTest(final String val) {
-			super(val);
-		}
-
-		public void testMyParams() {
-			LocalGridPainter ed = new LocalGridPainter();
-			ed.setOrigin(new WorldLocation(0, 0, 0));
-			MWC.GUI.Editable.editableTesterSupport.testParams(ed, this);
-			ed = null;
-		}
-	}
-
 	/**
 	 *
 	 */

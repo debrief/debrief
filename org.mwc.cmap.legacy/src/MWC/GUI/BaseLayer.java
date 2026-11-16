@@ -156,23 +156,6 @@ import java.util.Enumeration;
  */
 public class BaseLayer extends Plottables implements Layer, SupportsPropertyListeners {
 
-	// ////////////////////////////////////////////////////////////////////////////////////////////////
-	// testing for this class
-	// ////////////////////////////////////////////////////////////////////////////////////////////////
-	static public class BaseLayerTest extends junit.framework.TestCase {
-		static public final String TEST_ALL_TEST_TYPE = "UNIT";
-
-		public BaseLayerTest(final String val) {
-			super(val);
-		}
-
-		public void testMyParams() {
-			MWC.GUI.Editable ed = new BaseLayer();
-			editableTesterSupport.testParams(ed, this);
-			ed = null;
-		}
-	}
-
 	// ///////////////////////////////////////////////////////////
 	// member variables
 	// //////////////////////////////////////////////////////////

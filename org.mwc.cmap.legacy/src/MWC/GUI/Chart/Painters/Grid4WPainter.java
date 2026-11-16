@@ -178,132 +178,6 @@ import MWC.GenericData.WorldLocation;
 import MWC.GenericData.WorldVector;
 
 public class Grid4WPainter implements Plottable, Serializable, DraggableItem {
-	// ///////////////////////////////////////////////////////////
-	// member variables
-	// //////////////////////////////////////////////////////////
-
-	// ////////////////////////////////////////////////////////////////////////////////////////////////
-	// testing for this class
-	// ////////////////////////////////////////////////////////////////////////////////////////////////
-	// ////////////////////////////////////////////////////////////////////////////////////////////////
-	// testing for this class
-	// ////////////////////////////////////////////////////////////////////////////////////////////////
-	static public class Grid4WTest extends junit.framework.TestCase {
-		static public final String TEST_ALL_TEST_TYPE = "UNIT";
-
-		public Grid4WTest(final String val) {
-			super(val);
-		}
-
-		public void testIndexMgt() {
-			// first some valid ones
-			assertEquals("index not calculated properly", 1, Grid4WPainter.indexOf("B"));
-			assertEquals("index not calculated properly", 0, Grid4WPainter.indexOf("A"));
-			assertEquals("index not calculated properly", 5, Grid4WPainter.indexOf("F"));
-			assertEquals("index not calculated properly", 22, Grid4WPainter.indexOf("Y"));
-			assertEquals("index not calculated properly", 24, Grid4WPainter.indexOf("AA"));
-			assertEquals("index not calculated properly", 26, Grid4WPainter.indexOf("AC"));
-			assertEquals("index not calculated properly", 47, Grid4WPainter.indexOf("AZ"));
-			// and some invalid ones
-			assertEquals("invalid index not rejected properly", INVALID_INDEX, Grid4WPainter.indexOf("3"));
-			assertEquals("invalid index not rejected properly", INVALID_INDEX, Grid4WPainter.indexOf(""));
-			assertEquals("invalid index not rejected properly", INVALID_INDEX, Grid4WPainter.indexOf("CC"));
-			assertEquals("invalid index not rejected properly", INVALID_INDEX, Grid4WPainter.indexOf("?A"));
-			// now some reverse checks
-			// first some valid ones
-			assertEquals("index not calculated properly", Grid4WPainter.labelFor(1), "B");
-			assertEquals("index not calculated properly", Grid4WPainter.labelFor(0), "A");
-			assertEquals("index not calculated properly", Grid4WPainter.labelFor(5), "F");
-			assertEquals("index not calculated properly", Grid4WPainter.labelFor(22), "Y");
-			assertEquals("index not calculated properly", Grid4WPainter.labelFor(24), "AA");
-			assertEquals("index not calculated properly", Grid4WPainter.labelFor(26), "AC");
-			assertEquals("index not calculated properly", Grid4WPainter.labelFor(47), "AZ");
-
-		}
-
-		public void testInit() {
-			final WorldLocation origin = new WorldLocation(2, 3, 2);
-			final Grid4WPainter pt = new Grid4WPainter(origin);
-			assertEquals("wrong name", pt.getName(), DEFAULT_NAME);
-			assertEquals("wrong x def", new WorldDistance(10, WorldDistance.NM), pt.getXDelta());
-			assertEquals("wrong y def", new WorldDistance(10, WorldDistance.NM), pt.getYDelta());
-			assertEquals("wrong init index", 1, pt.getYMin().intValue());
-			assertEquals("wrong init index", 24, pt.getYMax().intValue());
-			assertEquals("wrong init index", "A", pt.getXMin());
-			assertEquals("wrong init index", "Z", pt.getXMax());
-			assertEquals("wrong origin lat", 2d, pt._origin.getLat());
-			assertEquals("wrong origin lat", 3d, pt._origin.getLong());
-		}
-
-		public void testMyParams() {
-			MWC.GUI.Editable ed = new Grid4WPainter(null);
-			MWC.GUI.Editable.editableTesterSupport.testParams(ed, this);
-			ed = null;
-		}
-
-		public void testPosCalc() {
-			// coords to get
-			final int x = 1, y = 1;
-			final WorldLocation origin = new WorldLocation(0, 0, 0);
-			final double orientation = 0;
-			final WorldDistance xDelta = new WorldDistance(1, WorldDistance.DEGS);
-			final WorldDistance yDelta = new WorldDistance(1, WorldDistance.DEGS);
-
-			final Grid4WPainter pt = new Grid4WPainter(origin);
-			pt.setXDelta(xDelta);
-			pt.setYDelta(yDelta);
-			pt.setOrientation(orientation);
-			WorldLocation newLoc = pt.calcLocationFor(1, 1);
-			assertEquals("easy Lat wrong", 1d, newLoc.getLat(), 0.001);
-			assertEquals("easy Long wrong", 1d, newLoc.getLong(), 0.001);
-			newLoc = pt.calcLocationFor(2, 2);
-			assertEquals("easy Lat wrong", 2d, newLoc.getLat(), 0.001);
-			assertEquals("easy Long wrong", 2d, newLoc.getLong(), 0.001);
-
-			// turn, baby
-			pt.setOrientation(90d);
-			newLoc = pt.calcLocationFor(x, y);
-			assertEquals("easy Lat wrong", -1d, newLoc.getLat(), 0.001);
-			assertEquals("easy Long wrong", 1d, newLoc.getLong(), 0.001);
-
-			// have another go
-			pt.setXDelta(new WorldDistance(2, WorldDistance.DEGS));
-			pt.setYDelta(new WorldDistance(3, WorldDistance.DEGS));
-			newLoc = pt.calcLocationFor(x, y);
-			assertEquals("easy Lat wrong", -2d, newLoc.getLat(), 0.001);
-			assertEquals("easy Long wrong", 3d, newLoc.getLong(), 0.001);
-
-			// and turn back
-			pt.setOrientation(0d);
-			newLoc = pt.calcLocationFor(x, y);
-			assertEquals("easy Lat wrong", 3d, newLoc.getLat());
-			assertEquals("easy Long wrong", 2d, newLoc.getLong());
-
-			// now try more complex orientations
-
-		}
-
-		public void testProperties() {
-			final Grid4WPainter pt = new Grid4WPainter(null);
-			pt.setName("new grid");
-			pt.setXDelta(new WorldDistance(12, WorldDistance.DEGS));
-			pt.setYDelta(new WorldDistance(5, WorldDistance.DEGS));
-			pt.setXMin("C");
-			pt.setXMax("E");
-			pt.setYMin(7);
-			pt.setYMax(12);
-			final WorldLocation origin = new WorldLocation(2, 2, 0);
-			pt.setOrigin(origin);
-			assertEquals("wrong name", "new grid", pt.getName());
-			assertEquals("wrong x val", new WorldDistance(12, WorldDistance.DEGS), pt.getXDelta());
-			assertEquals("wrong y val", new WorldDistance(5, WorldDistance.DEGS), pt.getYDelta());
-			assertEquals("wrong x index", "C", pt.getXMin());
-			assertEquals("wrong x index", "E", pt.getXMax());
-			assertEquals("wrong y index", 7, pt.getYMin().intValue());
-			assertEquals("wrong y index", 12, pt.getYMax().intValue());
-			assertEquals("wrong origin", origin, pt.getOrigin());
-		}
-	}
 
 	// ///////////////////////////////////////////////////////////
 	// info class
@@ -359,7 +233,7 @@ public class Grid4WPainter implements Plottable, Serializable, DraggableItem {
 	 * flag for invalid 4w index
 	 *
 	 */
-	private static final int INVALID_INDEX = 0;
+	static final int INVALID_INDEX = 0;
 
 	public static final String DEFAULT_NAME = "4W Grid";
 

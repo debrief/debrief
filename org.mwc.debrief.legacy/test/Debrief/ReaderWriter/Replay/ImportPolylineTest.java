@@ -1,0 +1,40 @@
+/*******************************************************************************
+ * Debrief - the Open Source Maritime Analysis Application
+ * http://debrief.info
+ *
+ * (C) 2000-2020, Deep Blue C Technology Ltd
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the Eclipse Public License v1.0
+ * (http://www.eclipse.org/legal/epl-v10.html)
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *******************************************************************************/
+
+package Debrief.ReaderWriter.Replay;
+
+import static org.junit.jupiter.api.Assertions.*;
+
+import static Debrief.ReaderWriter.Replay.ImportPolyline.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import Debrief.ReaderWriter.Replay.ImportPolyline.*;
+import java.text.ParseException;
+import java.util.Vector;
+import Debrief.Wrappers.ShapeWrapper;
+import MWC.GUI.Shapes.PolygonShape;
+import MWC.GUI.Shapes.PolygonShape.PolygonNode;
+import org.junit.jupiter.api.Test;
+
+public class ImportPolylineTest {
+
+	@Test
+	public void testExport() throws ParseException {
+		final String line = ";POLYLINE: @@ 49 43 49.08 N 004 10 11.60 E 49 38 25.80 N 004 23 58.02 E label";
+		final ImportPolyline ip = new ImportPolyline();
+		final ShapeWrapper sw = (ShapeWrapper) ip.readThisLine(line);
+		assertEquals(line, ip.exportThis(sw));
+	}
+}

@@ -297,14 +297,6 @@ Library.
          version="0.0.0"/>
 
    <plugin
-         id="org.junit"
-         version="0.0.0"/>
-
-   <plugin
-         id="org.hamcrest.core"
-         version="0.0.0"/>
-
-   <plugin
          id="org.apache.xml.resolver"
          version="0.0.0"/>
 

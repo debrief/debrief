@@ -28,9 +28,6 @@
  */
 package org.mwc.debrief.core.ContextOperations;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -49,7 +46,6 @@ import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.operations.CMAPOperation;
 import org.mwc.cmap.core.property_support.RightClickSupport.RightClickContextItemGenerator;
 
-import Debrief.ReaderWriter.Replay.ImportReplay;
 import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.TrackWrapper;
 import Debrief.Wrappers.Track.TrackSegment;
@@ -58,14 +54,12 @@ import MWC.GUI.Editable;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
 import MWC.GenericData.WorldLocation;
-import MWC.Utilities.ReaderWriter.PlainImporter.MonitorProvider;
-import junit.framework.TestCase;
 
 /**
  * @author ian.mayo
  */
 public class SmoothTrackJumps implements RightClickContextItemGenerator {
-	private static class SmoothJumps extends CMAPOperation {
+	static class SmoothJumps extends CMAPOperation {
 
 		/**
 		 * the parent to update on completion
@@ -82,7 +76,7 @@ public class SmoothTrackJumps implements RightClickContextItemGenerator {
 		 */
 		private final TrackWrapper _track;
 
-		private HashMap<FixWrapper, WorldLocation> _newFixes;
+		HashMap<FixWrapper, WorldLocation> _newFixes;
 
 		public SmoothJumps(final String title, final Layers theLayers, final TrackWrapper lTrack,
 				final Collection<Editable> points) {
@@ -132,130 +126,6 @@ public class SmoothTrackJumps implements RightClickContextItemGenerator {
 				_layers.fireModified(_track);
 
 			return Status.OK_STATUS;
-		}
-	}
-
-	public static class TestMe extends TestCase {
-		private static boolean isOnTrackDegs(final double existingDegs, final double newDegs) {
-			return isOnTrack(MWC.Algorithms.Conversions.Degs2Rads(existingDegs),
-					MWC.Algorithms.Conversions.Degs2Rads(newDegs));
-		}
-
-		public static void testOnTrack() {
-			assertTrue("is on track", isOnTrackDegs(90, 90));
-			assertTrue("is on track", isOnTrackDegs(90, 1));
-			assertTrue("is on track", isOnTrackDegs(90, 179));
-
-			assertFalse("not on track", isOnTrackDegs(90, 359));
-			assertFalse("not on track", isOnTrackDegs(90, 270));
-			assertFalse("not on track", isOnTrackDegs(90, 181));
-			assertFalse("not on track", isOnTrackDegs(90, -90));
-			assertFalse("not on track", isOnTrackDegs(90, -1));
-
-			assertTrue("is on track", isOnTrackDegs(-90, -90));
-			assertTrue("is on track", isOnTrackDegs(-90, 270));
-			assertTrue("is on track", isOnTrackDegs(-90, -1));
-			assertTrue("is on track", isOnTrackDegs(-90, -179));
-			assertTrue("is on track", isOnTrackDegs(-90, 181));
-			assertTrue("is on track", isOnTrackDegs(-90, 359));
-
-			assertFalse("is on track", isOnTrackDegs(-90, 90));
-			assertFalse("is on track", isOnTrackDegs(-90, -270));
-			assertFalse("is on track", isOnTrackDegs(-90, 1));
-			assertFalse("is on track", isOnTrackDegs(-90, 179));
-			assertFalse("is on track", isOnTrackDegs(-90, -181));
-			assertFalse("is on track", isOnTrackDegs(-90, -359));
-
-			assertTrue("is on track", isOnTrackDegs(0, 89));
-			assertTrue("is on track", isOnTrackDegs(0, 1));
-			assertTrue("is on track", isOnTrackDegs(0, -89));
-			assertTrue("is on track", isOnTrackDegs(0, -1));
-			assertTrue("is on track", isOnTrackDegs(0, 0));
-
-			assertFalse("not on track", isOnTrackDegs(0, 159));
-			assertFalse("not on track", isOnTrackDegs(0, 260));
-			assertFalse("not on track", isOnTrackDegs(0, 181));
-			assertFalse("not on track", isOnTrackDegs(0, -91));
-			assertFalse("not on track", isOnTrackDegs(0, -260));
-
-			assertTrue("is on track", isOnTrackDegs(180, 159));
-			assertTrue("is on track", isOnTrackDegs(180, 260));
-			assertTrue("is on track", isOnTrackDegs(180, 181));
-			assertTrue("is on track", isOnTrackDegs(180, -91));
-			assertTrue("is on track", isOnTrackDegs(-180, 181));
-			assertTrue("is on track", isOnTrackDegs(-180, -91));
-			assertTrue("is on track", isOnTrackDegs(180, -260));
-
-			assertFalse("not on track", isOnTrackDegs(180, 89));
-			assertFalse("not on track", isOnTrackDegs(180, 1));
-			assertFalse("not on track", isOnTrackDegs(180, -89));
-			assertFalse("not on track", isOnTrackDegs(180, -1));
-			assertFalse("not on track", isOnTrackDegs(180, 0));
-		}
-
-		public void testFindLegs() throws FileNotFoundException, ExecutionException {
-			final ImportReplay importer = new ImportReplay();
-			final Layers theLayers = new Layers();
-			final String fName = "../org.mwc.cmap.combined.feature/root_installs/sample_data/S2R/smooth_back_jumps/jumps.rep";
-			final File inFile = new File(fName);
-			assertTrue("input file exists", inFile.exists());
-			final FileInputStream is = new FileInputStream(fName);
-			importer.importThis(fName, is, theLayers, new MonitorProvider() {
-
-				@Override
-				public void done() {
-					// not implemented.
-				}
-
-				@Override
-				public void init(final String fileName, final int length) {
-					System.out.println("Loading " + fileName);
-				}
-
-				@Override
-				public void progress(final int _progress) {
-					// not implemented.
-
-					// comment out progress marker - too verbose
-					// System.out.println(_progress);
-				}
-			});
-
-			// sort out the sensors
-			importer.storePendingSensors();
-
-			// get the sensor track
-			final TrackWrapper track = (TrackWrapper) theLayers.findLayer("NONSUCH");
-
-			final TrackSegment seg = (TrackSegment) track.getSegments().first();
-
-			final int len = 826;
-
-			assertEquals("correct num positions", len, seg.size());
-
-			final SmoothJumps jumps = new SmoothJumps("smooth jumps", theLayers, track, seg.getData());
-
-			// ok, apply operation
-			jumps.execute(null, null);
-
-			assertEquals("still correct num positions", len, seg.size());
-
-			assertEquals("found correct num jumps", 7, jumps._newFixes.size());
-
-			// ok, undo operation
-			jumps.undo(null, null);
-
-			assertEquals("still correct num positions", len, seg.size());
-
-			assertEquals("found correct num jumps", 7, jumps._newFixes.size());
-
-			// ok, redo operation
-			jumps.undo(null, null);
-
-			assertEquals("still correct num positions", len, seg.size());
-
-			assertEquals("found correct num jumps", 7, jumps._newFixes.size());
-
 		}
 	}
 
@@ -337,7 +207,7 @@ public class SmoothTrackJumps implements RightClickContextItemGenerator {
 		return res;
 	}
 
-	private static boolean isOnTrack(final double existingRads, final double newRads) {
+	static boolean isOnTrack(final double existingRads, final double newRads) {
 		double delta = Math.abs(newRads - existingRads);
 
 		// we're having troubles where large numbers aren't recognised as multiple

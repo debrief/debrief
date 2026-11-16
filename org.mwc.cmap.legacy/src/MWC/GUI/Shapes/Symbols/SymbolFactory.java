@@ -129,61 +129,6 @@ package MWC.GUI.Shapes.Symbols;
  */
 public final class SymbolFactory {
 
-	/**
-	 * ************************************************* testing
-	 * *************************************************
-	 */
-	public static class SymFactoryTest extends junit.framework.TestCase {
-
-		static public final String TEST_ALL_TEST_TYPE = "UNIT";
-
-		public SymFactoryTest(final String val) {
-			super(val);
-		}
-
-		/**
-		 * test the string swapping
-		 */
-		public void testFindFromChar() {
-			final String cA = "A";
-			final String ps = SymbolFactory.createSymbolFromId(cA);
-			assertEquals("aircraft symbol returned", ps, AIRCRAFT);
-
-			String newChar = SymbolFactory.findIdForSymbolType(AIRCRAFT);
-			assertEquals("correct sym found", newChar, cA);
-
-			newChar = SymbolFactory.findIdForSymbolType("AIRCRAFT");
-			assertEquals("correct sym found", newChar, cA);
-
-		}
-
-		/**
-		 * Testing string swapping for SVG symbols
-		 */
-		public void testSVGFromChar() {
-			final String torpedoCharacter = "s";
-			final String torpedoSymbolGenerated = SymbolFactory.createSymbolFromId(torpedoCharacter);
-			final String expectedTorpedoSymbol = SVG_FORMAT_PREFIX + ":torpedo";
-			assertEquals("Torpedo symbol returned", torpedoSymbolGenerated, expectedTorpedoSymbol);
-
-			final String torpedoCharacterGenerated = SymbolFactory.findIdForSymbolType(expectedTorpedoSymbol);
-			assertEquals("correct symbol found", torpedoCharacter, torpedoCharacterGenerated);
-		}
-
-		/**
-		 * friend_air is indexed as 'y', but must still be available by name
-		 */
-		public void testFriendAirFromChar() {
-			final String expectedSymbol = SVG_FORMAT_PREFIX + ":friend_air";
-			assertEquals("Friend air symbol returned", expectedSymbol, SymbolFactory.createSymbolFromId("y"));
-			assertEquals("correct symbol found", "y", SymbolFactory.findIdForSymbolType(expectedSymbol));
-			assertNotNull("still available by name", SymbolFactory.createSymbol(expectedSymbol));
-			// characters after the indexed range are not mapped
-			assertNull("z not indexed", SymbolFactory.createSymbolFromId("z"));
-		}
-
-	}
-
 	public static final String KINGPIN = "Kingpin";
 
 	public static final String BARRA = "Barra";

@@ -207,23 +207,6 @@ public class ScalePainter implements Plottable, Serializable, ExcludeFromRightCl
 		}
 	}
 
-	//////////////////////////////////////////////////////////////////////////////////////////////////
-	// testing for this class
-	//////////////////////////////////////////////////////////////////////////////////////////////////
-	static public class ScalePainterTest extends junit.framework.TestCase {
-		static public final String TEST_ALL_TEST_TYPE = "UNIT";
-
-		public ScalePainterTest(final String val) {
-			super(val);
-		}
-
-		public void testMyParams() {
-			MWC.GUI.Editable ed = new ScalePainter();
-			MWC.GUI.Editable.editableTesterSupport.testParams(ed, this);
-			ed = null;
-		}
-	}
-
 	////////////////////////////////////
 	// static interior class to convert between units
 	////////////////////////////////////

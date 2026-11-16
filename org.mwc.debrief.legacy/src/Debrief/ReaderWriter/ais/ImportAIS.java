@@ -2,15 +2,12 @@ package Debrief.ReaderWriter.ais;
 
 import java.awt.Color;
 import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Optional;
@@ -18,189 +15,16 @@ import java.util.Optional;
 import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.Track.LightweightTrackWrapper;
 import MWC.GUI.BaseLayer;
-import MWC.GUI.Editable;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
-import MWC.GUI.Tools.SubjectAction;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.WorldLocation;
 import MWC.GenericData.WorldSpeed;
 import MWC.TacticalData.Fix;
-import junit.framework.TestCase;
 
 public class ImportAIS {
 
-	public static class TestImportAIS extends TestCase {
-		public void testBefore() {
-			assertEquals("is before", true, isPreviousMinute(2, 57));
-			assertEquals("is before", false, isPreviousMinute(22, 4));
-			assertEquals("is before", true, isPreviousMinute(2, 33));
-			assertEquals("is before", false, isPreviousMinute(1, 0));
-			assertEquals("is before", true, isPreviousMinute(1, 57));
-			assertEquals("is after", false, isPreviousMinute(2, 28));
-			assertEquals("is after", false, isPreviousMinute(57, 2));
-			assertEquals("is after", false, isPreviousMinute(4, 31));
-
-			assertEquals("is after", true, isNextMinute(57, 2));
-			assertEquals("is after", false, isNextMinute(5, 52));
-			assertEquals("is after", false, isNextMinute(5, 15));
-
-		}
-
-		public void testFullImport() throws Exception {
-			testImport("../org.mwc.cmap.combined.feature/root_installs/sample_data/other_formats/150304_0854.txt", 6);
-		}
-
-		public void testImport(final String testFile, final int len) throws Exception {
-			final File testI = new File(testFile);
-			assertTrue(testI.exists());
-
-			final InputStream is = new FileInputStream(testI);
-
-			final Layers tLayers = new Layers();
-
-			final ImportAIS importer = new ImportAIS(tLayers);
-			importer.importThis(testFile, is);
-
-			// hmmm, how many tracks
-			assertEquals("got track folder", 1, tLayers.size());
-
-			final BaseLayer parent = (BaseLayer) tLayers.findLayer(LAYER_NAME);
-			assertEquals("got new tracks", 7, parent.size());
-
-			final LightweightTrackWrapper thisT = (LightweightTrackWrapper) parent.find("BW LIONESS");
-			final Enumeration<Editable> fixes = thisT.getPositionIterator();
-			while (fixes.hasMoreElements()) {
-				final FixWrapper thisF = (FixWrapper) fixes.nextElement();
-				final SubjectAction[] actions = thisF.getInfo().getUndoableActions();
-				assertNull("should not return actions", actions);
-//        System.out.println(thisF.getDateTimeGroup().getDate() + " COG:"
-//            + (int) Math.toDegrees(thisF.getCourse()) + " SOG:" + (int) thisF
-//                .getSpeed());
-
-			}
-
-		}
-
-		public void testKnownImport() throws AISParseException {
-			final String test = "!AIVDM,1,1,,A,15RTgt0PAso;90TKcjM8h6g208CQ,0*4A";
-			final AISParser parser = new AISParser();
-			final Optional<IAISMessage> oRes = parser.parse(test, 1);
-			if (!oRes.isPresent()) {
-				throw new AISParseException();
-			}
-		}
-
-		@SuppressWarnings("deprecation")
-		public void testMissingTimes() {
-			final Layers layers = new Layers();
-			final ImportAIS ia = new ImportAIS(layers);
-			Timestamp lastTime = null;
-			int mmsi = 5;
-
-			ia.storeThis(1, 1, 1, 1, mmsi, 50, lastTime);
-
-			// check it got cached
-			assertEquals("queue present", 1, ia._queuedFixes.size());
-
-			lastTime = new Timestamp(2010, 6, 6, 6, 6, 2, 0);
-
-			// ok - handle them
-			ia.processQueuedPositions(lastTime);
-
-			// note - we should interpret this value as being from the previous minute
-			ia.storeThis(1, 1, 1, 1, mmsi, 5, lastTime);
-
-			// check queue cleared
-			assertEquals("queue present", 0, ia._queuedFixes.size());
-
-			// check order of points
-			final BaseLayer parent = (BaseLayer) layers.findLayer(LAYER_NAME);
-			LightweightTrackWrapper tw = (LightweightTrackWrapper) parent.find("" + mmsi);
-
-			// check the start time
-			assertEquals("start time correct", 5, tw.getStartDTG().getDate().getMinutes());
-			assertEquals("start time correct", 50, tw.getStartDTG().getDate().getSeconds());
-			assertEquals("end time correct", 6, tw.getEndDTG().getDate().getMinutes());
-			assertEquals("end time correct", 5, tw.getEndDTG().getDate().getSeconds());
-
-			// ok now, we'll have a previous position appearing after the time stamp
-			// note - we should interpret this value as being from the previous minute
-			mmsi = 12;
-			lastTime = null;
-			ia.storeThis(1, 1, 1, 1, mmsi, 50, lastTime);
-
-			lastTime = new Timestamp(2010, 6, 6, 6, 9, 2, 0);
-
-			// ok - handle them
-			ia.processQueuedPositions(lastTime);
-
-			// note - we should interpret this value as being from the previous minute
-			ia.storeThis(1, 1, 1, 1, mmsi, 57, lastTime);
-
-			// note - we should interpret this value as being from the previous minute
-			ia.storeThis(1, 1, 1, 1, mmsi, 12, lastTime);
-
-			// check queue cleared
-			assertEquals("queue present", 0, ia._queuedFixes.size());
-
-			// check order of points
-			final BaseLayer parentL = (BaseLayer) layers.findLayer(LAYER_NAME);
-			tw = (LightweightTrackWrapper) parentL.find("" + mmsi);
-
-			// check the start time
-			System.out.println("start time:" + tw.getStartDTG().getDate());
-			assertEquals("start time correct", 8, tw.getStartDTG().getDate().getMinutes());
-			assertEquals("start time correct", 50, tw.getStartDTG().getDate().getSeconds());
-			assertEquals("end time correct", 9, tw.getEndDTG().getDate().getMinutes());
-			assertEquals("end time correct", 12, tw.getEndDTG().getDate().getSeconds());
-
-		}
-
-		public void testNewImport() throws Exception {
-			String testFile = "../org.mwc.cmap.combined.feature/root_installs/sample_data/other_formats/150304_0914.txt";
-			File testI = new File(testFile);
-			assertTrue(testI.exists());
-
-			InputStream is = new FileInputStream(testI);
-
-			final Layers tLayers = new Layers();
-
-			final ImportAIS importer = new ImportAIS(tLayers);
-			importer.importThis(testFile, is);
-
-			// ok, now for the second file
-			is.close();
-			testFile = "../org.mwc.cmap.combined.feature/root_installs/sample_data/other_formats/150304_0924.txt";
-			testI = new File(testFile);
-			assertTrue(testI.exists());
-
-			is = new FileInputStream(testI);
-			importer.importThis(testFile, is);
-
-			// hmmm, how many tracks
-			assertEquals("got new tracks", 1, tLayers.size());
-
-			// hmmm, how many tracks
-			final BaseLayer parent = (BaseLayer) tLayers.findLayer(LAYER_NAME);
-			assertEquals("got new tracks", 22, parent.size());
-
-			final LightweightTrackWrapper thisT = (LightweightTrackWrapper) parent.find("LOLLAND");
-			final Enumeration<Editable> fixes = thisT.getPositionIterator();
-			while (fixes.hasMoreElements()) {
-				final FixWrapper thisF = (FixWrapper) fixes.nextElement();
-				final SubjectAction[] actions = thisF.getInfo().getUndoableActions();
-				assertNull("should not return actions", actions);
-//        System.out.println(thisF.getDateTimeGroup().getDate() + " COG:"
-//            + (int) Math.toDegrees(thisF.getCourse()) + " SOG:" + (int) thisF
-//                .getSpeed() + " loc:" + thisF.getLocation());
-			}
-
-		}
-
-	}
-
-	private final static String LAYER_NAME = "AIS Tracks";
+	final static String LAYER_NAME = "AIS Tracks";
 
 	/**
 	 * keep a tally of vessel names against MMSI numbers. We keep it as static so
@@ -216,7 +40,7 @@ public class ImportAIS {
 	 * @param newSecs
 	 * @return yes, no
 	 */
-	private static boolean isNextMinute(final int lastSecs, final int newSecs) {
+	static boolean isNextMinute(final int lastSecs, final int newSecs) {
 		final boolean res;
 
 		if (newSecs > lastSecs) {
@@ -239,7 +63,7 @@ public class ImportAIS {
 	 * @param newSecs
 	 * @return yes, no
 	 */
-	private static boolean isPreviousMinute(final int lastSecs, final int newSecs) {
+	static boolean isPreviousMinute(final int lastSecs, final int newSecs) {
 		final boolean res;
 
 		if (newSecs > lastSecs) {
@@ -273,7 +97,7 @@ public class ImportAIS {
 	 * fixes that are received before we have a TimeStamp from a base
 	 *
 	 */
-	private final ArrayList<FixWrapper> _queuedFixes;
+	final ArrayList<FixWrapper> _queuedFixes;
 
 	public ImportAIS(final Layers target) {
 		super();
@@ -379,7 +203,7 @@ public class ImportAIS {
 	}
 
 	@SuppressWarnings("deprecation")
-	private void processQueuedPositions(final Timestamp lastTime) {
+	void processQueuedPositions(final Timestamp lastTime) {
 
 		// anything to process?
 		if (_queuedFixes.isEmpty())
@@ -452,7 +276,7 @@ public class ImportAIS {
 	}
 
 	@SuppressWarnings("deprecation")
-	private void storeThis(final double latitude, final double longitude, final double cog, final double sog,
+	void storeThis(final double latitude, final double longitude, final double cog, final double sog,
 			final int mmsi, final int secs, final Timestamp lastTime) {
 		// try to do a name lookup
 		final String layerName = nameFor(mmsi);

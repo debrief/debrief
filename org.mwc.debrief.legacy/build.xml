@@ -64,7 +64,6 @@
 		<path id="debrief_legacy.jar.classpath">
 			<pathelement location="cmap_legacy.jar"/>
 			<fileset dir="../org.mwc.cmap.legacy" includes="*.jar" excludes="cmap_legacy.jar"></fileset>
-			<fileset dir="../org.mwc.cmap.legacy/libs" includes="*.jar"></fileset>
 			<fileset dir="../org.mwc.cmap.jfreechart" includes="*.jar"></fileset>
 			<fileset dir="." includes="*.jar" excludes="cmap_legacy.jar,debrief_legacy.jar"></fileset>
 		</path>
@@ -120,7 +119,6 @@
 		<copy todir="${dist.lib.dir}" failonerror="true" overwrite="true">
 			<fileset dir="${basedir}" includes="*.jar" excludes="cmap_legacy.jar,debrief_legacy.jar"/>
 			<fileset dir="../org.mwc.cmap.legacy" includes="*.jar" excludes="cmap_legacy.jar"/>
-			<fileset dir="../org.mwc.cmap.legacy/libs" includes="*.jar"/>
 			<fileset dir="../org.mwc.cmap.jfreechart" includes="*.jar"/>
 			<fileset dir="." includes="cmap_legacy.jar"/>
 		</copy>

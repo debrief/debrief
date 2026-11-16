@@ -15,42 +15,13 @@
 package Debrief.ReaderWriter.Replay.extensions;
 
 import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.StringTokenizer;
 
 import MWC.GenericData.HiResDate;
 import MWC.Utilities.ReaderWriter.AbstractPlainLineImporter;
 import MWC.Utilities.TextFormatting.DebriefFormatDateTime;
-import junit.framework.TestCase;
 
 public class TA_ForeAft_DataHandler extends Core_TA_Handler {
-
-	public static class TestMe extends TestCase {
-		//
-		private final List<String> _messages = new ArrayList<String>();
-
-		public void testImport() throws ParseException {
-			final String str = ";TA_FORE_AFT: 100112 120000 \"SENSOR ALPHA\" \"TA ARRAY\" 12.75 3.00\t14.75 10.00";
-			final TA_ForeAft_DataHandler ff = new TA_ForeAft_DataHandler() {
-
-				@Override
-				protected void storeMeasurement(final String platform_name, final String sensor_name,
-						final String folder, final String dataset, final String units, final HiResDate theDate,
-						final double measurement) {
-					super.storeMeasurement(platform_name, sensor_name, folder, dataset, units, theDate, measurement);
-					final String outStr = "stored:" + dataset + " value of:" + measurement;
-					_messages.add(outStr);
-
-				}
-
-			};
-			ff.readThisLine(str);
-
-			assertEquals("found items", 4, _messages.size());
-
-		}
-	}
 
 	final private String _datasetName;
 

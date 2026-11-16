@@ -19,8 +19,6 @@ import java.util.GregorianCalendar;
 
 import javax.swing.JSlider;
 
-import junit.framework.TestCase;
-
 /**
  * An extension of JSlider to select a range of values using two thumb controls.
  * The thumb controls are used to select the lower and upper value of a range
@@ -36,18 +34,6 @@ import junit.framework.TestCase;
  * https://ernienotes.wordpress.com/2010/12/27/creating-a-java-swing-range-slider/
  */
 public class RangeSlider extends JSlider {
-
-	public static class TestConversion extends TestCase {
-		public void testConvert() {
-			final Calendar date = new GregorianCalendar();
-			final int millis = (int) (date.getTimeInMillis() / 1000L);
-			final Calendar newD = toDate(millis);
-			final int sliderVal = toInt(date);
-			final Calendar newD2 = toDate(sliderVal);
-			assertEquals("conversion works", millis, sliderVal);
-			assertEquals("conversion works", newD, newD2);
-		}
-	}
 
 	/**
 	 *

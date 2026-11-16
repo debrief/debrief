@@ -15,9 +15,7 @@
 
 package org.mwc.cmap.core.property_support;
 
-import java.awt.Color;
 import java.beans.BeanInfo;
-import java.beans.IntrospectionException;
 import java.beans.MethodDescriptor;
 import java.beans.PropertyDescriptor;
 import java.beans.PropertyEditor;
@@ -45,9 +43,7 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.action.Action;
-import org.eclipse.jface.action.ActionContributionItem;
 import org.eclipse.jface.action.IAction;
-import org.eclipse.jface.action.IContributionItem;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
@@ -56,10 +52,6 @@ import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.operations.RightClickCutCopyAdaptor;
 import org.mwc.cmap.core.operations.RightClickPasteAdaptor;
 
-import Debrief.Wrappers.FixWrapper;
-import Debrief.Wrappers.LabelWrapper;
-import Debrief.Wrappers.SensorWrapper;
-import Debrief.Wrappers.ShapeWrapper;
 import MWC.GUI.Editable;
 import MWC.GUI.Editable.CategorisedPropertyDescriptor;
 import MWC.GUI.Editable.EditorType;
@@ -68,11 +60,7 @@ import MWC.GUI.FireReformatted;
 import MWC.GUI.HasEditables;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
-import MWC.GUI.Shapes.RectangleShape;
 import MWC.GUI.Tools.SubjectAction;
-import MWC.GenericData.HiResDate;
-import MWC.GenericData.WorldLocation;
-import MWC.TacticalData.Fix;
 import MWC.Utilities.ReaderWriter.PlainImporterBase;
 
 public class RightClickSupport {
@@ -277,132 +265,6 @@ public class RightClickSupport {
 
 		}
 	};
-
-	// ////////////////////////////////////////////////////////////////////////////////////////////////
-	// testing for this class
-	// ////////////////////////////////////////////////////////////////////////////////////////////////
-	static public final class testMe extends junit.framework.TestCase {
-		static public final String TEST_ALL_TEST_TYPE = "UNIT";
-
-		public testMe(final String val) {
-			super(val);
-		}
-
-		public final void testAdditionalNonePresent() {
-			final ShapeWrapper sw = new ShapeWrapper("rect",
-					new RectangleShape(new WorldLocation(12.1, 12.3, 12), new WorldLocation(1.1, 1.1, 12)), Color.red,
-					new HiResDate(2222));
-			final Editable[] editables = new Editable[] { sw };
-			final MenuManager menu = new MenuManager("Holder");
-
-			RightClickSupport.getDropdownListFor(menu, editables, null, null, null, true);
-
-			boolean foundTransparent = false;
-
-			// note: this next test may return 4 if run from within IDE,
-			// some contributions provided by plugins
-			assertEquals("Has items", 2, menu.getSize(), 2);
-
-			final IContributionItem[] items = menu.getItems();
-			for (int i = 0; i < items.length; i++) {
-				final IContributionItem thisI = items[i];
-				if (thisI instanceof MenuManager) {
-					final MenuManager subMenu = (MenuManager) thisI;
-					final IContributionItem[] subItems = subMenu.getItems();
-					for (int j = 0; j < subItems.length; j++) {
-						final IContributionItem subI = subItems[j];
-						if (subI instanceof ActionContributionItem) {
-							final ActionContributionItem ac = (ActionContributionItem) subI;
-							final String theName = ac.getAction().getText();
-							if (theName.equals("Semi transparent")) {
-								foundTransparent = true;
-							}
-						}
-					}
-				}
-			}
-
-			assertTrue("The additional bean info got processed!", foundTransparent);
-		}
-
-		public final void testAdditionalSomePresent() {
-			final LabelWrapper lw = new LabelWrapper("Some label", new WorldLocation(1.1, 1.1, 12), Color.red);
-			final Editable[] editables = new Editable[] { lw };
-			final MenuManager menu = new MenuManager("Holder");
-
-			RightClickSupport.getDropdownListFor(menu, editables, null, null, null, true);
-
-			// note: this next test may return 4 if run from within IDE,
-			// some contributions provided by plugins
-			assertEquals("Has items", 2, menu.getSize(), 2);
-
-		}
-
-		public final void testIntersection() {
-			try {
-				final PropertyDescriptor[] demo = new PropertyDescriptor[] {};
-				final PropertyDescriptor[] pa = new PropertyDescriptor[] {
-						new PropertyDescriptor("Color", FixWrapper.class),
-						new PropertyDescriptor("Font", FixWrapper.class),
-						new PropertyDescriptor("Label", FixWrapper.class),
-						new PropertyDescriptor("LabelShowing", FixWrapper.class),
-						new PropertyDescriptor("Visible", FixWrapper.class) };
-				final PropertyDescriptor[] pb = new PropertyDescriptor[] {
-						new PropertyDescriptor("Color", FixWrapper.class),
-						new PropertyDescriptor("Font", FixWrapper.class),
-						new PropertyDescriptor("Label", FixWrapper.class),
-						new PropertyDescriptor("LabelShowing", FixWrapper.class),
-						new PropertyDescriptor("SymbolShowing", FixWrapper.class), };
-				final PropertyDescriptor[] pc = new PropertyDescriptor[] {
-						new PropertyDescriptor("LabelShowing", FixWrapper.class),
-						new PropertyDescriptor("SymbolShowing", FixWrapper.class), };
-				final PropertyDescriptor[] pd = new PropertyDescriptor[] {};
-
-				PropertyDescriptor[] res = getIntersectionFor(pa, pb, demo);
-				assertNotNull("failed to find intersection", res);
-				assertEquals("Failed to find correct num", 4, res.length);
-				res = getIntersectionFor(res, pc, demo);
-				assertNotNull("failed to find intersection", res);
-				assertEquals("Failed to find correct num", 1, res.length);
-				res = getIntersectionFor(pa, pd, demo);
-				assertNotNull("failed to find intersection", res);
-				assertEquals("Failed to find correct num", 0, res.length);
-				res = getIntersectionFor(pd, pa, demo);
-				assertNotNull("failed to find intersection", res);
-				assertEquals("Failed to find correct num", 0, res.length);
-			} catch (final IntrospectionException e) {
-				CorePlugin.logError(IStatus.ERROR, "Whilst doing tests", e);
-				assertTrue("threw some error", false);
-			}
-		}
-
-		public final void testPropMgt() {
-			final Editable itemOne = new FixWrapper(new Fix(new HiResDate(122333), new WorldLocation(1, 2, 3), 12, 14));
-			final Editable itemTwo = new FixWrapper(new Fix(new HiResDate(122334), new WorldLocation(1, 2, 5), 13, 12));
-			final Editable itemThree = new SensorWrapper("alpha");
-			final Editable[] lst = new Editable[] { itemOne, itemTwo };
-			final Editable[] lst2 = new Editable[] { itemOne, itemThree };
-			final Editable[] lst3 = new Editable[] { itemThree, itemOne, itemThree };
-			final Editable[] lst4 = new Editable[] { itemThree, itemThree };
-			final Editable[] lst5 = new Editable[] { itemOne };
-			assertEquals("no data", 2, lst.length);
-			PropertyDescriptor[] props = RightClickSupport.getCommonPropertiesFor(lst);
-			assertNotNull("found some data", props);
-			assertEquals("found right matches", 14, props.length);
-			props = RightClickSupport.getCommonPropertiesFor(lst2);
-			assertNotNull("found some data", props);
-			assertEquals("found right matches", 1, props.length);
-			props = RightClickSupport.getCommonPropertiesFor(lst3);
-			assertNotNull("found some data", props);
-			assertEquals("found right matches", 1, props.length);
-			props = RightClickSupport.getCommonPropertiesFor(lst4);
-			assertNotNull("found some data", props);
-			assertEquals("found right matches", 10, props.length);
-			props = RightClickSupport.getCommonPropertiesFor(lst5);
-			assertNotNull("found some data", props);
-			assertEquals("found right matches", 14, props.length);
-		}
-	}
 
 	/**
 	 * embedded class to store a property change in an action

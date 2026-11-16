@@ -18,11 +18,9 @@ package ASSET.Models.Decision.Conditions;
 import ASSET.Models.Decision.TargetType;
 import ASSET.Models.Detection.DetectionEvent;
 import ASSET.Models.Detection.DetectionList;
-import ASSET.Models.Sensor.CoreSensor;
 import ASSET.Participants.Category;
 import ASSET.Participants.Status;
 import ASSET.Scenario.ScenarioActivityMonitor;
-import ASSET.Util.SupportTesting;
 import MWC.GUI.Editable;
 import MWC.GenericData.WorldDistance;
 
@@ -62,106 +60,6 @@ public class Detection extends Condition.CoreCondition {
 			} catch (final java.beans.IntrospectionException e) {
 				return super.getPropertyDescriptors();
 			}
-		}
-	}
-
-	/**
-	 * ************************************************* testing
-	 * *************************************************
-	 */
-	static public class DetectionTest extends SupportTesting.EditableTesting {
-		static public final String TEST_ALL_TEST_TYPE = "UNIT";
-
-		public DetectionTest(final String name) {
-			super(name);
-		}
-
-		/**
-		 * get an object which we can test
-		 *
-		 * @return Editable object which we can check the properties for
-		 */
-		@Override
-		public Editable getEditable() {
-			final Detection theDet = new Detection(null, null);
-			return theDet;
-		}
-
-		public void testIt() {
-			// build it
-
-			final Category firstTarget = new Category(Category.Force.RED, Category.Environment.SURFACE,
-					Category.Type.CARRIER);
-			final Category secondTarget = new Category(Category.Force.RED, Category.Environment.SURFACE,
-					Category.Type.AV_MISSILE);
-			final Category thirdTarget = new Category(Category.Force.RED, Category.Environment.SURFACE,
-					Category.Type.AV_MISSILE);
-
-			final ASSET.ParticipantType participant = new ASSET.Models.Vessels.Surface(12);
-			participant.setName("un-named");
-			final CoreSensor sensor = new ASSET.Models.Sensor.Initial.BroadbandSensor(12);
-			final DetectionEvent da = new DetectionEvent(110, participant.getId(), null, sensor,
-					new WorldDistance(4, WorldDistance.YARDS), new WorldDistance(4, WorldDistance.YARDS), null, null,
-					new Float(50), firstTarget, null, null, participant);
-			final DetectionEvent db = new DetectionEvent(120, participant.getId(), null, sensor,
-					new WorldDistance(1, WorldDistance.YARDS), new WorldDistance(4, WorldDistance.YARDS), null, null,
-					new Float(60), secondTarget, null, null, participant);
-			final DetectionEvent dc = new DetectionEvent(130, participant.getId(), null, sensor,
-					new WorldDistance(4, WorldDistance.YARDS), new WorldDistance(4, WorldDistance.YARDS), null, null,
-					new Float(70), thirdTarget, null, null, participant);
-
-			// build up the list
-			DetectionList dl = new DetectionList();
-
-			// try with no detections
-
-			final TargetType tt = new TargetType();
-			tt.addTargetType(Category.Type.AV_MISSILE);
-
-			Detection detection = new Detection(tt, null);
-			DetectionEvent de = (DetectionEvent) detection.test(null, dl, 0, null);
-			assertNull("no success with empty list", de);
-
-			// add the first (invalid item)
-			dl.add(da);
-			de = (DetectionEvent) detection.test(null, dl, 0, null);
-			assertNull("no success with invalid contact", de);
-
-			// add the second (valid item)
-			dl.add(db);
-			de = (DetectionEvent) detection.test(null, dl, 0, null);
-			assertNotNull("success with valid contact", de);
-
-			// add the third (valid, and closer item)
-			dl.add(dc);
-			de = (DetectionEvent) detection.test(null, dl, 0, null);
-			assertNotNull("success with valid contact", de);
-			assertEquals("strongest target found", de.getStrength().floatValue(), 70, 0.02);
-
-			//////////////////////////////////////////////////////////////
-			// now include a range threshold
-			//////////////////////////////////////////////////////////////
-			detection = new Detection(tt, new WorldDistance(2, WorldDistance.DEGS));
-			dl = new DetectionList();
-			de = (DetectionEvent) detection.test(null, dl, 0, null);
-			assertNull("no success with empty list", de);
-
-			// add the first (invalid item)
-			dl.add(da);
-			de = (DetectionEvent) detection.test(null, dl, 0, null);
-			assertNull("no success with invalid contact", de);
-
-			// add the second (valid item)
-			dl.add(db);
-			de = (DetectionEvent) detection.test(null, dl, 0, null);
-			assertNotNull("success with valid contact", de);
-
-			// add the third (valid, and closer item)
-			dl.add(dc);
-			de = (DetectionEvent) detection.test(null, dl, 0, null);
-			assertNotNull("success with valid contact", de);
-			assertEquals("target with detection in range", de.getStrength().floatValue(), 70, 0.02);
-
 		}
 	}
 

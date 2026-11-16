@@ -15,114 +15,16 @@
 
 package org.mwc.cmap.TimeController.views;
 
-import java.util.Date;
 
 import MWC.GenericData.HiResDate;
-import junit.framework.TestCase;
 
 abstract class SliderRangeManagement {
-
-	public static class TestRangeMgt extends TestCase {
-		static class MySlider extends SliderRangeManagement {
-			@Override
-			public void setEnabled(final boolean val) {
-				_isEnabled = val;
-			}
-
-			@Override
-			public void setMaxVal(final int max) {
-				_maxVal = max;
-			}
-
-			@Override
-			public void setMinVal(final int min) {
-				_minVal = min;
-			}
-
-			@Override
-			public void setTickSize(final int small, final int large, final int drag) {
-				_small = small;
-				_large = large;
-				_drag = drag;
-			}
-
-		}
-
-		private static int _maxVal, _minVal;
-		private static int _small, _large, _drag;
-
-		private static boolean _isEnabled;
-
-		@Override
-		public void setUp() {
-			_small = _large = _drag = -1;
-			_minVal = _maxVal = -1;
-			_isEnabled = false;
-		}
-
-		@SuppressWarnings("deprecation")
-		public void testRanges() {
-
-			// check we're initialised
-			assertEquals("not initialised", _small, -1);
-
-			final MySlider slider = new MySlider();
-			HiResDate minR = new HiResDate(new Date(0));
-			HiResDate maxR = new HiResDate(new Date(500));
-			slider.resetRange(minR, maxR);
-
-			assertEquals("is enabled", true, _isEnabled);
-			assertEquals("correct for tiny range", 0, _minVal);
-			assertEquals("correct for tiny range", 500000, _maxVal);
-			assertEquals("correct for tiny range", 1, _small);
-			assertEquals("correct for tiny range", 10000, _large);
-			assertEquals("correct for tiny range", 0, _drag);
-
-			// try a couple of conversions
-			int sVal = slider.toSliderUnits(new HiResDate(new Date(250)));
-			assertEquals("correct slider value", 250000, sVal);
-			final long sMicros = slider.fromSliderUnits(250000, 1).getMicros();
-			assertEquals("correct slider value", 250000, sMicros);
-
-			minR = new HiResDate(new Date(2009, 1, 1, 12, 0, 0));
-			maxR = new HiResDate(new Date(2009, 1, 1, 13, 0, 0));
-			slider.resetRange(minR, maxR);
-
-			assertEquals("is enabled", true, _isEnabled);
-			assertEquals("correct for mid range", 0, _minVal);
-			assertEquals("correct for mid range", 3600, _maxVal);
-			assertEquals("correct for mid range", 1, _small);
-			assertEquals("correct for mid range", 600, _large);
-			assertEquals("correct for mid range", 0, _drag);
-
-			// try a couple of conversions
-			sVal = slider.toSliderUnits(new HiResDate(new Date(2009, 1, 1, 12, 0, 30)));
-			assertEquals("correct slider value", 30, sVal);
-			final HiResDate dt = slider.fromSliderUnits(250000, 1);
-			final String dtStr = MWC.Utilities.TextFormatting.FormatRNDateTime.toMediumString(dt.getDate().getTime());
-			System.out.println(dtStr);
-			assertEquals("correct slider value", 250000, sMicros);
-
-			minR = new HiResDate(new Date(2009, 1, 1, 12, 0, 0));
-			maxR = new HiResDate(new Date(2090, 1, 1, 12, 0, 1));
-			slider.resetRange(minR, maxR);
-
-			assertEquals("is in minutes mode", MINUTE_STEP, slider._timeScalar);
-			assertEquals("is enabled", true, _isEnabled);
-			assertEquals("correct for large range", 0, _minVal);
-			assertEquals("correct for large range", 42602400, _maxVal);
-			assertEquals("correct for large range", 1, _small);
-			assertEquals("correct for large range", 6000000, _large);
-			assertEquals("correct for large range", 0, _drag);
-
-		}
-	}
 
 	private static final long DAY_STEP = 24 * 60 * 60000000L;
 
 	private static final long HOUR_STEP = 60 * 60000000L;
 
-	private static final long MINUTE_STEP = 60000000;
+	static final long MINUTE_STEP = 60000000;
 
 	private static final int SECOND_STEP = 1000000;
 

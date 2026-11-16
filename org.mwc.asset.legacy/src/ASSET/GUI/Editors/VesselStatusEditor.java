@@ -16,10 +16,7 @@ package ASSET.GUI.Editors;
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
 
-import ASSET.Models.Movement.SSMovementCharacteristics;
-import ASSET.Models.Vessels.SSN;
 import ASSET.Participants.Status;
-import ASSET.Util.SupportTesting;
 import MWC.GUI.Editable;
 import MWC.GUI.Properties.BoundedInteger;
 import MWC.GenericData.WorldDistance;
@@ -27,33 +24,6 @@ import MWC.GenericData.WorldLocation;
 import MWC.GenericData.WorldSpeed;
 
 public class VesselStatusEditor implements Editable {
-
-	//////////////////////////////////////////////////////////////////////
-	//
-	//////////////////////////////////////////////////////////////////////
-
-	//////////////////////////////////////////////////
-	// add testing code
-	//////////////////////////////////////////////////
-	public static class EditorTest extends SupportTesting.EditableTesting {
-		/**
-		 * get an object which we can test
-		 *
-		 * @return Editable object which we can check the properties for
-		 */
-		@Override
-		public Editable getEditable() {
-			final SSN theSSN = new SSN(12);
-			final Status stat = new Status(12, 12);
-			stat.setLocation(new WorldLocation(12, 12, 0));
-			stat.setSpeed(new WorldSpeed(12, WorldSpeed.M_sec));
-			theSSN.setMovementChars(SSMovementCharacteristics.getSampleSSChars());
-			theSSN.setStatus(stat);
-			final VesselStatusEditor res = new VesselStatusEditor(theSSN);
-
-			return res;
-		}
-	}
 
 	static public class VesselStatusInfo extends MWC.GUI.Editable.EditorType {
 

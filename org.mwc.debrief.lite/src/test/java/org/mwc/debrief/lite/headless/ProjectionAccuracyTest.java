@@ -15,6 +15,8 @@
 
 package org.mwc.debrief.lite.headless;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.io.File;
@@ -25,6 +27,9 @@ import org.geotools.geometry.DirectPosition2D;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.map.MapContent;
 import org.geotools.referencing.CRS;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
 import org.mwc.debrief.lite.LiteApplication;
 import org.mwc.debrief.lite.LiteSession;
 import org.mwc.debrief.lite.gui.GeoToolMapProjection;
@@ -37,7 +42,6 @@ import MWC.GUI.Layers;
 import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldLocation;
 import MWC.Utilities.ReaderWriter.ImportManager;
-import junit.framework.TestCase;
 
 /**
  * Position accuracy of Lite's map projection, for the GeoTools upgrade (plan
@@ -55,7 +59,7 @@ import junit.framework.TestCase;
  * within one pixel's width on the ground.
  * </ul>
  */
-public class ProjectionAccuracyTest extends TestCase {
+public class ProjectionAccuracyTest {
 
 	/** WGS84 semi-major axis, metres */
 	private static final double A = 6378137.0;
@@ -104,12 +108,13 @@ public class ProjectionAccuracyTest extends TestCase {
 		return session.getData();
 	}
 
-	@Override
-	protected void setUp() throws Exception {
+	@BeforeEach
+	public void setUp() throws Exception {
 		_app = HeadlessFixture.newApp();
 	}
 
 	/** the formula itself, against published EPSG:3395 values */
+	@Test
 	public void testMercatorFormula() {
 		final double[] origin = mercator(0, 0);
 		assertEquals(0, origin[0], 1e-6);
@@ -121,6 +126,7 @@ public class ProjectionAccuracyTest extends TestCase {
 	}
 
 	/** degrees to Mercator and back, and against the formula, for every fix */
+	@Test
 	public void testDegreesToMercatorAndBack() throws Exception {
 		final MapContent map = new MapContent();
 		try {
@@ -130,7 +136,7 @@ public class ProjectionAccuracyTest extends TestCase {
 				final MathTransform toMap = projection.getDataTransform();
 				final MathTransform fromMap = toMap.inverse();
 				final List<WorldLocation> fixes = fixesIn(layers);
-				assertTrue(plot + " has fixes", fixes.size() > 100);
+				assertTrue(fixes.size() > 100, plot + " has fixes");
 
 				double worstTrip = 0;
 				double worstFormula = 0;
@@ -147,9 +153,9 @@ public class ProjectionAccuracyTest extends TestCase {
 					fromMap.transform(metres, back);
 					worstTrip = Math.max(worstTrip, metresBetween(loc, new WorldLocation(back.y, back.x, 0)));
 				}
-				assertTrue(plot + ": worst round trip " + worstTrip + " m", worstTrip < ONE_METRE);
-				assertTrue(plot + ": worst difference from EPSG:3395 " + worstFormula + " m",
-						worstFormula < ONE_METRE);
+				assertTrue(worstTrip < ONE_METRE, plot + ": worst round trip " + worstTrip + " m");
+				assertTrue(worstFormula < ONE_METRE,
+						plot + ": worst difference from EPSG:3395 " + worstFormula + " m");
 			}
 		} finally {
 			map.dispose();
@@ -160,6 +166,7 @@ public class ProjectionAccuracyTest extends TestCase {
 	 * degrees to screen pixels and back, as the map does when drawing and when
 	 * the user clicks: within one pixel on the ground
 	 */
+	@Test
 	public void testDegreesToScreenAndBack() throws Exception {
 		for (final String plot : PLOTS) {
 			final MapContent map = new MapContent();
@@ -180,16 +187,16 @@ public class ProjectionAccuracyTest extends TestCase {
 				final Point p = projection.toScreen(centre);
 				final double pixelMetres = metresBetween(projection.toWorld(new Point(p.x, p.y)),
 						projection.toWorld(new Point(p.x + 1, p.y + 1)));
-				assertTrue(plot + ": pixel size " + pixelMetres + " m", pixelMetres > 0);
+				assertTrue(pixelMetres > 0, plot + ": pixel size " + pixelMetres + " m");
 
 				double worst = 0;
 				for (final WorldLocation loc : fixesIn(layers)) {
 					final Point screen = projection.toScreen(loc);
-					assertNotNull(plot + ": on screen", screen);
+					assertNotNull(screen, plot + ": on screen");
 					worst = Math.max(worst, metresBetween(loc, projection.toWorld(screen)));
 				}
-				assertTrue(plot + ": worst screen round trip " + worst + " m against a pixel of " + pixelMetres + " m",
-						worst <= pixelMetres);
+				assertTrue(worst <= pixelMetres,
+						plot + ": worst screen round trip " + worst + " m against a pixel of " + pixelMetres + " m");
 			} finally {
 				map.dispose();
 			}

@@ -180,6 +180,9 @@
 
 package MWC.GUI;
 
+import static MWC.Utilities.Errors.Testing.Checks.assertNotNull;
+import static MWC.Utilities.Errors.Testing.Checks.fail;
+
 import java.beans.BeanDescriptor;
 import java.beans.IntrospectionException;
 import java.beans.MethodDescriptor;
@@ -195,8 +198,6 @@ import java.lang.reflect.Method;
 import MWC.GUI.Properties.PlainPropertyEditor;
 import MWC.GUI.Properties.Swing.SwingPropertyEditor2;
 import MWC.GUI.Tools.SubjectAction;
-import junit.framework.Assert;
-import junit.framework.TestCase;
 
 /**
  * Interface defining behaviour for a screen item which should be editable by
@@ -321,9 +322,8 @@ public interface Editable {
 		 * old version of calling tester
 		 *
 		 * @param toBeTested the object to be tested
-		 * @param theCase    the parent test case
 		 */
-		public static final void testParams(final Editable toBeTested, final TestCase theCase) {
+		public static final void testParams(final Editable toBeTested) {
 			testTheseParameters(toBeTested);
 		}
 
@@ -338,12 +338,12 @@ public interface Editable {
 			if (toBeTested == null)
 				return;
 
-			Assert.assertNotNull("Found editable object", toBeTested);
+			assertNotNull(toBeTested, "Found editable object");
 
 			final Editable.EditorType et = toBeTested.getInfo();
 
 			if (et == null) {
-				Assert.fail("no editor type returned for");
+				fail("no editor type returned for");
 				return;
 			}
 
@@ -365,7 +365,7 @@ public interface Editable {
 												// | Settings | File Templates.
 					}
 					// check it worked
-					Assert.assertNotNull("we didn't create the custom editor for:", newInstance);
+					assertNotNull(newInstance, "we didn't create the custom editor for:");
 				}
 
 				else {
@@ -376,7 +376,7 @@ public interface Editable {
 					final PropertyDescriptor[] pd = et.getPropertyDescriptors();
 
 					if (pd == null) {
-						Assert.fail("problem fetching property editors for " + toBeTested);
+						fail("problem fetching property editors for " + toBeTested);
 						return;
 					}
 
@@ -407,11 +407,11 @@ public interface Editable {
 							final Object[] dummyArgument = null;
 							res = getter.invoke(data, dummyArgument);
 						} catch (final InvocationTargetException ie) {
-							Assert.fail(
+							fail(
 									"missing getter for " + toBeTested + " called:" + getter.getName() + " property:"
 											+ p.getDisplayName() + " (" + et.getClass() + ") because:" + ie.getCause());
 						} catch (final IllegalAccessException al) {
-							Assert.fail("getter not visible for " + toBeTested);
+							fail("getter not visible for " + toBeTested);
 						}
 
 						// note: we may not have a setter method
@@ -423,13 +423,13 @@ public interface Editable {
 							} catch (final InvocationTargetException ie) {
 								// just check that we were using a valid value for the res
 								if (res != null) {
-									Assert.fail("missing setter for " + p.getWriteMethod().getName() + ", "
+									fail("missing setter for " + p.getWriteMethod().getName() + ", "
 											+ toBeTested.getClass());
 								} else
 									System.out.println("######## null value returned form getter for "
 											+ p.getReadMethod().getName());
 							} catch (final IllegalAccessException al) {
-								Assert.fail("setter not visible for " + toBeTested);
+								fail("setter not visible for " + toBeTested);
 							}
 
 							// check if we can get a property editor GUI component for this
@@ -454,7 +454,7 @@ public interface Editable {
 					final MethodDescriptor method = methods[thisM];
 					final Method thisOne = method.getMethod();
 					final String theName = thisOne.getName();
-					Assert.assertNotNull(theName);
+					assertNotNull(theName);
 				}
 			}
 		}

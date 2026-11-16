@@ -20,21 +20,6 @@ import MWC.GenericData.WorldSpeed;
 
 public class NarrowbandRadNoise
 		implements ASSET.Models.Vessels.Radiated.RadiatedCharacteristics.Medium, java.io.Serializable, Editable {
-	//////////////////////////////////////////////////
-	// testing
-	//////////////////////////////////////////////////
-	public static class BBRadNoiseTest extends ASSET.Util.SupportTesting.EditableTesting {
-
-		/**
-		 * get an object which we can test
-		 *
-		 * @return Editable object which we can check the properties for
-		 */
-		@Override
-		public Editable getEditable() {
-			return new NarrowbandRadNoise(12, 12);
-		}
-	}
 
 	//////////////////////////////////////////////////
 	// editable info

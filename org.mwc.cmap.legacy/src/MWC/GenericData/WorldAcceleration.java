@@ -19,47 +19,6 @@ package MWC.GenericData;
  * class which represents a speed as a value plus a set of units
  */
 final public class WorldAcceleration {
-	/////////////////////////////////////////////////////////////////
-	// member variables
-	/////////////////////////////////////////////////////////////////
-
-	//////////////////////////////////////////////////////////////////////////////////////////////////
-	// testing for this class
-	//////////////////////////////////////////////////////////////////////////////////////////////////
-	static public final class AccelTest extends junit.framework.TestCase {
-		static public final String TEST_ALL_TEST_TYPE = "UNIT";
-
-		public AccelTest(final String val) {
-			super(val);
-		}
-
-		public final void testStrings() {
-			WorldAcceleration da = new WorldAcceleration(12, Kts_sec);
-			String res = da.toString();
-			assertEquals("correct output format", res, "12.0 kts/s");
-
-			da = new WorldAcceleration(1.75, M_sec_sec);
-			res = da.toString();
-			assertEquals("correct output format", res, "1.75 m/s/s");
-		}
-
-		public final void testWorldDistanceUnits() {
-			final WorldAcceleration w1 = new WorldAcceleration(1, WorldAcceleration.M_sec_sec);
-			assertEquals("m sec correct", w1.getValueIn(WorldAcceleration.M_sec_sec), 1d, 0.000001);
-
-			final WorldAcceleration w2 = new WorldAcceleration(1, WorldAcceleration.Kts_sec);
-			assertEquals("correct value stored", 1, w2._myAccel, 0.001);
-			assertEquals("correct units stored", WorldAcceleration.Kts_sec, w2._myUnits, 0.001);
-			assertEquals("m/sec correct", w2.getValueIn(WorldAcceleration.M_sec_sec), 0.5144444, 0.000001);
-			assertEquals("kts correct", w2.getValueIn(WorldAcceleration.Kts_sec), 1, 0.000001);
-
-			assertEquals("Back to kts correct", w2.getValueIn(WorldAcceleration.Kts_sec), 1, 0.000001);
-
-			assertEquals("retrieve m/s label", WorldAcceleration.getLabelFor(WorldAcceleration.M_sec_sec), "m/s/s");
-			assertEquals("retrieve kts label", WorldAcceleration.getLabelFor(WorldAcceleration.Kts_sec), "kts/s");
-
-		}
-	}
 
 	/**
 	 * the types of units we can handle

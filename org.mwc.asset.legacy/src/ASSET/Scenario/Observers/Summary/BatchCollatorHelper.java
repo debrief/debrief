@@ -24,7 +24,6 @@ import java.util.Iterator;
 import java.util.TreeMap;
 import java.util.Vector;
 
-import ASSET.Util.SupportTesting;
 import MWC.Utilities.TextFormatting.GeneralFormat;
 
 /**
@@ -40,7 +39,7 @@ public class BatchCollatorHelper {
 	/**
 	 * member class to average instances of results
 	 */
-	private static class AverageCollator extends StatsCollator {
+	static class AverageCollator extends StatsCollator {
 
 		/**
 		 * convenience class to store the components of the average
@@ -202,197 +201,10 @@ public class BatchCollatorHelper {
 		}
 	}
 
-	static public class CollatorTest extends SupportTesting {
-		static public final String TEST_ALL_TEST_TYPE = "UNIT";
-
-		public CollatorTest(final String val) {
-			super(val);
-		}
-
-		public void doCoreTest(final StatsCollator nonPerCaseCC, final StatsCollator perCaseCC, final String name,
-				final String nonPerCaseString, final String perCaseString, final String units) {
-			assertNotNull("didn't receive it", nonPerCaseCC);
-
-			// ok, add some items
-			nonPerCaseCC.addDatum("a1", "a", 2);
-			nonPerCaseCC.addDatum("a3", "b", 3);
-			nonPerCaseCC.addDatum("a4", "a", "sddfgsdfs");
-			nonPerCaseCC.addDatum("a5", "b", new Double(1));
-			nonPerCaseCC.addDatum("a5", "b", 3);
-			nonPerCaseCC.addDatum("a4", "a", "sddfgsdfs");
-
-			// get the result
-			final String thisResult = nonPerCaseCC.getResult(name, units);
-			assertTrue("count wrongly performed", thisResult.indexOf(nonPerCaseString) > 0);
-			assertTrue("collator name not included", thisResult.indexOf(name) > 0);
-
-			// and now the per-case instance
-			// ok, add some items
-			perCaseCC.addDatum("a7", "a", 2);
-			perCaseCC.addDatum("a8", "b", 3);
-			perCaseCC.addDatum("a9", "a", "sddfgsdfs");
-			perCaseCC.addDatum("a1", "b", new Double(1));
-			perCaseCC.addDatum("av", "a", new Double(5));
-			perCaseCC.addDatum("av", "a", new Double(5));
-			perCaseCC.addDatum("a8", "b", 3);
-			perCaseCC.addDatum("a9", "a", "sddfgsdfs");
-
-			// check we've stored them
-			assertNotNull("store not created", perCaseCC._myData);
-
-			final String newResult = perCaseCC.getResult(name, units);
-			assertTrue("results wrongly performed", newResult.indexOf(perCaseString) > 0);
-
-		}
-
-		public void testAverageCollator() {
-			// ////////////////////////////////////////////////
-			// allright, the non per-case instance first
-			// ////////////////////////////////////////////////
-			final AverageCollator cc = new AverageCollator(false);
-			final AverageCollator cc2 = new AverageCollator(true);
-
-			doCoreTest(cc, cc2, "meanie", "Count:,4 ,Average:,2.25", "a,Count:,3 ,Average:,4", "feet");
-
-			// ok, both collators should have some data in them now. do some more
-			// checking
-
-			// check we've stored them
-			assertNull("store created", cc._myData);
-			assertNotNull("items not stored", cc._myAverage);
-			assertEquals("correct count not recorded", 4, cc._myAverage.counter);
-
-			// and now the per-case instance
-			// check we've stored them
-			assertNotNull("store not created", cc2._myData);
-			assertTrue("items not stored", cc2._myData.size() > 0);
-			assertEquals("correct num cases not recorded", 2, cc2._myData.size());
-		}
-
-		public void testCountCollator() {
-			// ////////////////////////////////////////////////
-			// allright, the non per-case instance first
-			// ////////////////////////////////////////////////
-			final CountCollator cc = new CountCollator(false);
-			final CountCollator cc2 = new CountCollator(true);
-
-			doCoreTest(cc, cc2, "counter", "Count:6", "a,5", "feet");
-
-			// ok, both collators should have some data in them now. do some more
-			// checking
-
-			// check we've stored them
-			assertNull("store created", cc._myData);
-			assertTrue("items not stored", cc._myCounter > 0);
-			assertEquals("correct count not recorded", 6, cc._myCounter);
-
-			// and now the per-case instance
-			// check we've stored them
-			assertNotNull("store not created", cc2._myData);
-			assertTrue("items not stored", cc2._myData.size() > 0);
-			assertEquals("correct num cases not recorded", 2, cc2._myData.size());
-		}
-
-		public void testItemizedListCollator() {
-			// ////////////////////////////////////////////////
-			// allright, the non per-case instance first
-			// ////////////////////////////////////////////////
-			final ListCollator cc = new ItemisedListCollator(false);
-			final ListCollator cc2 = new ItemisedListCollator(true);
-
-			doCoreTest(cc, cc2, "lister", "a1 , 2.0", "a,a7 , 2.0", "feet");
-
-			// ok, both collators should have some data in them now. do some more
-			// checking
-
-			// check we've stored them
-			assertNull("store created", cc._myData);
-			assertNotNull("items not stored", cc._myList);
-			assertEquals("correct count not recorded", 6, cc._myList.size());
-
-			// and now the per-case instance
-			// check we've stored them
-			assertNotNull("store not created", cc2._myData);
-			assertTrue("items not stored", cc2._myData.size() > 0);
-			assertEquals("correct num cases not recorded", 2, cc2._myData.size());
-		}
-
-		public void testListCollator() {
-			// ////////////////////////////////////////////////
-			// allright, the non per-case instance first
-			// ////////////////////////////////////////////////
-			final ListCollator cc = new ListCollator(false);
-			final ListCollator cc2 = new ListCollator(true);
-
-			doCoreTest(cc, cc2, "lister", "2.0, 3.0", "a,2.0, sddfg", "feet");
-
-			// ok, both collators should have some data in them now. do some more
-			// checking
-
-			// check we've stored them
-			assertNull("store created", cc._myData);
-			assertNotNull("items not stored", cc._myList);
-			assertEquals("correct count not recorded", 6, cc._myList.size());
-
-			// and now the per-case instance
-			// check we've stored them
-			assertNotNull("store not created", cc2._myData);
-			assertTrue("items not stored", cc2._myData.size() > 0);
-			assertEquals("correct num cases not recorded", 2, cc2._myData.size());
-		}
-
-		public void testTopCollator() {
-			BatchCollatorHelper helper = new BatchCollatorHelper("lister", true, BatchCollator.LIST, true, "feet");
-			helper.submitResult("bb1", "a", new Double(12));
-			helper.submitResult("bb2", "b", 122);
-			helper.submitResult("bb3", "c", 32);
-			helper.submitResult("bb4", "a", 2);
-			helper.submitResult("bbb3", "a", "here");
-
-			String res = helper.getResults();
-			assertTrue("wrong listing", res.indexOf("a,12.0, 2.0, here") > 0);
-
-			// and the inactive version
-			helper = new BatchCollatorHelper("lister", true, BatchCollator.LIST, false, "feet");
-			helper.submitResult("bbb1", "a", new Double(12));
-			helper.submitResult("bbb2", "b", 122);
-			helper.submitResult("bbb3", "c", 32);
-			helper.submitResult("bbb4", "a", 2);
-			helper.submitResult("bbb5", "a", "here");
-
-			res = helper.getResults();
-			assertNull("mistakenly returned result", res);
-		}
-
-		public void untestFrequencyListCollator() {
-			// ////////////////////////////////////////////////
-			// allright, the non per-case instance first
-			// ////////////////////////////////////////////////
-			final FrequencyListCollator cc = new FrequencyListCollator(false);
-			final FrequencyListCollator cc2 = new FrequencyListCollator(true);
-
-			doCoreTest(cc, cc2, "lister", "(3.0: 2), (sddfgsdfs: 2),", "a, (sddfgsdfs: 2), (2.0: 1), (5.0: 2)", "feet");
-
-			// ok, both collators should have some data in them now. do some more
-			// checking
-
-			// check we've stored them
-			assertNull("store created", cc._myData);
-			assertNotNull("items not stored", cc._myList);
-			assertEquals("correct count not recorded", 4, cc._myList.size());
-
-			// and now the per-case instance
-			// check we've stored them
-			assertNotNull("store not created", cc2._myData);
-			assertTrue("items not stored", cc2._myData.size() > 0);
-			assertEquals("correct num cases not recorded", 2, cc2._myData.size());
-		}
-	}
-
 	/**
 	 * member class to count instances of results
 	 */
-	private static class CountCollator extends StatsCollator {
+	static class CountCollator extends StatsCollator {
 
 		int _myCounter;
 
@@ -503,7 +315,7 @@ public class BatchCollatorHelper {
 	/**
 	 * member class to average instances of results
 	 */
-	private static class FrequencyListCollator extends StatsCollator {
+	static class FrequencyListCollator extends StatsCollator {
 
 		// ////////////////////////////////////////////////
 		// member variables
@@ -652,7 +464,7 @@ public class BatchCollatorHelper {
 		}
 	}
 
-	private static class ItemisedListCollator extends ListCollator {
+	static class ItemisedListCollator extends ListCollator {
 		/**
 		 * constructor, get on with it
 		 *
@@ -749,7 +561,7 @@ public class BatchCollatorHelper {
 	/**
 	 * member class to average instances of results
 	 */
-	private static class ListCollator extends StatsCollator {
+	static class ListCollator extends StatsCollator {
 
 		// ////////////////////////////////////////////////
 		// member variables
@@ -903,7 +715,7 @@ public class BatchCollatorHelper {
 	/**
 	 * member class to help collate stats
 	 */
-	abstract private static class StatsCollator {
+	abstract static class StatsCollator {
 		// ////////////////////////////////////////////////
 		// member variables
 		// ////////////////////////////////////////////////

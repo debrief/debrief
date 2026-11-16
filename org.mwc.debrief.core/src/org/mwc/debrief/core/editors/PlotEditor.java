@@ -202,85 +202,12 @@ import MWC.TacticalData.temporal.TimeControlPreferences;
 import MWC.TacticalData.temporal.TimeManager;
 import MWC.TacticalData.temporal.TimeProvider;
 import MWC.Utilities.ReaderWriter.XML.LayerHandler;
-import junit.framework.TestCase;
 
 /**
  * @author ian.mayo
  */
 @SuppressWarnings({ "deprecation", "restriction" })
 public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor {
-	public static class TestMe extends TestCase {
-
-		public void testAmbig() {
-			final SensorWrapper sensor = new SensorWrapper("Some name");
-
-			assertFalse("Should not find ambig data", isAmbiguousData(sensor));
-
-			// give it some none freq data
-			sensor.add(new SensorContactWrapper("the track", new HiResDate(1000000), null, 100d, null, null, null,
-					Color.RED, "label", 1, "Some name"));
-
-			assertFalse("Should still not find ambig data", isAmbiguousData(sensor));
-
-			// and another cut
-			sensor.add(new SensorContactWrapper("the track", new HiResDate(1003000), null, 100d, null, null, null,
-					Color.RED, "label", 1, "Some name"));
-
-			assertFalse("Should still not find ambig data", isAmbiguousData(sensor));
-
-			// clear the cuts
-			sensor.removeElement(sensor.elements().nextElement());
-			sensor.removeElement(sensor.elements().nextElement());
-
-			assertEquals("now empty", 0, sensor.size());
-
-			// give it some freq data
-			sensor.add(new SensorContactWrapper("the track", new HiResDate(1000000), null, 122d, 222d, null, null,
-					Color.RED, "label", 1, "Some name"));
-
-			assertTrue("Should find ambig data", isAmbiguousData(sensor));
-		}
-
-		public void testBounds() {
-			final Layers la = new Layers();
-			final TimePeriod bounds = getPeriodFor(la);
-			assertNull("should not have found any", bounds);
-
-			final Layers la2 = null;
-			final TimePeriod bounds2 = getPeriodFor(la2);
-			assertNull("should not have found any", bounds2);
-		}
-
-		public void testFreq() {
-			final SensorWrapper sensor = new SensorWrapper("Some name");
-
-			assertFalse("Should not find freq data", hasFrequencyData(sensor));
-
-			// give it some none freq data
-			sensor.add(new SensorContactWrapper("the track", new HiResDate(1000000), null, 100d, 200d, null, null,
-					Color.RED, "label", 1, "Some name"));
-
-			assertFalse("Should still not find freq data", hasFrequencyData(sensor));
-
-			// and another cut
-			sensor.add(new SensorContactWrapper("the track", new HiResDate(1003000), null, 100d, 200d, null, null,
-					Color.RED, "label", 1, "Some name"));
-
-			assertFalse("Should still not find freq data", hasFrequencyData(sensor));
-
-			// clear the cuts
-			sensor.removeElement(sensor.elements().nextElement());
-			sensor.removeElement(sensor.elements().nextElement());
-
-			assertEquals("now empty", 0, sensor.size());
-
-			// give it some freq data
-			sensor.add(new SensorContactWrapper("the track", new HiResDate(1000000), null, null, null, 22d, null,
-					Color.RED, "label", 1, "Some name"));
-
-			assertTrue("Should find freq data", hasFrequencyData(sensor));
-		}
-	}
 
 	// Extension point tag and attributes in plugin.xml
 	private static final String EXTENSION_POINT_ID = "DebriefPlotLoader";
@@ -342,11 +269,11 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor {
 		return name;
 	}
 
-	private static TimePeriod getPeriodFor(final Layers theData) {
+	static TimePeriod getPeriodFor(final Layers theData) {
 		return theData != null ? theData.getTimePeriod() : null;
 	}
 
-	private static boolean hasFrequencyData(final SensorWrapper thisS) {
+	static boolean hasFrequencyData(final SensorWrapper thisS) {
 
 		final boolean hasFreq;
 		if (thisS.size() > 0) {
@@ -359,7 +286,7 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor {
 
 	}
 
-	private static boolean isAmbiguousData(final SensorWrapper thisS) {
+	static boolean isAmbiguousData(final SensorWrapper thisS) {
 		final boolean isTowed;
 		if (thisS.size() > 0) {
 			final SensorContactWrapper firstCut = (SensorContactWrapper) thisS.elements().nextElement();

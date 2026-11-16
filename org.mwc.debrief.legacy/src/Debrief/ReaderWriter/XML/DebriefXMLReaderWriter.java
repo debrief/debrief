@@ -292,18 +292,18 @@ public final class DebriefXMLReaderWriter extends MWC.Utilities.ReaderWriter.XML
 	// // area of coverage
 	// MWC.GenericData.WorldArea area = _theLayers.elementAt(1).getBounds();
 	//
-	// super.assertEquals("tl lat of first layer", area.getTopLeft().getLat(),
+	// assertEquals("tl lat of first layer", area.getTopLeft().getLat(),
 	// 12.142258, 0.001);
-	// super.assertEquals("tl long of first layer", area.getTopLeft().getLong(),
+	// assertEquals("tl long of first layer", area.getTopLeft().getLong(),
 	// -11.7342556, 0.00001);
-	// super.assertEquals("tl depth of first layer", area.getTopLeft().getDepth(),
+	// assertEquals("tl depth of first layer", area.getTopLeft().getDepth(),
 	// 0, 0.00001);
 	//
-	// super.assertEquals("br lat of first layer", area.getBottomRight().getLat(),
+	// assertEquals("br lat of first layer", area.getBottomRight().getLat(),
 	// 11.89421, 0.001);
-	// super.assertEquals("br long of first layer",
+	// assertEquals("br long of first layer",
 	// area.getBottomRight().getLong(), -11.59376, 0.00001);
-	// super.assertEquals("br depth of first layer",
+	// assertEquals("br depth of first layer",
 	// area.getBottomRight().getDepth(), 0, 0.00001);
 	//
 	// // area of projection

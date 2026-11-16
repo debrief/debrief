@@ -18,7 +18,6 @@ package ASSET.Models.Decision.Conditions;
 import ASSET.Models.Detection.DetectionList;
 import ASSET.Participants.Status;
 import ASSET.Scenario.ScenarioActivityMonitor;
-import ASSET.Util.SupportTesting;
 import MWC.GUI.Editable;
 import MWC.GenericData.WorldDistance;
 import MWC.GenericData.WorldLocation;
@@ -62,72 +61,6 @@ public class Location extends Condition.CoreCondition {
 				return super.getPropertyDescriptors();
 			}
 		}
-	}
-
-	/**
-	 * ************************************************* testing
-	 * *************************************************
-	 */
-	static public class LocationTest extends SupportTesting.EditableTesting {
-		static public final String TEST_ALL_TEST_TYPE = "UNIT";
-
-		public LocationTest(final String name) {
-			super(name);
-		}
-
-		/**
-		 * get an object which we can test
-		 *
-		 * @return Editable object which we can check the properties for
-		 */
-		@Override
-		public Editable getEditable() {
-			final Location loc = new Location(null, new WorldDistance(1, WorldDistance.DEGS));
-			return loc;
-		}
-
-		public void testIt() {
-			// build it
-			final WorldLocation wl = new WorldLocation(1, 1, 1);
-			Status newStat = new Status(12, 200);
-			newStat.setLocation(wl.add(new WorldVector(0, 2, 0)));
-			final Location loc = new Location(wl, new WorldDistance(1, WorldDistance.DEGS));
-			Object res = loc.test(newStat, null, 0, null);
-			// test it
-			assertNull("we are not in range", res);
-
-			newStat = new Status(12, 200);
-			newStat.setLocation(wl.add(new WorldVector(0, 1, 0)));
-			res = loc.test(newStat, null, 0, null);
-			assertNotNull("we are at range", res);
-
-			// try inside range
-			newStat = new Status(12, 200);
-			newStat.setLocation(wl.add(new WorldVector(0, 0.5, 0)));
-			res = loc.test(newStat, null, 0, null);
-			assertNotNull("we are in range", res);
-
-			// switch around when we succeed
-			loc.setSucceedIfCloser(false);
-
-			newStat.setLocation(wl.add(new WorldVector(0, 0.5, 0)));
-			res = loc.test(newStat, null, 0, null);
-			// test it
-			assertNull("we are not in range", res);
-
-			newStat = new Status(12, 200);
-			newStat.setLocation(wl.add(new WorldVector(0, 1, 0)));
-			res = loc.test(newStat, null, 0, null);
-			assertNotNull("we are at range", res);
-
-			// try inside range
-			newStat = new Status(12, 200);
-			newStat.setLocation(wl.add(new WorldVector(0, 2, 0)));
-			res = loc.test(newStat, null, 0, null);
-			assertNotNull("we are in range", res);
-
-		}
-
 	}
 
 	/**

@@ -15,6 +15,8 @@
 
 package org.mwc.debrief.lite.headless;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
@@ -27,6 +29,9 @@ import org.geotools.map.MapContent;
 import org.geotools.map.MapViewport;
 import org.geotools.referencing.CRS;
 import org.geotools.renderer.lite.StreamingRenderer;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
 import org.mwc.cmap.geotools.gt2plot.ShapeFileLayer;
 import org.mwc.debrief.lite.LiteApplication;
 import org.mwc.debrief.lite.LiteSession;
@@ -40,7 +45,6 @@ import MWC.GUI.Canvas.ExtendedCanvasAdapter;
 import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldLocation;
 import MWC.Utilities.ReaderWriter.ImportManager;
-import junit.framework.TestCase;
 
 /**
  * Screenshot tests of map rendering: draw sample plots, and the coastline
@@ -63,7 +67,7 @@ import junit.framework.TestCase;
  * Regenerate them as described in
  * {@code org.mwc.debrief.legacy/test_data/golden/README.md}.
  */
-public class MapRenderingTest extends TestCase {
+public class MapRenderingTest {
 
 	/** largest per-channel colour difference that still counts as the same pixel */
 	static final int CHANNEL_TOLERANCE = 48;
@@ -116,7 +120,7 @@ public class MapRenderingTest extends TestCase {
 			if (coastline) {
 				final ShapeFileLayer coast = new ShapeFileLayer("Background coastline", COASTLINE);
 				projection.addGeoToolsLayer(coast);
-				assertEquals("coastline loaded into the map", 1, map.layers().size());
+				assertEquals(1, map.layers().size(), "coastline loaded into the map");
 			}
 
 			final CoordinateReferenceSystem degs = CRS.decode("EPSG:4326");
@@ -168,7 +172,7 @@ public class MapRenderingTest extends TestCase {
 			ImportManager.importThese(new File[] { file }, session.getData(), null);
 		}
 		final Layers layers = session.getData();
-		assertNotNull(sampleFile + " has bounds", layers.getBounds());
+		assertNotNull(layers.getBounds(), sampleFile + " has bounds");
 		return layers;
 	}
 
@@ -176,12 +180,13 @@ public class MapRenderingTest extends TestCase {
 		GoldenImage.assertMatches("rendering/" + name + ".png", image, CHANNEL_TOLERANCE, MAX_DIFFERENT);
 	}
 
-	@Override
-	protected void setUp() throws Exception {
+	@BeforeEach
+	public void setUp() throws Exception {
 		_app = HeadlessFixture.newApp();
 	}
 
 	/** the coastline alone, over the British Isles and the North Sea */
+	@Test
 	public void testCoastline() throws Exception {
 		final WorldArea britishIsles = new WorldArea(new WorldLocation(61, -11, 0), new WorldLocation(49, 9, 0));
 		check("coastline_british_isles_800x600", render(new Layers(), true, britishIsles, 800, 600));
@@ -191,6 +196,7 @@ public class MapRenderingTest extends TestCase {
 	 * uk_track.rep, off south-west Wales, over the coastline: Debrief's track
 	 * must land in the same place on GeoTools' map
 	 */
+	@Test
 	public void testTrackOverCoastline() throws Exception {
 		check("uk_track_coastline_800x600", render(load("uk_track.rep"), true, PEMBROKESHIRE, 800, 600));
 	}
@@ -199,22 +205,25 @@ public class MapRenderingTest extends TestCase {
 	 * the tolerance is tight enough: the same plot, with the map panned by about
 	 * 3 pixels (0.005 degrees), fails the comparison
 	 */
+	@Test
 	public void testDetectsSmallShift() throws Exception {
 		final BufferedImage base = render(load("uk_track.rep"), true, PEMBROKESHIRE, 800, 600);
 		final WorldArea panned = new WorldArea(new WorldLocation(52.1, -6.295, 0),
 				new WorldLocation(51.55, -4.995, 0));
 		final BufferedImage moved = render(load("uk_track.rep"), true, panned, 800, 600);
 		final GoldenImage.Comparison c = GoldenImage.compare(base, moved, CHANNEL_TOLERANCE);
-		assertTrue("a 3-pixel pan should exceed the limit, but only " + c.differentPixels + " pixels differ",
-				c.fraction() > MAX_DIFFERENT);
+		assertTrue(c.fraction() > MAX_DIFFERENT,
+				"a 3-pixel pan should exceed the limit, but only " + c.differentPixels + " pixels differ");
 	}
 
 	/** sample.dpf: tracks, sensors, shapes and labels */
+	@Test
 	public void testSample() throws Exception {
 		check("sample_dpf_800x600", render(load("sample.dpf"), false, null, 800, 600));
 	}
 
 	/** sample.dpf at a second, smaller size, without the coastline */
+	@Test
 	public void testSampleSmall() throws Exception {
 		check("sample_dpf_400x300", render(load("sample.dpf"), false, null, 400, 300));
 	}
@@ -223,6 +232,7 @@ public class MapRenderingTest extends TestCase {
 	 * shapes.rep: rectangles, lines, vectors, circles in each line style and
 	 * fill, text, and the SVG symbols
 	 */
+	@Test
 	public void testShapes() throws Exception {
 		check("shapes_rep_800x600", render(load("shapes.rep"), false, null, 800, 600));
 	}
@@ -231,6 +241,7 @@ public class MapRenderingTest extends TestCase {
 	 * the comparison itself: an identical image passes, and a clearly different
 	 * one is counted as different
 	 */
+	@Test
 	public void testComparison() {
 		final BufferedImage a = new BufferedImage(10, 10, BufferedImage.TYPE_INT_RGB);
 		final BufferedImage b = new BufferedImage(10, 10, BufferedImage.TYPE_INT_RGB);

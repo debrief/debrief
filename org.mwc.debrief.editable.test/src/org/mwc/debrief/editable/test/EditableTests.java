@@ -15,6 +15,9 @@
 
 package org.mwc.debrief.editable.test;
 
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.awt.Color;
 import java.beans.BeanDescriptor;
 import java.beans.MethodDescriptor;
@@ -63,7 +66,6 @@ import ASSET.Models.Decision.Movement.RectangleWander;
 import ASSET.Models.Vessels.SSN;
 import ASSET.Participants.CoreParticipant;
 import ASSET.Scenario.MultiForceScenario;
-import ASSET.Util.SupportTesting;
 import Debrief.GUI.Tote.StepControl;
 import Debrief.GUI.Tote.Painters.PainterManager;
 import Debrief.Wrappers.FixWrapper;
@@ -101,9 +103,11 @@ import MWC.GenericData.WorldLocation;
 import MWC.GenericData.WorldSpeed;
 import MWC.GenericData.WorldVector;
 import MWC.TacticalData.Fix;
-import junit.framework.TestCase;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-public class EditableTests extends TestCase {
+public class EditableTests {
 
 	private static final String ORG_MWC_CMAP_LEGACY = "org.mwc.cmap.legacy";
 
@@ -141,6 +145,7 @@ public class EditableTests extends TestCase {
 	 *
 	 * @param toBeTested
 	 */
+	@Test
 	public static void testTheseParameters(final Editable toBeTested) {
 		if (toBeTested == null)
 			return;
@@ -148,7 +153,7 @@ public class EditableTests extends TestCase {
 		// check if we received an object
 		System.out.println("testing " + toBeTested.getClass());
 
-		assertNotNull("Found editable object", toBeTested);
+		assertNotNull(toBeTested, "Found editable object");
 
 		final Editable.EditorType et = toBeTested.getInfo();
 
@@ -175,7 +180,7 @@ public class EditableTests extends TestCase {
 											// | Settings | File Templates.
 				}
 				// check it worked
-				assertNotNull("we didn't create the custom editor for:", newInstance);
+				assertNotNull(newInstance, "we didn't create the custom editor for:");
 			} else {
 				// there isn't a dedicated editor, try the custom ones.
 				// do the edits
@@ -249,9 +254,6 @@ public class EditableTests extends TestCase {
 		}
 	}
 
-	public EditableTests(final String testName) {
-		super(testName);
-	}
 
 	private Editable getEditable(final IType type) {
 		Editable editable = null;
@@ -302,10 +304,23 @@ public class EditableTests extends TestCase {
 			editable = new PolygonShape(null);
 			break;
 		case "ASSET.GUI.Painters.NoiseSourcePainter":
-			editable = new ASSET.GUI.Painters.NoiseSourcePainter.PainterTest().getEditable();
+			editable = new ASSET.GUI.Painters.NoiseSourcePainter(null, ASSET.Models.Environment.EnvironmentType.BROADBAND_PASSIVE);
 			break;
 		case "ASSET.GUI.Painters.ScenarioNoiseLevelPainter":
-			editable = new ASSET.GUI.Painters.ScenarioNoiseLevelPainter.NoiseLevelTest().getEditable();
+			editable = new ASSET.GUI.Painters.ScenarioNoiseLevelPainter(null, new ASSET.GUI.Painters.ScenarioNoiseLevelPainter.StatusProvider() {
+				@Override
+				public void addScenarioChangeListener(final ASSET.Scenario.ScenarioSteppedListener listener) {
+				}
+
+				@Override
+				public java.util.Vector<ASSET.GUI.Painters.ScenarioNoiseLevelPainter.ParticipantStatus> getStatuses(final int theMedium) {
+					return null;
+				}
+
+				@Override
+				public void removeScenarioChangeListener(final ASSET.Scenario.ScenarioSteppedListener listener) {
+				}
+			}, 0, null);
 			break;
 		case "ASSET.GUI.Workbench.Plotters.ScenarioParticipantWrapper":
 			editable = new ScenarioParticipantWrapper(new SSN(12), null);
@@ -396,8 +411,8 @@ public class EditableTests extends TestCase {
 			System.out.println(type.getFullyQualifiedName() + " hasn't public constructor.");
 			return null;
 		case "ASSET.Models.Decision.Movement.RectangleWander":
-			final WorldLocation topLeft = SupportTesting.createLocation(0, 10000);
-			final WorldLocation bottomRight = SupportTesting.createLocation(10000, 0);
+			final WorldLocation topLeft = new WorldLocation(MWC.Algorithms.Conversions.m2Degs(10000), MWC.Algorithms.Conversions.m2Degs(0), 0);
+			final WorldLocation bottomRight = new WorldLocation(MWC.Algorithms.Conversions.m2Degs(0), MWC.Algorithms.Conversions.m2Degs(10000), 0);
 			final WorldArea theArea = new WorldArea(topLeft, bottomRight);
 			editable = new RectangleWander(theArea, "rect wander");
 			break;
@@ -544,11 +559,10 @@ public class EditableTests extends TestCase {
 	 *
 	 * @throws Exception
 	 *
-	 * @see TestCase#setUp()
+	 * @see 
 	 */
-	@Override
-	protected void setUp() throws Exception {
-		super.setUp();
+	@BeforeEach
+	public void setUp() throws Exception {
 
 		final Bundle bundle = Platform.getBundle(ORG_MWC_CMAP_LEGACY);
 		final URL cmapLegacyURL = FileLocator.resolve(bundle.getEntry("/"));
@@ -576,11 +590,10 @@ public class EditableTests extends TestCase {
 	 *
 	 * @throws Exception
 	 *
-	 * @see TestCase#tearDown()
+	 * @see 
 	 */
-	@Override
-	protected void tearDown() throws Exception {
-		super.tearDown();
+	@AfterEach
+	public void tearDown() throws Exception {
 
 		// Dispose of the test fixture
 		waitForJobs();
@@ -604,8 +617,9 @@ public class EditableTests extends TestCase {
 	 * @throws IllegalAccessException
 	 * @throws InstantiationException
 	 */
+	@Test
 	public void testEditable()
-			throws CoreException, ClassNotFoundException, InstantiationException, IllegalAccessException {
+		throws CoreException, ClassNotFoundException, InstantiationException, IllegalAccessException {
 		final IProgressMonitor monitor = new NullProgressMonitor();
 		final IProject project = ResourcesPlugin.getWorkspace().getRoot().getProject(ORG_MWC_CMAP_LEGACY);
 		IJavaProject javaProject = null;

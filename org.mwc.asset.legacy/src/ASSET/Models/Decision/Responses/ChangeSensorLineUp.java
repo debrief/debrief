@@ -23,7 +23,6 @@ import ASSET.Participants.DemandedSensorStatus;
 import ASSET.Participants.DemandedStatus;
 import ASSET.Participants.Status;
 import ASSET.Scenario.ScenarioActivityMonitor;
-import ASSET.Util.SupportTesting;
 import MWC.GUI.Editable;
 
 /**
@@ -70,21 +69,6 @@ public class ChangeSensorLineUp extends Response.CoreResponse {
 			} catch (final java.beans.IntrospectionException e) {
 				return super.getPropertyDescriptors();
 			}
-		}
-	}
-
-	//////////////////////////////////////////////////
-	// testing support
-	//////////////////////////////////////////////////
-	public static class SensorLineupTest extends SupportTesting.EditableTesting {
-		/**
-		 * get an object which we can test
-		 *
-		 * @return Editable object which we can check the properties for
-		 */
-		@Override
-		public Editable getEditable() {
-			return new ChangeSensorLineUp(2, true);
 		}
 	}
 

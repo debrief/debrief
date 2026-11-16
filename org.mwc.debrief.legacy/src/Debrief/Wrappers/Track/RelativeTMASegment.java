@@ -48,7 +48,6 @@ import MWC.GenericData.WorldLocation;
 import MWC.GenericData.WorldSpeed;
 import MWC.GenericData.WorldVector;
 import MWC.TacticalData.Fix;
-import junit.framework.TestCase;
 
 /**
  * extension of track segment that represents a single TMA solution as a series
@@ -58,15 +57,6 @@ import junit.framework.TestCase;
  *
  */
 public class RelativeTMASegment extends CoreTMASegment implements NeedsToKnowAboutLayers {
-
-	public static class TestMe extends TestCase {
-		public final void testMyParams() {
-			RelativeTMASegment rs = new RelativeTMASegment(0, new WorldSpeed(12, WorldSpeed.Kts),
-					new WorldVector(1d, 1d, 0d), null, null, null);
-			editableTesterSupport.testParams(rs, this);
-			rs = null;
-		}
-	}
 
 	/**
 	 * class containing editable details of a track

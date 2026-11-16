@@ -15,6 +15,8 @@
 
 package org.mwc.debrief.lite.tests;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 import java.awt.Component;
 import java.util.List;
 
@@ -26,6 +28,8 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import org.mwc.debrief.lite.DebriefLiteApp;
 import org.mwc.debrief.lite.gui.custom.JXCollapsiblePaneWithTitle;
 import org.mwc.debrief.lite.utils.TestUtils;
+
+import org.junit.jupiter.api.Test;
 import org.pushingpixels.flamingo.api.common.JCommandButton;
 import org.pushingpixels.flamingo.api.ribbon.JRibbonFrame;
 
@@ -36,15 +40,16 @@ import org.pushingpixels.flamingo.api.ribbon.JRibbonFrame;
 public class TestLiteLaunch extends BaseTestCase
 {
 
-  public void testTitleAndIcon()
+	@Test
+	public void testTitleAndIcon()
   {
     JFrame ribbonFrame = DebriefLiteApp.getInstance().getApplicationFrame();
     assertNotNull(ribbonFrame.getIconImage());
     assertNotNull(ribbonFrame.getTitle());
     assertTrue(ribbonFrame.getTitle().contains("Debrief Lite"));
   }
-  
-  public void testTaskBarButtons()
+	@Test
+	public void testTaskBarButtons()
   {
     JRibbonFrame ribbonFrame = DebriefLiteApp.getInstance().getApplicationFrame();
     List<Component> taskbarComponents = ribbonFrame.getRibbon().getTaskbarComponents();
@@ -60,8 +65,8 @@ public class TestLiteLaunch extends BaseTestCase
     assertTrue(item2.getText().equals("Redo"));
     assertTrue(item3.getText().equals("Collapse"));
   }
-  
-  public void testRibbonTabs()
+	@Test
+	public void testRibbonTabs()
   {
     JRibbonFrame ribbonFrame = DebriefLiteApp.getInstance().getApplicationFrame();
     assertEquals(ribbonFrame.getRibbon().getTaskCount(),5);
@@ -71,8 +76,8 @@ public class TestLiteLaunch extends BaseTestCase
     assertEquals(ribbonFrame.getRibbon().getTask(3).getTitle(),"Insert");
     assertEquals(ribbonFrame.getRibbon().getTask(4).getTitle(),"Time");
   }
-  
-  public void testPanels()
+	@Test
+	public void testPanels()
   {
     JRibbonFrame ribbonFrame = DebriefLiteApp.getInstance().getApplicationFrame();
     Component outlinePanel = TestUtils.getChildNamed(ribbonFrame,"Outline");
@@ -94,7 +99,7 @@ public class TestLiteLaunch extends BaseTestCase
     assertEquals(tree.getModel().getChildCount(tree.getModel().getRoot()),2);
     DefaultMutableTreeNode node = (DefaultMutableTreeNode)tree.getModel().getChild(tree.getModel().getRoot(), 1);
     assertNotNull(node);
-    assertEquals("last item is not selected:",1,tree.getSelectionCount());
+    assertEquals(1,tree.getSelectionCount(),"last item is not selected:");
     button1 = (JButton)TestUtils.getChildNamed(outlinePanel, "Cut");
     assertNotNull(button1);
     assertFalse(button1.isEnabled());

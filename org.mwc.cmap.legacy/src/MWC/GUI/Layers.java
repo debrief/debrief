@@ -346,23 +346,6 @@ public class Layers implements Serializable, Plottable, PlottablesType {
 		}
 	}
 
-	// ////////////////////////////////////////////////////////////////////////////////////////////////
-	// testing for this class
-	// ////////////////////////////////////////////////////////////////////////////////////////////////
-	static public class LayersTest extends junit.framework.TestCase {
-		static public final String TEST_ALL_TEST_TYPE = "UNIT";
-
-		public LayersTest(final String val) {
-			super(val);
-		}
-
-		public void testMyParams() {
-			MWC.GUI.Editable ed = new Layers();
-			Editable.editableTesterSupport.testParams(ed, this);
-			ed = null;
-		}
-	}
-
 	/**
 	 * marker for objects that want to know about the parent layer (prob because
 	 * they can create other layers)

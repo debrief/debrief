@@ -89,25 +89,6 @@ import MWC.Utilities.ReaderWriter.XML.MWCXMLReader;
  * class to parse a label from a line of text
  */
 final class ImportLabel extends AbstractPlainLineImporter {
-	// ///////////////////////////////////////////////////////////////////////////////////////////
-	// testing for this class
-	// ////////////////////////////////////////////////////////////////////////////////////////////////
-	static public final class testImport extends junit.framework.TestCase {
-		static public final String TEST_ALL_TEST_TYPE = "UNIT";
-
-		public void testLabel() {
-			//
-			final String str1 = ";TEXT: WB 21.72 0 0 N 21.52 0 0 W wreck symbol";
-			final String str2 = ";TEXT: EB 21.66 0 0 N 21.52 0 0 W";
-
-			final ImportLabel importer = new ImportLabel();
-			final LabelWrapper res = (LabelWrapper) importer.readThisLine(str1);
-			assertEquals("Correct label", "wreck symbol", res.getLabel());
-
-			final LabelWrapper res2 = (LabelWrapper) importer.readThisLine(str2);
-			assertEquals("Correct label", "", res2.getLabel());
-		}
-	}
 
 	/**
 	 * the type for this string

@@ -82,31 +82,6 @@ public class FurthestOnCircleShape extends PlainShape implements Editable {
 		}
 	}
 
-	// ////////////////////////////////////////////////////////////////////////////////////////////////
-	// testing for this class
-	// ////////////////////////////////////////////////////////////////////////////////////////////////
-	static public class WheelTest extends junit.framework.TestCase {
-		static public final String TEST_ALL_TEST_TYPE = "UNIT";
-
-		public WheelTest(final String val) {
-			super(val);
-		}
-
-		public void testMyParams() {
-			MWC.GUI.Editable ed = new FurthestOnCircleShape(new WorldLocation(2d, 2d, 2d), 3,
-					new WorldSpeed(2, WorldSpeed.Kts), 5000, 45, 180);
-			MWC.GUI.Editable.editableTesterSupport.testParams(ed, this);
-			ed = null;
-		}
-
-		public void testWidthCalc() {
-			final FurthestOnCircleShape ed = new FurthestOnCircleShape(new WorldLocation(2d, 2d, 2d), 3,
-					new WorldSpeed(60, WorldSpeed.Kts), 60 * 60 * 1000, 45, 180);
-			final WorldDistance dist = ed.getRingWidth();
-			assertEquals("the width", 1d, dist.getValueIn(WorldDistance.DEGS));
-		}
-	}
-
 	// keep track of versions
 	static final long serialVersionUID = 1;
 
@@ -270,7 +245,7 @@ public class FurthestOnCircleShape extends PlainShape implements Editable {
 	 *
 	 * @return
 	 */
-	private WorldDistance getRingWidth() {
+	WorldDistance getRingWidth() {
 		// calculate the distance travelled at this speed, in this time interval
 		final double degsPerHour = _speed.getValueIn(WorldSpeed.Kts) / 60;
 		final double hours = _intervalMillis / 1000d / 60d / 60d;

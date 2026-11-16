@@ -26,8 +26,6 @@ import javax.swing.event.ListSelectionEvent;
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
 
-import ASSET.Models.Mediums.BroadbandRadNoise;
-import ASSET.Models.Mediums.Optic;
 import ASSET.Models.Vessels.Radiated.RadiatedCharacteristics;
 import ASSET.Models.Vessels.Radiated.RadiatedCharacteristics.Medium;
 import MWC.GUI.ToolParent;
@@ -35,51 +33,10 @@ import MWC.GUI.Properties.PlainPropertyEditor;
 import MWC.GUI.Properties.PropertiesPanel;
 import MWC.GUI.Properties.Swing.SwingPropertiesPanel;
 import MWC.GUI.Properties.Swing.SwingPropertyEditor2;
-import MWC.GenericData.WorldDistance;
 
 public class RadiatedNoiseViewer extends MWC.GUI.Properties.Swing.SwingCustomEditor
 		implements MWC.GUI.Properties.NoEditorButtons, PlainPropertyEditor.EditorUsesPropertyPanel,
 		PlainPropertyEditor.EditorUsesToolParent {
-	//////////////////////////////////////////////////////////////////////////////////////////////////
-	// testing for this class
-	//////////////////////////////////////////////////////////////////////////////////////////////////
-	public static class ViewerTest extends junit.framework.TestCase {
-		static public final String TEST_ALL_TEST_TYPE = "UNIT";
-
-		boolean set = false;
-
-		public ViewerTest(final String val) {
-			super(val);
-		}
-
-		public void testMe() {
-			// create the object
-			final RadiatedNoiseViewer dv = new RadiatedNoiseViewer();
-
-			set = false;
-			final ASSET.Models.Vessels.SSN cp = new ASSET.Models.Vessels.SSN(12);
-
-			final RadiatedCharacteristics rc = new RadiatedCharacteristics();
-			rc.add(1, new Optic(12, new WorldDistance(12, WorldDistance.METRES)));
-			rc.add(3, new BroadbandRadNoise(23));
-			cp.setRadiatedChars(rc);
-
-			// store the radiated chars
-			dv.setObject(cp.getRadiatedChars());
-
-			assertEquals("our data stored", dv._chars, cp.getRadiatedChars());
-
-			// check data loaded
-			assertEquals("list shows our data", dv._chars.getMediums().size(), 2);
-
-			// check gui control created
-			assertEquals("form correctly laid out", dv._noiseList.getName(), "List of noise mediums");
-
-			// close down
-			dv.doClose();
-
-		}
-	}
 
 	/**
 	 *

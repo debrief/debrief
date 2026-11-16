@@ -19,7 +19,6 @@ import java.awt.Color;
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
 import java.io.Serializable;
-import java.util.Date;
 import java.util.Objects;
 
 import MWC.GUI.ExcludeFromRightClickEdit;
@@ -81,23 +80,6 @@ public final class NarrativeEntry
 			}
 		}
 
-	}
-
-	// ////////////////////////////////////////////////////////////////////////////////////////////////
-	// testing for this class
-	// ////////////////////////////////////////////////////////////////////////////////////////////////
-	static public final class testMe extends junit.framework.TestCase {
-		static public final String TEST_ALL_TEST_TYPE = "UNIT";
-
-		public testMe(final String val) {
-			super(val);
-		}
-
-		public final void testMyParams() {
-			final HiResDate hd = new HiResDate(new Date());
-			final NarrativeEntry ne = new NarrativeEntry("aaa", "bbb", hd, "vvvv");
-			editableTesterSupport.testParams(ne, this);
-		}
 	}
 
 	public static final String DTG = "DTG";

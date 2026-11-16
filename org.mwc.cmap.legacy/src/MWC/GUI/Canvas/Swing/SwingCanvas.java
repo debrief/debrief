@@ -276,22 +276,6 @@ public class SwingCanvas extends javax.swing.JComponent implements CanvasType, E
 		}
 	}
 
-	//////////////////////////////////////////////////////////////////////////////////////////////////
-	// testing for this class
-	//////////////////////////////////////////////////////////////////////////////////////////////////
-	static public final class CanvasTest extends junit.framework.TestCase {
-		static public final String TEST_ALL_TEST_TYPE = "UNIT";
-
-		public CanvasTest(final String val) {
-			super(val);
-		}
-
-		public final void testMyParams() {
-			final Editable ed = new SwingCanvas(null);
-			Editable.editableTesterSupport.testParams(ed, this);
-		}
-	}
-
 	/**
 		 *
 		 */

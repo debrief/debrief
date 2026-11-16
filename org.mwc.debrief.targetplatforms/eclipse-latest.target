@@ -166,8 +166,13 @@
       <unit id="org.eclipse.wst.xsd.ui" version="0.0.0"/>
       <unit id="org.eclipse.xsd" version="0.0.0"/>
       <unit id="org.eclipse.xsd.edit" version="0.0.0"/>
-      <unit id="org.hamcrest.core" version="0.0.0"/>
-      <unit id="org.junit" version="0.0.0"/>
+      <unit id="junit-jupiter-api" version="0.0.0"/>
+      <unit id="junit-jupiter-engine" version="0.0.0"/>
+      <unit id="junit-platform-commons" version="0.0.0"/>
+      <unit id="junit-platform-engine" version="0.0.0"/>
+      <unit id="junit-platform-launcher" version="0.0.0"/>
+      <unit id="org.opentest4j" version="0.0.0"/>
+      <unit id="org.apiguardian.api" version="0.0.0"/>
     </location>
   </locations>
 </target>

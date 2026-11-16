@@ -19,7 +19,6 @@ import java.awt.Color;
 import java.awt.Point;
 
 import ASSET.Models.Environment.EnvironmentType;
-import ASSET.Util.SupportTesting;
 import MWC.GUI.CanvasType;
 import MWC.GUI.Editable;
 import MWC.GUI.Chart.Painters.SpatialRasterPainter;
@@ -51,21 +50,6 @@ public class NoiseSourcePainter extends SpatialRasterPainter implements NoiseSou
 			} catch (final java.beans.IntrospectionException e) {
 				return super.getPropertyDescriptors();
 			}
-		}
-	}
-
-	//////////////////////////////////////////////////
-	// add testing code
-	//////////////////////////////////////////////////
-	public static class PainterTest extends SupportTesting.EditableTesting {
-		/**
-		 * get an object which we can test
-		 *
-		 * @return Editable object which we can check the properties for
-		 */
-		@Override
-		public Editable getEditable() {
-			return new NoiseSourcePainter(null, EnvironmentType.BROADBAND_PASSIVE);
 		}
 	}
 
@@ -109,7 +93,7 @@ public class NoiseSourcePainter extends SpatialRasterPainter implements NoiseSou
 	///////////////////////////////////////////////////
 	// constructor
 	///////////////////////////////////////////////////
-	NoiseSourcePainter(final EnvironmentType theEnv, final int medium) {
+	public NoiseSourcePainter(final EnvironmentType theEnv, final int medium) {
 		super("Noise Source Painter");
 		_myEnvironment = theEnv;
 		_myMedium = medium;

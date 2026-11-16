@@ -14,7 +14,6 @@
  *******************************************************************************/
 package org.mwc.debrief.track_shift.ambiguity;
 
-import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,52 +23,8 @@ import org.apache.commons.math3.fitting.WeightedObservedPoints;
 
 import Debrief.Wrappers.SensorContactWrapper;
 import MWC.GenericData.HiResDate;
-import junit.framework.TestCase;
 
 public class LegOfCuts extends ArrayList<SensorContactWrapper> {
-
-	public static class TestLegs extends TestCase {
-
-		public static void testProcessCuts() throws FileNotFoundException {
-			List<WeightedObservedPoint> obs = new ArrayList<WeightedObservedPoint>();
-			obs.add(new WeightedObservedPoint(1, 80d, 260d));
-			obs.add(new WeightedObservedPoint(1, 90, 280d));
-			obs.add(new WeightedObservedPoint(1, 100, 300d));
-			obs.add(new WeightedObservedPoint(1, 110, 320d));
-			obs.add(new WeightedObservedPoint(1, 120, 340d));
-			obs.add(new WeightedObservedPoint(1, 130, 0d));
-			obs.add(new WeightedObservedPoint(1, 140, 20d));
-
-			List<WeightedObservedPoint> res = LegOfCuts.putObsInCorrectDomain(obs);
-			assertEquals("correct last score", 380d, res.get(res.size() - 1).getY(), 0.001);
-
-			obs = new ArrayList<WeightedObservedPoint>();
-			obs.add(new WeightedObservedPoint(1, 80, 160d));
-			obs.add(new WeightedObservedPoint(1, 90, 140d));
-			obs.add(new WeightedObservedPoint(1, 100, 120d));
-			obs.add(new WeightedObservedPoint(1, 110, 80d));
-			obs.add(new WeightedObservedPoint(1, 120, 30d));
-			obs.add(new WeightedObservedPoint(1, 130, 340d));
-			obs.add(new WeightedObservedPoint(1, 140, 320d));
-
-			res = LegOfCuts.putObsInCorrectDomain(obs);
-			assertEquals("correct last score", -40d, res.get(res.size() - 1).getY(), 0.001);
-
-			obs = new ArrayList<WeightedObservedPoint>();
-			obs.add(new WeightedObservedPoint(1, 80, -160d));
-			obs.add(new WeightedObservedPoint(1, 90, -140d));
-			obs.add(new WeightedObservedPoint(1, 100, -120d));
-			obs.add(new WeightedObservedPoint(1, 110, -80d));
-			obs.add(new WeightedObservedPoint(1, 120, -30d));
-			obs.add(new WeightedObservedPoint(1, 130, 20d));
-			obs.add(new WeightedObservedPoint(1, 140, 40d));
-
-			res = LegOfCuts.putObsInCorrectRange(obs);
-			assertEquals("correct last score", 200d, res.get(0).getY(), 0.001);
-			assertEquals("correct last score", 40d, res.get(res.size() - 1).getY(), 0.001);
-		}
-
-	}
 
 	/**
 	 * determine if we're using the main baaring, or the ambig bearing
@@ -123,7 +78,7 @@ public class LegOfCuts extends ArrayList<SensorContactWrapper> {
 		return weighting;
 	}
 
-	private static List<WeightedObservedPoint> putObsInCorrectDomain(final List<WeightedObservedPoint> obs) {
+	static List<WeightedObservedPoint> putObsInCorrectDomain(final List<WeightedObservedPoint> obs) {
 		final List<WeightedObservedPoint> res = new ArrayList<WeightedObservedPoint>();
 
 		double lastVal = Double.MIN_VALUE;
@@ -153,7 +108,7 @@ public class LegOfCuts extends ArrayList<SensorContactWrapper> {
 		return res;
 	}
 
-	private static List<WeightedObservedPoint> putObsInCorrectRange(final List<WeightedObservedPoint> obs) {
+	static List<WeightedObservedPoint> putObsInCorrectRange(final List<WeightedObservedPoint> obs) {
 		final List<WeightedObservedPoint> res = new ArrayList<WeightedObservedPoint>();
 		for (final WeightedObservedPoint ob : obs) {
 			double thisVal = ob.getY();

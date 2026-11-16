@@ -70,44 +70,15 @@ import java.util.List;
 import java.util.StringTokenizer;
 
 import org.apache.poi.ss.formula.eval.NotImplementedException;
-import org.junit.Test;
 
 import Debrief.Wrappers.Formatters.SliceTrackFormatListener;
 import MWC.GUI.Layers.INewItemListener;
 import MWC.Utilities.ReaderWriter.AbstractPlainLineImporter;
-import junit.framework.TestCase;
 
 /**
  * class to parse a label from a line of text
  */
 final class ImportTrackSplitFormatter extends AbstractPlainLineImporter {
-
-	/*
-	 * example: ;SPLIT_TRACK: One_Hour 3600000 TRACK_NAME TRACK_TWO ... example:
-	 * ;SPLIT_TRACK: One_Hour 3600000
-	 */
-
-	public static class TestMe extends TestCase {
-		@Test
-		public void testRead() {
-			/*
-			 * example:
-			 */
-
-			final ImportTrackSplitFormatter iff = new ImportTrackSplitFormatter();
-			SliceTrackFormatListener res = (SliceTrackFormatListener) iff
-					.readThisLine(";SPLIT_TRACK: One_Hour 3600000");
-			assertNotNull(res);
-			assertEquals("correct name", "One_Hour", res.getName());
-			assertEquals("correct period", 3600000, res.getIntervalMillis());
-
-			res = (SliceTrackFormatListener) iff.readThisLine(";SPLIT_TRACK: One_Second 1000");
-			assertNotNull(res);
-			assertEquals("One_Second", res.getName());
-			assertEquals("correct period", 1000, res.getIntervalMillis());
-
-		}
-	}
 
 	/**
 	 * the type for this string

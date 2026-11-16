@@ -57,7 +57,7 @@ import MWC.Utilities.TextFormatting.GMTDateFormat;
 public class ImportWord_LEGACY {
 
 	private static class FCSEntry {
-		private static String getClassified(final String input) {
+		static String getClassified(final String input) {
 			String res = null;
 
 			final String regexp = "Classified (.*$)";
@@ -71,7 +71,7 @@ public class ImportWord_LEGACY {
 			return res;
 		}
 
-		private static Double getElement(final String identifier, final String input) {
+		static Double getElement(final String identifier, final String input) {
 			Double res = null;
 
 			final String regexp = identifier + "-*(\\d+\\.?\\d*)";
@@ -96,7 +96,7 @@ public class ImportWord_LEGACY {
 		 * @param str
 		 * @return
 		 */
-		private static String parseTrack(final String str) {
+		static String parseTrack(final String str) {
 			final String shortTrackId = "(M\\d{2})";
 			final Pattern shortPattern = Pattern.compile(shortTrackId);
 

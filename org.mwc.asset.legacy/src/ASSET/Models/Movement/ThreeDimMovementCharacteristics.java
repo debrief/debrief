@@ -18,8 +18,6 @@ package ASSET.Models.Movement;
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
 
-import ASSET.Util.SupportTesting;
-import MWC.GUI.Editable;
 import MWC.GenericData.WorldAcceleration;
 import MWC.GenericData.WorldDistance;
 import MWC.GenericData.WorldSpeed;
@@ -65,34 +63,6 @@ public abstract class ThreeDimMovementCharacteristics extends MovementCharacteri
 				e.printStackTrace();
 				return super.getPropertyDescriptors();
 			}
-		}
-	}
-
-	//////////////////////////////////////////////////
-	// property testing
-	//////////////////////////////////////////////////
-	public static class ThreeDMoveCharsTest extends SupportTesting.EditableTesting {
-		/**
-		 * get an object which we can test
-		 *
-		 * @return Editable object which we can check the properties for
-		 */
-		@Override
-		public Editable getEditable() {
-			return new ThreeDimMovementCharacteristics("", null, null, 12, null, null, null, null, null, null) {
-				/**
-				 *
-				 */
-				private static final long serialVersionUID = 1L;
-
-				/**
-				 * get the turning circle diameter (m) at this speed (in m/sec)
-				 */
-				@Override
-				public double getTurningCircleDiameter(final double m_sec) {
-					return 12;
-				}
-			};
 		}
 	}
 

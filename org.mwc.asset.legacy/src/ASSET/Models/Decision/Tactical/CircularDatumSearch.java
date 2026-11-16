@@ -87,8 +87,6 @@ import ASSET.Models.Detection.DetectionList;
 import ASSET.Participants.DemandedStatus;
 import ASSET.Participants.Status;
 import ASSET.Scenario.ScenarioActivityMonitor;
-import ASSET.Util.SupportTesting;
-import MWC.GUI.Editable;
 import MWC.GenericData.Duration;
 import MWC.GenericData.WorldDistance;
 import MWC.GenericData.WorldLocation;
@@ -101,49 +99,6 @@ import MWC.GenericData.WorldVector;
  * high-level behaviour which itself is a composite of other behaviours
  */
 public class CircularDatumSearch extends Sequence {
-
-	//////////////////////////////////////////////////
-	// member variables
-	//////////////////////////////////////////////////
-
-	/**
-	 * ********************************************************************** test
-	 * this class
-	 * **********************************************************************
-	 */
-
-	public static class CircSearchTest extends SupportTesting.EditableTesting {
-		static public final String TEST_ALL_TEST_TYPE = "UNIT";
-
-		public CircSearchTest(final String name) {
-			super(name);
-		}
-
-		/**
-		 * get an object which we can test
-		 *
-		 * @return Editable object which we can check the properties for
-		 */
-		@Override
-		public Editable getEditable() {
-			final MWC.GUI.Editable ed = new Move();
-			return ed;
-		}
-
-		public void testCreateBuoys() {
-			// ok, create the search
-			final CircularDatumSearch cs = new CircularDatumSearch(null, new WorldDistance(1, WorldDistance.KM), 6,
-					null, null, null, null);
-
-			final Sequence field = cs.createBuoyField(null, null);
-
-			// check we created the correct amount (one more than number dropped, since it
-			// includes the
-			// transit)
-			assertEquals("correct num buoys created", field.getModels().size(), 12);
-
-		}
-	}
 
 	/**
 	 *

@@ -16,8 +16,6 @@ package ASSET.Util.XML.Decisions.Responses;
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
 
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
 
 import org.w3c.dom.Document;
 
@@ -29,99 +27,6 @@ import MWC.GenericData.WorldSpeed;
 import MWC.Utilities.ReaderWriter.XML.Util.WorldSpeedHandler;
 
 public class ManoeuvreToLocationHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLReader {
-
-	// ////////////////////////////////////////////////////////////////////////////////////////////////
-	// testing for this class
-	// ////////////////////////////////////////////////////////////////////////////////////////////////
-	static public class ManToLocationHandlerTest extends junit.framework.TestCase {
-		abstract protected class MyReaderWriter extends ASSET.Util.XML.ASSETReaderWriter {
-
-			/**
-			 * exporting the session
-			 */
-			public void exportThis(final ManoeuvreToLocation scenario, final java.io.OutputStream os) {
-				try {
-					final Document doc = DocumentBuilderFactory.newInstance().newDocumentBuilder().newDocument();
-					final org.w3c.dom.Element scen = doc.createElement("Test");
-					ManoeuvreToLocationHandler.exportThis(scenario, scen, doc);
-					doc.appendChild(scen);
-
-					// ok, we should be done now
-				} catch (final ParserConfigurationException e) {
-					e.printStackTrace();
-				}
-			}
-
-			/**
-			 * handle the import of XML data into an existing session
-			 */
-			@Override
-			public void importThis(final String fName, final java.io.InputStream is) {
-				final MWC.Utilities.ReaderWriter.XML.MWCXMLReader handler = new ManoeuvreToLocationHandler() {
-					@Override
-					public void setResponse(final Response dec) {
-						responseIs(dec);
-					}
-				};
-				handler.reportNotHandledErrors(false);
-
-				// import the datafile into this set of layers
-				doImport(new org.xml.sax.InputSource(is), handler);
-			}
-
-			abstract public void responseIs(Response rec);
-		}
-
-		static public final String TEST_ALL_TEST_TYPE = "UNIT";
-
-		ManoeuvreToLocation resp = null;
-
-		public ManToLocationHandlerTest(final String val) {
-			super(val);
-		}
-
-		public void testTheTrail() {
-			// ok, let's go for it
-			final MyReaderWriter mr = new MyReaderWriter() {
-				@Override
-				public void responseIs(final Response rec) {
-					resp = (ManoeuvreToLocation) rec;
-				}
-			};
-
-			ManoeuvreToLocation ml = new ManoeuvreToLocation(new WorldLocation(1, 1, 1),
-					new WorldSpeed(12, WorldSpeed.M_sec));
-			ml.setName("bingop");
-			java.io.ByteArrayOutputStream os = new java.io.ByteArrayOutputStream();
-			mr.exportThis(ml, os);
-
-			// great, now try to read it in!
-			java.io.InputStream is = new java.io.ByteArrayInputStream(os.toByteArray());
-			mr.importThis("", is);
-
-			// check we got it
-			assertEquals("it has the correct name", resp.getName(), "bingop");
-			assertEquals("it has the correct speed", resp.getSpeed().getValueIn(WorldSpeed.M_sec), 12, 0.001);
-			assertEquals("correct location", resp.getLocation(), new WorldLocation(1, 1, 1));
-
-			// second try, with missing speed
-			ml = new ManoeuvreToLocation(new WorldLocation(1, 1, 1), null);
-			ml.setName("bingop");
-			os = new java.io.ByteArrayOutputStream();
-			mr.exportThis(ml, os);
-
-			// great, now try to read it in!
-			is = new java.io.ByteArrayInputStream(os.toByteArray());
-			mr.importThis("", is);
-
-			// check we got it
-			assertEquals("it has the correct name", resp.getName(), "bingop");
-			assertEquals("it has the correct (null) speed", resp.getSpeed(), null);
-			assertEquals("correct location", resp.getLocation(), new WorldLocation(1, 1, 1));
-
-		}
-
-	}
 
 	private final static String type = "ManoeuvreToLocation";
 	private final static String SPEED = "Speed";

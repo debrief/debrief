@@ -17,8 +17,6 @@ package org.mwc.debrief.track_shift.zig_detector.moving_average;
 import java.util.List;
 import java.util.Vector;
 
-import junit.framework.TestCase;
-
 /**
  * windowed moving average
  *
@@ -26,70 +24,6 @@ import junit.framework.TestCase;
  *
  */
 public class TimeRestrictedMovingAverage {
-	public static class TestMe extends TestCase {
-		public void testAverage() {
-			final TimeRestrictedMovingAverage avg = new TimeRestrictedMovingAverage(1000L, 10);
-
-			avg.add(100, 10);
-			assertEquals("correct average", 10d, avg.getAverage(), 0.0001);
-
-			avg.add(200, 20);
-			assertEquals("correct average", 15d, avg.getAverage(), 0.0001);
-
-			avg.add(500, 30);
-			assertEquals("correct average", 20d, avg.getAverage(), 0.0001);
-
-			// check we're storing all items
-			assertEquals("holding all items", 3, avg.size());
-
-			assertEquals("correctly calculating period", 400, avg.period());
-
-			avg.add(800, 60);
-			assertEquals("correct average", 30d, avg.getAverage(), 0.0001);
-
-			avg.add(1000, 10);
-			assertEquals("correct average", 26d, avg.getAverage(), 0.0001);
-
-			// check we're storing all items
-			assertEquals("holding all items", 5, avg.size());
-
-			assertEquals("correctly calculating period", 900, avg.period());
-
-			avg.add(1100, 20);
-			assertEquals("holding all items", 6, avg.size());
-			assertEquals("correct average", 25d, avg.getAverage(), 0.0001);
-
-			assertEquals("correctly calculating period", 1000, avg.period());
-
-			avg.add(1200, 40);
-			assertEquals("holding all items", 6, avg.size());
-			assertEquals("correct average", 34d, avg.getAverage(), 0.0001);
-
-			assertEquals("correctly calculating period", 1000, avg.period());
-		}
-
-		public void testReverse() {
-			final TimeRestrictedMovingAverage avg = new TimeRestrictedMovingAverage(300L, 10);
-
-			avg.add(1000, 10);
-			assertEquals("correct average", 10d, avg.getAverage(), 0.0001);
-
-			avg.add(900, 20);
-			assertEquals("correct average", 15d, avg.getAverage(), 0.0001);
-
-			avg.add(800, 30);
-			assertEquals("correct average", 20d, avg.getAverage(), 0.0001);
-			assertFalse(avg.isPopulated());
-
-			avg.add(700, 40);
-			assertFalse(avg.isPopulated());
-			assertEquals("correct average", 25d, avg.getAverage(), 0.0001);
-
-			avg.add(600, 50);
-			assertEquals("correct average", 35d, avg.getAverage(), 0.0001);
-			assertFalse(avg.isPopulated());
-		}
-	}
 
 	final List<Long> _times;
 	final List<Double> _values;

@@ -16,13 +16,10 @@ package Debrief.ReaderWriter.FlatFile;
 
 import java.awt.Color;
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.Reader;
-import java.io.StringReader;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -49,150 +46,16 @@ import MWC.GenericData.WorldVector;
 import MWC.TacticalData.Fix;
 import MWC.Utilities.TextFormatting.DebriefFormatDateTime;
 import MWC.Utilities.TextFormatting.GMTDateFormat;
-import junit.framework.TestCase;
 
 public class NMEA_Radar_FileImporter {
 
-	private static class RadarEntry {
+	static class RadarEntry {
 		int trackId;
 		double rangeNm;
 		double brgDegs;
 		public HiResDate dtg;
 		public double speedKts;
 		public double courseDegs;
-	}
-
-	public static class RadarImporter_Test extends TestCase {
-		static class Logger implements ErrorLogger {
-			private final List<String> messages = new ArrayList<>();
-
-			private final boolean console = true;
-
-			private void clear() {
-				messages.clear();
-			}
-
-			public boolean isEmpty() {
-				return messages.isEmpty();
-			}
-
-			@Override
-			public void logError(final int status, final String text, final Exception e) {
-				output(text, e);
-			}
-
-			@Override
-			public void logError(final int status, final String text, final Exception e, final boolean revealLog) {
-				output(text, e);
-			}
-
-			@Override
-			public void logStack(final int status, final String text) {
-				output(text, null);
-			}
-
-			public void output(final String text, final Exception e) {
-				messages.add(text);
-				if (console) {
-					System.out.println(text);
-					if (e != null) {
-						e.printStackTrace();
-					}
-				}
-			}
-
-			public void setUp() {
-			}
-		}
-
-		static public final String TEST_ALL_TEST_TYPE = "UNIT";
-
-		private final Logger _logger = new Logger();
-
-		@Override
-		public void setUp() {
-			_logger.clear();
-		}
-
-		public void testGoodLoadOnExisting() throws Exception {
-			final NMEA_Radar_FileImporter importer = new NMEA_Radar_FileImporter();
-			final Layers layers = new Layers();
-
-			final String ownship_track = "../org.mwc.cmap.combined.feature/root_installs/sample_data/700101_0106_R_Dev.txt";
-
-			assertTrue("input file exists", new File(ownship_track).exists());
-			
-			final WorldLocation origin = new WorldLocation(22.2, 33.3, 0d);
-
-
-			final InputStream is = new FileInputStream(ownship_track);
-			final Action action = importer.importThis(origin, is, layers, _logger);
-			action.execute();
-
-			assertEquals("has data", 17, layers.size());
-
-			final TrackWrapper track = (TrackWrapper) layers.elementAt(0);
-
-			assertEquals("correct fixes", 5, track.numFixes());
-		}
-		
-		public void testCanLoad() throws Exception {
-
-			final String initialString = "700101_010601:$RATTM,002,0.665,224.7,T,0.17,31.2,R,0.16,99.99,N,,T,,,A*2A";
-
-			final Reader inputString = new StringReader(initialString);
-			final BufferedReader reader = new BufferedReader(inputString);
-
-			assertTrue(canLoad(_logger, reader));
-		}
-
-		public void testParseLine() throws Exception {
-
-			final String initialString = "700101_010601:$RATTM,002,0.665,224.7,T,0.17,31.2,R,0.16,99.99,N,,T,,,A*2A";
-			final Optional<RadarEntry> entry = readLine(initialString, 5);
-			assertTrue(entry.isPresent());
-		}
-
-		public void testTwentyFourHourClock() throws Exception {
-			final String tail = ":$RATTM,002,0.665,224.7,T,0.17,31.2,R,0.16,99.99,N,,T,,,A*2A";
-			// afternoon
-			Optional<RadarEntry> entry = readLine("700101_130601" + tail, 5);
-			assertTrue("PM record read", entry.isPresent());
-			assertEquals((13 * 3600 + 6 * 60 + 1) * 1000L, entry.get().dtg.getDate().getTime());
-			// noon
-			entry = readLine("700101_120601" + tail, 5);
-			assertTrue("noon record read", entry.isPresent());
-			assertEquals((12 * 3600 + 6 * 60 + 1) * 1000L, entry.get().dtg.getDate().getTime());
-			// just after midnight
-			entry = readLine("700101_000601" + tail, 5);
-			assertTrue("midnight record read", entry.isPresent());
-			assertEquals((6 * 60 + 1) * 1000L, entry.get().dtg.getDate().getTime());
-			// morning
-			entry = readLine("700101_010601" + tail, 5);
-			assertEquals((3600 + 6 * 60 + 1) * 1000L, entry.get().dtg.getDate().getTime());
-		}
-
-		public void testInvalidDate() throws Exception {
-			final String initialString = "700101010601:$RATTM,002,0.665,224.7,T,0.17,31.2,R,0.16,99.99,N,,T,,,A*2A";
-			final Optional<RadarEntry> entry = readLine(initialString, 5);
-			assertFalse(entry.isPresent());
-		}
-
-		public void testWrongNumColumns() throws Exception {
-			final String initialString = "700101_010601:$RATTM,002,0.665,224.7,17,31.2,R,0.16,99.99,N,,T,,,A*2A";
-			final Optional<RadarEntry> entry = readLine(initialString, 5);
-			assertFalse(entry.isPresent());
-		}
-
-		public void testCannotLoad() throws Exception {
-
-			final String initialString = "700101_010601:$OTTER,002,0.665,224.7,T,0.17,31.2,R,0.16,99.99,N,,T,,,A*2A";
-
-			final Reader inputString = new StringReader(initialString);
-			final BufferedReader reader = new BufferedReader(inputString);
-
-			assertFalse(canLoad(_logger, reader));
-		}
 	}
 
 	private static FixWrapper generateFix(final WorldLocation origin, final RadarEntry entry) {
@@ -354,7 +217,7 @@ public class NMEA_Radar_FileImporter {
 		return dateFormatter.parse(item);
 	}
 
-	private static Optional<RadarEntry> readLine(final String line, final int lineNum) {
+	static Optional<RadarEntry> readLine(final String line, final int lineNum) {
 		// check if it's our type of message
 		if (line.indexOf(RADAR_STR) != -1) {
 			// split line

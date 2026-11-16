@@ -87,7 +87,7 @@ public class LookupSensorComponentViewer extends BaseSensorViewer {
 
 		// and it's sensor
 		final ASSET.Models.Sensor.SensorList fit = new ASSET.Models.Sensor.SensorList();
-		final OpticLookupSensor optic = OpticLookupSensor.OpticLookupTest.getTestOpticSensor();
+		final OpticLookupSensor optic = ASSET.Models.Sensor.Lookup.OpticLookupSensor.getTestOpticSensor();
 		fit.add(optic);
 		merlin.setSensorFit(fit);
 		merlin.setCategory(new Category(Category.Force.BLUE, Category.Environment.AIRBORNE, Category.Type.HELO));

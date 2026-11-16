@@ -17,100 +17,14 @@ package ASSET.Util.MonteCarlo;
 
 import java.text.DecimalFormat;
 import java.text.ParseException;
-import java.util.HashMap;
 import java.util.Vector;
 
 import org.w3c.dom.Element;
 
 import ASSET.Util.RandomGenerator;
-import ASSET.Util.SupportTesting;
 import MWC.Utilities.ReaderWriter.XML.MWCXMLReader;
 
 public final class XMLRange implements XMLOperation {
-	//////////////////////////////////////////////////
-	// property testing
-	//////////////////////////////////////////////////
-	public static class RangeTest extends SupportTesting {
-		public RangeTest(final String s) {
-			super(s);
-		}
-
-		// TODO FIX-TEST
-		public void NtestGaussianPerms() {
-			final XMLRange newR = new XMLRange();
-			newR.assign(140, 60, RandomGenerator.NORMAL, new Integer(120), null, null);
-
-			// ok, check we haven't got the perms yet
-			assertEquals("wrong min", 60, newR._min, 0);
-			assertEquals("wrong max", 140, newR._max, 0);
-			assertEquals("wrong num perms", 120, newR._numPerms.intValue());
-			assertEquals("wrong model", RandomGenerator.NORMAL, newR._model);
-
-			assertEquals("wrong num perms generated", 120, newR._myPerms.size(), 0);
-			for (int i = 0; i < newR._myPerms.size(); i++) {
-				final Double aDouble = newR._myPerms.elementAt(i);
-				assertTrue("out of range", aDouble.doubleValue() > 60);
-				assertTrue("out of range", aDouble.doubleValue() < 140);
-			}
-
-			// and check that we only get the right values
-			final HashMap<Integer, Integer> scores = new HashMap<Integer, Integer>();
-			for (int i = 0; i < 5000; i++) {
-				newR.newPermutation();
-				final Double thisVal = new Double(newR._currentValue);
-				assertTrue("not one of ours found", newR._myPerms.contains(thisVal));
-				final int index = newR._myPerms.indexOf(thisVal);
-				Integer res = scores.get(new Integer(index));
-				if (res == null)
-					res = new Integer(0);
-
-				res = new Integer(res.intValue() + 1);
-				scores.put(new Integer(index), res);
-			}
-
-		}
-
-		public void testNumPerms() {
-			final XMLRange newR = new XMLRange();
-			newR.assign(140, 60, RandomGenerator.UNIFORM, new Integer(12), null, null);
-
-			// ok, check we haven't got the perms yet
-			assertEquals("wrong min", 60, newR._min, 0);
-			assertEquals("wrong max", 140, newR._max, 0);
-			assertEquals("wrong num perms", 12, newR._numPerms.intValue());
-			assertEquals("wrong model", RandomGenerator.UNIFORM, newR._model);
-
-			assertEquals("wrong num perms generated", 12, newR._myPerms.size(), 0);
-			for (int i = 0; i < newR._myPerms.size(); i++) {
-				final Double aDouble = newR._myPerms.elementAt(i);
-				assertTrue("out of range", aDouble.doubleValue() > 60);
-				assertTrue("out of range", aDouble.doubleValue() < 140);
-			}
-
-			// and check that we only get the right values
-			final HashMap<Integer, Integer> scores = new HashMap<Integer, Integer>();
-			for (int i = 0; i < 5000; i++) {
-				newR.newPermutation();
-				final Double thisVal = new Double(newR._currentValue);
-				assertTrue("not one of ours found", newR._myPerms.contains(thisVal));
-				final int index = newR._myPerms.indexOf(thisVal);
-				Integer res = scores.get(new Integer(index));
-				if (res == null)
-					res = new Integer(0);
-
-				res = new Integer(res.intValue() + 1);
-				scores.put(new Integer(index), res);
-			}
-
-			// Iterator<Integer> freq = scores.keySet().iterator();
-			// while (freq.hasNext())
-			// {
-			// Integer index = (Integer) freq.next();
-			// Integer score = (Integer) scores.get(index);
-			// }
-
-		}
-	}
 
 	/**
 	 * the min value

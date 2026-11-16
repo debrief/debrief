@@ -60,23 +60,6 @@ public final class SymbolHighlighter implements PlotHighlighter {
 		}
 	}
 
-	//////////////////////////////////////////////////////////////////////////////////////////////////
-	// testing for this class
-	//////////////////////////////////////////////////////////////////////////////////////////////////
-	static public final class testMe extends junit.framework.TestCase {
-		static public final String TEST_ALL_TEST_TYPE = "UNIT";
-
-		public testMe(final String val) {
-			super(val);
-		}
-
-		public final void testMyParams() {
-			Editable ed = new SymbolHighlighter();
-			Editable.editableTesterSupport.testParams(ed, this);
-			ed = null;
-		}
-	}
-
 	private Color _myColor = Color.white;
 
 	private double _mySize = MWC.GUI.Shapes.Symbols.SymbolScalePropertyEditor.LARGE;

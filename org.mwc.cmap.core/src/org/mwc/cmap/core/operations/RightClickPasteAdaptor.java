@@ -15,7 +15,6 @@
 
 package org.mwc.cmap.core.operations;
 
-import java.awt.Color;
 import java.util.Enumeration;
 
 import org.eclipse.core.commands.ExecutionException;
@@ -34,8 +33,6 @@ import org.eclipse.ui.actions.ActionFactory;
 import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.operations.RightClickCutCopyAdaptor.EditableTransfer;
 
-import Debrief.Wrappers.LabelWrapper;
-import Debrief.Wrappers.DynamicTrackShapes.DynamicTrackShapeSetWrapper;
 import MWC.GUI.BaseLayer;
 import MWC.GUI.CanEnumerate;
 import MWC.GUI.DynamicLayer;
@@ -46,8 +43,6 @@ import MWC.GUI.Layer;
 import MWC.GUI.Layers;
 import MWC.GUI.Renamable;
 import MWC.GUI.Tools.Operations.RightClickPasteAdaptor.NeedsTidyingOnPaste;
-import MWC.GenericData.WorldLocation;
-import junit.framework.TestCase;
 
 public class RightClickPasteAdaptor {
 
@@ -230,112 +225,6 @@ public class RightClickPasteAdaptor {
 			return res;
 		}
 
-	}
-
-	public static class TestPaste extends TestCase {
-		public void testCreateAction() {
-			final Layers layers = new Layers();
-			final BaseLayer layer1 = new BaseLayer();
-			layer1.setName("name");
-			final BaseLayer layer2 = new BaseLayer();
-			layer2.setName("name");
-			final BaseLayer layer3 = new BaseLayer();
-			layer3.setName("name");
-			final Editable[] items = new Editable[] { layer1, layer2, layer3 };
-			final Clipboard clipboard = null;
-			final Layer destination = null;
-
-			final PasteItem action = createAction(destination, layers, clipboard, items);
-
-			assertEquals("Check empty", 0, layers.size());
-
-			action.run();
-
-			assertEquals("Check not empty", 3, layers.size());
-		}
-
-		public void testDynamicInValid() {
-			final Layers layers = new Layers();
-			final BaseLayer layer1 = new BaseLayer();
-			layer1.setName("name");
-			final BaseLayer layer2 = new BaseLayer();
-			layer2.setName("name");
-			final BaseLayer layer3 = new BaseLayer();
-			layer3.setName("name");
-			final Editable[] items = new Editable[] { layer1, layer2, layer3 };
-			final Clipboard clipboard = null;
-			final DynamicLayer destination = new DynamicLayer();
-
-			final PasteItem action = createAction(destination, layers, clipboard, items);
-
-			assertNull("failed to create action", action);
-		}
-
-		public void testDynamicValid() {
-			final Layers layers = new Layers();
-			final DynamicTrackShapeSetWrapper layer1 = new DynamicTrackShapeSetWrapper("title");
-			layer1.setName("name");
-			final Editable[] items = new Editable[] { layer1 };
-			final Clipboard clipboard = null;
-			final DynamicLayer destination = new DynamicLayer();
-			final PasteItem action = createAction(destination, layers, clipboard, items);
-			assertNull("failed to create action", action);
-		}
-
-		public void testLabels() {
-			final Layers layers = new Layers();
-			final BaseLayer shapes = new BaseLayer();
-			final LabelWrapper label = new LabelWrapper("label", new WorldLocation(1d, 1d, 1d), Color.red);
-			final LabelWrapper label2 = new LabelWrapper("label", new WorldLocation(1d, 1d, 1d), Color.red);
-			final LabelWrapper label3 = new LabelWrapper("label", new WorldLocation(1d, 1d, 1d), Color.red);
-			final Editable[] items = new Editable[] { label, label2, label3 };
-			final Layer destination = shapes;
-			final PasteItem paste = new PasteItem(items, destination, layers);
-
-			assertEquals("starts empty", 0, shapes.size());
-
-			paste.run();
-
-			assertEquals("now not empty", 3, shapes.size());
-
-			final Enumeration<Editable> numer = shapes.elements();
-			final Editable i1 = numer.nextElement();
-			final Editable i2 = numer.nextElement();
-			final Editable i3 = numer.nextElement();
-
-			assertEquals("was renamed", "Copy of Copy of label", i1.getName());
-			assertEquals("was renamed", "Copy of label", i2.getName());
-			assertEquals("was renamed", "label", i3.getName());
-		}
-
-		public void testLayers() {
-			final Layers layers = new Layers();
-			final BaseLayer layer1 = new BaseLayer();
-			layer1.setName("name");
-			final BaseLayer layer2 = new BaseLayer();
-			layer2.setName("name");
-			final BaseLayer layer3 = new BaseLayer();
-			layer3.setName("name");
-			final Editable[] items = new Editable[] { layer1, layer2, layer3 };
-			final Clipboard clipboard = null;
-			final Layer destination = null;
-			final PasteItem paste = new PasteLayer(items, clipboard, destination, layers);
-
-			assertEquals("starts empty", 0, layers.size());
-
-			paste.run();
-
-			assertEquals("now not empty", 3, layers.size());
-
-			final Enumeration<Editable> numer = layers.elements();
-			final Editable i1 = numer.nextElement();
-			final Editable i2 = numer.nextElement();
-			final Editable i3 = numer.nextElement();
-
-			assertEquals("was renamed", "Copy of Copy of name", i3.getName());
-			assertEquals("was renamed", "Copy of name", i2.getName());
-			assertEquals("was renamed", "name", i1.getName());
-		}
 	}
 
 	private static final String DUPLICATE_PREFIX = "Copy of ";

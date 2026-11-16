@@ -95,23 +95,6 @@ public final class SnailDrawSWTFix implements drawSWTHighLight, Editable {
 
 	}
 
-	//////////////////////////////////////////////////////////////////////////////////////////////////
-	// testing for this class
-	//////////////////////////////////////////////////////////////////////////////////////////////////
-	static public final class testMe extends junit.framework.TestCase {
-		static public final String TEST_ALL_TEST_TYPE = "UNIT";
-
-		public testMe(final String val) {
-			super(val);
-		}
-
-		public final void testMyParams() {
-			Editable ed = new SnailDrawSWTFix("testing");
-			Editable.editableTesterSupport.testParams(ed, this);
-			ed = null;
-		}
-	}
-
 	/**
 	 * keep a copy of the track plotter we are using
 	 */

@@ -1294,21 +1294,21 @@ public class SingleScenarioView
 	// @SuppressWarnings("synthetic-access")
 	// public final void testRelativePathMethod()
 	// {
-	// super.assertEquals("failed to recognise drive", false,
+	// assertEquals("failed to recognise drive", false,
 	// isRelativePath(new File("c:\\test.rep")));
-	// super.assertEquals("failed to root designator", false,
+	// assertEquals("failed to root designator", false,
 	// isRelativePath(new File("\\test.rep")));
-	// super.assertEquals("failed to root designator", false,
+	// assertEquals("failed to root designator", false,
 	// isRelativePath(new File("\\\\test.rep")));
-	// super.assertEquals("failed to root designator", false,
+	// assertEquals("failed to root designator", false,
 	// isRelativePath(new File("//test.rep")));
-	// super.assertEquals("failed to root designator", false,
+	// assertEquals("failed to root designator", false,
 	// isRelativePath(new File("////test.rep")));
-	// super.assertEquals("failed to recognise absolute ref", true,
+	// assertEquals("failed to recognise absolute ref", true,
 	// isRelativePath(new File("test.rep")));
-	// super.assertEquals("failed to recognise relative ref", true,
+	// assertEquals("failed to recognise relative ref", true,
 	// isRelativePath(new File("./test.rep")));
-	// super.assertEquals("failed to recognise parent ref", true,
+	// assertEquals("failed to recognise parent ref", true,
 	// isRelativePath(new File("../test.rep")));
 	// }
 	// }

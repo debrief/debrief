@@ -17,92 +17,17 @@ package ASSET.Util.MonteCarlo;
 
 import java.util.Vector;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.FactoryConfigurationError;
-import javax.xml.parsers.ParserConfigurationException;
 
-import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import ASSET.Util.SupportTesting;
 
 /**
  * Created by IntelliJ IDEA. User: Ian Date: 24-Sep-2003 Time: 13:51:49 To
  * change this template use Options | File Templates.
  */
 public final class XMLSnippets {
-	// ////////////////////////////////////////////////////////////////////////////////////////////////
-	// testing for this class
-	// ////////////////////////////////////////////////////////////////////////////////////////////////
-	public static final class XMLSnippetTest extends SupportTesting {
-
-		public XMLSnippetTest(final String val) {
-			super(val);
-		}
-
-		public final void testRandom() {
-			final XMLSnippets snips = new XMLSnippets();
-
-			Document theD = null;
-			try {
-				final DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-				final DocumentBuilder builder = factory.newDocumentBuilder();
-				theD = builder.newDocument();
-			} catch (final FactoryConfigurationError factoryConfigurationError) {
-				factoryConfigurationError.printStackTrace(); // To change body of catch
-																// statement use Options |
-																// File Templates.
-			} catch (final ParserConfigurationException e) {
-				e.printStackTrace(); // To change body of catch statement use Options |
-										// File Templates.
-			}
-
-			// check it worked
-			assertNotNull("created document", theD);
-
-			for (int i = 0; i < 4; i++) {
-				if (theD != null) {
-					final Element thisE = theD.createElement("a" + (i + 1));
-					snips._mySnippets.add(thisE);
-				}
-			}
-
-			int num1 = 0;
-			int num2 = 0;
-			int num3 = 0;
-			int num4 = 0;
-
-			final int len = 10000;
-			for (int i = 0; i < len; i++) {
-				final Element newE = snips.getInstance();
-				final String nm = newE.getNodeName();
-				final int val = Integer.parseInt(new String("" + nm.charAt(1)));
-
-				if (val == 1) {
-					num1++;
-				}
-				if (val == 2) {
-					num2++;
-				}
-				if (val == 3) {
-					num3++;
-				}
-				if (val == 4) {
-					num4++;
-				}
-
-			}
-
-			assertEquals("correct 1s", num1, 2500, 200);
-			assertEquals("correct 2s", num2, 2500, 200);
-			assertEquals("correct 3s", num3, 2500, 200);
-			assertEquals("correct 4s", num4, 2500, 200);
-
-		}
-	}
 
 	private static final String XML_SNIPPET = "XMLSnippet";
 

@@ -125,7 +125,12 @@ public class DialogFactory {
 
 	static AWTFile _awter = new AWTFile();
 
-	static private boolean _runHeadless = false;
+	/**
+	 * no dialogs: messages go to the console. On when the build runs the tests
+	 * (-DbuildMode=true, as DebriefPlugin.isRunningTests checks), so that a test
+	 * cannot block on a modal dialog.
+	 */
+	static private boolean _runHeadless = Boolean.getBoolean("buildMode");
 
 	/**
 	 * popup a dialog to retrieve an integer value from the user.

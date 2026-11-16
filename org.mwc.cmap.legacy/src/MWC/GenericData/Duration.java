@@ -25,54 +25,6 @@ import MWC.Utilities.ReaderWriter.XML.MWCXMLReader;
  * class which represents a time as a value plus a set of units
  */
 final public class Duration implements Serializable {
-	//////////////////////////////////////////////////////////////////////////////////////////////////
-	// testing for this class
-	//////////////////////////////////////////////////////////////////////////////////////////////////
-	static public final class DurationTest extends junit.framework.TestCase {
-		static public final String TEST_ALL_TEST_TYPE = "UNIT";
-
-		public DurationTest(final String val) {
-			super(val);
-		}
-
-		public void testToString() throws ParseException {
-			Duration dd = new Duration(12, MINUTES);
-			String res = dd.toString();
-			assertEquals("Minutes correct", res, "12.0 minutes");
-			dd = new Duration(1.25, MINUTES);
-			res = dd.toString();
-			assertEquals("Minutes correct", res, "75.0 seconds");
-
-			// and now convert back
-			final Duration d2 = Duration.fromString(res);
-			assertEquals("converted back", dd, d2);
-
-		}
-
-		public final void testWorldDistanceUnits() {
-			final Duration w1 = new Duration(1, Duration.MILLISECONDS);
-			assertEquals("millis correct", w1.getValueIn(Duration.MILLISECONDS), 1d, 0.000001);
-
-			final Duration w2 = new Duration(2 / 1000d, Duration.SECONDS);
-			assertEquals("seconds correct", w2.getValueIn(Duration.MILLISECONDS), 2d, 0.000001);
-
-			final Duration w3 = new Duration(5, Duration.MINUTES);
-			assertEquals("mins correct", w3.getValueIn(Duration.MILLISECONDS), 300000d, 0.000001);
-
-			final Duration w4 = new Duration(5 / 1000d / 60d / 60d, Duration.HOURS);
-			assertEquals("hours correct", w4.getValueIn(Duration.MILLISECONDS), 5d, 0.000001);
-
-			assertEquals("Back to Metres correct", w2.getValueIn(Duration.SECONDS), 2 / 1000d, 0.000001);
-
-			final Duration w5 = new Duration(w4);
-			assertEquals("Copy constructor", w5.getValueIn(Duration.MILLISECONDS), 5d, 0.000001);
-
-			assertEquals("retrieve mins label", Duration.getLabelFor(Duration.MINUTES), "minutes");
-			assertEquals("retrieve days label", Duration.getLabelFor(Duration.DAYS), "days");
-
-		}
-
-	}
 
 	/////////////////////////////////////////////////////////////////
 	// member variables

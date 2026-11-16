@@ -34,81 +34,6 @@ import MWC.TacticalData.TrackDataProvider;
  */
 public class TrackManager implements TrackDataProvider {
 
-	// ////////////////////////////////////////////////////////////////////////////////////////////////
-	// testing for this class
-	// ////////////////////////////////////////////////////////////////////////////////////////////////
-	static public final class testTrackManager extends junit.framework.TestCase {
-		static public final String TEST_ALL_TEST_TYPE = "UNIT";
-
-		public testTrackManager(final String val) {
-			super(val);
-		}
-
-		public void testLists() {
-			final TrackWrapper ta = new TrackWrapper();
-			ta.setName("ta");
-			final TrackWrapper tb = new TrackWrapper();
-			tb.setName("tb");
-			final TrackWrapper tc = new TrackWrapper();
-			tc.setName("tc");
-			final Layers theLayers = new Layers();
-			theLayers.addThisLayer(ta);
-			theLayers.addThisLayer(tb);
-			theLayers.addThisLayer(tc);
-
-			final String pri_a = "ta";
-			final String pri_b = "tz";
-			final String sec_b = "tb";
-			final String sec_c = "tc";
-			final String sec_d = "tz";
-			final Vector<String> secs = new Vector<String>(0, 1);
-			secs.add(sec_b);
-			secs.add(sec_c);
-
-			// create the mgr
-			final TrackManager tm = new TrackManager(theLayers);
-
-			// do some checks
-			assertNull("pri empty", tm._thePrimary);
-			assertNull("secs empty", tm._theSecondaries);
-			assertNotNull("layers assigned", tm._theLayers);
-
-			// now get going
-			tm.assignTracks(pri_a, secs);
-
-			// and do the tests
-			assertNotNull("pri assigned", tm._thePrimary);
-			assertEquals("pri matches", tm._thePrimary, ta);
-
-			// and the secs
-			assertNotNull("sec assigned", tm._theSecondaries);
-			assertEquals("correct num", 2, tm._theSecondaries.length);
-
-			// setup duff data
-			secs.clear();
-			secs.add(sec_b);
-			secs.add(sec_d);
-
-			// assign duff data
-			tm.assignTracks(pri_b, secs);
-
-			// and test duff data
-			assertNotNull("pri still assigned", tm._thePrimary);
-			assertEquals("pri matches", tm._thePrimary, ta);
-			assertNotNull("sec assigned", tm._theSecondaries);
-			assertEquals("correct num", 1, tm._theSecondaries.length);
-
-			// assign more real data
-			tm.assignTracks(sec_c, secs);
-
-			// and test duff data
-			assertNotNull("pri still assigned", tm._thePrimary);
-			assertEquals("pri matches", tm._thePrimary, tc);
-			assertNotNull("sec assigned", tm._theSecondaries);
-			assertEquals("correct num", 1, tm._theSecondaries.length);
-		}
-	}
-
 	/**
 	 * set a limit for the maximum number of secondary tracks we will plot
 	 */
@@ -134,7 +59,7 @@ public class TrackManager implements TrackDataProvider {
 
 	private Vector<TrackDataListener> _myDataListeners;
 
-	private final Layers _theLayers;
+	final Layers _theLayers;
 
 	private Vector<TrackShiftListener> _myShiftListeners;
 

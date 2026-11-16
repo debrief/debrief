@@ -15,10 +15,8 @@
 
 package MWC.Utilities.ReaderWriter.XML;
 
-import java.io.ByteArrayInputStream;
 import java.io.CharArrayWriter;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.text.DateFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.ParseException;
@@ -36,14 +34,12 @@ import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.DefaultHandler;
 
-import MWC.GUI.Dialogs.DialogFactory;
 import MWC.GUI.Shapes.TextLabel;
 import MWC.GenericData.Duration;
 import MWC.GenericData.HiResDate;
 import MWC.Utilities.ReaderWriter.ImportProblems;
 import MWC.Utilities.TextFormatting.DebriefFormatDateTime;
 import MWC.Utilities.TextFormatting.GMTDateFormat;
-import junit.framework.TestCase;
 
 /**
  * @author IAN MAYO
@@ -139,83 +135,6 @@ public class MWCXMLReader extends DefaultHandler {
 		public final void setValue(final String name, final String value) {
 			final long val = Long.parseLong(value);
 			setValue(name, val);
-		}
-	}
-
-	public static class ReadDoubleTest extends TestCase {
-		private static void assertRejected(final String val) {
-			try {
-				final double res = readThisDouble(val);
-				fail("should have rejected '" + val + "', got " + res);
-			} catch (final ParseException pe) {
-				// expected
-			}
-		}
-
-		public void testAttributeProblemsReported() throws Exception {
-			DialogFactory.setRunHeadless(true);
-			final double[] course = { -1 };
-			final double[] speed = { -1 };
-			final MWCXMLReader handler = new MWCXMLReader("fix") {
-				{
-					addAttributeHandler(new HandleDoubleAttribute("Course") {
-						@Override
-						public void setValue(final String name, final double value) {
-							course[0] = value;
-						}
-					});
-					addAttributeHandler(new HandleDoubleAttribute("Speed") {
-						@Override
-						public void setValue(final String name, final double value) {
-							speed[0] = value;
-						}
-					});
-				}
-			};
-			final String doc = "<?xml version=\"1.0\"?>\n<fix\n Course=\"9.0E1\" Speed=\"12kts\"/>";
-			final MWCXMLReaderWriter rw = new MWCXMLReaderWriter();
-			rw.importThis("test.dpf", new ByteArrayInputStream(doc.getBytes(StandardCharsets.UTF_8)), handler);
-			assertEquals("exponent notation read in full", 90d, course[0], 0.0001);
-			assertEquals("bad value not applied", -1d, speed[0], 0.0001);
-			final ImportProblems problems = rw.getImportProblems();
-			assertEquals(1, problems.size());
-			final String problem = problems.getProblems().get(0);
-			assertTrue(problem, problem.contains("Speed") && problem.contains("12kts") && problem.startsWith("Line 3"));
-		}
-
-		public void testReadThisDouble() throws ParseException {
-			assertEquals(12.5, readThisDouble("12.5"), 0);
-			assertEquals(12.5, readThisDouble(" 12.5 "), 0);
-			assertEquals(-0.5, readThisDouble("-0.5"), 0);
-			assertEquals(12, readThisDouble("12"), 0);
-			assertEquals(0.5, readThisDouble(".5"), 0);
-			// exponent notation
-			assertEquals(12, readThisDouble("1.2E1"), 0);
-			assertEquals(90, readThisDouble("9.0E1"), 0);
-			assertEquals(100000, readThisDouble("1e5"), 0);
-			assertEquals(0.00012, readThisDouble("1.2e-4"), 1e-12);
-			// comma decimal separator
-			assertEquals(22.5, readThisDouble("22,5"), 0);
-			assertEquals(239.9, readThisDouble("239,9"), 1e-9);
-			assertEquals(53.54, readThisDouble("53,54"), 1e-9);
-			// trailing garbage / partial numbers
-			assertRejected("12abc");
-			assertRejected("12.5abc");
-			assertRejected("22 10");
-			assertRejected("1.2.3");
-			assertRejected("");
-			assertRejected("   ");
-			assertRejected("x");
-			// not-a-number is not a valid measurement
-			assertRejected("NaN");
-			assertRejected("nan");
-			assertRejected("Infinity");
-			// could be a thousands separator or a decimal comma, so don't guess
-			assertRejected("1,234");
-			assertRejected("-12,500");
-			assertRejected("1,234,567");
-			assertEquals(1.2345, readThisDouble("1,2345"), 1e-9);
-			assertEquals(1234.5, readThisDouble("1234,5"), 1e-9);
 		}
 	}
 

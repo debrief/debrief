@@ -16,56 +16,11 @@ package org.mwc.debrief.track_shift.freq;
 
 import java.util.ArrayList;
 
-import junit.framework.TestCase;
-
 public class Normaliser {
-	public static class TestNormaliser extends TestCase {
-		public void testFlipped() {
-			final ArrayList<Double> data = new ArrayList<Double>();
-			data.add(12d);
-			data.add(3d);
-			data.add(5d);
-			data.add(103d);
-			final Normaliser norm = new Normaliser(data, true);
 
-			assertEquals(3d, norm._min, 0d);
-			assertEquals(103d, norm._max, 0d);
-			assertEquals(100d, norm._range, 0d);
-
-			assertEquals(1d, norm.normalise(3d), 0d);
-			assertEquals(0d, norm.normalise(103d), 0d);
-			assertEquals(0.5d, norm.normalise(53d), 0d);
-
-			assertEquals(3d, norm.deNormalise(1d), 0d);
-			assertEquals(103d, norm.deNormalise(0d), 0d);
-			assertEquals(53d, norm.deNormalise(0.5d), 0d);
-		}
-
-		public void testNormal() {
-			final ArrayList<Double> data = new ArrayList<Double>();
-			data.add(12d);
-			data.add(3d);
-			data.add(5d);
-			data.add(103d);
-			final Normaliser norm = new Normaliser(data, false);
-
-			assertEquals(3d, norm._min, 0d);
-			assertEquals(103d, norm._max, 0d);
-			assertEquals(100d, norm._range, 0d);
-
-			assertEquals(0d, norm.normalise(3d), 0d);
-			assertEquals(1d, norm.normalise(103d), 0d);
-			assertEquals(0.5d, norm.normalise(53d), 0d);
-
-			assertEquals(3d, norm.deNormalise(0d), 0d);
-			assertEquals(103d, norm.deNormalise(1d), 0d);
-			assertEquals(53d, norm.deNormalise(0.5d), 0d);
-		}
-	}
-
-	private double _min;
-	private double _max;
-	private final double _range;
+	double _min;
+	double _max;
+	final double _range;
 
 	/**
 	 * whether we should reverse the axis

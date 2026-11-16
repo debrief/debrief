@@ -1,7 +1,6 @@
 
 package ASSET.Models.Mediums;
 
-import ASSET.Util.SupportTesting;
 import MWC.GUI.Editable;
 
 /*******************************************************************************
@@ -19,20 +18,6 @@ import MWC.GUI.Editable;
  *******************************************************************************/
 
 public class SSKBroadband extends BroadbandRadNoise {
-	//////////////////////////////////////////////////
-	// testing
-	//////////////////////////////////////////////////
-	public static class SSKBBTest extends SupportTesting.EditableTesting {
-		/**
-		 * get an object which we can test
-		 *
-		 * @return Editable object which we can check the properties for
-		 */
-		@Override
-		public Editable getEditable() {
-			return new SSKBroadband(12, 12);
-		}
-	}
 
 	/**
 	 * ************************************************* the editor info

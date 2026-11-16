@@ -59,61 +59,7 @@ import ASSET.Util.RandomGenerator;
  * class returning one of a number of choices
  */
 public class Choice implements AttributeModifier {
-	public static class ChoiceTest extends junit.framework.TestCase {
-		public ChoiceTest(final String val) {
-			super(val);
-		}
 
-		public void testDistribution() {
-			final Choice choice = new Choice();
-			choice.add("a");
-			choice.add("b");
-			choice.add("c");
-
-			final int size = 1000000;
-			int numA = 0;
-			int numB = 0;
-			int numC = 0;
-
-			for (int i = 0; i < size; i++) {
-				final String thisVal = choice.getNewValue();
-				if (thisVal.equals("a")) {
-					numA++;
-				}
-				if (thisVal.equals("b")) {
-					numB++;
-				}
-				if (thisVal.equals("c")) {
-					numC++;
-				}
-			}
-
-			// check the dist
-			assertEquals("correct num of a", size / 3, numA, 2000);
-			assertEquals("correct num of b", size / 3, numB, 2000);
-			assertEquals("correct num of c", size / 3, numC, 2000);
-
-		}
-
-		public void testGenerate() {
-			final Choice choice = new Choice();
-			choice.add("a");
-			choice.add("b");
-			choice.add("c");
-
-			assertEquals("they got stored", 3, choice._myChoices.size(), 0);
-
-			assertTrue("found a", choice._myChoices.contains("a"));
-			assertTrue("found b", choice._myChoices.contains("b"));
-			assertTrue("found c", choice._myChoices.contains("c"));
-		}
-	}
-
-	public static void main(final String[] args) {
-		final ChoiceTest ts = new ChoiceTest("trial");
-		ts.testGenerate();
-		ts.testDistribution();
-	}
 
 	/////////////////////////////////////////////////
 	// member methods

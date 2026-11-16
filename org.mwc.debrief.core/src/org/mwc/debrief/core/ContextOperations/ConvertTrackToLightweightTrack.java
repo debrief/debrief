@@ -51,9 +51,6 @@ import MWC.GUI.Editable;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
 import MWC.GUI.Properties.DebriefColors;
-import MWC.GenericData.HiResDate;
-import MWC.GenericData.WorldLocation;
-import MWC.TacticalData.Fix;
 
 /**
  * @author ian.mayo
@@ -61,7 +58,7 @@ import MWC.TacticalData.Fix;
  */
 public class ConvertTrackToLightweightTrack implements RightClickContextItemGenerator {
 
-	private static class ConvertIt extends CMAPOperation {
+	static class ConvertIt extends CMAPOperation {
 
 		private final Layers _layers;
 		private final Editable[] _subjects;
@@ -206,64 +203,6 @@ public class ConvertTrackToLightweightTrack implements RightClickContextItemGene
 		protected void okPressed() {
 			nameString = nameField.getText();
 			super.okPressed();
-		}
-	}
-
-	// ////////////////////////////////////////////////////////////////////////////////////////////////
-	// testing for this class
-	// ////////////////////////////////////////////////////////////////////////////////////////////////
-	static public final class testMe extends junit.framework.TestCase {
-		static public final String TEST_ALL_TEST_TYPE = "UNIT";
-
-		public final static void testIWork() {
-			final Layers theLayers = new Layers();
-			final BaseLayer holder = new BaseLayer();
-			holder.setName("Trk");
-			theLayers.addThisLayer(holder);
-
-			final TrackWrapper track = new TrackWrapper();
-			track.setName("BIG ONE");
-
-			final int NUM_FIXES = 4;
-			for (int i = 0; i < NUM_FIXES; i++) {
-				final WorldLocation thisLoc = new WorldLocation(0, i, 0, 'N', 0, 0, 0, 'W', 0);
-				final Fix theFix = new Fix(new HiResDate(i * 10000), thisLoc, 2 * i, NUM_FIXES * i);
-				final FixWrapper fixW = new FixWrapper(theFix);
-				track.addFix(fixW);
-			}
-			theLayers.addThisLayer(track);
-
-			assertEquals("heavy track present", 2, theLayers.size());
-			assertEquals("holder empty", 0, holder.size());
-
-			// ok, now do the interpolation
-			final ConvertIt ct = new ConvertIt("convert it", theLayers, new Editable[] { track }, holder);
-
-			try {
-				ct.execute(null, null);
-			} catch (final ExecutionException e) {
-				fail("Exception thrown");
-			}
-
-			assertEquals("heavy track gone", 1, theLayers.size());
-
-			assertEquals("holder not empty", 1, holder.size());
-
-			// check the track got generated
-			final LightweightTrackWrapper tw = (LightweightTrackWrapper) holder.elements().nextElement();
-
-			// did we find it?
-			assertNotNull("track generated", tw);
-
-			assertEquals("correct name", "BIG ONE", tw.getName());
-			assertEquals("correct size", track.numFixes(), tw.numFixes());
-			assertEquals("correct size", NUM_FIXES, tw.numFixes());
-			assertEquals("correct color", track.getColor(), tw.getColor());
-			assertEquals("correct name", track.getName(), tw.getName());
-		}
-
-		public testMe(final String val) {
-			super(val);
 		}
 	}
 

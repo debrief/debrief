@@ -37,7 +37,6 @@ import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldDistance;
 import MWC.GenericData.WorldLocation;
 import MWC.GenericData.WorldVector;
-import junit.framework.TestCase;
 
 public class PolygonShape extends PlainShape implements Editable, HasDraggableComponents, Layer {
 
@@ -196,55 +195,6 @@ public class PolygonShape extends PlainShape implements Editable, HasDraggableCo
 			return getName();
 		}
 
-	}
-
-	public static class TestPolygonShape extends TestCase {
-		public void testConstructor() {
-			final Vector<PolygonNode> nodes = new Vector<PolygonNode>();
-			final PolygonShape poly = new PolygonShape(nodes);
-			nodes.add(new PolygonNode("1", new WorldLocation(2, 2, 0d), poly));
-		}
-
-		public void testRangeFromEmpty() {
-			final Vector<PolygonNode> nodes = new Vector<PolygonNode>();
-			final PolygonShape poly = new PolygonShape(nodes);
-			assertEquals("returns duff range", Plottable.INVALID_RANGE, poly.rangeFrom(new WorldLocation(3, 3, 3d)),
-					0.001);
-		}
-
-		public void testRangeIdenticalPoints() {
-			final Vector<PolygonNode> nodes = new Vector<PolygonNode>();
-			final PolygonShape poly = new PolygonShape(nodes);
-			final WorldLocation origin = new WorldLocation(4, 4, 0d);
-			final WorldLocation locA = new WorldLocation(3, 3, 0d);
-			final WorldLocation locB = new WorldLocation(3, 3, 0d);
-			final double realRange = origin.rangeFrom(locA);
-			poly.add(new PolygonNode("1", locA, poly));
-			poly.add(new PolygonNode("2", locB, poly));
-			assertEquals("returns valid range", realRange, poly.rangeFrom(origin));
-		}
-
-		public void testRangeMultiPoints() {
-			final Vector<PolygonNode> nodes = new Vector<PolygonNode>();
-			final PolygonShape poly = new PolygonShape(nodes);
-			final WorldLocation origin = new WorldLocation(4, 4, 0d);
-			final WorldLocation locA = new WorldLocation(3, 3, 0d);
-			final WorldLocation locB = new WorldLocation(5, 5, 0d);
-			final double realRange = 0d; // origin is mid-way between the points
-			poly.add(new PolygonNode("1", locA, poly));
-			poly.add(new PolygonNode("2", locB, poly));
-			assertEquals("returns valid range", realRange, poly.rangeFrom(origin));
-		}
-
-		public void testRangeSinglePoint() {
-			final Vector<PolygonNode> nodes = new Vector<PolygonNode>();
-			final PolygonShape poly = new PolygonShape(nodes);
-			final WorldLocation origin = new WorldLocation(4, 4, 0d);
-			final WorldLocation locA = new WorldLocation(3, 3, 0d);
-			final double realRange = origin.rangeFrom(locA);
-			poly.add(new PolygonNode("1", locA, poly));
-			assertEquals("returns valid range", realRange, poly.rangeFrom(origin));
-		}
 	}
 
 	/**

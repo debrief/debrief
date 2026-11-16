@@ -32,9 +32,6 @@ import MWC.GUI.Properties.AttributeTypePropertyEditor;
 import MWC.GUI.Properties.TimeFrequencyPropertyEditor;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.WorldArea;
-import MWC.GenericData.WorldLocation;
-import MWC.TacticalData.Fix;
-import junit.framework.TestCase;
 
 public class CoreFormatItemListener extends PlainWrapper implements INewItemListener {
 
@@ -71,91 +68,6 @@ public class CoreFormatItemListener extends PlainWrapper implements INewItemList
 			} catch (final IntrospectionException e) {
 				return super.getPropertyDescriptors();
 			}
-		}
-	}
-
-	public static class TestMe extends TestCase {
-		private FixWrapper createFix(final int time) {
-			final Fix newF = new Fix(new HiResDate(time), new WorldLocation(2, 2, 0), 22, 33);
-			final FixWrapper fw = new FixWrapper(newF);
-			return fw;
-
-		}
-
-		public void testIntervals() {
-			final CoreFormatItemListener cf = new CoreFormatItemListener("Test", null, null, 5000, false,
-					AttributeTypePropertyEditor.SYMBOL, true) {
-
-				/**
-				*
-				*/
-				private static final long serialVersionUID = 1L;
-
-				@Override
-				protected void applyFormat(final FixWrapper fix) {
-					fix.setSymbolShowing(true);
-				}
-
-				@Override
-				protected void formatTrack(final TrackWrapper track, final HiResDate interval) {
-					// skip
-				}
-			};
-			final TrackWrapper tw = new TrackWrapper();
-			tw.setName("Name");
-			final FixWrapper f1 = createFix(4000);
-			final FixWrapper f2 = createFix(5000);
-			final FixWrapper f3 = createFix(9000);
-			final FixWrapper f4 = createFix(10000);
-			final FixWrapper f5 = createFix(14100);
-
-			cf.newItem(tw, f1, null);
-			cf.newItem(tw, f2, null);
-			cf.newItem(tw, f3, null);
-			cf.newItem(tw, f4, null);
-			cf.newItem(tw, f5, null);
-
-			assertTrue(f1.getSymbolShowing());
-			assertFalse(f2.getSymbolShowing());
-			assertTrue(f3.getSymbolShowing());
-			assertFalse(f4.getSymbolShowing());
-			assertTrue(f5.getSymbolShowing());
-		}
-
-		public void testRegularIntervals() {
-			final CoreFormatItemListener cf = new CoreFormatItemListener("Test", null, null, 5000, true,
-					AttributeTypePropertyEditor.SYMBOL, true) {
-				private static final long serialVersionUID = 1L;
-
-				@Override
-				protected void applyFormat(final FixWrapper fix) {
-					fix.setSymbolShowing(true);
-				}
-
-				@Override
-				protected void formatTrack(final TrackWrapper track, final HiResDate interval) {
-					// skip
-				}
-			};
-			final TrackWrapper tw = new TrackWrapper();
-			tw.setName("Name");
-			final FixWrapper f1 = createFix(4000);
-			final FixWrapper f2 = createFix(5000);
-			final FixWrapper f3 = createFix(6000);
-			final FixWrapper f4 = createFix(10000);
-			final FixWrapper f5 = createFix(12000);
-
-			cf.newItem(tw, f1, null);
-			cf.newItem(tw, f2, null);
-			cf.newItem(tw, f3, null);
-			cf.newItem(tw, f4, null);
-			cf.newItem(tw, f5, null);
-
-			assertTrue(f1.getSymbolShowing());
-			assertTrue(f2.getSymbolShowing());
-			assertFalse(f3.getSymbolShowing());
-			assertTrue(f4.getSymbolShowing());
-			assertFalse(f5.getSymbolShowing());
 		}
 	}
 

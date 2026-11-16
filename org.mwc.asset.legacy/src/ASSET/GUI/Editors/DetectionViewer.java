@@ -23,86 +23,14 @@ import javax.swing.SwingConstants;
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
 
-import ASSET.ParticipantType;
 import ASSET.ScenarioType;
 import ASSET.Models.Detection.DetectionEvent;
 import ASSET.Models.Detection.DetectionList;
 import ASSET.Models.Sensor.SensorDataProvider;
-import ASSET.Models.Sensor.Initial.BroadbandSensor;
-import ASSET.Participants.CoreParticipant;
 import ASSET.Participants.ParticipantDetectedListener;
 
 class DetectionViewer extends MWC.GUI.Properties.Swing.SwingCustomEditor
 		implements MWC.GUI.Properties.NoEditorButtons, ASSET.Participants.ParticipantDetectedListener {
-	////////////////////////////////////////////////////
-	// member objects
-	////////////////////////////////////////////////////
-
-	//////////////////////////////////////////////////////////////////////////////////////////////////
-	// testing for this class
-	//////////////////////////////////////////////////////////////////////////////////////////////////
-	public static class ViewerTest extends junit.framework.TestCase {
-		static public final String TEST_ALL_TEST_TYPE = "UNIT";
-
-		boolean set = false;
-
-		public ViewerTest(final String val) {
-			super(val);
-		}
-
-		public void testMe() {
-			// create the object
-			final DetectionViewer dv = new DetectionViewer();
-
-			set = false;
-			final ParticipantType cp = new CoreParticipant(12) {
-				/**
-				 *
-				 */
-				private static final long serialVersionUID = 1L;
-
-				@Override
-				public void addParticipantDetectedListener(final ParticipantDetectedListener list) {
-					super.addParticipantDetectedListener(list);
-					if (list instanceof DetectionViewer) {
-						set = true;
-					}
-				}
-			};
-
-			dv.setObject(cp);
-
-			assertTrue("has been set as detected listener", set == true);
-
-			assertEquals("list starts off being empty", dv.detList.getModel().getSize(), 0);
-
-			// try setting the list
-			dv.newDetections(null);
-			assertEquals("we can set null data", dv.detList.getModel().getSize(), 0);
-
-			final DetectionList dl = new DetectionList();
-			dv.newDetections(dl);
-			assertEquals("we can set zero length data", dv.detList.getModel().getSize(), 0);
-
-			final BroadbandSensor bb = new BroadbandSensor(122);
-			final ParticipantType target = new ASSET.Models.Vessels.Surface(12);
-			target.setName("surfare target");
-			dl.add(new DetectionEvent(0, cp.getId(), null, bb, null, null, null, null, null, null, null, null, target));
-			dv.newDetections(dl);
-			assertEquals("we can set  data", dv.detList.getModel().getSize(), 1);
-
-			// check restart
-			dv.restart(null);
-			assertEquals("we can do restart", dv.detList.getModel().getSize(), 0);
-
-			System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-			System.out.println("POSSIBLE JUNIT PROBLEM - THIS THREAD (DetectionViewer) SHOULD DIE");
-
-			// close down
-			dv.doClose();
-
-		}
-	}
 
 	/**
 	 *

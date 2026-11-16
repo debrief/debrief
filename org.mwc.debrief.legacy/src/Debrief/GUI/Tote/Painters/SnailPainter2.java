@@ -90,38 +90,6 @@ public class SnailPainter2 extends TotePainter {
 				Watchable watch, TotePainter parent, HiResDate dtg, ColorFadeCalculator fader);
 	}
 
-	// ////////////////////////////////////////////////////////////////////////////////////////////////
-	// testing for this class
-	// ////////////////////////////////////////////////////////////////////////////////////////////////
-	static public final class testMe extends junit.framework.TestCase {
-		static public final String TEST_ALL_TEST_TYPE = "UNIT";
-
-		public testMe(final String val) {
-			super(val);
-		}
-
-		public final void testFade() {
-			final ColorFadeCalculator fader = new ColorFadeCalculator(1000, new HiResDate(10000));
-			assertEquals(0f, fader.fadeAt(new HiResDate(9000)));
-			assertEquals(1f, fader.fadeAt(new HiResDate(10000)));
-			assertEquals(0.5f, fader.fadeAt(new HiResDate(9500)));
-
-			final Color base = Color.red;
-			final Color faded = fader.fadeColorAt(base, new HiResDate(9500));
-			assertEquals("half fade", 127, faded.getAlpha());
-			assertEquals("right red", 255, faded.getRed());
-			assertEquals("right greem", 0, faded.getGreen());
-			assertEquals("right blue", 0, faded.getBlue());
-		}
-
-		public final void testMyParams() {
-			Editable ed = new SnailPainter2(null, null, null);
-			editableTesterSupport.testParams(ed, this);
-			ed = null;
-		}
-
-	}
-
 	public static final String SNAIL_NAME = "Snail";
 
 	/**

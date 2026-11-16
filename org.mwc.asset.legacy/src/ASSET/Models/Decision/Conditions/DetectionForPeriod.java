@@ -18,11 +18,8 @@ package ASSET.Models.Decision.Conditions;
 import ASSET.Models.Decision.TargetType;
 import ASSET.Models.Detection.DetectionEvent;
 import ASSET.Models.Detection.DetectionList;
-import ASSET.Models.Sensor.CoreSensor;
-import ASSET.Participants.Category;
 import ASSET.Participants.Status;
 import ASSET.Scenario.ScenarioActivityMonitor;
-import ASSET.Util.SupportTesting;
 import MWC.GUI.Editable;
 import MWC.GenericData.Duration;
 import MWC.GenericData.WorldDistance;
@@ -60,72 +57,6 @@ public class DetectionForPeriod extends Detection {
 			} catch (final java.beans.IntrospectionException e) {
 				return super.getPropertyDescriptors();
 			}
-		}
-	}
-
-	static public class DetPeriodTest extends SupportTesting.EditableTesting {
-		static public final String TEST_ALL_TEST_TYPE = "UNIT";
-
-		public DetPeriodTest(final String name) {
-			super(name);
-		}
-
-		/**
-		 * get an object which we can test
-		 *
-		 * @return Editable object which we can check the properties for
-		 */
-		@Override
-		public Editable getEditable() {
-			final TargetType tt = new TargetType();
-			tt.addTargetType(Category.Type.AV_MISSILE);
-
-			final Detection detection = new DetectionForPeriod(tt, null, null, false);
-			return detection;
-		}
-
-		public void testIt() {
-			// build it
-			final Category secondTarget = new Category(Category.Force.RED, Category.Environment.SURFACE,
-					Category.Type.AV_MISSILE);
-
-			final ASSET.ParticipantType participant = new ASSET.Models.Vessels.Surface(12);
-			participant.setName("un-named");
-			final CoreSensor sensor = new ASSET.Models.Sensor.Initial.BroadbandSensor(12);
-			final DetectionEvent db = new DetectionEvent(120, participant.getId(), null, sensor,
-					new WorldDistance(1, WorldDistance.YARDS), new WorldDistance(1, WorldDistance.YARDS), null, null,
-					new Float(60), secondTarget, null, null, participant);
-
-			// build up the list
-			DetectionList dl = new DetectionList();
-
-			// try with no detections
-
-			final TargetType tt = new TargetType();
-			tt.addTargetType(Category.Type.AV_MISSILE);
-
-			final Detection detection = new DetectionForPeriod(tt, null, null, false);
-			DetectionEvent de = (DetectionEvent) detection.test(null, dl, 0, null);
-			assertNull("no success with empty list", de);
-
-			// add the second (valid item)
-			final DetectionForPeriod d2 = new DetectionForPeriod(tt, null, new Duration(20, Duration.MILLISECONDS),
-					false);
-			dl.add(db);
-			de = (DetectionEvent) d2.test(null, dl, 0, null);
-			assertNotNull("success with valid contact", de);
-
-			// try it a few minutes later (even with no detections)
-			dl = new DetectionList();
-			de = (DetectionEvent) d2.test(null, dl, 15, null);
-			assertNotNull("we got detection when still in period", de);
-
-			// check we can expire
-			de = (DetectionEvent) d2.test(null, dl, 25, null);
-			assertNull("we didn't get detection when still out of period", de);
-
-			// create empty
-
 		}
 	}
 

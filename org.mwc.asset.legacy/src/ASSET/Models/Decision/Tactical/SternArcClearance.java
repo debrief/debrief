@@ -7,16 +7,11 @@ import ASSET.Models.Decision.CoreDecision;
 import ASSET.Models.Detection.DetectionList;
 import ASSET.Models.Movement.MovementCharacteristics;
 import ASSET.Models.Movement.SimpleDemandedStatus;
-import ASSET.Models.Movement.ThreeDimMovementCharacteristics;
-import ASSET.Models.Movement.TurnAlgorithm;
 import ASSET.Participants.DemandedStatus;
 import ASSET.Participants.Status;
 import ASSET.Scenario.ScenarioActivityMonitor;
-import ASSET.Util.SupportTesting;
 import MWC.GUI.Editable;
 import MWC.GenericData.Duration;
-import MWC.GenericData.WorldLocation;
-import MWC.GenericData.WorldSpeed;
 
 /*******************************************************************************
  * Debrief - the Open Source Maritime Analysis Application http://debrief.info
@@ -88,106 +83,6 @@ public class SternArcClearance extends CoreDecision implements java.io.Serializa
 		}
 	}
 
-	//////////////////////////////////////////////////
-	// support testing
-	//////////////////////////////////////////////////
-	public static class SternArcClearanceTest extends SupportTesting.EditableTesting {
-		/**
-		 * get an object which we can test
-		 *
-		 * @return Editable object which we can check the properties for
-		 */
-		@Override
-		public Editable getEditable() {
-			return new SternArcClearance();
-		}
-
-		public void testDoubleTurn() {
-			final SternArcClearance sac = new SternArcClearance(null, false, SternArcClearance.DOUBLE_LEG, null);
-			Status theStat = new Status(12, 1000);
-			theStat.setLocation(new WorldLocation(0, 0, 0));
-			theStat.setCourse(10);
-			theStat.setSpeed(new WorldSpeed(12, WorldSpeed.Kts));
-			final MovementCharacteristics theChars = ThreeDimMovementCharacteristics.getSampleChars(400);
-			final DemandedStatus theDemStat = new SimpleDemandedStatus(12, theStat);
-			final DetectionList theDets = null;
-			final ScenarioActivityMonitor theMonitor = null;
-			long time = 3000;
-			SimpleDemandedStatus res = (SimpleDemandedStatus) sac.decide(theStat, theChars, theDemStat, theDets,
-					theMonitor, time += 5000);
-			assertNotNull("Didn't return demanded status", res);
-
-			// check we;re moving onto the correct course
-			assertEquals("haven't adopted correct course", 10 + SternArcClearance.DEFAULT_TURN, res.getCourse(), 0.01);
-
-			final TurnAlgorithm alg = new TurnAlgorithm();
-
-			while (res.getCourse() == 10 + SternArcClearance.DEFAULT_TURN) {
-				theStat = alg.doTurn(theStat, res, theChars, time);
-				res = (SimpleDemandedStatus) sac.decide(theStat, theChars, res, theDets, theMonitor, time += 5000);
-			}
-
-			assertEquals("not back on original course", 10, res.getCourse(), 0.01);
-
-			while (res.getCourse() == 10) {
-				theStat = alg.doTurn(theStat, res, theChars, time);
-				res = (SimpleDemandedStatus) sac.decide(theStat, theChars, res, theDets, theMonitor, time += 5000);
-			}
-
-			assertEquals("not on second leg", 250, res.getCourse(), 0.01);
-
-			while (res.getCourse() == 250) {
-				theStat = alg.doTurn(theStat, res, theChars, time);
-				res = (SimpleDemandedStatus) sac.decide(theStat, theChars, res, theDets, theMonitor, time += 5000);
-			}
-
-			assertEquals("not back on course", 10, res.getCourse(), 0.01);
-
-			while (res != null) {
-				theStat = alg.doTurn(theStat, res, theChars, time);
-				res = (SimpleDemandedStatus) sac.decide(theStat, theChars, res, theDets, theMonitor, time += 5000);
-			}
-
-			assertNull("should have finished", res);
-		}
-
-		public void testSingleShot() {
-			final SternArcClearance sac = new SternArcClearance(null, false, SternArcClearance.SINGLE_LEG, null);
-			Status theStat = new Status(12, 1000);
-			theStat.setLocation(new WorldLocation(0, 0, 0));
-			theStat.setCourse(10);
-			theStat.setSpeed(new WorldSpeed(12, WorldSpeed.Kts));
-			final MovementCharacteristics theChars = ThreeDimMovementCharacteristics.getSampleChars(400);
-			final DemandedStatus theDemStat = new SimpleDemandedStatus(12, theStat);
-			final DetectionList theDets = null;
-			final ScenarioActivityMonitor theMonitor = null;
-			long time = 3000;
-			SimpleDemandedStatus res = (SimpleDemandedStatus) sac.decide(theStat, theChars, theDemStat, theDets,
-					theMonitor, time += 5000);
-			assertNotNull("Didn't return demanded status", res);
-
-			// check we;re moving onto the correct course
-			assertEquals("haven't adopted correct course", 10 + SternArcClearance.DEFAULT_TURN, res.getCourse(), 0.01);
-
-			final TurnAlgorithm alg = new TurnAlgorithm();
-
-			while (res.getCourse() == 10 + SternArcClearance.DEFAULT_TURN) {
-				theStat = alg.doTurn(theStat, res, theChars, time);
-				res = (SimpleDemandedStatus) sac.decide(theStat, theChars, res, theDets, theMonitor, time += 5000);
-			}
-
-			// check we're heading fwd again
-			assertEquals("not back on straight course", 10, res.getCourse(), 0.01);
-
-			while (res != null) {
-				theStat = alg.doTurn(theStat, res, theChars, time);
-				res = (SimpleDemandedStatus) sac.decide(theStat, theChars, res, theDets, theMonitor, time += 5000);
-			}
-
-			assertNull("should have finished", res);
-		}
-	}
-
 	/**
 	 *
 	 */
@@ -215,7 +110,7 @@ public class SternArcClearance extends CoreDecision implements java.io.Serializa
 	 * the default manoeuvre to use
 	 *
 	 */
-	private final static double DEFAULT_TURN = 120;
+	final static double DEFAULT_TURN = 120;
 
 	/**
 	 * the frequency at which we perform stern arc clearance (millis)

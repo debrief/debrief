@@ -16,13 +16,10 @@ package Debrief.ReaderWriter.NMEA;
 
 import java.awt.Color;
 import java.io.BufferedReader;
-import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.nio.charset.StandardCharsets;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -37,7 +34,6 @@ import Debrief.Wrappers.TrackWrapper;
 import Debrief.Wrappers.Track.LightweightTrackWrapper;
 import Debrief.Wrappers.Track.TrackSegment;
 import MWC.GUI.BaseLayer;
-import MWC.GUI.Layer;
 import MWC.GUI.Layers;
 import MWC.GUI.ToolParent;
 import MWC.GUI.Properties.DebriefColors;
@@ -48,18 +44,17 @@ import MWC.GenericData.WorldSpeed;
 import MWC.GenericData.WorldVector;
 import MWC.TacticalData.Fix;
 import MWC.Utilities.TextFormatting.GMTDateFormat;
-import junit.framework.TestCase;
 
 public class ImportNMEA {
 
-	private enum MsgType {
+	enum MsgType {
 		VESSEL_NAME, OS_POS, CONTACT, TIMESTAMP, UNKNOWN, AIS, OS_DEPTH, OS_COURSE_SPEED, OS_COURSE, OS_SPEED;
 	}
 
-	private static class State {
+	static class State {
 		static SimpleDateFormat sdf;
 
-		private static Date dateFor(final String dateStr, final String timeStr) {
+		static Date dateFor(final String dateStr, final String timeStr) {
 			if (sdf == null) {
 				sdf = new GMTDateFormat("yyyyMMdd,HHmmss.SSS");
 			}
@@ -97,299 +92,6 @@ public class ImportNMEA {
 		}
 	}
 
-	public static class TestImportNMEA extends TestCase {
-		@SuppressWarnings("deprecation")
-		public void testDate() {
-			final String dateStr = "20160720";
-			final String timeStr = "082807.345";
-			final Date date = State.dateFor(dateStr, timeStr);
-			assertNotNull("got date");
-			assertEquals("got right date/time", "20 Jul 2016 08:28:07 GMT", date.toGMTString());
-		}
-
-		public void testDegs() {
-			assertEquals("got it", 34.159, degsFor("3409.5794,N"), 0.001);
-			assertEquals("got it", -15.621, degsFor("01537.3128,W"), 0.001);
-			assertEquals("got it", -34.159, degsFor("3409.5794,S"), 0.001);
-			assertEquals("got it", 15.621, degsFor("01537.3128,E"), 0.001);
-			assertEquals("got it", -34.5, degsFor("3430.0,S"), 0.001);
-			assertEquals("got it", 15.25, degsFor("01515.0,E"), 0.001);
-			assertEquals("got it", 15.25, degsFor("01515.0,E"), 0.001);
-			assertEquals("got it", 2.693, degsFor("00241.5907,E"), 0.001);
-			assertEquals("got it", 36.2395, degsFor("3614.3708,N"), 0.001);
-		}
-
-		public void testFullImportAllValues() throws Exception {
-			final String testFile = "../org.mwc.cmap.combined.feature/root_installs/sample_data/other_formats/NMEA_TRIAL.log";
-			final File testI = new File(testFile);
-
-			// only run the test if we have the log-file available
-			assertTrue(testI.exists());
-
-			InputStream is = new FileInputStream(testI);
-
-			final Layers tLayers = new Layers();
-
-			final ImportNMEA importer = new ImportNMEA(tLayers);
-			importer.importThis(testFile, is, 0L, 0L, false);
-
-			assertEquals("got new layers", 4, tLayers.size());
-
-			TrackWrapper tOne = (TrackWrapper) tLayers.findLayer("WECDIS_OWNSHIP_POS_GPS");
-			assertEquals("found GPS cuts", 12736, tOne.numFixes());
-
-			TrackWrapper tTwo = (TrackWrapper) tLayers.findLayer("WECDIS_OWNSHIP-DR");
-			assertEquals("found GPS cuts", 21746, tTwo.numFixes());
-
-			TrackWrapper tThree = (TrackWrapper) tLayers.findLayer("WECDIS_OWNSHIP_POS_CMP");
-			assertEquals("found GPS cuts", 87, tThree.numFixes());
-
-			Layer contacts = tLayers.findLayer("WECDIS Contacts");
-			assertEquals("loaded tracks", "WECDIS Contacts (14 items)", contacts.toString());
-			LightweightTrackWrapper aisTrack = (LightweightTrackWrapper) contacts.elements().nextElement();
-			assertEquals("loaded lwt track", 1250, aisTrack.numFixes());
-
-			// try another import frequency
-			tLayers.clear();
-
-			assertEquals("layers empty", 0, tLayers.size());
-
-			is = new FileInputStream(testI);
-			importer.importThis(testFile, is, 15000L, 15000L, false);
-
-			assertEquals("got new layers", 4, tLayers.size());
-
-			tOne = (TrackWrapper) tLayers.findLayer("WECDIS_OWNSHIP_POS_GPS");
-			assertEquals("found GPS cuts", 4141, tOne.numFixes());
-			assertEquals("correct legs", 1, tOne.getSegments().size());
-
-			tTwo = (TrackWrapper) tLayers.findLayer("WECDIS_OWNSHIP-DR");
-			assertEquals("found GPS cuts", 4816, tTwo.numFixes());
-			assertEquals("correct legs", 1, tTwo.getSegments().size());
-
-			tThree = (TrackWrapper) tLayers.findLayer("WECDIS_OWNSHIP_POS_CMP");
-			assertEquals("found GPS cuts", 26, tThree.numFixes());
-			assertEquals("correct legs", 1, tThree.getSegments().size());
-
-			contacts = tLayers.findLayer("WECDIS Contacts");
-			assertEquals("loaded tracks", "WECDIS Contacts (14 items)", contacts.toString());
-			aisTrack = (LightweightTrackWrapper) contacts.elements().nextElement();
-			assertEquals("loaded lwt track", 744, aisTrack.numFixes());
-		}
-
-		public void testFullImportAllValuesWithSplit() throws Exception {
-			final String testFile = "../org.mwc.cmap.combined.feature/root_installs/sample_data/other_formats/NMEA_TRIAL.log";
-			final File testI = new File(testFile);
-
-			// only run the test if we have the log-file available
-			assertTrue(testI.exists());
-
-			InputStream is = new FileInputStream(testI);
-
-			final Layers tLayers = new Layers();
-
-			final ImportNMEA importer = new ImportNMEA(tLayers);
-			importer.importThis(testFile, is, 0L, 0L, false);
-
-			assertEquals("got new layers", 4, tLayers.size());
-
-			TrackWrapper tOne = (TrackWrapper) tLayers.findLayer("WECDIS_OWNSHIP_POS_GPS");
-			assertEquals("found GPS cuts", 12736, tOne.numFixes());
-
-			TrackWrapper tTwo = (TrackWrapper) tLayers.findLayer("WECDIS_OWNSHIP-DR");
-			assertEquals("found GPS cuts", 21746, tTwo.numFixes());
-
-			TrackWrapper tThree = (TrackWrapper) tLayers.findLayer("WECDIS_OWNSHIP_POS_CMP");
-			assertEquals("found GPS cuts", 87, tThree.numFixes());
-
-			Layer contacts = tLayers.findLayer("WECDIS Contacts");
-			assertEquals("loaded tracks", "WECDIS Contacts (14 items)", contacts.toString());
-			LightweightTrackWrapper aisTrack = (LightweightTrackWrapper) contacts.elements().nextElement();
-			assertEquals("loaded lwt track", 1250, aisTrack.numFixes());
-
-			// try another import frequency
-			tLayers.clear();
-
-			assertEquals("layers empty", 0, tLayers.size());
-
-			is = new FileInputStream(testI);
-			importer.importThis(testFile, is, 15000L, 15000L, true);
-
-			assertEquals("got new layers", 4, tLayers.size());
-
-			tOne = (TrackWrapper) tLayers.findLayer("WECDIS_OWNSHIP_POS_GPS");
-			assertEquals("found GPS cuts", 4141, tOne.numFixes());
-			assertEquals("correct legs", 2, tOne.getSegments().size());
-
-			tTwo = (TrackWrapper) tLayers.findLayer("WECDIS_OWNSHIP-DR");
-			assertEquals("found GPS cuts", 4816, tTwo.numFixes());
-			assertEquals("correct legs", 1, tTwo.getSegments().size());
-
-			tThree = (TrackWrapper) tLayers.findLayer("WECDIS_OWNSHIP_POS_CMP");
-			assertEquals("found GPS cuts", 26, tThree.numFixes());
-			assertEquals("correct legs", 1, tThree.getSegments().size());
-
-			contacts = tLayers.findLayer("WECDIS Contacts");
-			assertEquals("loaded tracks", "WECDIS Contacts (14 items)", contacts.toString());
-			aisTrack = (LightweightTrackWrapper) contacts.elements().nextElement();
-			assertEquals("loaded lwt track", 744, aisTrack.numFixes());
-		}
-
-		@SuppressWarnings({ "deprecation" })
-		public void testKnownImport() {
-			final String test1 = "$POSL,CONTACT,OC,DR,CHARLIE NAME,CHARLIE NAME,13.0,254.6,T,20160720,082807.345,FS,SFSP------^2a^2a^2a^2a^2a,0.0,M,3409.5794,N,01537.3128,W,0,,,*5D";
-			final String test2 = "$POSL,VNM,HMS NONSUCH*03";
-			final String test3 = "$POSL,POS,GPS,1122.2222,N,00712.6666,W,0.00,,Center of Rotation,N,,,,,*41";
-			final String test4 = "$POSL,DZA,20160720,000000.859,0007328229*42";
-			final String test5 = "$POSL,CONTACT,OC,DELETE,AIS 5,AIS 5,1.0,125.3,T,20160720,010059.897,FS,SFSP------^2a^2a^2a^2a^2a,0.0,M,1212.1234,N,12312.1234,W,0,,,*6E";
-			final String test6 = "$POSL,POS2,GPS,4422.1122,N,00812.1111,W,0.00,,GPS Antenna,N,,,,,*5C";
-			final String test7 = "$POSL,AIS,564166000,3606.3667,N,00522.3698,W,0,7.8,327.9,0,330.0,AIS1,0,0*06";
-			final String test8 = "$POSL,PDS,9.2,M*03";
-			final String test9 = "$POSL,VEL,GPS,276.3,4.6,,,*35";
-			final String test10_drSpd = "$POSL,VEL,SPL,,,4.1,0.0,4.0*12";
-			final String test11_drCrse = "$POSL,HDG,111.2,-04.1*7F";
-
-			assertEquals("Tgt POS", MsgType.CONTACT, parseType(test1));
-			assertEquals("Vessel name", MsgType.VESSEL_NAME, parseType(test2));
-			assertEquals("OS POS", MsgType.OS_POS, parseType(test3));
-			assertEquals("Timestamp", MsgType.TIMESTAMP, parseType(test4));
-
-			// ok, let's try the ownship name
-			assertEquals("got name", "HMS NONSUCH", parseMyName(test2));
-
-			// and the AIS track fields
-			final State aisState1 = parseContact(test1);
-			assertNotNull("found state", aisState1);
-			assertEquals("got name", "CHARLIE NAME", aisState1.name);
-			assertNotNull("found date", aisState1.date);
-			assertEquals("got date", "20 Jul 2016 08:28:07 GMT", aisState1.date.toGMTString());
-			assertNotNull("found location", aisState1.location);
-			assertEquals("got lat", 34.1596, aisState1.location.getLat(), 0.001);
-			assertEquals("got long", -15.622, aisState1.location.getLong(), 0.001);
-
-			// and the AIS track fields
-			final State aisState = parseContact(test5);
-			assertNotNull("found state", aisState);
-			assertEquals("got name", "AIS 5", aisState.name);
-
-			// and the ownship track fields
-			final State oState1 = parseOwnship(test3, "test_name");
-			assertNotNull("found state", oState1);
-			assertEquals("got name", "test_name_POS_GPS", oState1.name);
-			assertNull("found date", oState1.date);
-			assertNotNull("found location", oState1.location);
-			assertEquals("got lat", 11.370, oState1.location.getLat(), 0.001);
-			assertEquals("got long", -7.211, oState1.location.getLong(), 0.001);
-
-			// and the ownship track fields
-			final State oState2 = parseOwnship(test6, "test_name2");
-			assertNotNull("found state", oState2);
-			assertEquals("got name", "test_name2_POS2_GPS", oState2.name);
-			assertNull("found date", oState2.date);
-			assertNotNull("found location", oState2.location);
-			assertEquals("got lat", 44.368, oState2.location.getLat(), 0.001);
-			assertEquals("got long", -8.201, oState2.location.getLong(), 0.001);
-
-			// and the ownship track fields
-			final State oState3 = parseAIS(test7);
-			assertNotNull("found state", oState3);
-			assertEquals("got name", "564166000", oState3.name);
-			assertNull("found date", oState3.date);
-			assertNotNull("found location", oState3.location);
-
-			// ok, let's try the ownship name
-			assertEquals("got time", "20 Jul 2016 00:00:00 GMT", parseMyDate(test4).toGMTString());
-
-			assertEquals("got depth", 9.2d, parseMyDepth(test8), 0.001);
-
-			assertEquals("got course", 276.3d, parseMyCourse(coursePatternGPS, test9), 0.001);
-			assertEquals("got speed", 4.6d, parseMySpeed(speedPatternGPS, test9), 0.001);
-
-			// and the DR equivalents
-			assertEquals("got speed", 4.1d, parseMySpeed(speedPatternLOG, test10_drSpd), 0.001);
-			assertEquals("got course", 111.2d, parseMyCourse(coursePatternHDG, test11_drCrse), 0.001);
-
-		}
-
-		public void testMultiGPSImport() throws Exception {
-			String test1 = "$POSL,CONTACT,OC,DR,CHARLIE NAME,CHARLIE NAME,13.0,254.6,T,20160720,082807.345,FS,SFSP------^2a^2a^2a^2a^2a,0.0,M,3409.5794,N,01537.3128,W,0,,,*5D\r\n";
-			test1 += "$POSL,VNM,HMS NONSUCH*03\r\n";
-			test1 += "$POSL,POS,GPS,1122.2222,N,00712.6666,W,0.00,,Center of Rotation,N,,,,,*41\r\n";
-			test1 += "$POSL,DZA,20160720,000000.859,0007328229*42\r\n";
-			test1 += "$POSL,CONTACT,OC,DELETE,AIS 5,AIS 5,1.0,125.3,T,20160720,013059.897,FS,SFSP------^2a^2a^2a^2a^2a,0.0,M,1212.1234,N,12312.1234,W,0,,,*6E\r\n";
-			test1 += "$POSL,POS2,GPS,4422.1122,N,00812.1111,W,0.00,,GPS Antenna,N,,,,,*5C\r\n";
-			test1 += "$POSL,AIS,564166000,3606.3667,N,00522.3698,W,0,7.8,327.9,0,330.0,AIS1,0,0*06\r\n";
-			test1 += "$POSL,PDS,9.2,M*03\r\n";
-			test1 += "$POSL,VEL,GPS,276.3,4.6,,,*35\r\n";
-			test1 += "$POSL,CONTACT,OC,DELETE,AIS 5,AIS 5,1.0,125.3,T,20160720,010259.897,FS,SFSP------^2a^2a^2a^2a^2a,0.0,M,1212.1234,N,12312.1234,W,0,,,*6E\r\n";
-			test1 += "$POSL,VEL,SPL,,,4.1,0.0,4.0*12\r\n";
-			test1 += "$POSL,HDG,111.2,-04.1*7F\r\n";
-			test1 += "$POSL,POS,GPS,1122.2222,N,00712.6666,W,0.00,,Center of Rotation,N,,,,,*41\r\n";
-			test1 += "$POSL,DZA,20160720,000001.859,0007328229*42\r\n";
-			test1 += "$POSL,CONTACT,OC,DELETE,AIS 5,AIS 5,1.0,125.3,T,20160720,110049.897,FS,SFSP------^2a^2a^2a^2a^2a,0.0,M,1212.1234,N,12312.1234,W,0,,,*6E\r\n";
-			test1 += "$POSL,POS2,GPS,4422.1122,N,00812.1111,W,0.00,,GPS Antenna,N,,,,,*5C\r\n";
-			test1 += "$POSL,AIS,564166000,3606.3667,N,00522.3698,W,0,7.8,327.9,0,330.0,AIS1,0,0*06\r\n";
-			test1 += "$POSL,PDS,9.2,M*03\r\n";
-			test1 += "$POSL,VEL,GPS,276.3,4.6,,,*35\r\n";
-			test1 += "$POSL,AIS,564166022,3606.3667,N,00522.3698,W,0,7.8,327.9,0,330.0,AIS1,0,0*06\r\n";
-			test1 += "$POSL,VEL,SPL,,,4.1,0.0,4.0*12\r\n";
-			test1 += "$POSL,HDG,111.2,-04.1*7F\r\n";
-			test1 += "$POSL,VNM,HMS NONSUCH*03\r\n";
-			test1 += "$POSL,POS,GPS,1122.2222,N,00712.6666,W,0.00,,Center of Rotation,N,,,,,*41\r\n";
-			test1 += "$POSL,DZA,20160720,000002.859,0007328229*42\r\n";
-			test1 += "$POSL,CONTACT,OC,DELETE,AIS 5,AIS 5,1.0,125.3,T,20160720,020059.897,FS,SFSP------^2a^2a^2a^2a^2a,0.0,M,1212.1234,N,12312.1234,W,0,,,*6E\r\n";
-			test1 += "$POSL,POS2,GPS,4422.1122,N,00812.1111,W,0.00,,GPS Antenna,N,,,,,*5C\r\n";
-			test1 += "$POSL,AIS,564166000,3606.3667,N,00522.3698,W,0,7.8,327.9,0,330.0,AIS1,0,0*06\r\n";
-			test1 += "$POSL,PDS,9.2,M*03\r\n";
-			test1 += "$POSL,VEL,GPS,276.3,4.6,,,*35\r\n";
-			test1 += "$POSL,VEL,SPL,,,4.1,0.0,4.0*12\r\n";
-			test1 += "$POSL,HDG,111.2,-04.1*7F\r\n";
-			test1 += "$POSL,POS,GPS,1122.2222,N,00712.6666,W,0.00,,Center of Rotation,N,,,,,*41\r\n";
-			test1 += "$POSL,DZA,20160720,000003.859,0007328229*42\r\n";
-			test1 += "$POSL,CONTACT,OC,DELETE,AIS 5,AIS 5,1.0,125.3,T,20160720,011059.897,FS,SFSP------^2a^2a^2a^2a^2a,0.0,M,1212.1234,N,12312.1234,W,0,,,*6E\r\n";
-			test1 += "$POSL,POS2,GPS,4422.1122,N,00812.1111,W,0.00,,GPS Antenna,N,,,,,*5C\r\n";
-			test1 += "$POSL,AIS,564166000,3606.3667,N,00522.3698,W,0,7.8,327.9,0,330.0,AIS1,0,0*06\r\n";
-			test1 += "$POSL,PDS,9.2,M*03\r\n";
-			test1 += "$POSL,VEL,GPS,276.3,4.6,,,*35\r\n";
-			test1 += "$POSL,VEL,SPL,,,4.1,0.0,4.0*12\r\n";
-			test1 += "$POSL,HDG,111.2,-04.1*7F\r\n";
-
-			final InputStream is = new ByteArrayInputStream(test1.getBytes(StandardCharsets.UTF_8));
-			final Layers layers = new Layers();
-
-			assertEquals("empty", 0, layers.size());
-
-			final ImportNMEA importer = new ImportNMEA(layers);
-			importer.importThis("file.log", is, 0, 0, false);
-
-			assertEquals("not empty", 4, layers.size());
-			final LightweightTrackWrapper t1 = (LightweightTrackWrapper) layers.elementAt(0);
-			final LightweightTrackWrapper t2 = (LightweightTrackWrapper) layers.elementAt(1);
-			final LightweightTrackWrapper t3 = (LightweightTrackWrapper) layers.elementAt(2);
-			final BaseLayer t4 = (BaseLayer) layers.elementAt(3);
-
-			assertEquals("correct name", "HMS NONSUCH_POS_GPS", t1.getName());
-			assertEquals("correct name", "HMS NONSUCH_POS2_GPS", t2.getName());
-			assertEquals("correct name", "HMS NONSUCH-DR", t3.getName());
-			assertEquals("correct name", "WECDIS Contacts", t4.getName());
-
-			assertEquals("correct size", 3, t1.numFixes());
-			assertEquals("correct size", 4, t2.numFixes());
-			assertEquals("correct size", 3, t3.numFixes());
-			assertEquals("correct size", 2, t4.size());
-
-			final LightweightTrackWrapper a1 = (LightweightTrackWrapper) t4.first();
-			final LightweightTrackWrapper a2 = (LightweightTrackWrapper) t4.last();
-
-			assertEquals("correct name", "564166000", a1.getName());
-			assertEquals("correct name", "564166022", a2.getName());
-
-			assertEquals("correct size", 4, a1.numFixes());
-			assertEquals("correct size", 1, a2.numFixes());
-
-		}
-	}
-
 	private static final String DR_NAME = "-DR";
 
 	/**
@@ -414,12 +116,12 @@ public class ImportNMEA {
 	/**
 	 * $POSL,VEL,GPS,276.3,4.6,,,*35
 	 */
-	final private static Pattern coursePatternGPS = Pattern.compile("\\$POSL,VEL,GPS,(?<COURSE>\\d+.\\d+),.*");
+	final static Pattern coursePatternGPS = Pattern.compile("\\$POSL,VEL,GPS,(?<COURSE>\\d+.\\d+),.*");
 
 	/**
 	 * $POSL,HDG,111.0,-04.1*7F
 	 */
-	final private static Pattern coursePatternHDG = Pattern.compile("\\$POSL,HDG,(?<COURSE>\\d+.\\d+),.*");
+	final static Pattern coursePatternHDG = Pattern.compile("\\$POSL,HDG,(?<COURSE>\\d+.\\d+),.*");
 
 	/**
 	 * $POSL,DZA,20160720,000000.859,0007328229*42
@@ -437,11 +139,11 @@ public class ImportNMEA {
 	/**
 	 * $POSL,VEL,GPS,276.3,4.6,,,*35
 	 */
-	final private static Pattern speedPatternGPS = Pattern.compile("\\$POSL,VEL,GPS,.*,(?<SPEED>\\d+.\\d+),.*");
+	final static Pattern speedPatternGPS = Pattern.compile("\\$POSL,VEL,GPS,.*,(?<SPEED>\\d+.\\d+),.*");
 	/**
 	 * $POSL,VEL,SPL,,,4.0,0.0,4.0*12
 	 */
-	final private static Pattern speedPatternLOG = Pattern.compile("\\$POSL,VEL,SPL,,,(?<SPEED>\\d+.\\d+),.*");
+	final static Pattern speedPatternLOG = Pattern.compile("\\$POSL,VEL,SPL,,,(?<SPEED>\\d+.\\d+),.*");
 	/**
 	 * "$POSL,POS,GPS,1122.2222,N,12312.1234,W,0.00,,Center of Rotation,N,,,,,*41";
 	 */
@@ -450,7 +152,7 @@ public class ImportNMEA {
 
 	final private static Pattern typePattern = Pattern.compile("\\$POSL,(?<TYPE1>\\w*),(?<TYPE2>\\w*),*.*");
 
-	private static double degsFor(final String text) {
+	static double degsFor(final String text) {
 		final int dec = text.indexOf(".");
 		final String degs = text.substring(0, dec - 2);
 		final String mins = text.substring(dec - 2, text.length() - 2);
@@ -496,7 +198,7 @@ public class ImportNMEA {
 		return fw;
 	}
 
-	static private State parseAIS(final String nmea_sentence) {
+	static State parseAIS(final String nmea_sentence) {
 
 		final Matcher m = aisPattern.matcher(nmea_sentence);
 		final State res;
@@ -512,7 +214,7 @@ public class ImportNMEA {
 		return res;
 	}
 
-	static private State parseContact(final String nmea_sentence) {
+	static State parseContact(final String nmea_sentence) {
 
 		final Matcher m = contactPattern.matcher(nmea_sentence);
 		final State res;
@@ -530,7 +232,7 @@ public class ImportNMEA {
 		return res;
 	}
 
-	static private double parseMyCourse(final Pattern pattern, final String nmea_sentence) {
+	static double parseMyCourse(final Pattern pattern, final String nmea_sentence) {
 		final Matcher m = pattern.matcher(nmea_sentence);
 		final double res;
 		if (m.matches()) {
@@ -541,7 +243,7 @@ public class ImportNMEA {
 		return res;
 	}
 
-	private static Date parseMyDate(final String nmea_sentence) {
+	static Date parseMyDate(final String nmea_sentence) {
 		final Matcher m = datePattern.matcher(nmea_sentence);
 		final Date res;
 		if (m.matches()) {
@@ -555,7 +257,7 @@ public class ImportNMEA {
 		return res;
 	}
 
-	static private double parseMyDepth(final String nmea_sentence) {
+	static double parseMyDepth(final String nmea_sentence) {
 
 		final Matcher m = depthPattern.matcher(nmea_sentence);
 		final double res;
@@ -567,7 +269,7 @@ public class ImportNMEA {
 		return res;
 	}
 
-	static private String parseMyName(final String nmea_sentence) {
+	static String parseMyName(final String nmea_sentence) {
 
 		final Matcher m = namePattern.matcher(nmea_sentence);
 		final String res;
@@ -579,7 +281,7 @@ public class ImportNMEA {
 		return res;
 	}
 
-	static private double parseMySpeed(final Pattern pattern, final String nmea_sentence) {
+	static double parseMySpeed(final Pattern pattern, final String nmea_sentence) {
 		final Matcher m = pattern.matcher(nmea_sentence);
 		final double res;
 		if (m.matches()) {
@@ -590,7 +292,7 @@ public class ImportNMEA {
 		return res;
 	}
 
-	static private State parseOwnship(final String nmea_sentence, final String myName) {
+	static State parseOwnship(final String nmea_sentence, final String myName) {
 		final Matcher m = osPattern.matcher(nmea_sentence);
 		final State res;
 		if (m.matches()) {
@@ -606,7 +308,7 @@ public class ImportNMEA {
 
 	}
 
-	static private MsgType parseType(final String nmea_sentence) {
+	static MsgType parseType(final String nmea_sentence) {
 		final Matcher m = typePattern.matcher(nmea_sentence);
 		final MsgType res;
 		if (m.matches()) {

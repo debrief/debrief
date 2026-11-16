@@ -24,7 +24,6 @@ import MWC.GUI.BaseLayer;
 import MWC.GUI.Plottable;
 import MWC.TacticalData.NarrativeEntry;
 import MWC.TacticalData.NarrativeWrapper;
-import junit.framework.TestCase;
 
 public class LogicHelpers {
 	/**
@@ -127,83 +126,6 @@ public class LogicHelpers {
 			}
 			return false;
 		}
-	}
-
-	public static class TestLogic extends TestCase {
-		public void testClipboardNotEmptyFail() {
-			final EnabledTest test = getClipboardNotEmptyTest();
-			final Helper helper = new Helper() {
-
-				@Override
-				public ArrayList<Plottable> getClipboardContents() {
-					final ArrayList<Plottable> res = new ArrayList<Plottable>();
-					return res;
-				}
-
-				@Override
-				public ArrayList<Plottable> getSelection() {
-					return null;
-				}
-			};
-			assertTrue(!test.isEnabled(helper));
-		}
-
-		public void testClipboardNotEmptyPass() {
-			final EnabledTest test = getClipboardNotEmptyTest();
-			final Helper helper = new Helper() {
-
-				@Override
-				public ArrayList<Plottable> getClipboardContents() {
-					final ArrayList<Plottable> res = new ArrayList<Plottable>();
-					res.add(new BaseLayer());
-					return res;
-				}
-
-				@Override
-				public ArrayList<Plottable> getSelection() {
-					return null;
-				}
-			};
-			assertTrue(test.isEnabled(helper));
-		}
-
-		public void testSelectionEmptyFail() {
-			final EnabledTest test = getSelectionEmptyTest();
-			final Helper helper = new Helper() {
-
-				@Override
-				public ArrayList<Plottable> getClipboardContents() {
-					return null;
-				}
-
-				@Override
-				public ArrayList<Plottable> getSelection() {
-					final ArrayList<Plottable> res = new ArrayList<Plottable>();
-					return res;
-				}
-			};
-			assertTrue(test.isEnabled(helper));
-		}
-
-		public void testSelectionEmptyPass() {
-			final EnabledTest test = getSelectionEmptyTest();
-			final Helper helper = new Helper() {
-
-				@Override
-				public ArrayList<Plottable> getClipboardContents() {
-					return null;
-				}
-
-				@Override
-				public ArrayList<Plottable> getSelection() {
-					final ArrayList<Plottable> res = new ArrayList<Plottable>();
-					res.add(new BaseLayer());
-					return res;
-				}
-			};
-			assertTrue(!test.isEnabled(helper));
-		}
-
 	}
 
 	public static EnabledTest getClipboardNotEmptyTest() {

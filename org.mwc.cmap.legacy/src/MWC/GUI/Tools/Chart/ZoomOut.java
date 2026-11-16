@@ -15,21 +15,13 @@
 
 package MWC.GUI.Tools.Chart;
 
-import java.awt.Component;
-import java.awt.Dimension;
 
-import MWC.Algorithms.PlainProjection;
-import MWC.Algorithms.Projections.FlatProjection;
-import MWC.GUI.CanvasType;
-import MWC.GUI.HasEditables;
-import MWC.GUI.Layers;
+
 import MWC.GUI.PlainChart;
 import MWC.GUI.ToolParent;
-import MWC.GUI.Canvas.MockCanvasType;
 import MWC.GUI.Tools.Action;
 import MWC.GUI.Tools.PlainTool;
 import MWC.GenericData.WorldArea;
-import MWC.GenericData.WorldLocation;
 
 public class ZoomOut extends PlainTool {
 
@@ -86,100 +78,6 @@ public class ZoomOut extends PlainTool {
 	}
 
 	public static class ZoomOutAreaAction implements Action {
-
-		static public class zoomOutAreaActionTest extends junit.framework.TestCase {
-			class MockCanvas extends MockCanvasType {
-				PlainProjection _theProjection;
-
-				public MockCanvas() {
-					_theProjection = new FlatProjection();
-				}
-
-				@Override
-				public PlainProjection getProjection() {
-					return _theProjection;
-				}
-			}
-
-			class MockChart extends PlainChart {
-				/**
-				 *
-				 */
-				private static final long serialVersionUID = 1L;
-				MockCanvasType _theCanvas;
-
-				public MockChart(final Layers theLayers) {
-					super(theLayers);
-					_theCanvas = new MockCanvas();
-				}
-
-				@Override
-				public CanvasType getCanvas() {
-					return _theCanvas;
-				}
-
-				@Override
-				public Component getPanel() {
-					return null;
-				}
-
-				@Override
-				public Dimension getScreenSize() {
-					return null;
-				}
-
-				@Override
-				public void repaint() {
-				}
-
-				@Override
-				public void repaintNow(final java.awt.Rectangle rect) {
-				}
-
-				@Override
-				public void rescale() {
-				}
-
-				@Override
-				public void update() {
-				}
-
-				@Override
-				public void update(final HasEditables changedLayer) {
-				}
-
-			}
-
-			PlainChart _chart;
-
-			@Override
-			public void setUp() {
-				_chart = new MockChart(null);
-			}
-
-			public void testUndoRestoresArea() {
-				final PlainProjection proj = _chart.getCanvas().getProjection();
-
-				final WorldLocation topLeft = new WorldLocation(0, 0, 0);
-				final WorldLocation bottomRight = new WorldLocation(10, 10, 0);
-				final WorldArea oldArea = new WorldArea(topLeft, bottomRight);
-
-				final WorldLocation selTopLeft = new WorldLocation(1, 2, 0);
-				final WorldLocation selBottomRight = new WorldLocation(5, 5, 0);
-				final WorldArea selectedArea = new WorldArea(selTopLeft, selBottomRight);
-
-				proj.setDataArea(oldArea);
-				proj.setScreenArea(new Dimension(100, 100));
-				final ZoomOutAreaAction action = new ZoomOutAreaAction(_chart, oldArea, selectedArea, 2);
-
-				assertEquals(oldArea, proj.getDataArea());
-				action.execute();
-				assertNotSame(oldArea, proj.getDataArea());
-				action.undo();
-				assertEquals(oldArea, proj.getDataArea());
-			}
-
-		}
 
 		private final PlainChart _theChart;
 		private final WorldArea _oldArea;

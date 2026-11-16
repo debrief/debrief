@@ -221,45 +221,6 @@ public final class ImportNarrative2 extends AbstractPlainLineImporter {
 		}
 	}
 
-	// ///////////////////////////////////////////////////////////////////////////////////////////
-	// testing for this class
-	// ////////////////////////////////////////////////////////////////////////////////////////////////
-	static public final class testImport extends junit.framework.TestCase {
-		static public final String TEST_ALL_TEST_TYPE = "UNIT";
-
-		public testImport(final String val) {
-			super(val);
-		}
-
-		public void testImportQuotedLine() throws ParseException {
-			final String theLine = ";NARRATIVE2:	020421	121857	\"HMS TORBAY\" 	GenComment2	Mk Rge BAAA R121212";
-			final ImportNarrative2 in = new ImportNarrative2();
-			final Object res = in.readThisLine(theLine);
-			final NarrativeEntry ne = (NarrativeEntry) res;
-
-			// check it contains the right data
-			final String theDate = ne.getDTGString();
-			assertEquals("020421 121857", theDate);
-			assertEquals("found track name", "HMS TORBAY", ne.getTrackName());
-			assertEquals("type matches", "GenComment2", ne.getType());
-
-		}
-
-		public void testImportSingleLine() throws ParseException {
-			final String theLine = ";NARRATIVE2:	020421	121857	HMS_TORBAY 	GenComment	Mk Rge BAAA R121212";
-			final ImportNarrative2 in = new ImportNarrative2();
-			final Object res = in.readThisLine(theLine);
-			final NarrativeEntry ne = (NarrativeEntry) res;
-
-			// check it contains the right data
-			final String theDate = ne.getDTGString();
-			assertEquals(theDate, "020421 121857");
-			assertEquals("found track name", "HMS_TORBAY", ne.getTrackName());
-			assertEquals("type matches", "GenComment", ne.getType());
-		}
-
-	}
-
 	/**
 	 * do some narrative import checking
 	 *

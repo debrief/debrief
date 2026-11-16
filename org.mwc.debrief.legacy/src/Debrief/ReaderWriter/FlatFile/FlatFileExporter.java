@@ -15,11 +15,6 @@
 
 package Debrief.ReaderWriter.FlatFile;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
@@ -43,7 +38,6 @@ import MWC.GenericData.Watchable;
 import MWC.GenericData.WatchableList;
 import MWC.GenericData.WorldLocation;
 import MWC.GenericData.WorldVector;
-import MWC.TacticalData.Fix;
 import MWC.Utilities.TextFormatting.GMTDateFormat;
 
 /**
@@ -53,179 +47,6 @@ import MWC.Utilities.TextFormatting.GMTDateFormat;
  *
  */
 public class FlatFileExporter {
-
-	// ////////////////////////////////////////////////////////////////
-	// TEST THIS CLASS
-	// ////////////////////////////////////////////////////////////////
-	static public final class testMe extends junit.framework.TestCase {
-
-		static public final String TEST_ALL_TEST_TYPE = "UNIT";
-
-		public testMe(final String val) {
-			super(val);
-		}
-
-		private void dumpToFile(final String str, final String filename) {
-			final File outFile = new File(filename);
-			FileWriter out = null;
-			try {
-				out = new FileWriter(outFile);
-				out.write(str);
-			} catch (final IOException e) {
-				e.printStackTrace();
-			} finally {
-				try {
-					if (out != null)
-						out.close();
-				} catch (final IOException e) {
-					e.printStackTrace();
-				}
-			}
-		}
-
-		private String getTestData(final String fName) {
-			String res = null;
-			try {
-				res = readFileAsString(fName);
-			} catch (final IOException e) {
-				e.printStackTrace();
-			}
-			return res;
-		}
-
-		// TODO FIX-TEST
-		public void NtestAgainstSample1() throws IOException {
-			final String TARGET_STR = getTestData("src/Debrief/ReaderWriter/FlatFile/fakedata.txt");
-			assertNotNull("test data found", TARGET_STR);
-			final FlatFileExporter fa = new FlatFileExporter();
-			String res = null;
-			try {
-				res = fa.testExport("V1.0");
-			} catch (final ParseException e) {
-				e.printStackTrace();
-			}
-			assertNotNull("produced string", res);
-
-			assertEquals("correct string", TARGET_STR, res);
-
-			dumpToFile(res, "src/Debrief/ReaderWriter/FlatFile/data_out.txt");
-		}
-
-		// TODO FIX-TEST
-		public void NtestAgainstSample2() throws IOException {
-			// collate the data
-			final TrackWrapper primary = new TrackWrapper();
-			final TrackWrapper secondary = new TrackWrapper();
-
-			for (int i = 0; i < 20; i++) {
-				final double lat = 2 + i / 3600;
-				final double lon = 3 + i / 3700;
-				final double depth = 19 + i / 10;
-				final WorldLocation wa = new WorldLocation(lat, -lon, depth);
-				final WorldLocation wb = new WorldLocation(-lat, lon, depth + 25);
-				final Fix fa = new Fix(new HiResDate(10000 + i * 1000), wa, 45, 12);
-				final Fix fb = new Fix(new HiResDate(10004 + i * 1000), wb, 45, 12);
-				final FixWrapper fwa = new FixWrapper(fa);
-				final FixWrapper fwb = new FixWrapper(fb);
-				primary.addFix(fwa);
-				secondary.addFix(fwb);
-			}
-
-			final SensorWrapper sa = new SensorWrapper("sensor-A");
-			sa.setHost(primary);
-			sa.setVisible(true);
-			primary.add(sa);
-			final SensorWrapper sb = new SensorWrapper("sensor-B");
-			sb.setHost(primary);
-			sb.setVisible(true);
-			primary.add(sb);
-			for (int i = 0; i < 15; i++) {
-				// primary.getName(),,
-				final SensorContactWrapper sca = new SensorContactWrapper();
-				sca.setBearing(i * 3);
-				sca.setSensor(sa);
-				sca.setDTG(new HiResDate(11000 + i * 950));
-				sa.add(sca);
-			}
-
-			for (int i = 0; i < 15; i++) {
-				// primary.getName(),,
-				final SensorContactWrapper sca = new SensorContactWrapper();
-				sca.setBearing(i * 1.6);
-				sca.setSensor(sa);
-				sca.setDTG(new HiResDate(10900 + i * 930));
-				sb.add(sca);
-			}
-
-			final WatchableList[] secList = new WatchableList[] { secondary };
-			final HiResDate start = new HiResDate(10000);
-			final HiResDate end = new HiResDate(50000);
-			final TimePeriod period = new TimePeriod.BaseTimePeriod(start, end);
-			final String s1Type = "s1_type";
-			final String s2Type = "s2_TYPE";
-			final String protMarking = "PROT_MARKING";
-			final String serName = "SER_NAME";
-
-			// do the export
-			final FlatFileExporter fa = new FlatFileExporter();
-			final String res = fa.export(primary, secList, period, s1Type, s2Type, null, null, null, null,
-					INITIAL_VERSION, protMarking, serName, 1600d);
-
-			// get the test data
-			final String TARGET_STR = getTestData("src/Debrief/ReaderWriter/FlatFile/fakedata2.txt");
-			assertNotNull("test data found", TARGET_STR);
-
-			// and now the checking
-			assertNotNull("produced string", res);
-			assertEquals("correct string", TARGET_STR, res);
-
-			dumpToFile(res, "src/Debrief/ReaderWriter/FlatFile/data_out.txt");
-		}
-
-		private String readFileAsString(final String filePath) throws java.io.IOException {
-			final StringBuffer fileData = new StringBuffer(1000);
-			final BufferedReader reader = new BufferedReader(new FileReader(filePath));
-			char[] buf = new char[1024];
-			int numRead = 0;
-			while ((numRead = reader.read(buf)) != -1) {
-				final String readData = String.valueOf(buf, 0, numRead);
-				fileData.append(readData);
-				buf = new char[1024];
-			}
-			reader.close();
-			return fileData.toString();
-		}
-
-		public void testDateFormat() throws ParseException {
-			final Date theDate = dateFrom("01:45:00	22/12/2002");
-			final String val = formatThis(theDate);
-			assertEquals("correct start date", "01:45:00	22/12/2002", val);
-		}
-
-		public void testGetNearestCut() {
-			final SensorWrapper sa = new SensorWrapper("sensor-A");
-			for (int i = 1; i < 5; i++) {
-				// primary.getName(),,
-				final SensorContactWrapper sca = new SensorContactWrapper();
-				sca.setDTG(new HiResDate(i * 10));
-				sca.setLabel("" + i * 10);
-				sa.add(sca);
-			}
-
-			SensorContactWrapper fw = FlatFileExporter.nearestCutTo(sa, new HiResDate(5));
-			assertNull("should not return one - before data starts", fw);
-			fw = FlatFileExporter.nearestCutTo(sa, new HiResDate(11));
-			assertEquals("got first one", "10", fw.getLabel());
-			fw = FlatFileExporter.nearestCutTo(sa, new HiResDate(19));
-			assertEquals("got correct one", "20", fw.getLabel());
-			fw = FlatFileExporter.nearestCutTo(sa, new HiResDate(85));
-			assertNull("should not return one - after data finishes", fw);
-			fw = FlatFileExporter.nearestCutTo(sa, new HiResDate(40));
-			assertEquals("got last one", "40", fw.getLabel());
-			fw = FlatFileExporter.nearestCutTo(sa, new HiResDate(35));
-			assertEquals("got correct one", "40", fw.getLabel());
-		}
-	}
 
 	public static final String INITIAL_VERSION = "1.0";
 
@@ -292,7 +113,7 @@ public class FlatFileExporter {
 	 * @return string as java date
 	 * @throws ParseException if the string doesn't match
 	 */
-	private static Date dateFrom(final String dateStr) throws ParseException {
+	static Date dateFrom(final String dateStr) throws ParseException {
 		final DateFormat df = new GMTDateFormat("HH:mm:ss	dd/MM/yyyy");
 		Date res = null;
 		res = df.parse(dateStr);
@@ -1057,7 +878,7 @@ public class FlatFileExporter {
 		return body;
 	}
 
-	private String testExport(final String fileVersion) throws ParseException {
+	String testExport(final String fileVersion) throws ParseException {
 		final String StartTime = "04:45:00	20/04/2009";
 		final Date startDate = dateFrom(StartTime);
 		final String endTime = "04:45:05	20/04/2009";

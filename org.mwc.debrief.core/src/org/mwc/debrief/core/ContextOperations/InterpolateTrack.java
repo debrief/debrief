@@ -16,7 +16,6 @@
 package org.mwc.debrief.core.ContextOperations;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.Iterator;
@@ -46,8 +45,6 @@ import MWC.GUI.Layers;
 import MWC.GUI.Properties.TimeStepPropertyEditor;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.Watchable;
-import MWC.GenericData.WorldLocation;
-import MWC.TacticalData.Fix;
 
 /**
  * @author ian.mayo
@@ -67,7 +64,7 @@ public class InterpolateTrack implements RightClickContextItemGenerator {
 		}
 	}
 
-	private static class InterpolateTrackOperation extends CMAPOperation {
+	static class InterpolateTrackOperation extends CMAPOperation {
 
 		/**
 		 * the parent to update on completion
@@ -195,116 +192,6 @@ public class InterpolateTrack implements RightClickContextItemGenerator {
 			_layers.fireExtended(null, _track);
 
 			return Status.OK_STATUS;
-		}
-	}
-
-	// ////////////////////////////////////////////////////////////////////////////////////////////////
-	// testing for this class
-	// ////////////////////////////////////////////////////////////////////////////////////////////////
-	static public final class testMe extends junit.framework.TestCase {
-		static public final String TEST_ALL_TEST_TYPE = "UNIT";
-
-		public testMe(final String val) {
-			super(val);
-		}
-
-		public final void testInterpolate() {
-			final Layers theLayers = new Layers();
-			final TrackWrapper track = new TrackWrapper();
-			track.setName("Trk");
-			theLayers.addThisLayer(track);
-
-			for (int i = 0; i < 3; i++) {
-				final WorldLocation thisLoc = new WorldLocation(0, i, 0, 'N', 0, 0, 0, 'W', 0);
-				final Calendar cal = Calendar.getInstance();
-				cal.setTimeInMillis(0);
-				cal.set(2005, 6, 6, 12, i * 5, 0);
-				final Fix newFix = new Fix(new HiResDate(cal.getTime()), thisLoc, 0, 0);
-
-				final FixWrapper sw = new FixWrapper(newFix);
-				track.add(sw);
-			}
-
-			// ok, now do the interpolation
-			final InterpolateTrackOperation ct = new InterpolateTrackOperation("convert it", theLayers, track, "1 min",
-					60 * 1000 * 1000);
-
-			// check we're starting with the right number of items
-			assertEquals("starting with right number", 3, track.numFixes());
-
-			try {
-				ct.execute(null, null);
-			} catch (final ExecutionException e) {
-				fail("Exception thrown");
-			}
-
-			// check we've got the right number of fixes (12:00 to 12:10 inclusive)
-			assertEquals("right num of fixes generated", 11, track.numFixes());
-			assertEquals("keeps start", 0, ((FixWrapper) track.getPositionIterator().nextElement()).getDTG()
-					.getDate().getTime() % (5 * 60 * 1000));
-
-		}
-
-		private static List<List<Editable>> contentsOf(final TrackWrapper track) {
-			final List<List<Editable>> res = new ArrayList<List<Editable>>();
-			final Enumeration<Editable> segs = track.getSegments().elements();
-			while (segs.hasMoreElements()) {
-				final TrackSegment seg = (TrackSegment) segs.nextElement();
-				res.add(Collections.list(seg.elements()));
-			}
-			return res;
-		}
-
-		private static String legSizes(final TrackWrapper track) {
-			final List<Integer> sizes = new ArrayList<Integer>();
-			for (final List<Editable> leg : contentsOf(track)) {
-				sizes.add(leg.size());
-			}
-			Collections.sort(sizes);
-			return sizes.toString();
-		}
-
-		/**
-		 * undo must put back exactly the original fixes, in their original segments
-		 */
-		public final void testUndoRestoresOriginalFixes() throws ExecutionException {
-			final Layers theLayers = new Layers();
-			final TrackWrapper track = new TrackWrapper();
-			track.setName("Trk");
-			theLayers.addThisLayer(track);
-
-			final TrackSegment legOne = new TrackSegment(TrackSegment.ABSOLUTE);
-			final TrackSegment legTwo = new TrackSegment(TrackSegment.ABSOLUTE);
-			for (int i = 0; i < 6; i++) {
-				final WorldLocation thisLoc = new WorldLocation(0, i, 0, 'N', 0, 0, 0, 'W', 0);
-				final Fix newFix = new Fix(new HiResDate(1000000000000L + i * 5 * 60 * 1000L), thisLoc, 0, 0);
-				(i < 3 ? legOne : legTwo).addFix(new FixWrapper(newFix));
-			}
-			track.add(legOne);
-			track.add(legTwo);
-
-			final List<List<Editable>> before = contentsOf(track);
-			assertEquals("two legs", 2, before.size());
-			assertEquals("six fixes", 6, track.numFixes());
-
-			final InterpolateTrackOperation ct = new InterpolateTrackOperation("convert it", theLayers, track, "1 min",
-					60 * 1000 * 1000);
-
-			ct.execute(null, null);
-			assertEquals("resampled", 26, track.numFixes());
-			assertEquals("resampled fixes all in one leg", "[0, 26]", legSizes(track));
-
-			ct.undo(null, null);
-			assertEquals("original fixes restored", before, contentsOf(track));
-			assertEquals("six fixes", 6, track.numFixes());
-			assertEquals("same period", 1000000000000L, track.getStartDTG().getDate().getTime());
-
-			// and redo/undo again
-			ct.execute(null, null);
-			assertEquals("resampled", 26, track.numFixes());
-			assertEquals("resampled fixes all in one leg", "[0, 26]", legSizes(track));
-			ct.undo(null, null);
-			assertEquals("original fixes restored", before, contentsOf(track));
 		}
 	}
 

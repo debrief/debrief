@@ -1,0 +1,94 @@
+/*******************************************************************************
+ * Debrief - the Open Source Maritime Analysis Application
+ * http://debrief.info
+ *
+ * (C) 2000-2020, Deep Blue C Technology Ltd
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the Eclipse Public License v1.0
+ * (http://www.eclipse.org/legal/epl-v10.html)
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *******************************************************************************/
+
+package Debrief.ReaderWriter.Replay.extensions;
+
+import static org.junit.jupiter.api.Assertions.*;
+
+import static Debrief.ReaderWriter.Replay.extensions.TA_Modules_DataHandler.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import Debrief.ReaderWriter.Replay.extensions.TA_Modules_DataHandler.*;
+import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.List;
+import MWC.GenericData.HiResDate;
+import org.junit.jupiter.api.Test;
+
+public class TA_Modules_DataHandlerTest {
+	//
+	private final List<String> _messages = new ArrayList<String>();
+
+	public void setup() {
+		_messages.clear();
+	}
+
+	@Test
+	public void testImportLong() throws ParseException {
+		final String str = ";TA_MODULES: 100112 120000 \"SENSOR ALPHA\" \"TA ARRAY\" 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 14.75 3.00 14.75 10.00  12.75 3.00 14.75 10.00 12.75 3.00 14.75 10.00  12.75 3.00 14.75 10.00";
+		final TA_ForeAft_DataHandler ff = new TA_Modules_DataHandler() {
+
+			@Override
+			protected void storeMeasurement(final String platform_name, final String sensor_name,
+					final String folder, final String dataset, final String units, final HiResDate theDate,
+					final double measurement) {
+				super.storeMeasurement(platform_name, sensor_name, folder, dataset, units, theDate, measurement);
+				final String outStr = "stored//" + dataset + "//value of//" + measurement + "//in//" + folder;
+				_messages.add(outStr);
+			}
+		};
+		ff.readThisLine(str);
+
+		assertEquals(16, _messages.size(), "found items");
+		final String message1 = _messages.get(0);
+		testResults(message1, "Depth", "14.75", "Acoustic Modules / 1");
+		final String message2 = _messages.get(15);
+		testResults(message2, "Heading", "10.0", "Acoustic Modules / 8");
+	}
+
+	@Test
+	public void testImportShort() throws ParseException {
+		final String str = ";TA_MODULES: 100112 120000 \"SENSOR ALPHA\" \"TA ARRAY\" 12.75 3.00 14.75 10.00  12.75 3.00 14.75 10.00 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0";
+		final TA_ForeAft_DataHandler ff = new TA_Modules_DataHandler() {
+
+			@Override
+			protected void storeMeasurement(final String platform_name, final String sensor_name,
+					final String folder, final String dataset, final String units, final HiResDate theDate,
+					final double measurement) {
+				super.storeMeasurement(platform_name, sensor_name, folder, dataset, units, theDate, measurement);
+				final String outStr = "stored//" + dataset + "//value of//" + measurement + "//in//" + folder;
+				_messages.add(outStr);
+			}
+		};
+		ff.readThisLine(str);
+
+		assertEquals(8, _messages.size(), "found items");
+
+		// have a look at one
+		final String message = _messages.get(0);
+		testResults(message, "Depth", "12.75", "Acoustic Modules / 1");
+		final String message2 = _messages.get(7);
+		testResults(message2, "Heading", "10.0", "Acoustic Modules / 4");
+	}
+
+	public void testResults(final String message, final String dataset, final String measurement,
+			final String folder) {
+		final String items[] = message.split("//");
+		assertEquals(items[1], dataset);
+		assertEquals(items[3], measurement);
+		assertEquals(items[5], folder);
+
+	}
+}

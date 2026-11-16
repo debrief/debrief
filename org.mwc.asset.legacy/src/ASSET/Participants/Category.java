@@ -4,7 +4,6 @@ package ASSET.Participants;
 import java.awt.Color;
 
 import MWC.GUI.Properties.DebriefColors;
-import junit.framework.TestCase;
 
 /*******************************************************************************
  * Debrief - the Open Source Maritime Analysis Application http://debrief.info
@@ -30,25 +29,6 @@ public class Category implements java.io.Serializable {
 		static public final String SURFACE = "SURFACE";
 		public static final String AIRBORNE = "AIRBORNE";
 		public static final String CROSS = "CROSS";
-	}
-
-	/**
-	 * and here's how to test it
-	 *
-	 * @author ianmayo
-	 *
-	 */
-	public static class EqualityTest extends TestCase {
-		public void testEquals() {
-			final Category catOne = new Category(Force.BLUE, Environment.SURFACE, Type.FRIGATE);
-			final Category catTwo = new Category(Force.RED, Environment.SURFACE, Type.FRIGATE);
-			final Category catThree = new Category(Force.BLUE, Environment.SURFACE, Type.FRIGATE);
-
-			assertNotSame("not equal", catOne, catTwo);
-			assertTrue(" equal", catOne.equals(catThree));
-			assertTrue(" equal", catThree.equals(catOne));
-			assertFalse(" equal", catOne.equals(catTwo));
-		}
 	}
 
 	public interface Force {
