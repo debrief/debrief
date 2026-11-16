@@ -157,6 +157,10 @@ public class InterceptTest extends ASSET.Util.EditableTesting {
 			}
 		};
 		cs.setSeed(new Integer(12300));
+		// the scenario applies its seed only in start(), and this test steps it by
+		// hand: seed the shared generator here, so detection does not depend on
+		// which tests ran before
+		ASSET.Util.RandomGenerator.seed(12300);
 		cs.addParticipant(searcher.getId(), searcher);
 		cs.addParticipant(ffta.getId(), ffta);
 		cs.setScenarioStepTime(new Duration(5, Duration.SECONDS));
