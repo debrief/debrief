@@ -2,6 +2,29 @@
 
 For the owner's decision at Gate D (see [plan.md](plan.md), Phase E). Facts are as of November 2026, on `develop`.
 
+## Decisions (owner, November 2026)
+
+1. **RCPTT: retire the runner, keep the scripts as a checklist, and plan a new small automated RCP UI suite** (SWTBot or current RCPTT) covering the main paths, written against the current product. It should be in place before the GeoTools upgrade (Phase D1), which changes the RCP map.
+2. **JUnit: full migration to JUnit 5.** This means moving the inline tests out of production classes first, then converting about 280 test classes. It is done in stages (below).
+3. **Stale test libraries:** delete jmock; remove or replace mockito-all 1.8.5.
+
+### JUnit 5 migration: stages
+
+Each stage is its own PR or set of PRs, and CI stays green throughout.
+
+1. **Run both.** Add the JUnit Platform with the vintage and Jupiter engines:
+   - in Tycho Surefire (Jupiter and Platform bundles from the Eclipse release);
+   - in Lite's Ant build (`<junit>` → `<junitlauncher>`).
+   
+   Existing tests run unchanged; new tests can be Jupiter.
+2. **Move inline tests out of production code**, one plugin at a time, starting with the smaller ones and ending with `debrief.legacy` (51 files):
+   - each `TestMe` inner class moves to a test class in a test source folder;
+   - `junit.framework` leaves the bundles' `uses:` clauses and Lite's shipped `lib/`.
+3. **Convert to Jupiter**, plugin by plugin: `TestCase` → `@Test`, `assertEquals` argument order kept, suites → `@Suite` or Surefire includes. The golden-file and screenshot helpers (`GoldenFile`, `GoldenImage`) move to JUnit 5 assertions.
+4. **Remove JUnit 4**: the vintage engine, `junit.jar`, `hamcrest-core.jar`, and their Dependabot rules.
+
+The options and reasons follow, as written for the decision.
+
 ## Summary
 
 | Decision | Options | Recommendation |
