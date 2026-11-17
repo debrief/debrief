@@ -169,7 +169,7 @@ Spec `specs/004-geotools/`.
 - **Postgres 8.3.** Done early, with the Pepys driver: all PostgreSQL support was removed (see PR 3+ item 2).
 
 ## Phase E: test tooling (after Phase B)
-**Decided** (owner, November 2026; options and stages in [phase-e-options.md](phase-e-options.md)): retire the RCPTT runner, keep its scripts as a manual checklist, and plan a new small RCP UI suite before Phase D1; migrate fully to JUnit 6 (done, in one PR: tests moved out of production code into each plugin's `test/` folder, converted to Jupiter, run by Surefire and Lite's `<junitlauncher>`; JUnit 4 and hamcrest removed everywhere); delete jmock and mockito-all (done). The two lines below are the original plan, kept for history.
+**Decided** (owner, November 2026; options and stages in [phase-e-options.md](phase-e-options.md)): retire the RCPTT runner, keep its scripts as a manual checklist, and plan a new small RCP UI suite before Phase D1 (proposal: [rcp-ui-suite-plan.md](../testing/rcp-ui-suite-plan.md), SWTBot); migrate fully to JUnit 6 (done, in one PR: tests moved out of production code into each plugin's `test/` folder, converted to Jupiter, run by Surefire and Lite's `<junitlauncher>`; JUnit 4 and hamcrest removed everywhere); delete jmock and mockito-all (done). The two lines below are the original plan, kept for history.
 
 - **JUnit 4.12 → JUnit 5** with the vintage engine. Tycho Surefire supports it, and the existing tests run unchanged.
 - **RCPTT runner 2.5.0** (about 600 committed jars): replace it with the current RCPTT Maven plugin, or retire it in favour of the screenshot and headless tests. **The owner decides at Gate D.**
