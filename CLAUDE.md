@@ -93,14 +93,16 @@ Build with **JDK 21** and **Maven 3.9 or later**: Tycho 5 needs both. Bundles de
 
 ## Test Architecture
 
-Tests use **JUnit 6 (Jupiter)**: `@Test`, `org.junit.jupiter.api.Assertions` (message last). There is no JUnit 4 or hamcrest anywhere.
+Tests use **JUnit 6 (Jupiter)**: `@Test`, `org.junit.jupiter.api.Assertions` (message last). There is no JUnit 4 or hamcrest, except in the test runtime of `org.mwc.debrief.ui.test`, because SWTBot requires them.
 
 - **Plugin tests**: each plugin keeps its tests in a `test/` folder beside `src/`, in the same packages as the code they test (so package-private members are visible). `maven-surefire-plugin`, configured in the root `pom.xml`, runs every `*Test`, `*_Test` and `Test*` class in each plugin's `test` phase, with the plugin's OSGi classpath that Tycho computes, under `-DbuildMode=true` (which suppresses dialogs). JUnit is a test-scope dependency only: production bundles and Lite don't contain it. A test needing the Eclipse runtime belongs in an `eclipse-test-plugin` such as `org.mwc.debrief.editable.test`, which Tycho Surefire runs in an OSGi UI harness.
 - **Test support in production code**: `Editable.editableTesterSupport` and `WatchableList.TestWatchables` are shared by tests in several plugins, so they stay in production code and check with `MWC.Utilities.Errors.Testing.Checks` (plain `AssertionError`), not JUnit. The golden-file helpers (`Debrief.Testing.GoldenFile`, `GoldenImage`) do the same.
 - **Lite headless tests**: `org.mwc.debrief.lite/src/test/java` (every `*Test` outside `tests/`), run by Ant's `<junitlauncher>` in every build (skipped with `-DskipTests`) with `java.awt.headless=true`: file round-trips, time stepping and the tote, plot state, shape insertion with undo/redo, map and projection checks. They drive Lite's own non-UI code (`org.mwc.debrief.lite.util.PlotFiles`, `PlotState`, `LiteTote`, `LiteStepControl`, the shape actions). Lite's tests compile apart from `debrief_lite.jar`, against JUnit jars that `org.mwc.debrief.thirdparty` fetches into `org.mwc.debrief.lite/test-libs/`.
 - **Lite UI tests**: Swing tests in `org.mwc.debrief.lite/src/test/java/org/mwc/debrief/lite/tests/`, run by `<junitlauncher>` only with `-DliteUiTests=true` (CI's separate `lite-ui-tests` job does this under xvfb). The main build also produces `org.mwc.debrief.lite/dist/debrief-lite-<version>.zip`.
 
-There are no automated UI tests of Debrief NG (the RCP product): the RCPTT suite was retired in Phase E. Use the manual checklist in [docs/testing/debrief-ng-smoke-checklist.md](docs/testing/debrief-ng-smoke-checklist.md); a new small RCP UI suite is planned (see [docs/dependencies/phase-e-options.md](docs/dependencies/phase-e-options.md)).
+- **Debrief NG UI tests**: SWTBot tests of the RCP product's workbench in `org.mwc.debrief.ui.test` (an `eclipse-test-plugin`), only in the build with `-DrcpUiTests=true` and under a display; CI's `rcp-ui-tests` job runs them under xvfb. The suite is being built up from the plan in [docs/testing/rcp-ui-suite-plan.md](docs/testing/rcp-ui-suite-plan.md). SWTBot needs JUnit 4 and hamcrest in that plugin's test runtime (nothing shipped includes them), so its pom names the `junit6` provider.
+
+What the UI tests don't cover yet is in the manual checklist, [docs/testing/debrief-ng-smoke-checklist.md](docs/testing/debrief-ng-smoke-checklist.md).
 
 ## Project Structure
 

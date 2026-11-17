@@ -174,5 +174,13 @@
       <unit id="org.opentest4j" version="0.0.0"/>
       <unit id="org.apiguardian.api" version="0.0.0"/>
     </location>
+    <!-- SWTBot, for org.mwc.debrief.ui.test (the RCP UI suite). Its finder
+         bundles need JUnit 4 and hamcrest; nothing shipped includes them. -->
+    <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="planner" includeSource="true" type="InstallableUnit">
+      <repository location="https://download.eclipse.org/technology/swtbot/releases/4.3.0/"/>
+      <unit id="org.eclipse.swtbot.eclipse.finder" version="0.0.0"/>
+      <unit id="org.eclipse.swtbot.swt.finder" version="0.0.0"/>
+      <unit id="org.eclipse.swtbot.junit5_x" version="0.0.0"/>
+    </location>
   </locations>
 </target>

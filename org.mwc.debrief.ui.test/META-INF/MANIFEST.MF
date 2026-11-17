@@ -1,0 +1,18 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Debrief NG UI Tests
+Bundle-SymbolicName: org.mwc.debrief.ui.test
+Bundle-Version: 1.0.0
+Bundle-Vendor: MWC
+Bundle-RequiredExecutionEnvironment: JavaSE-21
+Require-Bundle: org.eclipse.ui,
+ org.eclipse.ui.ide,
+ org.eclipse.core.runtime,
+ org.eclipse.core.resources,
+ org.eclipse.swtbot.swt.finder,
+ org.eclipse.swtbot.eclipse.finder,
+ org.eclipse.swtbot.junit5_x,
+ org.mwc.debrief.core,
+ org.mwc.cmap.core
+Import-Package: org.junit.jupiter.api;version="[5.0.0,7.0.0)",
+ org.junit.jupiter.api.extension;version="[5.0.0,7.0.0)"
