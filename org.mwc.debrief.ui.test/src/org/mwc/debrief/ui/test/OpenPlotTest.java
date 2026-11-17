@@ -17,13 +17,10 @@ package org.mwc.debrief.ui.test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.swtbot.eclipse.finder.widgets.SWTBotEditor;
-import org.eclipse.swtbot.eclipse.finder.widgets.SWTBotView;
 import org.eclipse.swtbot.swt.finder.junit5.SWTBotJunit5Extension;
-import org.eclipse.swtbot.swt.finder.widgets.SWTBotTreeItem;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -51,11 +48,7 @@ public class OpenPlotTest {
 		final SWTBotEditor editor = DebriefBot.openSample("sample.dpf");
 		assertEquals("org.mwc.debrief.PlotEditor", editor.getReference().getId(), "opened in the plot editor");
 
-		final SWTBotView outline = DebriefBot.outline();
-		final List<String> labels = new ArrayList<>();
-		for (final SWTBotTreeItem item : outline.bot().tree().getAllItems()) {
-			labels.add(item.getText());
-		}
+		final List<String> labels = DebriefBot.outlineLabels();
 		System.out.println("Outline of sample.dpf: " + labels);
 
 		assertEquals(List.of("Annotations (0 items)", "Track:COLLINGWOOD", "Chart Features (3 items)",

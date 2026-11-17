@@ -2,7 +2,7 @@
 
 Phase E retired the RCPTT runner and replaced its 22 scripts with a [manual checklist](debrief-ng-smoke-checklist.md). The owner asked for a small automated suite for the Eclipse RCP product (Debrief NG) before Phase D1, because the GeoTools upgrade changes the RCP map ([plan.md](../dependencies/plan.md), [phase-e-options.md](../dependencies/phase-e-options.md)).
 
-This document proposes the tool, the scenarios, how it runs and the order of the work. **Status: approved by the owner (SWTBot and the seven scenarios). The spike is done.**
+This document proposes the tool, the scenarios, how it runs and the order of the work. **Status: done.** The owner approved SWTBot and the seven scenarios, and all seven are automated.
 
 ## What the suite must do
 
@@ -64,9 +64,13 @@ The rest of the checklist stays manual: preferences, toolbar inventory, chart fe
    - SWTBot's JUnit 5 extension works on Jupiter 6.
    - SWTBot also brings JUnit 4, so Tycho chose its JUnit 4 provider and found no tests. The pom now sets `<providerHint>junit6</providerHint>`.
    - The workbench needs the `org.eclipse.platform` bundle and the `org.eclipse.e4.rcp` feature as extra test dependencies.
-2. **Scenarios 2–4, 1 PR.** Includes the map screenshot and its references.
-3. **Scenarios 5–7, 1 PR.**
-4. **Docs.** Update CLAUDE.md (Test Architecture), the checklist (mark the automated items) and `plan.md` (Phase E done; the suite is a D1 acceptance check).
+2. **Scenarios 2–7, 1 PR (the owner merged two planned PRs into one). Done:** one test class per scenario in `org.mwc.debrief.ui.test`.
+   - `MapScreenshotTest` captures the plot editor's chart canvas at a fixed 1400×900, after fitting the plot to it, for `sample.dpf` and `boat1.rep`. It compares the captures with `rcp/*.png` in the golden folder, at Lite's tolerances. Neither plot shows the Natural Earth coastline, so the coastline variant was dropped; Lite's `MapRenderingTest` covers the coastline.
+   - `ImportRepTest`, `TimeStepTest`, `ToteTest`, `HideUndoTest` and `SensorImportTest` cover scenarios 3–7.
+   - Scenario 5 makes COLLINGWOOD primary and NELSON secondary, because `sample.dpf` opens with NELSON primary.
+   - Scenario 6 hides `NOGO DELTA` from Outline, then uses *Edit → Undo*, instead of changing a colour in *Properties*: a colour dialog is fragile to drive.
+   - Scenario 7 drops the sensor file through the editor's drop handler, because SWTBot cannot drag between views. The import asked no questions when run here, so the sensor wizard stays on the manual checklist.
+3. **Docs. Done:** CLAUDE.md, the checklist (automated items are marked) and `plan.md`.
 
 ## Risks
 
