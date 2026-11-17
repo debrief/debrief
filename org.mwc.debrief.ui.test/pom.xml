@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>org.mwc.debrief</groupId>
+    <artifactId>parent</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+  </parent>
+  <artifactId>org.mwc.debrief.ui.test</artifactId>
+  <version>1.0.0</version>
+  <packaging>eclipse-test-plugin</packaging>
+
+  <!-- SWTBot tests of Debrief NG (the RCP product), run in the Eclipse
+       workbench. Only in the build with -DrcpUiTests=true (see the root pom),
+       under a display: CI runs it with xvfb-run. -->
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.eclipse.tycho</groupId>
+        <artifactId>tycho-surefire-plugin</artifactId>
+        <version>${tycho.version}</version>
+        <configuration>
+          <!-- SWTBot brings JUnit 4 too, so name the JUnit 6 provider -->
+          <providerHint>junit6</providerHint>
+          <useUIHarness>true</useUIHarness>
+          <useUIThread>false</useUIThread>
+          <product>org.mwc.debrief.core.Debrief</product>
+          <application>org.eclipse.ui.ide.workbench</application>
+          <includes>
+            <include>**/*Test.class</include>
+          </includes>
+          <argLine>-Xmx2g -DbuildMode=true -Ddebrief.sampleData=${project.basedir}/../org.mwc.cmap.combined.feature/root_installs/sample_data</argLine>
+          <dependencies>
+            <dependency>
+              <artifactId>org.mwc.debrief.combined.feature</artifactId>
+              <type>eclipse-feature</type>
+            </dependency>
+            <dependency>
+              <artifactId>org.eclipse.platform</artifactId>
+              <type>eclipse-plugin</type>
+            </dependency>
+            <dependency>
+              <artifactId>org.eclipse.e4.rcp</artifactId>
+              <type>eclipse-feature</type>
+            </dependency>
+          </dependencies>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+</project>

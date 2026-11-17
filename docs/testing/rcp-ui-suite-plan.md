@@ -2,7 +2,7 @@
 
 Phase E retired the RCPTT runner and replaced its 22 scripts with a [manual checklist](debrief-ng-smoke-checklist.md). The owner asked for a small automated suite for the Eclipse RCP product (Debrief NG) before Phase D1, because the GeoTools upgrade changes the RCP map ([plan.md](../dependencies/plan.md), [phase-e-options.md](../dependencies/phase-e-options.md)).
 
-This document proposes the tool, the scenarios, how it runs and the order of the work. **Status: proposal, for the owner to approve.**
+This document proposes the tool, the scenarios, how it runs and the order of the work. **Status: approved by the owner (SWTBot and the seven scenarios). The spike is done.**
 
 ## What the suite must do
 
@@ -60,10 +60,10 @@ The rest of the checklist stays manual: preferences, toolbar inventory, chart fe
 
 ## Order of work
 
-1. **Spike, 1 PR.**
-   - Add SWTBot to the target and create the test plugin with scenario 1 only.
-   - Prove that it runs under Tycho Surefire on JUnit 6 and xvfb, locally and in CI.
-   - Stop and report if `junit5_x` does not run on Jupiter 6. The fallback is SWTBot's JUnit 4 runner, for this plugin only.
+1. **Spike, 1 PR. Done:** `org.mwc.debrief.ui.test` runs scenario 1 under Tycho Surefire, JUnit 6 and xvfb.
+   - SWTBot's JUnit 5 extension works on Jupiter 6.
+   - SWTBot also brings JUnit 4, so Tycho chose its JUnit 4 provider and found no tests. The pom now sets `<providerHint>junit6</providerHint>`.
+   - The workbench needs the `org.eclipse.platform` bundle and the `org.eclipse.e4.rcp` feature as extra test dependencies.
 2. **Scenarios 2–4, 1 PR.** Includes the map screenshot and its references.
 3. **Scenarios 5–7, 1 PR.**
 4. **Docs.** Update CLAUDE.md (Test Architecture), the checklist (mark the automated items) and `plan.md` (Phase E done; the suite is a D1 acceptance check).

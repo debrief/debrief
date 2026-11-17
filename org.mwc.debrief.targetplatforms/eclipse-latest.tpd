@@ -169,3 +169,10 @@ location "https://download.eclipse.org/releases/2026-09/202609091000/" {
 	org.opentest4j
 	org.apiguardian.api
 }
+
+// SWTBot, for org.mwc.debrief.ui.test (the RCP UI suite)
+location "https://download.eclipse.org/technology/swtbot/releases/4.3.0/" {
+	org.eclipse.swtbot.eclipse.finder
+	org.eclipse.swtbot.swt.finder
+	org.eclipse.swtbot.junit5_x
+}

@@ -246,6 +246,20 @@
     </plugins>
   </build>
   <profiles>
+    <!-- the Debrief NG UI tests (SWTBot): need a display, so CI runs them in
+         their own job, under xvfb-run. See docs/testing/rcp-ui-suite-plan.md -->
+    <profile>
+      <id>rcp-ui-tests</id>
+      <activation>
+        <property>
+          <name>rcpUiTests</name>
+          <value>true</value>
+        </property>
+      </activation>
+      <modules>
+        <module>org.mwc.debrief.ui.test</module>
+      </modules>
+    </profile>
     <profile>
       <id>mac</id>
       <activation>

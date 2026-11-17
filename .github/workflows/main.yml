@@ -399,3 +399,51 @@ jobs:
           name: lite-ui-test-reports
           path: org.mwc.debrief.lite/temp.folder/reports/
           if-no-files-found: ignore
+
+  # The Debrief NG UI tests (SWTBot, org.mwc.debrief.ui.test): the RCP product's
+  # workbench, driven under xvfb. Separate from the main build, like Lite's UI
+  # tests, while it proves stable. See docs/testing/rcp-ui-suite-plan.md.
+  rcp-ui-tests:
+    name: Debrief NG UI tests
+    needs: changes
+    if: needs.changes.outputs.software == 'true'
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+    steps:
+      - name: Install xvfb
+        run: sudo apt-get -y -o Acquire::Retries=3 update && sudo apt-get -y -o Acquire::Retries=3 install xvfb
+      - name: Checkout
+        uses: actions/checkout@v7
+      - name: Set up Java
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '21'
+      - name: Restore Maven / Tycho cache
+        uses: actions/cache/restore@v6
+        with:
+          path: |
+            ~/.m2/repository
+            ~/.p2
+          key: m2-tycho-${{ hashFiles('org.mwc.debrief.targetplatforms/eclipse-latest.target', '**/pom.xml') }}
+          restore-keys: |
+            m2-tycho-
+      # The tests need every Debrief bundle (they run the whole product), so
+      # build and install them first, without their unit tests (the main
+      # build runs those), then run the UI test plugin against them.
+      - name: Build Debrief NG
+        run: mvn -B install -DskipTests -pl '!org.mwc.debrief.product'
+      - name: Run the Debrief NG UI tests
+        run: >-
+          xvfb-run -a -s "-screen 0 1600x1200x24" mvn -B verify -DrcpUiTests=true
+          -pl org.mwc.debrief.targetplatforms,org.mwc.debrief.ui.test
+      - name: Upload Debrief NG UI test reports
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: rcp-ui-test-reports
+          path: |
+            org.mwc.debrief.ui.test/target/surefire-reports/
+            org.mwc.debrief.ui.test/target/work/data/.metadata/.log
+          if-no-files-found: ignore
