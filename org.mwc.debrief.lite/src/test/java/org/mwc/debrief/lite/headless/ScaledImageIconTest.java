@@ -15,6 +15,8 @@
 
 package org.mwc.debrief.lite.headless;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
@@ -23,13 +25,13 @@ import java.awt.image.BufferedImage;
 
 import org.mwc.debrief.lite.util.ScaledImageIcon;
 
-import junit.framework.TestCase;
+import org.junit.jupiter.api.Test;
 
 /**
  * Ribbon icons must cover the same share of their button whatever the screen
  * zoom: at 200% Windows UI zoom they were drawn half size.
  */
-public class ScaledImageIconTest extends TestCase {
+public class ScaledImageIconTest {
 
 	private static BufferedImage solid(final int size) {
 		final BufferedImage image = new BufferedImage(size, size, BufferedImage.TYPE_INT_ARGB);
@@ -64,13 +66,14 @@ public class ScaledImageIconTest extends TestCase {
 	}
 
 	private static void assertSquare(final String message, final int offset, final int size, final Rectangle actual) {
-		assertNotNull(message + ": nothing painted", actual);
-		assertEquals(message + " x", offset, actual.x, 1);
-		assertEquals(message + " y", offset, actual.y, 1);
-		assertEquals(message + " width", size, actual.width, 2);
-		assertEquals(message + " height", size, actual.height, 2);
+		assertNotNull(actual, message + ": nothing painted");
+		assertEquals(offset, actual.x, 1, message + " x");
+		assertEquals(offset, actual.y, 1, message + " y");
+		assertEquals(size, actual.width, 2, message + " width");
+		assertEquals(size, actual.height, 2, message + " height");
 	}
 
+	@Test
 	public void testSmallImageKeepsItsSizeWhenZoomed() {
 		// a 24 pixel image in the ribbon's 32 unit icon: centred, at its own size
 		final ScaledImageIcon icon = ScaledImageIcon.getIcon(solid(24), new Dimension(32, 32));
@@ -80,6 +83,7 @@ public class ScaledImageIconTest extends TestCase {
 		assertSquare("200%", 8, 48, painted(icon, 2));
 	}
 
+	@Test
 	public void testLargeImageShrinksToFit() {
 		final ScaledImageIcon icon = ScaledImageIcon.getIcon(solid(400), new Dimension(32, 32));
 		assertEquals(new Dimension(32, 32), icon.getDrawnSize());
@@ -87,6 +91,7 @@ public class ScaledImageIconTest extends TestCase {
 		assertSquare("200%", 0, 64, painted(icon, 2));
 	}
 
+	@Test
 	public void testFollowsTheIconSize() {
 		final ScaledImageIcon icon = ScaledImageIcon.getIcon(solid(24), new Dimension(32, 32));
 		icon.setDimension(new Dimension(16, 16));
@@ -95,6 +100,7 @@ public class ScaledImageIconTest extends TestCase {
 		assertSquare("200%", 0, 32, painted(icon, 2));
 	}
 
+	@Test
 	public void testNoImageNoIcon() {
 		assertNull(ScaledImageIcon.getIcon(null, new Dimension(16, 16)));
 	}

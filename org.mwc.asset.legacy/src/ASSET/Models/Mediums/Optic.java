@@ -1,7 +1,6 @@
 
 package ASSET.Models.Mediums;
 
-import ASSET.Util.SupportTesting;
 import MWC.GUI.Editable;
 import MWC.GenericData.WorldDistance;
 
@@ -56,21 +55,6 @@ public class Optic implements ASSET.Models.Vessels.Radiated.RadiatedCharacterist
 			} catch (final java.beans.IntrospectionException e) {
 				return super.getPropertyDescriptors();
 			}
-		}
-	}
-
-	//////////////////////////////////////////////////
-	// testing
-	//////////////////////////////////////////////////
-	public static class OpticTest extends SupportTesting.EditableTesting {
-		/**
-		 * get an object which we can test
-		 *
-		 * @return Editable object which we can check the properties for
-		 */
-		@Override
-		public Editable getEditable() {
-			return new Optic(12, new WorldDistance(12, WorldDistance.NM));
 		}
 	}
 

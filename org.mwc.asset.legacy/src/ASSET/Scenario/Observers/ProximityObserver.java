@@ -25,26 +25,13 @@ import ASSET.NetworkParticipant;
 import ASSET.ParticipantType;
 import ASSET.ScenarioType;
 import ASSET.Models.Decision.TargetType;
-import ASSET.Models.Decision.Movement.RectangleWander;
-import ASSET.Models.Movement.SimpleDemandedStatus;
-import ASSET.Models.Movement.SurfaceMovementCharacteristics;
-import ASSET.Models.Vessels.Surface;
-import ASSET.Participants.Category;
-import ASSET.Participants.DemandedStatus;
-import ASSET.Participants.Status;
-import ASSET.Scenario.CoreScenario;
 import ASSET.Scenario.ScenarioSteppedListener;
 import ASSET.Scenario.Genetic.ScenarioRunner;
 import ASSET.Scenario.Observers.Summary.BatchCollator;
 import ASSET.Scenario.Observers.Summary.BatchCollatorHelper;
-import ASSET.Util.SupportTesting;
 import MWC.Algorithms.LiveData.DataDoublet;
 import MWC.Algorithms.LiveData.IAttribute;
-import MWC.GUI.Editable;
-import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldDistance;
-import MWC.GenericData.WorldLocation;
-import MWC.GenericData.WorldSpeed;
 
 /**
  * listener which keeps tally of how close a particular type of vessel gets to
@@ -83,116 +70,6 @@ public class ProximityObserver extends CoreObserver
 				return super.getPropertyDescriptors();
 			}
 		}
-	}
-
-	// ////////////////////////////////////////////////
-	// and now general test
-	// ////////////////////////////////////////////////
-	public static final class ProxObserverTest extends SupportTesting.EditableTesting {
-		boolean hasStopped = false;
-
-		public ProxObserverTest(final String val) {
-			super(val);
-		}
-
-		/**
-		 * get an object which we can test
-		 *
-		 * @return Editable object which we can check the properties for
-		 */
-		@Override
-		public Editable getEditable() {
-			return new ProximityObserver(null, null, "here", true);
-		}
-
-		public final void testNoDemCourseSpeed() {
-			final WorldLocation topLeft = SupportTesting.createLocation(0, 10000);
-			final WorldLocation bottomRight = SupportTesting.createLocation(10000, 0);
-			final WorldArea theArea = new WorldArea(topLeft, bottomRight);
-			final RectangleWander tw = new RectangleWander(theArea, "rect wander");
-			final RectangleWander tw2 = new RectangleWander(theArea, "rect wander 2");
-
-			final Status stat = new Status(1, 0);
-			stat.setLocation(SupportTesting.createLocation(2000, 4000));
-			stat.setCourse(270);
-			stat.setSpeed(new WorldSpeed(12, WorldSpeed.Kts));
-
-			final Status stat2 = new Status(1, 0);
-			stat2.setLocation(SupportTesting.createLocation(4000, 2000));
-			stat2.setCourse(155);
-			stat2.setSpeed(new WorldSpeed(12, WorldSpeed.Kts));
-
-			final DemandedStatus dem = null;
-
-			final SimpleDemandedStatus ds = (SimpleDemandedStatus) tw.decide(stat, null, dem, null, null, 100);
-
-			assertNotNull("dem returned", ds);
-			// assertEquals("still on old course", 22, ds.getCourse(), 0);
-			// assertEquals("still on old speed",
-			// MWC.Algorithms.Conversions.Kts2Mps(12), ds.getSpeed(), 0);
-
-			final Surface fisher = new Surface(23);
-			fisher.setName("Fisher");
-			fisher.setCategory(
-					new Category(Category.Force.BLUE, Category.Environment.SURFACE, Category.Type.FISHING_VESSEL));
-			fisher.setStatus(stat);
-			fisher.setDecisionModel(tw);
-			fisher.setMovementChars(SurfaceMovementCharacteristics.getSampleChars());
-
-			final Surface fisher2 = new Surface(25);
-			fisher2.setName("Fisher2");
-			fisher2.setCategory(
-					new Category(Category.Force.RED, Category.Environment.SURFACE, Category.Type.FISHING_VESSEL));
-			fisher2.setStatus(stat2);
-			fisher2.setDecisionModel(tw2);
-			fisher2.setMovementChars(SurfaceMovementCharacteristics.getSampleChars());
-
-			final CoreScenario cs = new CoreScenario();
-			cs.setScenarioStepTime(10000);
-			cs.addParticipant(fisher.getId(), fisher);
-			cs.addParticipant(fisher2.getId(), fisher2);
-
-			hasStopped = false;
-
-			// and the stop on proximity observer
-			final StopOnProximityObserver stopper = new StopOnProximityObserver(new TargetType(Category.Force.RED),
-					new TargetType(Category.Force.BLUE), new WorldDistance(0.6, WorldDistance.KM), "stop on proxim",
-					true) {
-				@Override
-				protected void stopScenario() {
-					hasStopped = true;
-					super.stopScenario();
-					System.out.println("stopped at:" + super._myScenario.getTime());
-				}
-			};
-
-			stopper.setup(cs);
-			System.out.println("started at:" + cs.getTime());
-
-			// DebriefReplayObserver dro = new DebriefReplayObserver("c:/temp",
-			// "rect_wander_search.rep", false, "plotter", true);
-			// TrackPlotObserver tpo = new TrackPlotObserver("c:/temp", 300, 300,
-			// "rect_wander_search.png", null, false, true, "tester", true);
-			// dro.setup(cs);
-			// tpo.setup(cs);
-			//
-			// dro.outputThisArea(theArea);
-
-			// now run through to completion
-			while ((cs.getTime() < 120000000) && (!hasStopped)) {
-				cs.step();
-			}
-
-			stopper.tearDown(cs);
-
-			// dro.tearDown(cs);
-			// tpo.tearDown(cs);
-
-			// check that we stopped
-			assertTrue("Proximity sensor failed to notice vessels getting too close to each other", hasStopped);
-
-		}
-
 	}
 
 	// ////////////////////////////////////////////////
@@ -318,25 +195,6 @@ public class ProximityObserver extends CoreObserver
 			_myScenario.stop("Stopped on proximity:" + getName());
 		}
 
-	}
-
-	// ////////////////////////////////////////////////
-	// first stop on proximity tset
-	// ////////////////////////////////////////////////
-	public static final class StopOnProxObserverTest extends SupportTesting.EditableTesting {
-		public StopOnProxObserverTest(final String val) {
-			super(val);
-		}
-
-		/**
-		 * get an object which we can test
-		 *
-		 * @return Editable object which we can check the properties for
-		 */
-		@Override
-		public Editable getEditable() {
-			return new StopOnProximityObserver(null, null, new WorldDistance(12, WorldDistance.NM), "here", true);
-		}
 	}
 
 	/**

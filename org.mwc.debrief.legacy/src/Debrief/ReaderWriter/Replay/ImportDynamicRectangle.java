@@ -89,30 +89,11 @@ import MWC.GenericData.WorldLocation;
 import MWC.Utilities.ReaderWriter.AbstractPlainLineImporter;
 import MWC.Utilities.ReaderWriter.XML.MWCXMLReader;
 import MWC.Utilities.TextFormatting.DebriefFormatDateTime;
-import junit.framework.TestCase;
 
 /**
  * class to parse a rectangle from a line of text
  */
 final class ImportDynamicRectangle extends AbstractPlainLineImporter {
-	public static class TestImport extends TestCase {
-
-		public void testWithLabel() throws ParseException {
-			final String line1 = ";RECT_TRACK: @J \"Dynamic A\" 951212 051000.000 49.7303 0 0 N 4.16989 0 0 E 49.6405 0 0 N 4.39945 0 0 E label";
-			final ImportDynamicRectangle ir = new ImportDynamicRectangle();
-			final DynamicShapeWrapper res = (DynamicShapeWrapper) ir.readThisLine(line1);
-			assertNotNull("read it in", res);
-			assertNotNull(res.getLabel());
-			final RectangleShape rect = (RectangleShape) res.getShape();
-			assertNotNull("found shape", rect);
-			assertEquals("correct tl lat", 49.7303, rect.getCorner_TopLeft().getLat(), 0.0001);
-			assertEquals("Track name isn't correct", "Dynamic A", res.getTrackName());
-			assertEquals("Start DTG isn't correct", 818745000000000l, res.getStartDTG().getMicros());
-			assertEquals("correct tl long", 4.16989, rect.getCorner_TopLeft().getLong(), 0.0001);
-			assertEquals("correct br long", 49.6405, rect.getCornerBottomRight().getLat(), 0.0001);
-			assertEquals("correct br lat", 4.39945, rect.getCornerBottomRight().getLong(), 0.0001);
-		}
-	}
 
 	/**
 	 * the type for this string

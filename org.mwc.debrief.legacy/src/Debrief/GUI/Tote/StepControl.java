@@ -424,67 +424,6 @@ abstract public class StepControl implements Editable, MWC.Utilities.Timer.Timer
 		}
 	}
 
-	//////////////////////////////////////////////////////////////////////////////////////////////////
-	// testing for this class
-	//////////////////////////////////////////////////////////////////////////////////////////////////
-	static public final class testMe extends junit.framework.TestCase {
-		static public final String TEST_ALL_TEST_TYPE = "UNIT";
-
-		public testMe(final String val) {
-			super(val);
-		}
-
-		public final void testMyParams() {
-			StepControl ed = new StepControl(null, null) {
-				@Override
-				protected void doEditPainter() {
-				}
-
-				@Override
-				protected void formatTimeText() {
-				}
-
-				@Override
-				protected PropertiesPanel getPropertiesPanel() {
-					return null;
-				}
-
-				@Override
-				public HiResDate getToolboxEndTime() {
-					return null;
-				}
-
-				@Override
-				public HiResDate getToolboxStartTime() {
-					return null;
-				}
-
-				@Override
-				protected void initForm() {
-				}
-
-				@Override
-				protected void painterIsDefined() {
-				}
-
-				@Override
-				public void setToolboxEndTime(final HiResDate val) {
-				}
-
-				@Override
-				public void setToolboxStartTime(final HiResDate val) {
-				}
-
-				@Override
-				protected void updateForm(final HiResDate DTG) {
-				}
-			};
-
-			editableTesterSupport.testParams(ed, this);
-			ed = null;
-		}
-	}
-
 	/**
 	 * the list of highlighters we know about
 	 */

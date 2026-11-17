@@ -22,7 +22,6 @@ import ASSET.Models.SensorType;
 import ASSET.Models.Detection.DetectionEvent;
 import ASSET.Models.Detection.DetectionList;
 import ASSET.Participants.Category;
-import ASSET.Util.SupportTesting;
 import MWC.GUI.CanvasType;
 import MWC.GUI.Editable;
 import MWC.GUI.Plottable;
@@ -40,22 +39,6 @@ import MWC.GenericData.WorldVector;
  */
 
 public class ScenarioDetectionPainter implements Plottable {
-
-	/****************************************************
-	 * member objects
-	 ***************************************************/
-
-	public static class PainterTest extends SupportTesting.EditableTesting {
-		/**
-		 * get an object which we can test
-		 *
-		 * @return Editable object which we can check the properties for
-		 */
-		@Override
-		public Editable getEditable() {
-			return new ScenarioDetectionPainter(null);
-		}
-	}
 
 	/**
 	 * ************************************************* radiated noise levels

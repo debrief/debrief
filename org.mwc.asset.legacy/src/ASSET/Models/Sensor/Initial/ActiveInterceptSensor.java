@@ -17,32 +17,9 @@ package ASSET.Models.Sensor.Initial;
 
 import ASSET.ParticipantType;
 import ASSET.Models.Environment.EnvironmentType;
-import ASSET.Util.SupportTesting;
 import MWC.GUI.Editable;
 
 public class ActiveInterceptSensor extends BroadbandSensor {
-	////////////////////////////////////////////////////
-	// member objects
-	////////////////////////////////////////////////////
-
-	////////////////////////////////////////////////////
-	// member constructor
-	////////////////////////////////////////////////////
-
-	//////////////////////////////////////////////////
-	// property testing
-	//////////////////////////////////////////////////
-	public static class ActiveInterceptTest extends SupportTesting.EditableTesting {
-		/**
-		 * get an object which we can test
-		 *
-		 * @return Editable object which we can check the properties for
-		 */
-		@Override
-		public Editable getEditable() {
-			return new ActiveInterceptSensor(12);
-		}
-	}
 
 	////////////////////////////////////////////////////
 	// the editor object

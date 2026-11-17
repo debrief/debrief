@@ -39,21 +39,6 @@ import MWC.GenericData.WorldLocation;
 
 public final class ParticipantVariance extends XMLVarianceList {
 
-	// ////////////////////////////////////////////////////////////////////////////////////////////////
-	// testing for this class
-	// ////////////////////////////////////////////////////////////////////////////////////////////////
-	public static final class PartVarianceTest extends junit.framework.TestCase {
-
-		public PartVarianceTest(final String val) {
-			super(val);
-		}
-
-		public final void testGenerate() {
-
-		}
-
-	}
-
 	/**
 	 * human=readable string used to name the part id
 	 */

@@ -9,7 +9,6 @@ import ASSET.Participants.DemandedStatus;
 import ASSET.Participants.Status;
 import ASSET.Scenario.ScenarioActivityMonitor;
 import ASSET.Util.RandomGenerator;
-import ASSET.Util.SupportTesting;
 import MWC.GUI.Editable;
 import MWC.GenericData.WorldDistance;
 import MWC.GenericData.WorldLocation;
@@ -31,69 +30,6 @@ import MWC.GenericData.WorldVector;
  *******************************************************************************/
 
 public class Wander extends CoreDecision implements Response, java.io.Serializable {
-
-	/***********************************************************************
-	 * member variables
-	 ***********************************************************************/
-
-	public static class Wander2Test extends SupportTesting.EditableTesting {
-		public Wander2Test(final String val) {
-			super(val);
-		}
-
-		/**
-		 * get an object which we can test
-		 *
-		 * @return Editable object which we can check the properties for
-		 */
-		@Override
-		public Editable getEditable() {
-			final Wander newWander = new Wander(createLocation(0, 0), new WorldDistance(21, WorldDistance.KM));
-			newWander.setName("testing wander");
-			return newWander;
-		}
-
-		/**
-		 * test we handle missing demanded speed
-		 */
-		public final void testNoDemCourseSpeed() {
-			final WorldLocation origin = SupportTesting.createLocation(0, 0);
-			final Wander tw = new Wander(origin, new WorldDistance(21, WorldDistance.KM));
-
-			final Status stat = new Status(1, 0);
-			stat.setLocation(origin.add(new WorldVector(100, WorldDistance.METRES, 0)));
-			stat.setCourse(22);
-			stat.setSpeed(new WorldSpeed(12, WorldSpeed.M_sec));
-
-			final DemandedStatus dem = null;
-
-			final SimpleDemandedStatus ds = (SimpleDemandedStatus) tw.decide(stat, null, dem, null, null, 100);
-
-			assertNotNull("dem returned", ds);
-			assertEquals("still on old course", 22, ds.getCourse(), 0);
-			assertEquals("still on old speed", 12, ds.getSpeed(), 0);
-		}
-
-		public final void testWithDemCourseSpeed() {
-			final WorldLocation origin = SupportTesting.createLocation(0, 0);
-			final Wander tw = new Wander(origin, new WorldDistance(21, WorldDistance.KM));
-			tw.setSpeed(new WorldSpeed(44, WorldSpeed.M_sec));
-			tw.setHeight(new WorldDistance(45, WorldDistance.METRES));
-
-			final Status stat = new Status(1, 0);
-			stat.setLocation(origin.add(new WorldVector(100, WorldDistance.METRES, 0)));
-			stat.setCourse(22);
-			stat.setSpeed(new WorldSpeed(12, WorldSpeed.M_sec));
-
-			final DemandedStatus dem = null;
-
-			final SimpleDemandedStatus ds = (SimpleDemandedStatus) tw.decide(stat, null, dem, null, null, 100);
-
-			assertNotNull("dem returned", ds);
-			assertEquals("new demanded Height", 45, ds.getHeight(), 0);
-			assertEquals("new demanded speed", 44, ds.getSpeed(), 0);
-		}
-	}
 
 	static public final class WanderInfo extends MWC.GUI.Editable.EditorType {
 

@@ -15,17 +15,7 @@
 
 package ASSET.Models.Sensor.Cookie;
 
-import ASSET.Models.Detection.DetectionEvent;
-import ASSET.Models.Environment.EnvironmentType;
-import ASSET.Models.Environment.SimpleEnvironment;
-import ASSET.Models.Sensor.SensorList;
-import ASSET.Participants.Status;
-import ASSET.Util.SupportTesting;
-import MWC.GUI.Editable;
 import MWC.GenericData.WorldDistance;
-import MWC.GenericData.WorldLocation;
-import MWC.GenericData.WorldSpeed;
-import MWC.GenericData.WorldVector;
 
 /**
  * simple sensor that uses cookie cutter model for detections
@@ -64,68 +54,6 @@ public class PlainCookieSensor extends TypedCookieSensor {
 			}
 		}
 
-	}
-
-	//////////////////////////////////////////////////////////////////////////////////////////////////
-	// testing for this class
-	//////////////////////////////////////////////////////////////////////////////////////////////////
-	static public class PlainCookieTest extends SupportTesting.EditableTesting {
-		static public final String TEST_ALL_TEST_TYPE = "UNIT";
-
-		public PlainCookieTest(final String val) {
-			super(val);
-		}
-
-		/**
-		 * get an object which we can test
-		 *
-		 * @return Editable object which we can check the properties for
-		 */
-		@Override
-		public Editable getEditable() {
-			return new PlainCookieSensor(1, new WorldDistance(12, WorldDistance.DEGS));
-		}
-
-		public void testPlainSensor() {
-
-			// reset the earth model
-			WorldLocation.setModel(new MWC.Algorithms.EarthModels.CompletelyFlatEarth());
-
-			// ok, create the sensor
-			final PlainCookieSensor ps = new PlainCookieSensor(12, new WorldDistance(12, WorldDistance.DEGS));
-
-			// now the objects
-			final WorldLocation l1 = new WorldLocation(0, 0, 0);
-			final WorldLocation l2 = l1.add(new WorldVector(0, 10, 0));
-			final WorldLocation l3 = l1.add(new WorldVector(0, 13, 0));
-
-			final ASSET.Models.Vessels.Surface su1 = new ASSET.Models.Vessels.Surface(12);
-			final Status theStat1 = new Status(12, 0);
-			theStat1.setLocation(l1);
-			theStat1.setSpeed(new WorldSpeed(12, WorldSpeed.Kts));
-			su1.setStatus(theStat1);
-			final SensorList sl = new SensorList();
-			sl.add(ps);
-
-			final ASSET.Models.Vessels.Surface su2 = new ASSET.Models.Vessels.Surface(14);
-			final Status theStat2 = new Status(12, 0);
-			theStat2.setLocation(l2);
-			theStat2.setSpeed(new WorldSpeed(12, WorldSpeed.Kts));
-			su2.setStatus(theStat2);
-
-			final EnvironmentType env = new SimpleEnvironment(1, 1, 1);
-
-			DetectionEvent de = ps.detectThis(env, su1, su2, 1000, null);
-
-			assertNotNull("Made a detection", de);
-
-			su2.getStatus().setLocation(l3);
-
-			de = ps.detectThis(env, su1, su2, 1000, null);
-
-			assertNull("Not made a detection", de);
-
-		}
 	}
 
 	/**

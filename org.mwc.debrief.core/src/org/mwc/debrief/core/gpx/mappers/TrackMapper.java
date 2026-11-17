@@ -14,9 +14,6 @@
  *******************************************************************************/
 package org.mwc.debrief.core.gpx.mappers;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Enumeration;
@@ -45,15 +42,11 @@ import com.topografix.gpx.v11.TrkType;
 import com.topografix.gpx.v11.TrksegType;
 import com.topografix.gpx.v11.WptType;
 
-import Debrief.ReaderWriter.Replay.ImportReplay;
 import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.TrackWrapper;
 import Debrief.Wrappers.Track.TrackSegment;
 import MWC.GUI.Editable;
-import MWC.GUI.Layers;
 import MWC.GUI.Properties.LocationPropertyEditor;
-import MWC.Utilities.ReaderWriter.PlainImporter.MonitorProvider;
-import junit.framework.TestCase;
 
 /**
  * @author Aravind R. Yarram <yaravind@gmail.com>
@@ -67,89 +60,6 @@ import junit.framework.TestCase;
  *           </pre>
  */
 public class TrackMapper implements DebriefJaxbContextAware {
-	public static class TestGPXExport extends TestCase {
-		private static TrackWrapper getData(final String name) throws FileNotFoundException {
-			// get our sample data-file
-			final ImportReplay importer = new ImportReplay();
-			final Layers theLayers = new Layers();
-			final String fName = "../org.mwc.cmap.combined.feature/root_installs/sample_data/" + name;
-			final File inFile = new File(fName);
-			assertTrue("input file exists", inFile.exists());
-			final FileInputStream is = new FileInputStream(fName);
-			importer.importThis(fName, is, theLayers, new MonitorProvider() {
-
-				@Override
-				public void done() {
-					// not implemented
-				}
-
-				@Override
-				public void init(final String fileName, final int length) {
-					System.out.println("Loading " + fileName);
-				}
-
-				@Override
-				public void progress(final int _progress) {
-					// System.out.println(_progress);
-				}
-			});
-
-			// sort out the sensors
-			importer.storePendingSensors();
-
-			// get the sensor track
-			final TrackWrapper track = (TrackWrapper) theLayers.elements().nextElement();
-
-			return track;
-		}
-
-		public void testTrackExport() throws FileNotFoundException {
-			final List<TrackWrapper> tracks = new ArrayList<TrackWrapper>();
-
-			final TrackMapper mapper = new TrackMapper();
-
-			List<Trk> res = mapper.toGpx10(tracks);
-
-			assertEquals("empty list", 0, res.size());
-
-			final TrackWrapper trk1 = getData("boat1.rep");
-
-			tracks.add(trk1);
-
-			res = mapper.toGpx10(tracks);
-
-			assertEquals("has track", 1, res.size());
-
-			final TrackWrapper trk2 = getData("boat2.rep");
-
-			tracks.add(trk2);
-
-			res = mapper.toGpx10(tracks);
-
-			assertEquals("has track", 2, res.size());
-
-			// check the data
-			final Trk firstTrack = res.get(0);
-			final Trkseg seg = firstTrack.getTrkseg().iterator().next();
-			final Iterator<Trkpt> tIter = seg.getTrkpt().iterator();
-			final Trkpt fix1 = tIter.next();
-
-			assertEquals("correct lat", 22.186286d, fix1.getLat().doubleValue(), 0.000001);
-			assertEquals("correct lon", -21.697880, fix1.getLon().doubleValue(), 0.000001);
-			assertEquals("correct course", 269.7d, fix1.getCourse().doubleValue(), 0.1);
-			assertEquals("correct speed", MWC.Algorithms.Conversions.Kts2Mps(2d), fix1.getSpeed().doubleValue(), 0.001);
-			assertEquals("correct time", "1995-12-12T05:00:00Z", fix1.getTime().toString());
-
-			final Trkpt fix2 = tIter.next();
-
-			assertEquals("correct lat", 22.186272d, fix2.getLat().doubleValue(), 0.000001);
-			assertEquals("correct lon", -21.700827, fix2.getLon().doubleValue(), 0.000001);
-			assertEquals("correct course", 269.7d, fix2.getCourse().doubleValue(), 0.1);
-			assertEquals("correct speed", MWC.Algorithms.Conversions.Kts2Mps(2d), fix2.getSpeed().doubleValue(), 0.001);
-			assertEquals("correct time", "1995-12-12T05:01:00Z", fix2.getTime().toString());
-
-		}
-	}
 
 	private static final ObjectFactory GPX_1_0_OBJ_FACTORY = new ObjectFactory();
 	private final TrackSegmentMapper segmentMapper = new TrackSegmentMapper();

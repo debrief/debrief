@@ -87,24 +87,6 @@ public final class PainterManager implements StepperListener, Editable {
 		}
 	}
 
-	//////////////////////////////////////////////////////////////////////////////////////////////////
-	// testing for this class
-	//////////////////////////////////////////////////////////////////////////////////////////////////
-	static public final class testMe extends junit.framework.TestCase {
-		static public final String TEST_ALL_TEST_TYPE = "UNIT";
-
-		public testMe(final String val) {
-			super(val);
-		}
-
-		public final void testMyParams() {
-			final StepControl stepper = new Debrief.GUI.Tote.Swing.SwingStepControl(null, null, null, null, null, null);
-			Editable ed = new PainterManager(stepper);
-			Editable.editableTesterSupport.testParams(ed, this);
-			ed = null;
-		}
-	}
-
 	///////////////////////////////////
 	// member variables
 	//////////////////////////////////

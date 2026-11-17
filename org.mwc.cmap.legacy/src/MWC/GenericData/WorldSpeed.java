@@ -21,59 +21,6 @@ import java.io.Serializable;
  * class which represents a speed as a value plus a set of units
  */
 final public class WorldSpeed implements Serializable {
-	// ////////////////////////////////////////////////////////////////////////////////////////////////
-	// testing for this class
-	// ////////////////////////////////////////////////////////////////////////////////////////////////
-	static public final class SpeedTest extends junit.framework.TestCase {
-		static public final String TEST_ALL_TEST_TYPE = "UNIT";
-
-		public SpeedTest(final String val) {
-			super(val);
-		}
-
-		public final void testStrings() {
-			WorldSpeed da = new WorldSpeed(12, Kts);
-			String res = da.toString();
-			assertEquals("correct output format", res, "12.0 kts");
-
-			da = new WorldSpeed(1.75, M_sec);
-			res = da.toString();
-			assertEquals("correct output format", res, "1.75 m/s");
-		}
-
-		public final void testWorldDistanceUnits() {
-			final WorldSpeed w1 = new WorldSpeed(1, WorldSpeed.M_sec);
-			assertEquals("m sec correct", w1.getValueIn(WorldSpeed.M_sec), 1d, 0.000001);
-
-			final WorldSpeed w2 = new WorldSpeed(1, WorldSpeed.Kts);
-			assertEquals("correct value stored", 1, w2._mySpeed, 0.001);
-			assertEquals("correct unts stored", WorldSpeed.Kts, w2._myUnits, 0.001);
-			assertEquals("m/sec correct", w2.getValueIn(WorldSpeed.M_sec), 0.5144444, 0.000001);
-			assertEquals("kts correct", w2.getValueIn(WorldSpeed.Kts), 1, 0.000001);
-
-			final WorldSpeed w3 = new WorldSpeed(1, WorldSpeed.ft_sec);
-			assertEquals("m/sec correct", 0.3048, w3.getValueIn(WorldSpeed.M_sec), 0.000001);
-			assertEquals("ft/sec correct", 1, w3.getValueIn(WorldSpeed.ft_sec), 0.000001);
-
-			final WorldSpeed w4 = new WorldSpeed(1, WorldSpeed.ft_min);
-			assertEquals("m/sec correct", 0.00508, w4.getValueIn(WorldSpeed.M_sec), 0.000001);
-			assertEquals("ft/sec correct", 1, w4.getValueIn(WorldSpeed.ft_min), 0.000001);
-
-			assertEquals("Back to kts correct", w2.getValueIn(WorldSpeed.Kts), 1, 0.000001);
-
-			final WorldSpeed w5 = new WorldSpeed(w3);
-			assertEquals("Copy constructor", w5.getValueIn(WorldSpeed.ft_sec), 1, 0.000001);
-
-			assertEquals("retrieve m/s label", WorldSpeed.getLabelFor(WorldSpeed.M_sec), "m/s");
-			assertEquals("retrieve ft/s label", WorldSpeed.getLabelFor(WorldSpeed.ft_sec), "ft/s");
-			assertEquals("retrieve kts label", WorldSpeed.getLabelFor(WorldSpeed.Kts), "kts");
-
-			// test conversions
-			final WorldDistance w6 = new WorldDistance(10, WorldDistance.YARDS);
-			assertEquals("valid units conversion", 30, w6.getValueIn(WorldDistance.FT), 0.001);
-
-		}
-	}
 
 	// ///////////////////////////////////////////////////////////////
 	// member variables

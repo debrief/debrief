@@ -19,9 +19,6 @@ import java.util.Enumeration;
 import java.util.HashMap;
 
 import ASSET.ScenarioType;
-import ASSET.Models.Vessels.SSN;
-import ASSET.Scenario.CoreScenario;
-import ASSET.Util.SupportTesting;
 import MWC.GUI.Editable;
 import MWC.GUI.Shapes.Symbols.PlainSymbol;
 import MWC.GenericData.Duration;
@@ -31,74 +28,6 @@ import MWC.GenericData.Duration;
  */
 
 public class ScenarioLayer extends MWC.GUI.BaseLayer implements ASSET.Scenario.ParticipantsChangedListener {
-
-	public static class LayerListenerTest extends SupportTesting.EditableTesting {
-		/**
-		 * get an object which we can test
-		 *
-		 * @return Editable object which we can check the properties for
-		 */
-		@Override
-		public Editable getEditable() {
-			final SSN ssn = new SSN(12);
-			final Editable listener = new ScenarioParticipantWrapper(ssn, null);
-			return listener;
-		}
-	}
-
-	//////////////////////////////////////////////////
-	// testing support
-	//////////////////////////////////////////////////
-	public static class LayerTest extends SupportTesting.EditableTesting {
-		/**
-		 * get an object which we can test
-		 *
-		 * @return Editable object which we can check the properties for
-		 */
-		@Override
-		public Editable getEditable() {
-			final ScenarioLayer layer = new ScenarioLayer();
-			final CoreScenario cs = new CoreScenario();
-			if (cs.getName() == null) {
-				cs.setName("Scenario");
-			}
-			layer.setScenario(cs);
-			layer.setStepTime(new Duration(12, Duration.SECONDS));
-			layer.setScenarioStepTime(new Duration(12, Duration.SECONDS));
-			return layer;
-		}
-
-		public void testSetScenario() {
-			final ScenarioType scen1 = new CoreScenario();
-			scen1.setName("test scenario");
-			scen1.createNewParticipant(ASSET.Participants.Category.Type.SUBMARINE);
-			scen1.createNewParticipant(ASSET.Participants.Category.Type.FRIGATE);
-
-			super.assertEquals("Wrong number of participants", 2, scen1.getListOfParticipants().length);
-
-			// check it doesn't have any listeners
-
-			// sort out the listeners
-			final ScenarioLayer sl = new ScenarioLayer();
-			sl.setScenario(scen1);
-
-			// check the listeners are assigned
-			super.assertEquals("Wrong number of part listeners", 2, sl.getData().size());
-
-			// and try another
-			final ScenarioType scen2 = new CoreScenario();
-			scen2.setName("test scenario 2");
-			scen2.createNewParticipant(ASSET.Participants.Category.Type.SUBMARINE);
-			scen2.createNewParticipant(ASSET.Participants.Category.Type.FRIGATE);
-			scen2.createNewParticipant(ASSET.Participants.Category.Type.FRIGATE);
-
-			sl.setScenario(scen2);
-
-			// check there are no listeners to the old sceanrio
-			super.assertEquals("Wrong number of part listeners", 3, sl.getData().size());
-
-		}
-	}
 
 	/***************************************************************
 	 * editable data for this plotter

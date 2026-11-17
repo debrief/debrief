@@ -15,33 +15,39 @@
 
 package org.mwc.debrief.lite.headless;
 
+import static org.junit.jupiter.api.Assertions.*;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.io.DataInputStream;
 import java.io.InputStream;
 
 import org.mwc.debrief.lite.LiteLauncher;
 
-import junit.framework.TestCase;
+import org.junit.jupiter.api.Test;
 
 /**
  * The launcher that tells users on an old Java to install Java 21, instead of
  * failing with UnsupportedClassVersionError.
  */
-public class LiteLauncherTest extends TestCase {
+public class LiteLauncherTest {
 
 	/** the class file major version for Java 8 */
 	private static final int JAVA_8_CLASS_FILE = 52;
 
+	@Test
 	public void testLauncherLoadsOnJava8() throws Exception {
 		// the whole point: the launcher must load on a Java that cannot load the
 		// rest of Lite
 		try (InputStream in = LiteLauncher.class.getResourceAsStream("LiteLauncher.class");
 				DataInputStream data = new DataInputStream(in)) {
-			assertEquals("magic", 0xCAFEBABE, data.readInt());
+			assertEquals(0xCAFEBABE, data.readInt(), "magic");
 			data.readUnsignedShort(); // minor version
-			assertEquals("class file version", JAVA_8_CLASS_FILE, data.readUnsignedShort());
+			assertEquals(JAVA_8_CLASS_FILE, data.readUnsignedShort(), "class file version");
 		}
 	}
 
+	@Test
 	public void testReadsJavaVersions() throws Exception {
 		final java.lang.reflect.Method featureVersion = LiteLauncher.class.getDeclaredMethod("featureVersion",
 				String.class);

@@ -101,24 +101,6 @@ import interfaces.IEarthModelProvider;
  */
 public class CorePlugin extends AbstractUIPlugin implements ClipboardOwner, PreferenceProvider {
 
-	static public final class ClipboardTest extends junit.framework.TestCase {
-		public void testNearGreenwich() {
-			String clipboard = "Location\t 26\u00c2\u00b008'04.55\"N 021\u00c2\u00b056'56.52\"E";
-			WorldLocation fromClipboard = fromClipboard(clipboard);
-			assertEquals("Expected 26 degrees, 08 minutes, 0.455 seconds north", 26.134597222222222,
-					fromClipboard.getLat());
-			assertEquals("Expected 21 degrees, 56 minutes, 56.52 seconds north", 21.949033333333333,
-					fromClipboard.getLong());
-
-			clipboard = "Location Attribute with spaces\t 26\u00c2\u00b008'04.55\"N 021\u00c2\u00b056'56.52\"E";
-			fromClipboard = fromClipboard(clipboard);
-			assertEquals("Expected 26 degrees, 08 minutes, 0.455 seconds north", 26.134597222222222,
-					fromClipboard.getLat());
-			assertEquals("Expected 21 degrees, 56 minutes, 56.52 seconds north", 21.949033333333333,
-					fromClipboard.getLong());
-		}
-	}
-
 	/**
 	 * how many UI operations to remember in the undo buffer
 	 *

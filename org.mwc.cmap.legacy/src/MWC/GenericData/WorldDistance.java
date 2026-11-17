@@ -48,59 +48,6 @@ public class WorldDistance implements Serializable {
 		}
 	}
 
-	//////////////////////////////////////////////////////////////////////////////////////////////////
-	// testing for this class
-	//////////////////////////////////////////////////////////////////////////////////////////////////
-	static public final class DistWithUnitsTest extends junit.framework.TestCase {
-		static public final String TEST_ALL_TEST_TYPE = "UNIT";
-
-		public DistWithUnitsTest(final String val) {
-			super(val);
-		}
-
-		public final void testEquals() {
-			final WorldDistance da = new WorldDistance(60, WorldDistance.MINUTES);
-			final WorldDistance db = new WorldDistance(1, WorldDistance.DEGS);
-			assertEquals("distances should be equal", da, db);
-		}
-
-		public final void testStrings() {
-			WorldDistance da = new WorldDistance(12, METRES);
-			String res = da.toString();
-			assertEquals("correct output format", res, "12 m");
-
-			da = new WorldDistance(1.75, KM);
-			res = da.toString();
-			assertEquals("correct output format, received:" + res, res, "1.75 km");
-		}
-
-		public final void testWorldDistanceUnits() {
-			final WorldDistance w1 = new WorldDistance(1, WorldDistance.NM);
-			assertEquals("Minutes correct", w1.getValueIn(WorldDistance.NM), 1d, 0.000001);
-
-			final WorldDistance w2 = new WorldDistance(1852 * 2, WorldDistance.METRES);
-			assertEquals("Metres correct", w2.getValueIn(WorldDistance.NM), 2d, 0.000001);
-
-			final WorldDistance w3 = new WorldDistance(5, WorldDistance.DEGS);
-			assertEquals("Degrees correct", w3.getValueIn(WorldDistance.NM), 300d, 0.000001);
-
-			final WorldDistance w4 = new WorldDistance(1.852 / 22, WorldDistance.KM);
-			assertEquals("Km correct", w4.getValueIn(WorldDistance.NM), 1 / 22d, 0.000001);
-
-			assertEquals("Back to Metres correct", w2.getValueIn(WorldDistance.METRES), 1852 * 2d, 0.000001);
-
-			final WorldDistance w5 = new WorldDistance(w4);
-			assertEquals("Copy constructor", w5.getValueIn(WorldDistance.NM), 1 / 22d, 0.000001);
-
-			assertEquals("retrieve metres label", WorldDistance.getLabelFor(WorldDistance.METRES), "m");
-			assertEquals("retrieve degs label", WorldDistance.getLabelFor(WorldDistance.DEGS), "degs");
-
-			final WorldDistance w6 = new WorldDistance(2000, WorldDistance.YARDS);
-			assertEquals("Kyds correct", w6.getValueIn(WorldDistance.KYDS), 2d, 0.000001);
-
-		}
-	}
-
 	/**
 	 *
 	 */

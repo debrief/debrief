@@ -34,7 +34,6 @@ import MWC.GenericData.WorldDistance;
 import MWC.GenericData.WorldLocation;
 import MWC.GenericData.WorldSpeed;
 import MWC.GenericData.WorldVector;
-import junit.framework.TestCase;
 
 public class NMEAObserver extends RecordStatusToFileObserverType {
 
@@ -67,23 +66,7 @@ public class NMEAObserver extends RecordStatusToFileObserverType {
 		}
 	}
 
-	public static class TestConvert extends TestCase {
-		public static void testPack() {
-			assertEquals("valid string", "0000.0000,N", pack(0, true));
-			assertEquals("valid string", "00000.0000,E", pack(0, false));
-
-			assertEquals("valid string", "4530.0000,N", pack(45.5, true));
-			assertEquals("valid string", "04530.0000,E", pack(45.5, false));
-
-			assertEquals("valid string", "0000.6000,S", pack(-0.01, true));
-			assertEquals("valid string", "00000.6000,W", pack(-0.01, false));
-
-			assertEquals("valid string", "4530.0000,S", pack(-45.5, true));
-			assertEquals("valid string", "04530.0000,W", pack(-45.5, false));
-		}
-	}
-
-	private final static String pack(final double val, final boolean isLat) {
+	final static String pack(final double val, final boolean isLat) {
 		final boolean isPos = val >= 0;
 		final double aVal = Math.abs(val);
 

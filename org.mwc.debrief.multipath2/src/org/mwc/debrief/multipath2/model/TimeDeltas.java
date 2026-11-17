@@ -38,48 +38,6 @@ import MWC.Utilities.ReaderWriter.XML.MWCXMLReader;
  *
  */
 public class TimeDeltas {
-	// /////////////////////////////////////////////////
-	// and the testing goes here
-	// /////////////////////////////////////////////////
-	public static class IntervalTest extends junit.framework.TestCase {
-		public static final String TEST_TIMES_FILE = "..//org.mwc.debrief.multipath2/src/org/mwc/debrief/multipath2/model/test_times.csv";
-
-		public void testMe() {
-			final TimeDeltas times = new TimeDeltas();
-
-			assertEquals("not got data", null, times._myData);
-
-			// and missing file
-			try {
-				times.load("../org.mwc.debrief.multipath2/src/org/mwc/debrief/multipath/model2/test_times_bad.csv");
-				fail("should not have found file");
-			} catch (final ParseException e) {
-				fail("wrong number format");
-			} catch (final IOException e) {
-				// ok - this should have been thrown
-			} catch (final DataFormatException e) {
-				fail("bad data");
-			}
-
-			assertEquals("still not got data", null, times._myData);
-
-			try {
-				times.load(TEST_TIMES_FILE);
-			} catch (final ParseException e) {
-				fail("wrong number format");
-			} catch (final IOException e) {
-				fail("unable to read lines");
-			} catch (final DataFormatException e) {
-				fail("bad data");
-			}
-
-			assertEquals("got correct num entries", 379, times._myData.size());
-
-			assertNotNull("return iterator", times.iterator());
-
-		}
-
-	}
 
 	public static class Observation {
 		private final HiResDate time;
@@ -99,7 +57,7 @@ public class TimeDeltas {
 		}
 	}
 
-	private Vector<Observation> _myData;
+	Vector<Observation> _myData;
 
 	public HiResDate getEndTime() {
 		return _myData.lastElement().getDate();

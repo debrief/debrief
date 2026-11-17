@@ -15,6 +15,8 @@
 
 package org.mwc.debrief.lite.tests;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 import java.util.Arrays;
 
 import javax.swing.JComboBox;
@@ -23,6 +25,8 @@ import javax.swing.JSlider;
 
 import org.mwc.debrief.lite.DebriefLiteApp;
 import org.mwc.debrief.lite.utils.TestUtils;
+
+import org.junit.jupiter.api.Test;
 import org.pushingpixels.flamingo.api.common.JCommandButton;
 import org.pushingpixels.flamingo.api.common.JCommandButton.CommandButtonKind;
 import org.pushingpixels.flamingo.api.common.JCommandButtonStrip;
@@ -42,7 +46,9 @@ public class TestMenus extends BaseTestCase
 {
 
   final static String[] disabledButtons = new String[] {"Close"};
-  public void testLiteMenu() {
+
+	@Test
+	public void testLiteMenu() {
     JRibbonFrame ribbonFrame = DebriefLiteApp.getInstance().getApplicationFrame();
     assertEquals(ribbonFrame.getRibbon().getTaskCount(),5);
     assertEquals(TestUtils.getTask(0).getTitle(),"Lite");

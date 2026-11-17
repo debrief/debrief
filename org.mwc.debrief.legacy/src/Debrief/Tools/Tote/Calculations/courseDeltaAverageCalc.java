@@ -15,7 +15,7 @@ public class courseDeltaAverageCalc extends courseRateCalc implements TimeWindow
 	////////////////////////////////////////////////////////////
 	public courseDeltaAverageCalc() {
 		super(new DecimalFormat("000.0"), "Absolute Course Rate", "degs/sec");
-		windowSizeInMilli = DeltaRateToteCalcImplementation.DeltaRateToteCalcImplementationTest.TIME_WINDOW;
+		windowSizeInMilli = DeltaRateToteCalcImplementation.TIME_WINDOW;
 	}
 
 	/////////////////////////////////////////////////////////////
@@ -24,7 +24,7 @@ public class courseDeltaAverageCalc extends courseRateCalc implements TimeWindow
 
 	public courseDeltaAverageCalc(final DecimalFormat decimalFormat, final String name, final String unit) {
 		super(decimalFormat, name, unit);
-		windowSizeInMilli = DeltaRateToteCalcImplementation.DeltaRateToteCalcImplementationTest.TIME_WINDOW;
+		windowSizeInMilli = DeltaRateToteCalcImplementation.TIME_WINDOW;
 	}
 
 	@Override

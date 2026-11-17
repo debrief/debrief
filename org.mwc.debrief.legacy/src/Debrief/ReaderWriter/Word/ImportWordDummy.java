@@ -14,9 +14,6 @@
  *******************************************************************************/
 package Debrief.ReaderWriter.Word;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.DateFormat;
@@ -49,11 +46,10 @@ import MWC.TacticalData.NarrativeWrapper;
 import MWC.Utilities.Errors.Trace;
 import MWC.Utilities.ReaderWriter.XML.LayerHandler;
 import MWC.Utilities.TextFormatting.GMTDateFormat;
-import junit.framework.TestCase;
 
 public class ImportWordDummy {
 
-	private static class FCSEntry {
+	static class FCSEntry {
 		final double brgDegs;
 		final double rangYds;
 		final String tgtName;
@@ -127,146 +123,6 @@ public class ImportWordDummy {
 			}
 
 		}
-	}
-
-	public static class TestImportDummyWord extends TestCase {
-		private final static String doc_path = "../org.mwc.cmap.combined.feature/root_installs/sample_data/other_formats/narrative.doc";
-
-		List<String> tstMessages = new ArrayList<String>();
-
-		private FixWrapper createF(final HiResDate dtg) {
-
-			final WorldLocation loc = new WorldLocation(2, 2, 2);
-			final Fix newF = new Fix(dtg, loc, 0, 0);
-			final FixWrapper fw = new FixWrapper(newF);
-			return fw;
-		}
-
-		public void testImportEmptyLayers() throws FileNotFoundException {
-			final String testFile = doc_path;
-			final File testI = new File(testFile);
-			assertTrue(testI.exists());
-
-			final InputStream is = new FileInputStream(testI);
-
-			final Layers tLayers = new Layers();
-
-			final ImportWordDummy importer = new ImportWordDummy(tLayers);
-			importer.importThis(testFile, is);
-
-			// hmmm, how many tracks
-			assertEquals("got new tracks", 1, tLayers.size());
-		}
-
-		public void testImportHostPresentNoFixes() throws FileNotFoundException {
-			tstMessages.clear();
-			final String testFile = doc_path;
-			final File testI = new File(testFile);
-			assertTrue(testI.exists());
-
-			final InputStream is = new FileInputStream(testI);
-
-			final Layers tLayers = new Layers();
-
-			final TrackWrapper track = new TrackWrapper();
-			track.setName("Nelson");
-			tLayers.addThisLayer(track);
-
-			final ImportWordDummy importer = new ImportWordDummy(tLayers) {
-
-				@Override
-				public void logError(final String msg, final Exception e) {
-					tstMessages.add(msg);
-				}
-
-			};
-			importer.importThis(testFile, is);
-
-			// hmmm, how many tracks
-			assertEquals("got new tracks", 2, tLayers.size());
-
-			assertEquals("received messages", 19, tstMessages.size());
-		}
-
-		public void testImportHostPresentWithFixes() throws FileNotFoundException, ParseException {
-			tstMessages.clear();
-			final String testFile = doc_path;
-			final File testI = new File(testFile);
-			assertTrue(testI.exists());
-
-			final DateFormat df = new GMTDateFormat("yyyy,MM,dd,HH:mm:ss");
-
-			final InputStream is = new FileInputStream(testI);
-
-			final Layers tLayers = new Layers();
-
-			final TrackWrapper track = new TrackWrapper();
-			track.setName("Nelson");
-			tLayers.addThisLayer(track);
-
-			track.add(createF(new HiResDate(df.parse("1995,12,12,06:21:32"))));
-			track.add(createF(new HiResDate(df.parse("1995,12,12,06:34:32"))));
-			track.add(createF(new HiResDate(df.parse("1995,12,12,06:56:32"))));
-
-			final ImportWordDummy importer = new ImportWordDummy(tLayers) {
-
-				@Override
-				public void logError(final String msg, final Exception e) {
-					tstMessages.add(msg);
-				}
-
-			};
-			importer.importThis(testFile, is);
-
-			// hmmm, how many tracks
-			assertEquals("got new tracks", 4, tLayers.size());
-
-			assertEquals("received messages", 1, tstMessages.size());
-		}
-
-		public void testNameHandler() {
-			final Layers layers = new Layers();
-			final TrackWrapper track = new TrackWrapper();
-			track.setName("Nelson");
-			layers.addThisLayer(track);
-			final TrackWrapper track2 = new TrackWrapper();
-			track2.setName("Iron Duck");
-			layers.addThisLayer(track2);
-			final ImportWordDummy iw = new ImportWordDummy(layers);
-			String match = iw.trackFor("HMS Boat", "HMS Boat");
-			assertNull("not found match", match);
-			match = iw.trackFor("HMS Nelson", "HMS Nelson");
-			assertNotNull("found match", match);
-			match = iw.trackFor("Hms Nelson", "Hms Nelson");
-			assertNotNull("found match", match);
-			match = iw.trackFor("RNAS Nelson", "RNAS Nelson");
-			assertNotNull("found match", match);
-
-			// check we've created new entries
-			assertEquals("name matches", 3, iw.nameMatches.size());
-
-			// and the two word name
-			match = iw.trackFor("Hms Iron Duck", "Hms Iron Duck");
-			assertNotNull("found match", match);
-
-			// check we've created new entries
-			assertEquals("name matches", 4, iw.nameMatches.size());
-
-		}
-
-		public void testParseFCS() {
-			FCSEntry fe = new FCSEntry(" B:124 R:23434 Track:T_NAME");
-			assertEquals("got range:", 23434d, fe.rangYds);
-			assertEquals("got brg:", 124d, fe.brgDegs);
-			assertEquals("got name:", "T_NAME", fe.tgtName);
-
-			fe = new FCSEntry(" B:124.44 R:23434.2 Track:T NAME");
-			assertEquals("got range:", 23434.2, fe.rangYds);
-			assertEquals("got brg:", 124.44, fe.brgDegs);
-			assertEquals("got name:", "T NAME", fe.tgtName);
-
-		}
-
 	}
 
 	private static List<String> SkipNames = null;
@@ -432,7 +288,7 @@ public class ImportWordDummy {
 		return trackFor(originalName, null);
 	}
 
-	private String trackFor(final String originalName, String name) {
+	String trackFor(final String originalName, String name) {
 		if (name == null) {
 			name = originalName;
 		}

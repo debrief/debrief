@@ -60,21 +60,6 @@ import MWC.Utilities.TextFormatting.FormatRNDateTime;
  */
 public class GenerateTMASegmentFromOwnshipPositions implements RightClickContextItemGenerator {
 
-	// ////////////////////////////////////////////////////////////////////////////////////////////////
-	// testing for this class
-	// ////////////////////////////////////////////////////////////////////////////////////////////////
-	static public final class testMe extends junit.framework.TestCase {
-		static public final String TEST_ALL_TEST_TYPE = "UNIT";
-
-		public testMe(final String val) {
-			super(val);
-		}
-
-		public final void testIWork() {
-
-		}
-	}
-
 	private static class TMAfromPositions extends CMAPOperation {
 
 		private final Layers _layers;

@@ -10,7 +10,6 @@ import java.util.Vector;
 
 import ASSET.Models.MWCModel;
 import ASSET.Models.Environment.CoreEnvironment;
-import ASSET.Util.SupportTesting;
 import MWC.GUI.Editable;
 
 /*******************************************************************************
@@ -36,7 +35,7 @@ public class RadiatedCharacteristics implements MWC.GUI.Editable, java.io.Serial
 	/**
 	 * class which stores a list of noise components for a particular bearing
 	 */
-	private static class BearingSet extends TreeSet<NoiseComponent> {
+	static class BearingSet extends TreeSet<NoiseComponent> {
 		/**
 		 *
 		 */
@@ -314,147 +313,6 @@ public class RadiatedCharacteristics implements MWC.GUI.Editable, java.io.Serial
 
 			// done
 			return res;
-
-		}
-	}
-
-	//////////////////////////////////////////////////////////////////////
-	// constructor
-	//////////////////////////////////////////////////////////////////////
-
-	////////////////////////////////////////////////////
-	// testing for this class
-	////////////////////////////////////////////////////
-	public static class RadCharsTest extends SupportTesting.EditableTesting {
-		static public final String TEST_ALL_TEST_TYPE = "UNIT";
-
-		public RadCharsTest(final String val) {
-			super(val);
-		}
-
-		/**
-		 * get an object which we can test
-		 *
-		 * @return Editable object which we can check the properties for
-		 */
-		@Override
-		public Editable getEditable() {
-			return new RadiatedCharacteristics("h334");
-		}
-
-		/**
-		 * test the list management
-		 */
-		public void testBearingSet() {
-			// create a few noise components
-			final NoiseComponent nc = new NoiseComponent(0, 4, 100);
-			final NoiseComponent n2 = new NoiseComponent(0, 8, 200);
-			final NoiseComponent n3 = new NoiseComponent(0, 16, 300);
-			final NoiseComponent n4 = new NoiseComponent(0, 24, 600);
-
-			final BearingSet bs = new BearingSet(22);
-			bs.add(nc);
-			bs.add(n2);
-			bs.add(n3);
-			bs.add(n4);
-
-			double res = bs.valueFor(8);
-			assertEquals("found correct value", 200, res, 0.001);
-			res = bs.valueFor(4);
-			assertEquals("found correct value", 100, res, 0.001);
-			res = bs.valueFor(2);
-			assertEquals("found correct value", 100, res, 0.001);
-			res = bs.valueFor(16);
-			assertEquals("found correct value", 300, res, 0.001);
-			res = bs.valueFor(20);
-			assertEquals("found correct value", 450, res, 0.001);
-			res = bs.valueFor(24);
-			assertEquals("found correct value", 600, res, 0.001);
-			res = bs.valueFor(28);
-			assertEquals("found correct value", 600, res, 0.001);
-		}
-
-		/**
-		 * test the string swapping
-		 */
-		public void testInterpolation() {
-			final NoiseComponent nc = new NoiseComponent(0, 4, 100);
-			final NoiseComponent n2 = new NoiseComponent(0, 8, 200);
-			double res = BearingSet.interpolateBetween(nc, n2, 6);
-			assertEquals("correct interpolated value", res, 150d, 0.001);
-			res = BearingSet.interpolateBetween(nc, n2, 7);
-			assertEquals("correct interpolated value", res, 175d, 0.001);
-			res = BearingSet.interpolateBetween(nc, n2, 4);
-			assertEquals("correct interpolated value", res, 100d, 0.001);
-			res = BearingSet.interpolateBetween(nc, n2, 8);
-			assertEquals("correct interpolated value", res, 200d, 0.001);
-			res = BearingSet.interpolateBetween(nc, nc, 2);
-			assertEquals("correct interpolated value", res, 100d, 0.001);
-			res = BearingSet.interpolateBetween(n2, n2, 10);
-			assertEquals("correct interpolated value", res, 200d, 0.001);
-		}
-
-		public void testNoiseSignature() {
-			final NoiseSignature ns = new NoiseSignature();
-
-			// create a few noise components
-			final NoiseComponent nc = new NoiseComponent(0, 4, 100);
-			final NoiseComponent n2 = new NoiseComponent(0, 8, 200);
-			final NoiseComponent n3 = new NoiseComponent(0, 16, 300);
-			final NoiseComponent n4 = new NoiseComponent(0, 24, 500);
-
-			final NoiseComponent pc = new NoiseComponent(90, 4, 1000);
-			final NoiseComponent p2 = new NoiseComponent(90, 8, 2000);
-			final NoiseComponent p3 = new NoiseComponent(90, 16, 3000);
-			final NoiseComponent p4 = new NoiseComponent(90, 24, 5000);
-
-			final NoiseComponent qc = new NoiseComponent(160, 4, 10000);
-			final NoiseComponent q2 = new NoiseComponent(160, 8, 20000);
-			final NoiseComponent q3 = new NoiseComponent(160, 16, 30000);
-			final NoiseComponent q4 = new NoiseComponent(160, 24, 50000);
-
-			ns.addComponent(nc);
-			ns.addComponent(n2);
-			ns.addComponent(n3);
-			ns.addComponent(n4);
-			ns.addComponent(pc);
-			ns.addComponent(p2);
-			ns.addComponent(p3);
-			ns.addComponent(p4);
-			ns.addComponent(qc);
-			ns.addComponent(q2);
-			ns.addComponent(q3);
-			ns.addComponent(q4);
-
-			// see how we get on
-			double res = ns.getValueFor(90, 16);
-			assertEquals("found speed for existing bearing", res, 3000, 0.001);
-			res = ns.getValueFor(90, 2);
-			assertEquals("found speed for existing bearing", res, 1000, 0.001);
-			res = ns.getValueFor(90, 24);
-			assertEquals("found speed for existing bearing", res, 5000, 0.001);
-			res = ns.getValueFor(90, 28);
-			assertEquals("found speed for existing bearing", res, 5000, 0.001);
-			res = ns.getValueFor(0, 2);
-			assertEquals("found speed for existing bearing", res, 100, 0.001);
-			res = ns.getValueFor(0, 28);
-			assertEquals("found speed for existing bearing", res, 500, 0.001);
-			res = ns.getValueFor(160, 2);
-			assertEquals("found speed for existing bearing", res, 10000, 0.001);
-			res = ns.getValueFor(160, 28);
-			assertEquals("found speed for existing bearing", res, 50000, 0.001);
-			res = ns.getValueFor(180, 2);
-			assertEquals("found speed for existing bearing", res, 10000, 0.001);
-			res = ns.getValueFor(180, 28);
-			assertEquals("found speed for existing bearing", res, 50000, 0.001);
-			res = ns.getValueFor(30, 2);
-			assertEquals("found speed for existing bearing", res, 100, 0.001);
-			res = ns.getValueFor(30, 24);
-			assertEquals("found speed for existing bearing", res, 500, 0.001);
-			res = ns.getValueFor(60, 2);
-			assertEquals("found speed for existing bearing", res, 1000, 0.001);
-			res = ns.getValueFor(60, 24);
-			assertEquals("found speed for existing bearing", res, 5000, 0.001);
 
 		}
 	}

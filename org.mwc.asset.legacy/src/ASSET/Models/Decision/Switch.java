@@ -22,7 +22,6 @@ import ASSET.Models.Detection.DetectionList;
 import ASSET.Participants.DemandedStatus;
 import ASSET.Participants.Status;
 import ASSET.Scenario.ScenarioActivityMonitor;
-import MWC.GUI.Editable;
 
 /**
  * Represents a sequence of ordered behaviours.
@@ -96,28 +95,6 @@ public class Switch extends Waterfall {
 				return super.getPropertyDescriptors();
 			}
 		}
-	}
-
-	//////////////////////////////////////////////////////////////////////////////////////////////////
-	// testing for this class
-	//////////////////////////////////////////////////////////////////////////////////////////////////
-	public static class SequenceTest extends ASSET.Util.SupportTesting.EditableTesting {
-		static public final String TEST_ALL_TEST_TYPE = "UNIT";
-
-		public SequenceTest(final String val) {
-			super(val);
-		}
-
-		/**
-		 * get an object which we can test
-		 *
-		 * @return Editable object which we can check the properties for
-		 */
-		@Override
-		public Editable getEditable() {
-			return new Switch();
-		}
-
 	}
 
 	/**

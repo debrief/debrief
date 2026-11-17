@@ -15,8 +15,6 @@
 
 package ASSET.Models.Movement;
 
-import ASSET.Util.SupportTesting;
-import MWC.GUI.Editable;
 import MWC.GenericData.WorldAcceleration;
 import MWC.GenericData.WorldDistance;
 import MWC.GenericData.WorldSpeed;
@@ -72,49 +70,6 @@ import MWC.GenericData.WorldSpeed;
  * the maneuvering characteristics particular to a helo
  */
 public class HeloMovementCharacteristics extends ThreeDimMovementCharacteristics implements ClimbRateCharacteristics {
-	//////////////////////////////////////////////////
-	// member objects
-	//////////////////////////////////////////////////
-
-	//////////////////////////////////////////////////////////////////////////////////////////////////
-	// testing for this class
-	//////////////////////////////////////////////////////////////////////////////////////////////////
-	static public class HeloMoveCharsTest extends SupportTesting.EditableTesting {
-		static public final String TEST_ALL_TEST_TYPE = "UNIT";
-
-		public HeloMoveCharsTest(final String val) {
-			super(val);
-		}
-
-		/**
-		 * get an object which we can test
-		 *
-		 * @return Editable object which we can check the properties for
-		 */
-		@Override
-		public Editable getEditable() {
-			return HeloMovementCharacteristics.getSampleChars();
-		}
-
-		public void testTurningCircle() {
-			double rate = 3;
-			double speed = 60;
-			double circle = HeloMovementCharacteristics._calcTurnCircle(rate, speed);
-			assertEquals("correct turning circle calculated", 2291.831, circle, 0.01);
-
-			rate = 3;
-			speed = 0;
-			circle = HeloMovementCharacteristics._calcTurnCircle(rate, speed);
-			assertEquals("correct turning circle calculated", 2 * _hoverTurnCircle, circle, 0.01);
-
-			rate = 0;
-			speed = 60;
-			circle = HeloMovementCharacteristics._calcTurnCircle(rate, speed);
-			assertEquals("correct turning circle calculated", 2 * _hoverTurnCircle, circle, 0.01);
-
-		}
-
-	}
 
 	/**
 	 *
@@ -124,7 +79,7 @@ public class HeloMovementCharacteristics extends ThreeDimMovementCharacteristics
 	/**
 	 * the turn circle we travel through at zero speed (hover)
 	 */
-	final static private double _hoverTurnCircle = 1;
+	final static double _hoverTurnCircle = 1;
 
 	/**
 	 * static method used to calculate turning circle diameter from angular velocity

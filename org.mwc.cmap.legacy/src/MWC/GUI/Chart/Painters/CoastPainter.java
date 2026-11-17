@@ -198,23 +198,6 @@ public class CoastPainter implements Runnable, Serializable, Plottable {
 		}
 	}
 
-	// ////////////////////////////////////////////////////////////////////////////////////////////////
-	// testing for this class
-	// ////////////////////////////////////////////////////////////////////////////////////////////////
-	final static public class CoastPainterTest extends junit.framework.TestCase {
-		static public final String TEST_ALL_TEST_TYPE = "UNIT";
-
-		public CoastPainterTest(final String val) {
-			super(val);
-		}
-
-		final public void testMyParams() {
-			MWC.GUI.Editable ed = new CoastPainter((Coastline) null);
-			editableTesterSupport.testParams(ed, this);
-			ed = null;
-		}
-	}
-
 	/**
 	 *
 	 */

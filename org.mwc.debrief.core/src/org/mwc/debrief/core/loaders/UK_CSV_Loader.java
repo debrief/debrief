@@ -19,7 +19,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
-import java.nio.charset.Charset;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.util.Date;
@@ -43,90 +42,11 @@ import MWC.GenericData.WorldLocation;
 import MWC.GenericData.WorldSpeed;
 import MWC.TacticalData.Fix;
 import MWC.Utilities.TextFormatting.GMTDateFormat;
-import junit.framework.TestCase;
 
 /**
  * @author ian.mayo
  */
 public class UK_CSV_Loader extends CoreLoader {
-
-	public final static class TestLogImport extends TestCase {
-
-		boolean tripped = false;
-
-		public void testGetName() throws ParseException {
-			final String line = "22.1862861, -21.6978806,19951212T050000Z,NELSON,D-112/12,OILER,UK,S2002,1.0,0.5,0.5,269.7000,2.0000,0.0,Remote,Low,UNIT ALPHA,NELSON,19951212,For planning,PUBLIC,\"Quite a long s.  I'll 'll duplicate to get more content.\"\r\n";
-			final String name = UK_CSV_Loader.getName(line);
-			assertEquals("Correct name", "NELSON", name);
-		}
-
-		public void testImport() throws ParseException {
-
-			final String testInput = "# UK TRACK EXCHANGE FORMAT, V1.0\r\n"
-					+ "# Lat,Long,DTG,UnitName,CaseNumber,Type,Flag,Sensor,MajorAxis,SemiMajorAxis,SemiMinorAxis,Course,Speed,Depth,Likelihood,Confidence,SuppliedBy,Provenance,InfoCutoffDate,Purpose,Classification,DistributionStatement\r\n"
-					+ "22.1862861, -21.6978806,19951212T050000Z,NELSON,D-112/12,OILER,UK,S2002,1.0,0.5,0.5,269.7000,2.0000,0.0,Remote,Low,UNIT ALPHA,NELSON,19951212,For planning,PUBLIC,\"Quite a long s.  I'll 'll duplicate to get more content.\"\r\n"
-					+ "22.1862722, -21.7008278,19951212T050100Z,NELSON,D-112/12,OILER,UK,S2002,1.0,0.5,0.5,269.7000,2.0000,0.0,Remote,Low,UNIT ALPHA,NELSON,19951212,For planning,PUBLIC,\"Quite a long more content. Quite a more content.\"\r\n"
-					+ "22.1862528, -21.7041139,19951212T050200Z,NELSON,D-112/12,OILER,UK,S2002,1.0,0.5,0.5,269.9000,2.0000,0.0,Remote,Low,UNIT ALPHA,NELSON,19951212,For planning,PUBLIC,\"Quite a long sentuite a cate to get more content.\"\r\n"
-					+ "22.1862528, -21.707575,19951212T050300Z,NELSON,D-112/12,OILER,UK,S2002,1.0,0.5,0.5,268.7000,2.0000,0.0,Remote,Low,UNIT ALPHA,NELSON,19951212,For planning,PUBLIC,\"Quite a long senttent. Quite a long sentence decontent.\"";
-
-			final InputStream stream = new java.io.ByteArrayInputStream(testInput.getBytes(Charset.forName("UTF-8")));
-
-			final Layers layers = new Layers();
-
-			assertEquals("layers empty", 0, layers.size());
-
-			UK_CSV_Loader.importThis(layers, "test_file.csv", stream);
-
-			assertEquals("layers not empty", 1, layers.size());
-
-			final TrackWrapper track = (TrackWrapper) layers.findLayer("NELSON");
-			assertNotNull("found track", track);
-
-			assertEquals("all points", 4, track.numFixes());
-		}
-
-		public void testSingleLine() throws ParseException {
-			final String line = "22.1862861, -21.6978806,19951212T050000Z,NELSON,D-112/12,OILER,UK,S2002,1.0,0.5,0.5,269.7000,2.0000,0.0,Remote,Low,UNIT ALPHA,NELSON,19951212,For planning,PUBLIC,\"Quite a long s.  I'll 'll duplicate to get more content.\"\r\n";
-			final FixWrapper fix = UK_CSV_Loader.readLine(line);
-			assertNotNull(fix);
-
-			// test the params
-			assertEquals("lat", 22.1862861, fix.getLocation().getLat());
-			assertEquals("lon", -21.6978806, fix.getLocation().getLong());
-			assertEquals("depth", 0d, fix.getLocation().getDepth());
-			assertEquals("date", 818744400000L, fix.getDTG().getDate().getTime());
-			assertEquals("course", 269.7, fix.getCourseDegs());
-			assertEquals("speed", new WorldSpeed(2, WorldSpeed.M_sec).getValueIn(WorldSpeed.Kts), fix.getSpeed(),
-					0.001);
-		}
-
-		public void testSingleLineBad1() throws ParseException {
-			final String line = "22.18a62861, -21.6978806,19951212T050000Z,NELSON,D-112/12,OILER,UK,S2002,1.0,0.5,0.5,269.7000,2.0000,0.0,Remote,Low,UNIT ALPHA,NELSON,19951212,For planning,PUBLIC,\"Quite a long s.  I'll 'll duplicate to get more content.\"\r\n";
-
-			FixWrapper fix = null;
-			try {
-				fix = UK_CSV_Loader.readLine(line);
-			} catch (final NumberFormatException e) {
-				tripped = true;
-			}
-			assertNull("didn't manage to produce fix", fix);
-			assertTrue("parse exception thrown", tripped);
-		}
-
-		public void testSingleLineBad2() throws ParseException {
-			final String line = "22.1862861, -21.6978806,19951212T050000Z";
-
-			tripped = false;
-			FixWrapper fix = null;
-			try {
-				fix = UK_CSV_Loader.readLine(line);
-			} catch (final ArrayIndexOutOfBoundsException e) {
-				tripped = true;
-			}
-			assertNull("didn't manage to produce fix", fix);
-			assertTrue("parse exception thrown", tripped);
-		}
-	}
 
 	private static TrackWrapper createParentTrack(final Layers theLayers, final String thisLine) throws ParseException {
 		TrackWrapper tw;
@@ -157,7 +77,7 @@ public class UK_CSV_Loader extends CoreLoader {
 		return sdf.parse(date);
 	}
 
-	private static String getName(final String thisLine) throws ParseException {
+	static String getName(final String thisLine) throws ParseException {
 		// ok, segment the line
 		final String[] blocks = thisLine.split(",");
 		final String name = blocks[3];
@@ -169,7 +89,7 @@ public class UK_CSV_Loader extends CoreLoader {
 	 *
 	 * @param theLayers
 	 */
-	private final static void importThis(final Layers theLayers, final String fName, final java.io.InputStream is) {
+	final static void importThis(final Layers theLayers, final String fName, final java.io.InputStream is) {
 		// declare linecounter
 		int lineCounter = 0;
 		TrackWrapper tw = null;
@@ -236,7 +156,7 @@ public class UK_CSV_Loader extends CoreLoader {
 		}
 	}
 
-	private static FixWrapper readLine(final String thisLine) throws ParseException, NumberFormatException {
+	static FixWrapper readLine(final String thisLine) throws ParseException, NumberFormatException {
 		// sample line
 		// final String line = "22.1862861,
 		// -21.6978806,19951212T050000Z,NELSON,D-112/12,OILER,UK,S2002,1.0,0.5,0.5,269.7000,2.0000,0.0,Remote,Low,UNIT

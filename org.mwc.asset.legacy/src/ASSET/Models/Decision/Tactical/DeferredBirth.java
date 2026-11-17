@@ -22,15 +22,10 @@ import java.io.Serializable;
 import ASSET.ParticipantType;
 import ASSET.Models.Decision.CoreDecision;
 import ASSET.Models.Detection.DetectionList;
-import ASSET.Models.Movement.SimpleDemandedStatus;
 import ASSET.Participants.DemandedStatus;
 import ASSET.Participants.Status;
 import ASSET.Scenario.ScenarioActivityMonitor;
-import ASSET.Util.SupportTesting;
-import MWC.GUI.Editable;
 import MWC.GenericData.Duration;
-import MWC.GenericData.WorldLocation;
-import MWC.GenericData.WorldSpeed;
 
 /**
  * PlanetMayo Ltd.  2003
@@ -132,89 +127,6 @@ public class DeferredBirth extends CoreDecision implements Serializable {
 				e.printStackTrace();
 				return super.getPropertyDescriptors();
 			}
-		}
-	}
-
-	// ////////////////////////////////////////////////
-	// testing
-	// ////////////////////////////////////////////////
-	static public class WaitTest extends SupportTesting.EditableTesting {
-		static public final String TEST_ALL_TEST_TYPE = "UNIT";
-
-		public WaitTest(final String val) {
-			super(val);
-		}
-
-		/**
-		 * get an object which we can test
-		 *
-		 * @return Editable object which we can check the properties for
-		 */
-		@Override
-		public Editable getEditable() {
-			return new DeferredBirth(null, "my name");
-		}
-
-		// TODO FIX-TEST
-		public void NtestSimple() {
-			final Duration dur = new Duration(12, Duration.SECONDS);
-			final DeferredBirth wt = new DeferredBirth(dur, "do a wait");
-
-			// ok, give it a test.
-			final Status stat = new Status(12, 0);
-			stat.setTime(0);
-			stat.setSpeed(new WorldSpeed(2, WorldSpeed.Kts));
-			stat.setLocation(new WorldLocation(0, 0, 0));
-			DemandedStatus res = new SimpleDemandedStatus(0, stat);
-
-			stat.setTime(stat.getTime() + 1000);
-			final ScenarioActivityMonitor monitor = new ScenarioActivityMonitor() {
-
-				@Override
-				public void createParticipant(final ParticipantType newPart) {
-					// TODO Auto-generated method stub
-
-				}
-
-				@Override
-				public void detonationAt(final int id, final WorldLocation loc, final double power) {
-					// TODO Auto-generated method stub
-
-				}
-
-				@Override
-				public Integer[] getListOfParticipants() {
-					// TODO Auto-generated method stub
-					return null;
-				}
-
-				@Override
-				public ParticipantType getThisParticipant(final int id) {
-					// TODO Auto-generated method stub
-					return null;
-				}
-			};
-			res = wt.decide(stat, null, res, null, monitor, stat.getTime());
-
-			// have we set the correct expiry time?
-			assertEquals("correct expiry time set", 13000, wt._expiryTime, 0);
-
-			// are we continuing in state?
-			assertNotNull("returned dem status", res);
-
-			res = wt.decide(stat, null, res, null, null, stat.getTime());
-			stat.setTime(stat.getTime() + 1000);
-
-			res = wt.decide(stat, null, res, null, null, stat.getTime());
-			stat.setTime(stat.getTime() + 10000);
-
-			res = wt.decide(stat, null, res, null, null, stat.getTime());
-			stat.setTime(stat.getTime() + 1000);
-			res = wt.decide(stat, null, res, null, null, stat.getTime());
-			stat.setTime(stat.getTime() + 1000);
-			res = wt.decide(stat, null, res, null, null, stat.getTime());
-			assertNull("dropped out", res);
-
 		}
 	}
 

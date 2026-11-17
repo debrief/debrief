@@ -226,23 +226,6 @@ import MWC.GenericData.WorldArea;
  */
 public class TotePainter implements StepperListener, CanvasType.PaintListener, Editable {
 
-	// ////////////////////////////////////////////////////////////////////////////////////////////////
-	// testing for this class
-	// ////////////////////////////////////////////////////////////////////////////////////////////////
-	static public final class testMe extends junit.framework.TestCase {
-		static public final String TEST_ALL_TEST_TYPE = "UNIT";
-
-		public testMe(final String val) {
-			super(val);
-		}
-
-		public final void testMyParams() {
-			Editable ed = new TotePainter(null, null, null);
-			Editable.editableTesterSupport.testParams(ed, this);
-			ed = null;
-		}
-	}
-
 	// ///////////////////////////////////////////////////////////
 	// nested class describing how to edit this class
 	// //////////////////////////////////////////////////////////

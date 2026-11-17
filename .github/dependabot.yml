@@ -40,9 +40,6 @@ updates:
       # not a version bump
       - dependency-name: "org.jfree:jfreechart"
         versions: [">= 1.5"]
-      # junit 4 needs hamcrest-core 1.3; 2.x and 3.x are empty stubs
-      - dependency-name: "org.hamcrest:hamcrest-core"
-        update-types: ["version-update:semver-major"]
     # Jars that must move together share a group, majors included, so one PR
     # bumps the whole family. Dependabot uses the first group that matches.
     groups:
@@ -54,6 +51,9 @@ updates:
         patterns: ["org.slf4j:*"]
       jackson:
         patterns: ["com.fasterxml.jackson.core:*"]
+      # the JUnit 6 jars (junit.version in the root pom) move together
+      junit:
+        patterns: ["org.junit.jupiter:*", "org.junit.platform:*", "org.opentest4j:*", "org.apiguardian:*"]
       # everything else: minor and patch bumps together, in one weekly PR.
       # Other major bumps arrive one per PR, because each can need code
       # changes.

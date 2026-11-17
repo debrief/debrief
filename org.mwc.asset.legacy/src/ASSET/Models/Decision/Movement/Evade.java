@@ -22,7 +22,6 @@ import ASSET.Models.Detection.DetectionEvent;
 import ASSET.Models.Detection.DetectionList;
 import ASSET.Models.Movement.SimpleDemandedStatus;
 import ASSET.Participants.Status;
-import ASSET.Util.SupportTesting;
 import MWC.Algorithms.Conversions;
 import MWC.GUI.Editable;
 import MWC.GenericData.Duration;
@@ -67,27 +66,6 @@ public class Evade extends CoreDecision implements java.io.Serializable {
 				return super.getPropertyDescriptors();
 			}
 		}
-	}
-
-	/**
-	 * ASSET.Models.Decision.Movement.Evade.UserControlInfo
-	 */
-
-	// ////////////////////////////////////////////////
-	// testing
-	// ////////////////////////////////////////////////
-	public static class EvadeTest extends SupportTesting.EditableTesting {
-		/**
-		 * get an object which we can test
-		 *
-		 * @return Editable object which we can check the properties for
-		 */
-		@Override
-		public Editable getEditable() {
-			return new Evade(null, new WorldSpeed(12, WorldSpeed.M_sec), new WorldDistance(12, WorldDistance.METRES),
-					null);
-		}
-
 	}
 
 	private static final int DUFF_COURSE = -999;

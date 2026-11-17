@@ -67,64 +67,15 @@ package Debrief.ReaderWriter.Replay;
 
 import java.util.StringTokenizer;
 
-import org.junit.Test;
-
 import Debrief.Wrappers.LabelWrapper;
 import Debrief.Wrappers.Formatters.CoreFormatItemListener;
 import MWC.GUI.Properties.AttributeTypePropertyEditor;
 import MWC.Utilities.ReaderWriter.AbstractPlainLineImporter;
-import junit.framework.TestCase;
 
 /**
  * class to parse a label from a line of text
  */
 final class ImportFixFormatter extends AbstractPlainLineImporter {
-
-	/*
-	 * example: ;FORMAT_FIX: 10_sec_sym SYMBOL NULL NULL TRUE 600000
-	 */
-
-	public static class TestMe extends TestCase {
-		@Test
-		public void testRead() {
-			/*
-			 * example:
-			 */
-
-			final ImportFixFormatter iff = new ImportFixFormatter();
-			CoreFormatItemListener res = (CoreFormatItemListener) iff
-					.readThisLine(";FORMAT_FIX: 10_sec_sym SYMBOL NULL NULL TRUE 600000");
-			assertNotNull(res);
-			assertNull("No track", res.getLayerName());
-			assertNull("no sym", res.getSymbology());
-			assertTrue("active", res.getVisible());
-			assertNotNull("has name", res.getName());
-			assertEquals("has correct attr", 1, res.getAttributeType());
-			assertEquals("has correct freq", 600000, res.getInterval().getDate().getTime());
-			assertTrue("regular intervals", res.getRegularIntervals());
-
-			res = (CoreFormatItemListener) iff
-					.readThisLine(";FORMAT_FIX: 10_sec_sym ARROW \"Track One\" @A FALSE 100000");
-			assertNotNull(res);
-			assertEquals("No track", "Track One", res.getLayerName());
-			assertNotNull("sym", res.getSymbology());
-			assertTrue("active", res.getVisible());
-			assertNotNull("has name", res.getName());
-			assertEquals("has correct attr", 0, res.getAttributeType());
-			assertEquals("has correct freq", 100000, res.getInterval().getDate().getTime());
-			assertFalse("regular intervals", res.getRegularIntervals());
-
-			res = (CoreFormatItemListener) iff
-					.readThisLine(";FORMAT_FIX: \"10 arrow\" ARROW \"Track One\" BB FALSE 100000");
-			assertNotNull(res);
-			assertEquals("No track", "Track One", res.getLayerName());
-			assertNotNull("sym", res.getSymbology());
-			assertEquals("correct sym", "BB", res.getSymbology());
-			assertTrue("active", res.getVisible());
-			assertNotNull("has name", res.getName());
-
-		}
-	}
 
 	/**
 	 * the type for this string

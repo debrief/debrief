@@ -19,24 +19,25 @@ import javax.swing.SwingUtilities;
 
 import org.mwc.debrief.lite.DebriefLiteApp;
 
-import junit.framework.TestCase;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 
 /**
  * @author Ayesha
  *
  */
-public abstract class BaseTestCase extends TestCase
+public abstract class BaseTestCase
 {
-  
-  protected void setUp() throws Exception
+	@BeforeEach
+	public void setUp() throws Exception
   {
     System.out.println("Setup");
     DebriefLiteApp.launchApp();
     Thread.sleep(5000);
   }
-  
 
-  protected void tearDown() throws Exception
+	@AfterEach
+	public void tearDown() throws Exception
   {
     System.out.println("teardown");
     SwingUtilities.invokeLater(new Runnable()
@@ -48,6 +49,5 @@ public abstract class BaseTestCase extends TestCase
       }
     });
     Thread.sleep(3000);
-    super.tearDown();
   }
 }

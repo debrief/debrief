@@ -24,15 +24,8 @@ import java.util.Vector;
  *******************************************************************************/
 
 import ASSET.Models.Decision.TargetType;
-import ASSET.Models.Sensor.CoreSensor;
-import ASSET.Models.Sensor.Initial.OpticSensor;
-import ASSET.Models.Vessels.SSN;
-import ASSET.Participants.Category;
-import ASSET.Util.SupportTesting;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.TimePeriod;
-import MWC.GenericData.WorldDistance;
-import MWC.GenericData.WorldSpeed;
 
 /**
  * object containing a series of detections recorded for a single platform at a
@@ -42,124 +35,6 @@ import MWC.GenericData.WorldSpeed;
  * {@link ASSET.ParticipantType participant}.
  */
 public class DetectionList extends Vector<DetectionEvent> {
-
-	/**
-	 * our list of detections
-	 *
-	 */
-	// private Vector _list;
-
-	//////////////////////////////////////////////////
-	// property testing
-	//////////////////////////////////////////////////
-	public static class ListTest extends SupportTesting {
-		public ListTest(final String s) {
-			super(s);
-		}
-
-		public void testFullLists() {
-			final SSN ssnA = new SSN(44);
-			final SSN ssnB = new SSN(45);
-			final CoreSensor newSensor = new OpticSensor(22);
-			final DetectionEvent de1 = new DetectionEvent(12, 12, null, newSensor, null, null, null, null, null,
-					new Category(Category.Force.RED, Category.Environment.SURFACE, Category.Type.FRIGATE), null, null,
-					ssnA);
-			final DetectionEvent de2 = new DetectionEvent(13, 12, null, newSensor,
-					new WorldDistance(12, WorldDistance.NM), null, null, null, null,
-					new Category(Category.Force.GREEN, Category.Environment.SURFACE, Category.Type.FRIGATE), null, null,
-					ssnA);
-			final DetectionEvent de3 = new DetectionEvent(11, 12, null, newSensor, null, null, null, null, null,
-					new Category(Category.Force.RED, Category.Environment.SURFACE, Category.Type.FRIGATE),
-					new WorldSpeed(12, WorldSpeed.Kts), null, ssnA, DetectionEvent.DETECTED);
-			final DetectionEvent de4 = new DetectionEvent(10, 12, null, newSensor,
-					new WorldDistance(3, WorldDistance.NM), null, null, null, null,
-					new Category(Category.Force.BLUE, Category.Environment.SURFACE, Category.Type.FRIGATE), null, null,
-					ssnA);
-			final DetectionEvent de5 = new DetectionEvent(17, 12, null, newSensor,
-					new WorldDistance(7, WorldDistance.NM), null, null, null, null,
-					new Category(Category.Force.RED, Category.Environment.SURFACE, Category.Type.FRIGATE), null, null,
-					ssnB);
-			final DetectionEvent de6 = new DetectionEvent(15, 12, null, newSensor, null, null, null, null, null,
-					new Category(Category.Force.BLUE, Category.Environment.SURFACE, Category.Type.FRIGATE),
-					new WorldSpeed(12, WorldSpeed.Kts), null, ssnB, DetectionEvent.CLASSIFIED);
-
-			final DetectionList dl = new DetectionList();
-			dl.add(de1);
-			dl.add(de2);
-			dl.add(de3);
-			dl.add(de4);
-			dl.add(de5);
-			dl.add(de6);
-
-			// ok, do some tests
-			assertEquals("wrong number of items in list", 6, dl.size(), 0);
-
-			// see which is the nearest
-			final DetectionEvent nearest = dl.getNearestDetection();
-			assertEquals("failed to find closest detection :", de4, nearest);
-
-			final TargetType redType = new TargetType(Category.Force.RED);
-			final DetectionList reds = dl.getDetectionsOf(redType);
-			assertEquals("wrong number of red targets", 3, reds.size());
-
-			final DetectionEvent mostRecent = reds.getMostRecentDetection();
-			assertEquals("wrong detection returned as most recent", de5, mostRecent);
-
-			// couple of other quick ones
-			final DetectionList validDets = dl.getDetectionsOf(ssnB.getId());
-			assertEquals("wrong number of ssnb detections", 2, validDets.size(), 0);
-			assertEquals("wrong one returned as most recent", de5, validDets.getMostRecentDetection());
-			assertEquals("wrong one returned as overall most recent", de5, dl.getMostRecentDetection());
-			// DetectionEvent bestDet = validDets.getBestDetection();
-			assertEquals("wrong one returned as best", de6, dl.getBestDetection());
-
-		}
-
-		public void testLists() {
-			final SSN ssnA = new SSN(44);
-			final SSN ssnB = new SSN(45);
-			final SSN ssnC = new SSN(65);
-			final CoreSensor newSensor = new OpticSensor(22);
-			final DetectionEvent de1 = new DetectionEvent(12, 12, null, newSensor, null, null, null, null, null,
-					new Category(Category.Force.RED, Category.Environment.SURFACE, Category.Type.FRIGATE), null, null,
-					ssnA);
-			final DetectionEvent de2 = new DetectionEvent(13, 12, null, newSensor, null, null, null, null, null,
-					new Category(Category.Force.GREEN, Category.Environment.SURFACE, Category.Type.FRIGATE), null, null,
-					ssnA);
-			final DetectionEvent de3 = new DetectionEvent(11, 12, null, newSensor, null, null, null, null, null,
-					new Category(Category.Force.RED, Category.Environment.SURFACE, Category.Type.FRIGATE), null, null,
-					ssnA);
-			final DetectionEvent de4 = new DetectionEvent(10, 12, null, newSensor, null, null, null, null, null,
-					new Category(Category.Force.BLUE, Category.Environment.SURFACE, Category.Type.FRIGATE), null, null,
-					ssnC);
-			final DetectionEvent de5 = new DetectionEvent(17, 12, null, newSensor, null, null, null, null, null,
-					new Category(Category.Force.RED, Category.Environment.SURFACE, Category.Type.FRIGATE), null, null,
-					ssnB);
-			final DetectionEvent de6 = new DetectionEvent(15, 12, null, newSensor, null, null, null, null, null,
-					new Category(Category.Force.BLUE, Category.Environment.SURFACE, Category.Type.FRIGATE), null, null,
-					ssnB);
-
-			final DetectionList dl = new DetectionList();
-			dl.add(de1);
-			dl.add(de2);
-			dl.add(de3);
-			dl.add(de4);
-			dl.add(de5);
-			dl.add(de6);
-
-			// ok, do some tests
-			assertEquals("wrong number of items in list", 6, dl.size(), 0);
-			DetectionList myDets = dl.getDetectionsOf(new Integer(ssnC.getId()), new TargetType(Category.Force.RED));
-			assertEquals("didn't find the target we're after", 1, myDets.size(), 0);
-			assertEquals("didn't find the target we're after", de4, myDets.getMostRecentDetection());
-			myDets = dl.getDetectionsOf(new Integer(712), new TargetType(Category.Force.RED));
-			assertEquals("didn't find the target we're after", 3, myDets.size(), 0);
-			assertEquals("didn't find the target we're after", de5, myDets.getMostRecentDetection());
-			myDets = dl.getDetectionsOf(null, new TargetType(Category.Force.RED));
-			assertEquals("didn't find the target we're after", 3, myDets.size(), 0);
-			assertEquals("didn't find the target we're after", de5, myDets.getMostRecentDetection());
-		}
-	}
 
 	/**
 	 *

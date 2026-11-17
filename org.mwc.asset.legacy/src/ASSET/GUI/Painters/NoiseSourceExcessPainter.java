@@ -21,7 +21,6 @@ import java.beans.PropertyDescriptor;
 import java.beans.PropertyEditorSupport;
 import java.util.Vector;
 
-import ASSET.Util.SupportTesting;
 import MWC.GUI.Editable;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
@@ -124,21 +123,6 @@ public class NoiseSourceExcessPainter extends SpatialRasterPainter implements No
 				final String val = (String) p1;
 				setAsText(val);
 			}
-		}
-	}
-
-	//////////////////////////////////////////////////
-	// add testing code
-	//////////////////////////////////////////////////
-	public static class PainterTest extends SupportTesting.EditableTesting {
-		/**
-		 * get an object which we can test
-		 *
-		 * @return Editable object which we can check the properties for
-		 */
-		@Override
-		public Editable getEditable() {
-			return new NoiseSourceExcessPainter("the layer", new Layers());
 		}
 	}
 

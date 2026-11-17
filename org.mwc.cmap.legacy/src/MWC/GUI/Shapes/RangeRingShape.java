@@ -162,24 +162,6 @@ public class RangeRingShape extends PlainShape implements Editable {
 		}
 	}
 
-	// ////////////////////////////////////////////////////////////////////////////////////////////////
-	// testing for this class
-	// ////////////////////////////////////////////////////////////////////////////////////////////////
-	static public class WheelTest extends junit.framework.TestCase {
-		static public final String TEST_ALL_TEST_TYPE = "UNIT";
-
-		public WheelTest(final String val) {
-			super(val);
-		}
-
-		public void testMyParams() {
-			MWC.GUI.Editable ed = new RangeRingShape(new WorldLocation(2d, 2d, 2d), 3,
-					new WorldDistance(2, WorldDistance.DEGS));
-			MWC.GUI.Editable.editableTesterSupport.testParams(ed, this);
-			ed = null;
-		}
-	}
-
 	// keep track of versions
 	static final long serialVersionUID = 1;
 

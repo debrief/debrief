@@ -51,55 +51,6 @@ import java.util.Random;
 
 public class RandomGenerator {
 
-	//////////////////////////////////////////////////
-	// property testing
-	//////////////////////////////////////////////////
-	public static class RandomGennyTest extends SupportTesting {
-		public RandomGennyTest(final String s) {
-			super(s);
-		}
-
-		public void testConstrainedGaussian() {
-			final double min = 60;
-			final double max = 140;
-			final int num = 10000;
-			for (int i = 0; i < num; i++) {
-				final double nextV = RandomGenerator.generateRandomNumber(min, max, NORMAL_CONSTRAINED);
-				assertTrue("slipped outside lower bounds at num:" + i, nextV >= min);
-				assertTrue("slipped outside upper bounds at num:" + i, nextV <= max);
-			}
-		}
-
-		public void testGaussian() {
-			final double min = 60;
-			final double max = 140;
-			final int num = 10000;
-			boolean lowerExceeded = false;
-			boolean upperExceeded = false;
-			for (int i = 0; i < num; i++) {
-				final double nextV = RandomGenerator.generateRandomNumber(min, max, NORMAL);
-				if (nextV < min)
-					lowerExceeded = true;
-				if (nextV > max)
-					upperExceeded = true;
-			}
-
-			assertTrue("didn't go off bottom of range", lowerExceeded);
-			assertTrue("didn't go off top of range", upperExceeded);
-		}
-
-		public void testUniform() {
-			final double min = 60;
-			final double max = 140;
-			final int num = 10000;
-			for (int i = 0; i < num; i++) {
-				final double nextV = RandomGenerator.generateRandomNumber(min, max, UNIFORM);
-				assertTrue("slipped outside lower bounds at num:" + i, nextV >= min);
-				assertTrue("slipped outside upper bounds at num:" + i, nextV <= max);
-			}
-		}
-	}
-
 	/**
 	 * property name indicating that random numbers should be uniformly distributed
 	 */

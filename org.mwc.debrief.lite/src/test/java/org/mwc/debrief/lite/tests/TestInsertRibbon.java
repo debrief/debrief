@@ -14,6 +14,8 @@
  *******************************************************************************/
 package org.mwc.debrief.lite.tests;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
@@ -28,6 +30,8 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import org.mwc.debrief.lite.DebriefLiteApp;
 import org.mwc.debrief.lite.gui.custom.JXCollapsiblePaneWithTitle;
 import org.mwc.debrief.lite.utils.TestUtils;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.pushingpixels.flamingo.api.common.JCommandButton;
 import org.pushingpixels.flamingo.api.ribbon.JRibbonFrame;
 import org.pushingpixels.flamingo.internal.ui.ribbon.JBandControlPanel;
@@ -41,9 +45,8 @@ import MWC.GUI.Shapes.RectangleShape;
 
 public class TestInsertRibbon extends BaseTestCase
 {
-  
-  @Override
-  protected void setUp() throws Exception
+	@BeforeEach
+	public void setUp() throws Exception
   {
     super.setUp();
     SwingUtilities.invokeAndWait(new Runnable()
@@ -57,7 +60,8 @@ public class TestInsertRibbon extends BaseTestCase
     });
   }
 
-  public void testInsertEllipse() throws Exception
+	@Test
+	public void testInsertEllipse() throws Exception
   {
     final JComboBox<String> combo = TestUtils.getActiveLayerDropDown();
     SwingUtilities.invokeAndWait(new Runnable()
@@ -113,7 +117,9 @@ public class TestInsertRibbon extends BaseTestCase
     //assert the shape was drawn on the plot, how to  do that?
     
   }
-  public void testInsertRectangle() throws Exception
+
+	@Test
+	public void testInsertRectangle() throws Exception
   {
     final JComboBox<String> combo = TestUtils.getActiveLayerDropDown();
     SwingUtilities.invokeAndWait(new Runnable()
@@ -170,8 +176,8 @@ public class TestInsertRibbon extends BaseTestCase
     //assert the shape was drawn on the plot, how to  do that?
     
   }
-  
-  public void testInsertCircle() throws Exception
+	@Test
+	public void testInsertCircle() throws Exception
   {
     final JComboBox<String> combo = TestUtils.getActiveLayerDropDown();
     SwingUtilities.invokeAndWait(new Runnable()
@@ -227,7 +233,9 @@ public class TestInsertRibbon extends BaseTestCase
     //assert the shape was drawn on the plot, how to  do that?
     
   }
-  public void testInsertLine() throws Exception
+
+	@Test
+	public void testInsertLine() throws Exception
   {
     final JComboBox<String> combo = TestUtils.getActiveLayerDropDown();
     SwingUtilities.invokeAndWait(new Runnable()
@@ -284,7 +292,9 @@ public class TestInsertRibbon extends BaseTestCase
     //assert the shape was drawn on the plot, how to  do that?
     
   }
-  public void testInsertArc() throws Exception
+
+	@Test
+	public void testInsertArc() throws Exception
   {
     final JComboBox<String> combo = TestUtils.getActiveLayerDropDown();
     SwingUtilities.invokeAndWait(new Runnable()
@@ -341,8 +351,8 @@ public class TestInsertRibbon extends BaseTestCase
     //assert the shape was drawn on the plot, how to  do that?
     
   }
-  
-  public void testShapeEdit() throws Exception
+	@Test
+	public void testShapeEdit() throws Exception
   {
     
     final JComboBox<String> combo = TestUtils.getActiveLayerDropDown();

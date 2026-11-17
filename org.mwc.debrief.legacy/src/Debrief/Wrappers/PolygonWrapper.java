@@ -258,8 +258,6 @@ import MWC.GUI.Shapes.PolygonShape;
 import MWC.GUI.Shapes.PolygonShape.PolygonNode;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.WorldArea;
-import MWC.GenericData.WorldLocation;
-import junit.framework.TestCase;
 
 /**
  * extended shapewrapper class, that introduces support for showing the child
@@ -347,18 +345,6 @@ public class PolygonWrapper extends ShapeWrapper implements Layer, ExportLayerAs
 			}
 		}
 
-	}
-
-	public static class TestPolygon extends TestCase {
-
-		public final void testMyParams() {
-			final Vector<PolygonNode> nodes = new Vector<PolygonNode>();
-			nodes.add(new PolygonNode("aa", new WorldLocation(2d, 3d, 0d), null));
-			final PolygonShape shape = new PolygonShape(nodes);
-			PolygonWrapper ed = new PolygonWrapper("aa", shape, MWC.GUI.Properties.DebriefColors.RED, new HiResDate(0));
-			editableTesterSupport.testParams(ed, this);
-			ed = null;
-		}
 	}
 
 	/**

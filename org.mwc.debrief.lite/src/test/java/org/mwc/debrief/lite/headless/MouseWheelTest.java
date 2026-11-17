@@ -15,6 +15,11 @@
 
 package org.mwc.debrief.lite.headless;
 
+import static org.junit.jupiter.api.Assertions.*;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 
@@ -22,13 +27,14 @@ import org.mwc.debrief.lite.gui.LiteStepControl;
 import org.mwc.debrief.lite.map.MouseWheelHandler;
 
 import MWC.GenericData.HiResDate;
-import junit.framework.TestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * The mouse wheel over the map: stepping the time, and the area a ctrl-wheel
  * zoom shows.
  */
-public class MouseWheelTest extends TestCase {
+public class MouseWheelTest {
 
 	/** 1 Jan 2026 00:00 UTC */
 	private static final long T0 = 1767225600000L;
@@ -37,8 +43,8 @@ public class MouseWheelTest extends TestCase {
 	private LiteStepControl _stepper;
 	private MouseWheelHandler _handler;
 
-	@Override
-	protected void setUp() {
+	@BeforeEach
+	public void setUp() {
 		_stepper = HeadlessFixture.stepper(HeadlessFixture.newSession(HeadlessFixture.newApp()));
 		_stepper.setStartTime(new HiResDate(T0));
 		_stepper.setEndTime(new HiResDate(T0 + 10 * 60_000L));
@@ -48,45 +54,48 @@ public class MouseWheelTest extends TestCase {
 		_handler = new MouseWheelHandler(_stepper, null);
 	}
 
+	@Test
 	public void testWheelStepsTime() {
 		_handler.stepTime(1);
-		assertEquals("one notch towards the user: +1 small step", T0 * 1000 + MINUTE_MICROS,
-				_stepper.getCurrentTime().getMicros());
+		assertEquals(T0 * 1000 + MINUTE_MICROS, _stepper.getCurrentTime().getMicros(),
+				"one notch towards the user: +1 small step");
 
 		_handler.stepTime(3);
-		assertEquals("three notches: +3 small steps", T0 * 1000 + 4 * MINUTE_MICROS,
-				_stepper.getCurrentTime().getMicros());
+		assertEquals(T0 * 1000 + 4 * MINUTE_MICROS, _stepper.getCurrentTime().getMicros(),
+				"three notches: +3 small steps");
 
 		_handler.stepTime(-2);
-		assertEquals("two notches away: -2 small steps", T0 * 1000 + 2 * MINUTE_MICROS,
-				_stepper.getCurrentTime().getMicros());
+		assertEquals(T0 * 1000 + 2 * MINUTE_MICROS, _stepper.getCurrentTime().getMicros(),
+				"two notches away: -2 small steps");
 
 		_handler.stepTime(-5);
-		assertEquals("stops at the start", T0 * 1000, _stepper.getCurrentTime().getMicros());
+		assertEquals(T0 * 1000, _stepper.getCurrentTime().getMicros(), "stops at the start");
 
 		_handler.stepTime(20);
-		assertEquals("stops at the end", T0 * 1000 + 10 * MINUTE_MICROS, _stepper.getCurrentTime().getMicros());
+		assertEquals(T0 * 1000 + 10 * MINUTE_MICROS, _stepper.getCurrentTime().getMicros(), "stops at the end");
 	}
 
+	@Test
 	public void testZoomDirection() {
-		assertTrue("rolling away zooms in", MouseWheelHandler.zoomFactor(-1) < 1);
-		assertTrue("rolling towards zooms out", MouseWheelHandler.zoomFactor(1) > 1);
-		assertEquals("in then out is back where we started", 1d,
-				MouseWheelHandler.zoomFactor(-2) * MouseWheelHandler.zoomFactor(2), 1e-12);
+		assertTrue(MouseWheelHandler.zoomFactor(-1) < 1, "rolling away zooms in");
+		assertTrue(MouseWheelHandler.zoomFactor(1) > 1, "rolling towards zooms out");
+		assertEquals(1d, MouseWheelHandler.zoomFactor(-2) * MouseWheelHandler.zoomFactor(2),
+				1e-12, "in then out is back where we started");
 	}
 
+	@Test
 	public void testZoomKeepsTheCursorInPlace() {
 		final Rectangle2D area = new Rectangle2D.Double(10, 20, 100, 50);
 		// a quarter of the way across, four fifths of the way up
 		final Point2D anchor = new Point2D.Double(35, 60);
 
 		final Rectangle2D in = MouseWheelHandler.zoomedArea(area, anchor, 0.5);
-		assertEquals("half the width", 50, in.getWidth(), 1e-9);
-		assertEquals("half the height", 25, in.getHeight(), 1e-9);
-		assertEquals("anchor still a quarter of the way across", 0.25, (anchor.getX() - in.getX()) / in.getWidth(),
-				1e-9);
-		assertEquals("anchor still four fifths of the way up", 0.8, (anchor.getY() - in.getY()) / in.getHeight(),
-				1e-9);
+		assertEquals(50, in.getWidth(), 1e-9, "half the width");
+		assertEquals(25, in.getHeight(), 1e-9, "half the height");
+		assertEquals(0.25, (anchor.getX() - in.getX()) / in.getWidth(), 1e-9,
+				"anchor still a quarter of the way across");
+		assertEquals(0.8, (anchor.getY() - in.getY()) / in.getHeight(), 1e-9,
+				"anchor still four fifths of the way up");
 
 		final Rectangle2D back = MouseWheelHandler.zoomedArea(in, anchor, 2);
 		assertEquals(area.getX(), back.getX(), 1e-9);

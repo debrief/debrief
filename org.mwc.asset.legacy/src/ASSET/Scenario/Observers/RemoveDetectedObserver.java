@@ -26,40 +26,12 @@ import ASSET.Models.Decision.TargetType;
 import ASSET.Models.Detection.DetectionEvent;
 import ASSET.Participants.Category;
 import ASSET.Participants.Status;
-import ASSET.Util.SupportTesting;
 import Debrief.Wrappers.LabelWrapper;
 import MWC.GUI.CanvasType;
 import MWC.GUI.Editable;
 import MWC.GenericData.WorldLocation;
 
 public class RemoveDetectedObserver extends ASSET.Scenario.Observers.DetectionObserver {
-	/**
-	 * ************************************************************ a gui class to
-	 * show progress of this monitor
-	 * *************************************************************
-	 */
-
-	// ////////////////////////////////////////////////////////////////////////////////////////////////
-	// testing for this class
-	// ////////////////////////////////////////////////////////////////////////////////////////////////
-	public static class RemDetectedTest extends SupportTesting.EditableTesting {
-		static public final String TEST_ALL_TEST_TYPE = "UNIT";
-
-		public RemDetectedTest(final String val) {
-			super(val);
-		}
-
-		/**
-		 * get an object which we can test
-		 *
-		 * @return Editable object which we can check the properties for
-		 */
-		@Override
-		public Editable getEditable() {
-			final MWC.GUI.Editable ed = new RemoveDetectedObserver(null, null, "how many", new Integer(2), true);
-			return ed;
-		}
-	}
 
 	// ////////////////////////////////////////////////////
 	// bean info for this class

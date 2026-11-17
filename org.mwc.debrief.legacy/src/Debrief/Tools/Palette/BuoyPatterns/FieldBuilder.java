@@ -189,22 +189,6 @@ public final class FieldBuilder extends PatternBuilderType {
 		}
 	}
 
-	// ////////////////////////////////////////////////////////////////////////////////////////////////
-	// testing for this class
-	// ////////////////////////////////////////////////////////////////////////////////////////////////
-	static public final class TestMe extends junit.framework.TestCase {
-		static public final String TEST_ALL_TEST_TYPE = "UNIT";
-
-		public TestMe(final String val) {
-			super(val);
-		}
-
-		public final void testMyParams() {
-			final MWC.GUI.Editable ed = new FieldBuilder(null, null, null);
-			MWC.GUI.Editable.editableTesterSupport.testParams(ed, this);
-		}
-	}
-
 	/**
 	 * the enumerated types used for the offset
 	 */

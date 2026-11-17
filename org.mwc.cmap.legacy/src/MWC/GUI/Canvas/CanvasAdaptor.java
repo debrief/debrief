@@ -38,35 +38,6 @@ import MWC.GenericData.WorldLocation;
 
 public class CanvasAdaptor implements MWC.GUI.CanvasType {
 
-	// ////////////////////////////////////////////////////////////////////////////////////////////////
-	// testing for this class
-	// ////////////////////////////////////////////////////////////////////////////////////////////////
-	static public final class testMe extends junit.framework.TestCase {
-		static public final String TEST_ALL_TEST_TYPE = "UNIT";
-
-		public testMe(final String val) {
-			super(val);
-		}
-
-		public final void testPolygonMgt() {
-			final int[] points = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
-			// convert to normal format
-			final int len = points.length / 2;
-			final int[] xP = new int[len];
-			final int[] yP = new int[len];
-
-			for (int i = 0; i < points.length; i += 2) {
-				xP[i / 2] = points[i];
-				yP[i / 2] = points[i + 1];
-			}
-			assertEquals("array wrong length", len, 5);
-			assertEquals("wrong first x", xP[0], 1);
-			assertEquals("wrong first y", yP[0], 2);
-			assertEquals("wrong last x", xP[len - 1], 9);
-			assertEquals("wrong last y", yP[len - 1], 10);
-		}
-	}
-
 	/**
 	 * convenience method that allows a canvas implementation to support the new
 	 * polyline method by just converting the data and calling the old method

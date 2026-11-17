@@ -15,11 +15,7 @@
 
 package org.mwc.debrief.track_shift.views;
 
-import java.awt.Color;
 import java.awt.Paint;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.text.DecimalFormat;
 import java.text.FieldPosition;
 import java.text.NumberFormat;
@@ -71,18 +67,14 @@ import org.mwc.debrief.track_shift.controls.ZoneChart.ZoneSlicer;
 import org.mwc.debrief.track_shift.controls.ZoneUndoRedoProvider;
 import org.mwc.debrief.track_shift.views.StackedDotHelper.SetBackgroundShade;
 
-import Debrief.ReaderWriter.Replay.ImportReplay;
 import Debrief.Wrappers.SensorContactWrapper;
 import Debrief.Wrappers.SensorWrapper;
 import Debrief.Wrappers.TrackWrapper;
 import Debrief.Wrappers.Track.ITimeVariableProvider;
 import MWC.GUI.Editable;
-import MWC.GUI.Layers;
 import MWC.GUI.SupportsPropertyListeners;
-import MWC.GUI.Properties.LineStylePropertyEditor;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.TimePeriod;
-import junit.framework.TestCase;
 
 public class BearingResidualsView extends BaseStackedDotsView implements ITimeVariableProvider {
 
@@ -192,9 +184,9 @@ public class BearingResidualsView extends BaseStackedDotsView implements ITimeVa
 		}
 	}
 
-	private static class DeleteCutsOperation extends CMAPOperation {
+	static class DeleteCutsOperation extends CMAPOperation {
 
-		private static Map<SensorWrapper, LegOfCuts> deleteTheseCuts(final List<SensorContactWrapper> cutsToDelete) {
+		static Map<SensorWrapper, LegOfCuts> deleteTheseCuts(final List<SensorContactWrapper> cutsToDelete) {
 			final Map<SensorWrapper, LegOfCuts> deletedCuts = new HashMap<SensorWrapper, LegOfCuts>();
 
 			for (final SensorContactWrapper t : cutsToDelete) {
@@ -619,150 +611,6 @@ public class BearingResidualsView extends BaseStackedDotsView implements ITimeVa
 
 	}
 
-	public static class TestResiduals extends TestCase {
-		private static TrackWrapper getData(final String name) throws FileNotFoundException {
-			// get our sample data-file
-			final ImportReplay importer = new ImportReplay();
-			final Layers theLayers = new Layers();
-			final String fName = "../org.mwc.cmap.combined.feature/root_installs/sample_data/S2R/" + name;
-			final File inFile = new File(fName);
-			assertTrue("input file exists", inFile.exists());
-			final FileInputStream is = new FileInputStream(fName);
-			importer.importThis(fName, is, theLayers);
-
-			// sort out the sensors
-			importer.storePendingSensors();
-			assertEquals("has some layers", 3, theLayers.size());
-
-			// get the sensor track
-			final TrackWrapper track = (TrackWrapper) theLayers.findLayer("SENSOR");
-			return track;
-		}
-
-		public void testDeleteAmbiguous() throws FileNotFoundException {
-			final TrackWrapper track = new TrackWrapper();
-			track.setName("track");
-
-			final SensorWrapper s1 = new SensorWrapper("s1");
-
-			final SensorContactWrapper sc1 = new SensorContactWrapper(track.getName(), new HiResDate(100000), null,
-					100d, 120d, null, null, Color.RED, "one", LineStylePropertyEditor.DOT_DASH, "sensor");
-			final SensorContactWrapper sc2 = new SensorContactWrapper(track.getName(), new HiResDate(200000), null,
-					101d, 121d, null, null, Color.RED, "one", LineStylePropertyEditor.DOT_DASH, "sensor");
-			final SensorContactWrapper sc3 = new SensorContactWrapper(track.getName(), new HiResDate(300000), null,
-					102d, 122d, null, null, Color.RED, "one", LineStylePropertyEditor.DOT_DASH, "sensor");
-			final SensorContactWrapper sc4 = new SensorContactWrapper(track.getName(), new HiResDate(400000), null,
-					103d, 123d, null, null, Color.RED, "one", LineStylePropertyEditor.DOT_DASH, "sensor");
-			final SensorContactWrapper sc5 = new SensorContactWrapper(track.getName(), new HiResDate(500000), null,
-					104d, 124d, null, null, Color.RED, "one", LineStylePropertyEditor.DOT_DASH, "sensor");
-
-			s1.add(sc1);
-			s1.add(sc2);
-			s1.add(sc3);
-			s1.add(sc4);
-			s1.add(sc5);
-
-			track.add(s1);
-			;
-
-			final TimePeriod period = new TimePeriod.BaseTimePeriod(new HiResDate(250000), new HiResDate(500000));
-			LegOfCuts resolved = findResolvedAmbiguousCuts(period, track);
-			assertEquals("found none, sensor not visible", 0, resolved.size());
-
-			s1.setVisible(true);
-
-			resolved = findResolvedAmbiguousCuts(period, track);
-			assertEquals("found none, they're not resolved ones", 0, resolved.size());
-
-			// ok, now resolve some
-			sc3.setHasAmbiguousBearing(false);
-			sc4.setHasAmbiguousBearing(false);
-
-			resolved = findResolvedAmbiguousCuts(period, track);
-			assertEquals("found correct ones", 2, resolved.size());
-
-			sc5.setHasAmbiguousBearing(false);
-
-			resolved = findResolvedAmbiguousCuts(period, track);
-			assertEquals("found correct ones", 3, resolved.size());
-
-		}
-
-		public void testDitchUsingAmbiguity() throws FileNotFoundException {
-			final TrackWrapper track = getData("Ambig_tracks2.rep");
-			assertNotNull("found track", track);
-
-			// has sensors
-			assertEquals("has sensor", 1, track.getSensors().size());
-
-			// make the sensor visible
-			final SensorWrapper sensor = (SensorWrapper) track.getSensors().elements().nextElement();
-			sensor.setVisible(true);
-
-			final TimePeriod timePeriod = new TimePeriod.BaseTimePeriod(sensor.getStartDTG(), sensor.getEndDTG());
-
-			// try to get zones using ambiguity delta
-			final LegsAndZigs res = AmbiguityResolver.sliceTrackIntoLegsUsingAmbiguity(track, 0.2, 0.2, 240, null, null,
-					null, null, timePeriod, null);
-			final List<LegOfCuts> legs = res.getLegs();
-			final LegOfCuts zigs = res.getZigs();
-
-			assertNotNull("found zones", legs);
-			assertEquals("found correct number of zones", 12, legs.size());
-
-			assertNotNull("found zigs", zigs);
-			assertEquals("found correct number of zig cuts", 22, zigs.size());
-
-			// ok, ditch those cuts
-			final int fullSensorLen = sensor.size();
-			Map<SensorWrapper, LegOfCuts> deleted = DeleteCutsOperation.deleteTheseCuts(zigs);
-			assertEquals("fewer cuts", 99, sensor.size());
-
-			// ok, and undo them
-			BearingResidualsView.restoreCuts(deleted);
-			assertEquals("fewer cuts", fullSensorLen, sensor.size());
-
-			// and do it again, so we've got fewer cuts
-			deleted = DeleteCutsOperation.deleteTheseCuts(zigs);
-
-			final List<ResolvedLeg> resolvedLegs = AmbiguityResolver.resolve(legs);
-			assertNotNull(resolvedLegs);
-			assertEquals("right num legs", 12, legs.size());
-
-			assertEquals("correct leg", 251.33d, resolvedLegs.get(0).leg.get(0).getBearing(), 1d);
-			assertEquals("correct leg", 253d, resolvedLegs.get(1).leg.get(0).getBearing(), 1d);
-			assertEquals("correct leg", 251d, resolvedLegs.get(2).leg.get(0).getBearing(), 1d);
-			assertEquals("correct leg", 254d, resolvedLegs.get(3).leg.get(0).getBearing(), 1d);
-			assertEquals("correct leg", 258d, resolvedLegs.get(4).leg.get(0).getBearing(), 1d);
-			assertEquals("correct leg", 269d, resolvedLegs.get(5).leg.get(0).getBearing(), 1d);
-
-			// ok, and cancel the leg resolving
-			BearingResidualsView.undoResolveBearings(resolvedLegs);
-
-			// and re-check they're ambiguous
-			assertEquals("is unresloved", true, resolvedLegs.get(0).leg.get(0).getHasAmbiguousBearing());
-		}
-
-		/**
-		 * note: we're testing this zone chart functionality in here, so we can
-		 * introduce it into the automated test suite.
-		 */
-		public void testPanCalculation() {
-			TimePeriod period = ZoneChart.calculatePanData(false, 1000, 2000, 1100, 1300);
-			assertEquals("corrent new times", 1300, period.getStartDTG().getDate().getTime());
-			assertEquals("corrent new times", 1500, period.getEndDTG().getDate().getTime());
-			period = ZoneChart.calculatePanData(false, 1000, 2000, 1700, 1900);
-			assertEquals("corrent new times", 1800, period.getStartDTG().getDate().getTime());
-			assertEquals("corrent new times", 2000, period.getEndDTG().getDate().getTime());
-			period = ZoneChart.calculatePanData(true, 1000, 2000, 1700, 1900);
-			assertEquals("corrent new times", 1500, period.getStartDTG().getDate().getTime());
-			assertEquals("corrent new times", 1700, period.getEndDTG().getDate().getTime());
-			period = ZoneChart.calculatePanData(true, 1000, 2000, 1100, 1300);
-			assertEquals("corrent new times", 1000, period.getStartDTG().getDate().getTime());
-			assertEquals("corrent new times", 1200, period.getEndDTG().getDate().getTime());
-		}
-	}
-
 	private static enum ZoneModes {
 		PRIMARY, SECONDARY, CLEAR;
 	}
@@ -891,7 +739,7 @@ public class BearingResidualsView extends BaseStackedDotsView implements ITimeVa
 		return logger;
 	}
 
-	private static void restoreCuts(final Map<SensorWrapper, LegOfCuts> deletedCuts) {
+	static void restoreCuts(final Map<SensorWrapper, LegOfCuts> deletedCuts) {
 		for (final SensorWrapper sensor : deletedCuts.keySet()) {
 			final ArrayList<SensorContactWrapper> cuts = deletedCuts.get(sensor);
 			for (final SensorContactWrapper cut : cuts) {
@@ -900,7 +748,7 @@ public class BearingResidualsView extends BaseStackedDotsView implements ITimeVa
 		}
 	}
 
-	private static void undoResolveBearings(final List<ResolvedLeg> legs) {
+	static void undoResolveBearings(final List<ResolvedLeg> legs) {
 		for (final ResolvedLeg leg : legs) {
 			for (final SensorContactWrapper cut : leg.leg) {
 				// cool, we have a course - we can go for it. remember the bearings

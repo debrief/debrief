@@ -32,8 +32,8 @@ Bundle-ClassPath: cmap_legacy.jar,
 Bundle-Vendor: MWC
 Export-Package: 
  .,
- MWC.Algorithms;uses:="junit.framework,MWC.GenericData,MWC.GUI",
- MWC.Algorithms.EarthModels;uses:="junit.framework,MWC.GenericData,MWC.Algorithms",
+ MWC.Algorithms;uses:="MWC.GenericData,MWC.GUI",
+ MWC.Algorithms.EarthModels;uses:="MWC.GenericData,MWC.Algorithms",
  MWC.Algorithms.Editors;
   uses:="MWC.GUI.Tools.Chart,
    javax.swing,
@@ -41,7 +41,7 @@ Export-Package:
    MWC.GUI",
  MWC.Algorithms.LiveData,
  MWC.Algorithms.Projections;
-  uses:="junit.framework,
+  uses:="
    MWC.GenericData,
    MWC.Algorithms,
    MWC.GUI",
@@ -49,7 +49,6 @@ Export-Package:
   uses:="MWC.GUI.Tools.Chart,
    MWC.GenericData,
    MWC.Algorithms,
-   junit.framework,
    MWC.GUI.Tools",
  MWC.GUI.AWT;uses:="MWC.GUI.Properties,MWC.GUI",
  MWC.GUI.Canvas;
@@ -57,7 +56,6 @@ Export-Package:
    MWC.GenericData,
    MWC.GUI.Canvas.Metafile,
    MWC.Algorithms,
-   junit.framework,
    javax.swing,
    MWC.GUI.Properties,
    MWC.GUI",
@@ -65,7 +63,7 @@ Export-Package:
  MWC.GUI.Canvas.Clip;uses:="MWC.GenericData,MWC.Algorithms,MWC.GUI",
  MWC.GUI.Canvas.Metafile;uses:="MWC.GenericData,MWC.Algorithms,MWC.GUI",
  MWC.GUI.Canvas.Swing;
-  uses:="junit.framework,
+  uses:="
    javax.swing,
    MWC.GenericData,
    MWC.GUI.Properties,
@@ -78,7 +76,6 @@ Export-Package:
    MWC.GenericData,
    MWC.Algorithms,
    MWC.GUI.Shapes,
-   junit.framework,
    javax.swing,
    MWC.GUI.Coast,
    MWC.GUI.Properties,
@@ -98,7 +95,6 @@ Export-Package:
    com.bbn.openmap.util,
    MWC.GUI.Chart.Painters,
    com.bbn.openmap.omGraphics,
-   junit.framework,
    javax.swing,
    com.bbn.openmap.event,
    com.bbn.openmap.proj,
@@ -152,7 +148,6 @@ Export-Package:
  MWC.GUI.RubberBanding;uses:="MWC.GUI",
  MWC.GUI.S57;
   uses:="MWC.GUI.S57.features,
-   junit.framework,
    MWC.GenericData,
    com.bbn.openmap.io,
    com.bbn.openmap.layer.vpf,
@@ -160,16 +155,15 @@ Export-Package:
  MWC.GUI.S57.features;uses:="MWC.GenericData,MWC.GUI",
  MWC.GUI.S57.support,
  MWC.GUI.Shapes;
-  uses:="junit.framework,
+  uses:="
    MWC.GenericData,
    MWC.GUI.Properties,
    MWC.GUI.Properties.Swing,
    MWC.GUI",
- MWC.GUI.Shapes.Symbols;uses:="junit.framework,MWC.GenericData,MWC.GUI",
+ MWC.GUI.Shapes.Symbols;uses:="MWC.GenericData,MWC.GUI",
  MWC.GUI.Shapes.Symbols.Buoys;uses:="MWC.GUI.Shapes.Symbols,MWC.GenericData,MWC.GUI",
  MWC.GUI.Shapes.Symbols.Geog;
   uses:="MWC.GUI.Shapes.Symbols,
-   junit.framework,
    MWC.GenericData,
    MWC.GUI",
  MWC.GUI.Shapes.Symbols.SVG,
@@ -188,7 +182,6 @@ Export-Package:
   uses:="MWC.GenericData,
    MWC.GUI.Undo,
    MWC.Algorithms,
-   junit.framework,
    javax.swing,
    MWC.GUI.Properties,
    MWC.GUI.Canvas,
@@ -229,8 +222,8 @@ Export-Package:
    javax.media,
    MWC.GUI",
  MWC.GUI.ptplot.Swing,
- MWC.GenericData;uses:="MWC.GUI.Shapes.Symbols,junit.framework,MWC.Algorithms",
- MWC.TacticalData;uses:="junit.framework,MWC.GenericData,MWC.GUI",
+ MWC.GenericData;uses:="MWC.GUI.Shapes.Symbols,MWC.Algorithms",
+ MWC.TacticalData;uses:="MWC.GenericData,MWC.GUI",
  MWC.TacticalData.GND;
   uses:="MWC.GUI.Shapes.Symbols,
    MWC.GenericData,
@@ -240,7 +233,7 @@ Export-Package:
  MWC.TacticalData.temporal,
  MWC.Tools.Tote,
  MWC.Utilities.Errors;uses:="MWC.GUI",
- MWC.Utilities.Errors.Testing;uses:="junit.framework",
+ MWC.Utilities.Errors.Testing,
  MWC.Utilities.ReaderWriter;uses:="javax.swing,MWC.GUI",
  MWC.Utilities.ReaderWriter.Word,
  MWC.Utilities.ReaderWriter.XML;
@@ -270,10 +263,9 @@ Export-Package:
    org.xml.sax",
  MWC.Utilities.ReaderWriter.json;
   uses:="com.fasterxml.jackson.databind.node,
-   junit.framework,
    MWC.TacticalData,
    com.fasterxml.jackson.databind",
- MWC.Utilities.TextFormatting;uses:="junit.framework,MWC.GenericData",
+ MWC.Utilities.TextFormatting;uses:="MWC.GenericData",
  MWC.Utilities.Timer,
  codecLib.mpa,
  com.bbn.openmap;
@@ -1362,6 +1354,5 @@ Export-Package:
  vrml;uses:="javax.media.j3d,com.sun.j3d.loaders.vrml97.impl",
  vrml.field;uses:="vrml,com.sun.j3d.loaders.vrml97.impl",
  vrml.node;uses:="vrml,com.sun.j3d.loaders.vrml97.impl"
-Require-Bundle: org.junit;visibility:=reexport,
- org.mwc.cmap.jfreechart;bundle-version="1.0.16";visibility:=reexport
+Require-Bundle: org.mwc.cmap.jfreechart;bundle-version="1.0.16";visibility:=reexport
 Bundle-RequiredExecutionEnvironment: JavaSE-21

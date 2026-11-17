@@ -26,7 +26,6 @@ import ASSET.Participants.Category;
 import ASSET.Participants.DemandedStatus;
 import ASSET.Participants.Status;
 import ASSET.Scenario.ScenarioActivityMonitor;
-import ASSET.Util.SupportTesting;
 import MWC.GUI.Editable;
 import MWC.GenericData.WorldSpeed;
 
@@ -76,34 +75,6 @@ public class LaunchSensor extends CoreDecision implements Response, java.io.Seri
 			} catch (final java.beans.IntrospectionException e) {
 				return super.getPropertyDescriptors();
 			}
-		}
-	}
-
-	/**
-	 * ************************************************* testing
-	 * *************************************************
-	 */
-	public static class LaunchSensorTest extends SupportTesting.EditableTesting {
-		static public final String TEST_ALL_TEST_TYPE = "UNIT";
-
-		public LaunchSensorTest(final String val) {
-			super(val);
-		}
-
-		/**
-		 * get an object which we can test
-		 *
-		 * @return Editable object which we can check the properties for
-		 */
-		@Override
-		public Editable getEditable() {
-			return new LaunchSensor();
-		}
-
-		public void testCreate() {
-			// create the weapon
-
-			// todo: IMPLEMENT TESTS FOR THIS
 		}
 	}
 

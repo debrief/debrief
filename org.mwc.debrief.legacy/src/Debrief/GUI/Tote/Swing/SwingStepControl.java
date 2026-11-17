@@ -268,8 +268,6 @@ import javax.swing.event.ChangeListener;
 
 import Debrief.GUI.Tote.StepControl;
 import Debrief.GUI.Tote.Painters.PainterManager;
-import Debrief.Wrappers.LabelWrapper;
-import MWC.GUI.BaseLayer;
 import MWC.GUI.Editable;
 import MWC.GUI.Layers;
 import MWC.GUI.PlainChart;
@@ -279,7 +277,6 @@ import MWC.GUI.Properties.Swing.SwingPropertiesPanel;
 import MWC.GUI.Tools.Swing.MyMetalToolBarUI;
 import MWC.GUI.Tools.Swing.RepeaterButton;
 import MWC.GenericData.HiResDate;
-import MWC.GenericData.WorldLocation;
 
 public final class SwingStepControl extends StepControl implements java.awt.event.ActionListener {
 	static final class FakeEvent extends AbstractAction {
@@ -433,45 +430,6 @@ public final class SwingStepControl extends StepControl implements java.awt.even
 					setBorderPainted(false);
 				}
 			});
-		}
-	}
-
-	// ////////////////////////////////////////////////////////////////////////////////////////////////
-	// testing for this class
-	// ////////////////////////////////////////////////////////////////////////////////////////////////
-	static public final class testStepper extends junit.framework.TestCase {
-		static public final String TEST_ALL_TEST_TYPE = "UNIT";
-
-		public testStepper(final String val) {
-			super(val);
-		}
-
-		public final void testStepperFormatting() {
-
-			// create some dummy data so the panel has start/stop times
-			final Layers layers = new Layers();
-			final BaseLayer base = new BaseLayer();
-			base.setName("Ian's layer");
-			layers.addThisLayer(base);
-			final LabelWrapper label = new LabelWrapper("my label", new WorldLocation(12, 12, 100), Color.red,
-					new HiResDate(120000000), new HiResDate(150000000));
-			base.add(label);
-
-			// ok, create a new SwingStepControl
-			final SwingStepControl ssc = new SwingStepControl(null, layers, null, null, null, null);
-
-			// check this is valid
-			final MWC.GUI.Properties.DateFormatPropertyEditor pe = new MyDateEditor();
-
-			final String[] tags = pe.getTags();
-
-			// check we found tags
-			assertNotNull("tags got found from property editor", tags);
-			assertEquals("tags found from property editor", 7, tags.length);
-
-			// and ditch the stuff
-			ssc.closeMe();
-
 		}
 	}
 

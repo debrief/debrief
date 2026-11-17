@@ -47,7 +47,6 @@ import MWC.GenericData.WorldSpeed;
 import MWC.TacticalData.Fix;
 import MWC.Utilities.TextFormatting.FormatRNDateTime;
 import MWC.Utilities.TextFormatting.GMTDateFormat;
-import junit.framework.TestCase;
 
 public class OTH_Importer {
 
@@ -59,7 +58,7 @@ public class OTH_Importer {
 	 * package up the action that adds the data to the layers target
 	 *
 	 */
-	private static class ImportOTHAction implements Action {
+	static class ImportOTHAction implements Action {
 		private final List<TrackWrapper> _tracks;
 		private final List<BaseLayer> _ellipseLayers;
 		private final Layers _layers;
@@ -177,199 +176,7 @@ public class OTH_Importer {
 		}
 	}
 
-	public static class OTH_ImporterTest extends TestCase {
-		static class Logger implements ErrorLogger {
-			private final List<String> messages = new ArrayList<String>();
-
-			private final boolean console = true;
-
-			private void clear() {
-				messages.clear();
-			}
-
-			private boolean isEmpty() {
-				return messages.isEmpty();
-			}
-
-			private String last() {
-				return messages.get(messages.size() - 1);
-			}
-
-			@Override
-			public void logError(final int status, final String text, final Exception e) {
-				output(text, e);
-			}
-
-			@Override
-			public void logError(final int status, final String text, final Exception e, final boolean revealLog) {
-				output(text, e);
-			}
-
-			@Override
-			public void logStack(final int status, final String text) {
-				output(text, null);
-			}
-
-			public void output(final String text, final Exception e) {
-				messages.add(text);
-				if (console) {
-					System.out.println(text);
-					if (e != null) {
-						e.printStackTrace();
-					}
-				}
-			}
-		}
-
-		static public final String TEST_ALL_TEST_TYPE = "UNIT";
-
-		private final String root = "../org.mwc.debrief.legacy/test_data/OTH_Import";
-
-		private final Logger _logger = new Logger();
-
-		@Override
-		public void setUp() {
-			_logger.clear();
-			setLogFeedback(true);
-		}
-
-		public void testBadlyFormattedFields() {
-
-			/*
-			 * unexpected units in the bagging area
-			 *
-			 */
-			_logger.clear();
-			assertEquals("not T markers", 0d,
-					courseFor("POS/112313Z1/AUG/4612N34/02122W7//170T/11NM/13NM/300a/2K/", _logger));
-			assertEquals("correct message", "Failed to parse course:For input string: \"300a\"", _logger.last());
-
-			_logger.clear();
-			assertEquals("got speed", 0d,
-					speedFor("POS/112313Z1/AUG/4612N34/02122W7//170T/11NM/13NM/200T/2MS/", _logger));
-			assertEquals("correct message", "Failed to parse speed:For input string: \"2MS\"", _logger.last());
-
-		}
-
-		public void testCanLoad() {
-			assertFalse("doesn't load dodgy file", canLoad(root + "/really_bad.txt", new Logger()));
-			assertTrue("loads valid file", canLoad(root + "/valid.txt", new Logger()));
-
-			// this time, verify the message
-			assertFalse("missing pos", canLoad(root + "/missing_pos.txt", _logger));
-			assertEquals("correct error message", "OTH Import rejecting file, Header:true Track:true Pos:false",
-					_logger.last());
-		}
-
-		public void testGetLocation() {
-			assertEquals("got location", " 46\u00B012'00.00\"N 021\u00B022'00.00\"E ",
-					locationFrom("POS/112313Z1/AUG/4612N34/02122E7//170T/11NM/13NM/000T/0K/", _logger).toString());
-
-			assertEquals("got location", " 22\u00B011'00.00\"N 021\u00B042'00.00\"W ",
-					locationFrom("POS/120502Z0/DEC/2211N6/02142W9///170T/11NM/13NM/000T/0K/", _logger).toString());
-		}
-
-		public void testGetName() {
-			assertEquals("got good name", "TYPE 12-HOOD", nameFrom("CTC/12345AB6/TYPE 12-HOOD//DDGH/NAV/D 32/UK/"));
-			assertNull("not got name", nameFrom("CTC/12345AB6"));
-		}
-
-		public void testGoodFields() {
-
-			assertEquals("got course", Math.toRadians(300d),
-					courseFor("POS/112313Z1/AUG/4612N34/02122W7//170T/11NM/13NM/300T/2K/", _logger));
-			assertEquals("got speed", new WorldSpeed(2, WorldSpeed.Kts).getValueIn(WorldSpeed.ft_sec) / 3d,
-					speedFor("POS/112313Z1/AUG/4612N34/02122W7//170T/11NM/13NM/200T/2K/", _logger));
-		}
-
-		public void testGoodLoad() throws Exception {
-			final OTH_Importer importer = new OTH_Importer();
-			final Layers layers = new Layers();
-
-			final OTH_Helper brtHelper = new OTH_Helper_Headless(true);
-			final InputStream is = new FileInputStream(root + "/valid.txt");
-			final ImportOTHAction action = importer.importThis(brtHelper, is, layers, _logger);
-			action.execute();
-
-			assertEquals("has data", 2, layers.size());
-
-			final TrackWrapper track = (TrackWrapper) layers.elementAt(0);
-			final BaseLayer ellipses = (BaseLayer) layers.elementAt(1);
-
-			assertEquals("correct fixes", 3, track.numFixes());
-			assertEquals("correct ellipses", 3, ellipses.size());
-
-			// and undo it
-			action.undo();
-
-			assertEquals("has data", 0, layers.size());
-		}
-
-		public void testInsufficientFields() {
-			/*
-			 * missing fields
-			 *
-			 */
-			_logger.clear();
-			assertEquals("not got speed", 0d, speedFor("POS/112313Z1/AUG/4612N34/02122W7", _logger));
-			assertEquals("correct message", "Insufficient fields in POS line:POS/112313Z1/AUG/4612N34/02122W7",
-					_logger.last());
-
-			_logger.clear();
-			assertEquals("not got course", 0d, courseFor("POS/112313Z1/AUG/4612N34/02122W7//170T/11NM/13NM", _logger));
-			assertEquals("correct message",
-					"Insufficient fields in POS line:POS/112313Z1/AUG/4612N34/02122W7//170T/11NM/13NM", _logger.last());
-		}
-
-		public void testParseYear() {
-			_logger.clear();
-			assertEquals("good year", 19, parseYear(_logger, "some string more string 19"));
-			assertTrue("empty logger", _logger.isEmpty());
-
-			_logger.clear();
-			assertEquals("bad year", YEAR_UNKNOWN, parseYear(_logger, "some string more string 1a9"));
-			assertEquals("correct message", "Failed to extract year from last token in:some string more string 1a9",
-					_logger.last());
-
-			_logger.clear();
-			assertEquals("bad year", YEAR_UNKNOWN, parseYear(_logger, ""));
-			assertEquals("correct message", "Failed to extract year from empty first line", _logger.last());
-
-		}
-
-		public void testTrackAlreadyPresent() throws Exception {
-			final OTH_Importer importer = new OTH_Importer();
-			final Layers layers = new Layers();
-
-			final TrackWrapper existing_track = new TrackWrapper();
-			existing_track.setName("TYPE 12-HOOD");
-			existing_track
-					.addFix(new FixWrapper(new Fix(new HiResDate(10000000), new WorldLocation(33, 4, 0d), 33, 22)));
-			layers.addThisLayer(existing_track);
-			assertEquals("just one position", 1, existing_track.numFixes());
-
-			final OTH_Helper brtHelper = new OTH_Helper_Headless(true);
-			final InputStream is = new FileInputStream(root + "/valid.txt");
-			final ImportOTHAction action = importer.importThis(brtHelper, is, layers, _logger);
-			action.execute();
-
-			assertEquals("has data", 2, layers.size());
-
-			final TrackWrapper track = (TrackWrapper) layers.elementAt(0);
-			final BaseLayer ellipses = (BaseLayer) layers.elementAt(1);
-
-			assertEquals("correct fixes", 4, track.numFixes());
-			assertEquals("correct ellipses", 3, ellipses.size());
-
-			// and undo it
-			action.undo();
-
-			assertEquals("has data", 1, layers.size());
-			assertEquals("just one position", 1, existing_track.numFixes());
-		}
-	}
-
-	private final static int YEAR_UNKNOWN = -1;
+	final static int YEAR_UNKNOWN = -1;
 
 	private static final String HEADER_STR = "MSGID";
 
@@ -446,7 +253,7 @@ public class OTH_Importer {
 		return res;
 	}
 
-	private static double courseFor(final String line, final ErrorLogger logger) {
+	static double courseFor(final String line, final ErrorLogger logger) {
 		final Double res = getField(line, logger, "T", 9, "course", new ExtractValue<Double>() {
 
 			@Override
@@ -573,7 +380,7 @@ public class OTH_Importer {
 		return hemiVal * (degs + mins / 60d);
 	}
 
-	private static WorldLocation locationFrom(final String line, final ErrorLogger logger) {
+	static WorldLocation locationFrom(final String line, final ErrorLogger logger) {
 		// POS/112313Z1/AUG/4612N34/02122W7//170T/11NM/13NM/000T/0K/
 
 		WorldLocation res = null;
@@ -603,7 +410,7 @@ public class OTH_Importer {
 		return hemiVal * (degs + mins / 60d);
 	}
 
-	private static String nameFrom(final String line) {
+	static String nameFrom(final String line) {
 		final String[] tokens = line.split("/");
 		if (tokens.length >= 3) {
 			return tokens[2];
@@ -612,7 +419,7 @@ public class OTH_Importer {
 		}
 	}
 
-	private static int parseYear(final ErrorLogger logger, final String line) {
+	static int parseYear(final ErrorLogger logger, final String line) {
 		int res = YEAR_UNKNOWN;
 		final String[] tokens = line.split(" ");
 		if (tokens.length <= 1) {
@@ -762,11 +569,11 @@ public class OTH_Importer {
 		return brtData;
 	}
 
-	private static void setLogFeedback(final boolean logFeedback) {
+	static void setLogFeedback(final boolean logFeedback) {
 		_logFeedback = logFeedback;
 	}
 
-	private static double speedFor(final String line, final ErrorLogger logger) {
+	static double speedFor(final String line, final ErrorLogger logger) {
 		final Double res = getField(line, logger, "K", 10, "speed", new ExtractValue<Double>() {
 			@Override
 			public Double extract(final String txt) {

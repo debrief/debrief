@@ -21,8 +21,6 @@ import java.io.IOException;
 
 import javax.imageio.ImageIO;
 
-import junit.framework.AssertionFailedError;
-
 /**
  * Compares a rendered image against a committed reference PNG, with a
  * per-pixel tolerance, so that a library upgrade which changes how a plot is
@@ -88,14 +86,14 @@ public final class GoldenImage {
 		}
 		if (!golden.isFile()) {
 			final File written = writeFailure(name, "actual", actual);
-			throw new AssertionFailedError("Golden image " + golden.getCanonicalPath() + " is missing. Actual image written to "
+			throw new AssertionError("Golden image " + golden.getCanonicalPath() + " is missing. Actual image written to "
 					+ written.getCanonicalPath() + ". Run the test with " + GoldenFile.REGENERATE_ENV
 					+ "=true to create it.");
 		}
 		final BufferedImage expected = ImageIO.read(golden);
 		if (expected.getWidth() != actual.getWidth() || expected.getHeight() != actual.getHeight()) {
 			final File written = writeFailure(name, "actual", actual);
-			throw new AssertionFailedError("Image size differs from golden image " + golden.getCanonicalPath()
+			throw new AssertionError("Image size differs from golden image " + golden.getCanonicalPath()
 					+ ": expected " + expected.getWidth() + "x" + expected.getHeight() + " but was "
 					+ actual.getWidth() + "x" + actual.getHeight() + ". Actual image written to "
 					+ written.getCanonicalPath());
@@ -104,7 +102,7 @@ public final class GoldenImage {
 		if (c.fraction() > maxDifferentFraction) {
 			final File actualFile = writeFailure(name, "actual", actual);
 			final File diffFile = writeFailure(name, "diff", c.diff);
-			throw new AssertionFailedError(String.format(
+			throw new AssertionError(String.format(
 					"Image differs from golden image %s: %d of %d pixels (%.3f%%) differ by more than %d,"
 							+ " above the limit of %.3f%%. Actual image: %s; diff: %s. If the change is intended,"
 							+ " regenerate with %s=true and explain why in the pull request.",

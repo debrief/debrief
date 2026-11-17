@@ -137,7 +137,6 @@ import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
 import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.Vector;
 
 import MWC.GUI.CanvasType;
 import MWC.GUI.Editable;
@@ -182,23 +181,6 @@ public class CircleShape extends PlainShape implements Editable, HasDraggableCom
 			} catch (final IntrospectionException e) {
 				return super.getPropertyDescriptors();
 			}
-		}
-	}
-
-	// ////////////////////////////////////////////////////////////////////////////////////////////////
-	// testing for this class
-	// ////////////////////////////////////////////////////////////////////////////////////////////////
-	static public class CircleTest extends junit.framework.TestCase {
-		static public final String TEST_ALL_TEST_TYPE = "UNIT";
-
-		public CircleTest(final String val) {
-			super(val);
-		}
-
-		public void testMyParams() {
-			MWC.GUI.Editable ed = new CircleShape(new WorldLocation(2d, 2d, 2d), 2d);
-			MWC.GUI.Editable.editableTesterSupport.testParams(ed, this);
-			ed = null;
 		}
 	}
 

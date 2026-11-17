@@ -16,7 +16,6 @@
 package ASSET.GUI.CommandLine;
 
 import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -41,7 +40,6 @@ import ASSET.Scenario.Observers.RecordToFileObserverType;
 import ASSET.Scenario.Observers.ScenarioObserver;
 import ASSET.Scenario.Observers.ScenarioStatusObserver;
 import ASSET.Scenario.Observers.TimeObserver;
-import ASSET.Util.SupportTesting;
 import ASSET.Util.MonteCarlo.ScenarioGenerator;
 import ASSET.Util.XML.ASSETReaderWriter;
 import ASSET.Util.XML.ASSETReaderWriter.ResultsContainer;
@@ -112,64 +110,6 @@ public class MultiScenarioCore implements ISimulationQue {
 		}
 	}
 
-	// //////////////////////////////////////////////////////////
-	// testing stuff
-	// //////////////////////////////////////////////////////////
-	public static class MultiServerTest extends SupportTesting {
-		public MultiServerTest(final String val) {
-			super(val);
-		}
-
-		public void testCommandLineMainProcessing() {
-			final String[] args = new String[2];
-			args[0] = "../org.mwc.asset.legacy/src/ASSET/Util/MonteCarlo/test_variance_scenario.xml";
-			args[1] = "../org.mwc.asset.legacy/src/ASSET/Util/MonteCarlo/test_variance_realistic.xml";
-
-			CommandLine.main(args);
-		}
-
-		public void testValidStartup() {
-			final ByteArrayOutputStream bos = new ByteArrayOutputStream();
-			final ByteArrayOutputStream bes = new ByteArrayOutputStream();
-
-			final PrintStream out = new PrintStream(bos);
-			final PrintStream err = new PrintStream(bes);
-			final InputStream in = new ByteArrayInputStream(new byte[] {});
-
-			bos.reset();
-			bes.reset();
-			final String[] args = new String[2];
-			args[1] = "../org.mwc.asset.legacy/src/ASSET/Util/MonteCarlo/test_variance_scenario.xml";
-			args[0] = "../org.mwc.asset.legacy/src/ASSET/Util/MonteCarlo/test_variance1.xml";
-			// args[1] =
-			// "..\\src\\java\\ASSET_SRC\\ASSET\\Util\\MonteCarlo\\test_variance1.xml";
-			final MultiScenarioCore scen = new MultiScenarioCore();
-			final ASSETProgressMonitor pMon = new ASSETProgressMonitor() {
-				@Override
-				public void beginTask(final String name, final int totalWork) {
-				}
-
-				@Override
-				public void worked(final int work) {
-				}
-			};
-			int res = 0;
-			try {
-				res = scen.prepareFiles(args[0], args[1], out, err, in, pMon, null);
-			} catch (final XPathExpressionException e) {
-				e.printStackTrace();
-			}
-			assertEquals("ran ok", SUCCESS, res);
-
-			// check the contents of the error message
-			assertEquals("no error reported", 0, bes.size());
-
-			// check the scenarios got created
-			final Vector<Document> scenarios = scen._myScenarioDocuments;
-			assertEquals("scenarios got created", 3, scenarios.size());
-		}
-	}
-
 	/**
 	 * success code to prove it ran ok
 	 */
@@ -195,16 +135,6 @@ public class MultiScenarioCore implements ISimulationQue {
 	 */
 	static int TROUBLE_MAKING_FILES = 4;
 
-	/**
-	 * main method, of course - decides whether to handle this ourselves, or to pass
-	 * it on to the command line
-	 *
-	 * @param args
-	 */
-	public static void main(final String[] args) {
-		final MultiServerTest tm = new MultiServerTest("me");
-		SupportTesting.callTestMethods(tm);
-	}
 
 	/**
 	 * the scenario generator that does all the work

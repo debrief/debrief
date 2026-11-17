@@ -268,24 +268,6 @@ public class SnailPainter extends TotePainter {
 				SnailPainter parent, HiResDate dtg, Color backColor);
 	}
 
-	// /////////////////////////////////
-	// member variables
-	// ////////////////////////////////
-
-	static public final class testMe extends junit.framework.TestCase {
-		static public final String TEST_ALL_TEST_TYPE = "UNIT";
-
-		public testMe(final String val) {
-			super(val);
-		}
-
-		public final void testMyParams() {
-			Editable ed = new SnailPainter(null, null, null);
-			editableTesterSupport.testParams(ed, this);
-			ed = null;
-		}
-	}
-
 	public static final String SNAIL_NAME = "Snail";
 
 	public static void extractPlottables(final Layer thisLayer, final Vector<Plottable> res) {

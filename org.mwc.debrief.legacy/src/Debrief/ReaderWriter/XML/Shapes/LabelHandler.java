@@ -28,57 +28,12 @@ import MWC.Utilities.ReaderWriter.XML.Util.TimeRangeHandler;
 
 abstract public class LabelHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLReader implements PlottableExporter {
 
-	//////////////////////////////////////////////////////////////////////////////////////////////////
-	// testing for this class
-	//////////////////////////////////////////////////////////////////////////////////////////////////
-	static public final class testMe extends junit.framework.TestCase {
-		static public final String TEST_ALL_TEST_TYPE = "UNIT";
-
-		public testMe(final String val) {
-			super(val);
-		}
-
-		public final void testConversion() {
-			final String start = "here\\nand there\\nalpha";
-
-			String other = MWCXMLReader.fromXML(start);
-			assertEquals("strings match on way to XML", "here\nand there\nalpha", other);
-
-			final String andBack = MWCXMLReader.toXML(other);
-
-			assertEquals("strings match on way back to text", start, andBack);
-
-			if (!andBack.equals(start)) {
-				System.out.println("second one failed");
-			}
-
-			// check they handle null strings
-			other = MWCXMLReader.toXML(null);
-			assertEquals("handled null string going to XML", "", other);
-
-			other = MWCXMLReader.fromXML(null);
-			assertEquals("handled null string going from XML", "", other);
-
-			// check they handle short strings
-			other = MWCXMLReader.toXML("");
-			assertEquals("handled empty string going to XML", "", other);
-
-			other = MWCXMLReader.fromXML("");
-			assertEquals("handled empty string going from XML", "", other);
-		}
-	}
-
 	/**
 	 * class which contains list of textual representations of label locations
 	 */
 	static private final MWC.GUI.Properties.LocationPropertyEditor lp = new MWC.GUI.Properties.LocationPropertyEditor();
 	static private final MWC.GUI.Shapes.Symbols.SymbolScalePropertyEditor ss_editor = new MWC.GUI.Shapes.Symbols.SymbolScalePropertyEditor();
 
-	public static void main(final String[] args) {
-		final testMe tm = new testMe("here");
-		tm.testConversion();
-
-	}
 
 	java.awt.Color _theColor;
 	boolean _isVisible;

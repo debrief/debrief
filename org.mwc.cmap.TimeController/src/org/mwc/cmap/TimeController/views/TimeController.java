@@ -15,15 +15,15 @@
 
 package org.mwc.cmap.TimeController.views;
 
+import static MWC.Utilities.Errors.Testing.Checks.*;
+
 import java.awt.event.ActionEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -111,7 +111,6 @@ import MWC.TacticalData.temporal.TimeControlPreferences;
 import MWC.TacticalData.temporal.TimeProvider;
 import MWC.Utilities.TextFormatting.GMTDateFormat;
 import MWC.Utilities.Timer.TimerListener;
-import junit.framework.TestCase;
 
 /**
  * View performing time management: show current time, allow control of time,
@@ -354,91 +353,6 @@ public class TimeController extends ViewPart implements ISelectionProvider, Time
 	 */
 	protected enum STEP_SIZE {
 		END, SMALL, NORMAL, LARGE
-	}
-
-	public static class TestTimeController extends TestCase {
-		private int _min;
-
-		private int _max;
-
-		private int _smallTick;
-
-		private int _largeTick;
-
-		private int _dragSize;
-
-		private boolean _enabled;
-
-		public void testSliderScales() {
-			final SliderRangeManagement range = new SliderRangeManagement() {
-				@Override
-				public void setEnabled(final boolean val) {
-					_enabled = val;
-				}
-
-				@Override
-				public void setMaxVal(final int max) {
-					_max = max;
-				}
-
-				@Override
-				public void setMinVal(final int min) {
-					_min = min;
-				}
-
-				@Override
-				public void setTickSize(final int small, final int large, final int drag) {
-					_smallTick = small;
-					_largeTick = large;
-					_dragSize = drag;
-				}
-			};
-
-			// initialise our testing values
-			_min = _max = _smallTick = _largeTick = -1;
-			_enabled = false;
-
-			HiResDate starter = new HiResDate(0, 100);
-			HiResDate ender = new HiResDate(0, 200);
-			range.resetRange(starter, ender);
-
-			assertEquals("min val set", 0, _min);
-			assertEquals("max val set", 100, _max);
-			assertEquals("sml tick set", 1, _smallTick);
-			assertEquals("drag size set", 0, _dragSize);
-			assertEquals("large tick set", 1000, _largeTick);
-
-			assertTrue("slider should be enabled", _enabled);
-
-			// ok, see how the transfer goes
-			HiResDate newToSlider = new HiResDate(0, 130);
-			final int res = range.toSliderUnits(newToSlider);
-			assertEquals("correct to slider units", 30, res);
-
-			// and backwards
-			newToSlider = range.fromSliderUnits(res, 1000);
-			assertEquals("correct from slider units", 130, newToSlider.getMicros());
-
-			// right, now back to millis
-			final Calendar cal = new GregorianCalendar();
-
-			cal.set(2005, 3, 3, 12, 1, 1);
-			final Date starterD = cal.getTime();
-
-			cal.set(2005, 3, 12, 12, 1, 1);
-			final Date enderD = cal.getTime();
-
-			starter = new HiResDate(starterD.getTime());
-			ender = new HiResDate(enderD.getTime());
-			range.resetRange(starter, ender);
-
-			final long diff = (enderD.getTime() - starterD.getTime()) / 1000;
-			assertEquals("correct range in secs", diff, _max);
-			assertEquals("sml tick set", 1, _smallTick);
-			assertEquals("large tick set", 60000, _largeTick);
-
-		}
-
 	}
 
 	protected class WheelMovedEvent implements Listener {
@@ -1473,9 +1387,9 @@ public class TimeController extends ViewPart implements ISelectionProvider, Time
 	 */
 	public void doTests() {
 		// check we have some data
-		TestCase.assertNotNull("check we have time to control", _controllableTime);
-		TestCase.assertNotNull("check we have time provider", _myTemporalDataset);
-		TestCase.assertNotNull("check we have period to control", _controllablePeriod);
+		assertNotNull(_controllableTime, "check we have time to control");
+		assertNotNull(_myTemporalDataset, "check we have time provider");
+		assertNotNull(_controllablePeriod, "check we have period to control");
 
 		final Object oldDtgFormat = _myStepperProperties.getPropertyValue(TimeControlProperties.DTG_FORMAT_ID);
 
@@ -1495,7 +1409,7 @@ public class TimeController extends ViewPart implements ISelectionProvider, Time
 			// find the new time
 			final HiResDate tNew = _myTemporalDataset.getTime();
 
-			TestCase.assertNotSame("time has changed", "" + tNew.getMicros(), "" + tNow.getMicros());
+			assertNotSame("" + tNew.getMicros(), "" + tNow.getMicros(), "time has changed");
 
 			// ok, go back to the demanded time (in case we loaded the plot with a
 			// different saved time)
@@ -1505,7 +1419,7 @@ public class TimeController extends ViewPart implements ISelectionProvider, Time
 			final String timeStr = _timeLabel.getText();
 
 			// check it's what we're expecting
-			TestCase.assertEquals("time is correct", timeStr, "120600:00");
+			assertEquals(timeStr, "120600:00", "time is correct");
 
 		} finally {
 			_myStepperProperties.setPropertyValue(TimeControlProperties.DTG_FORMAT_ID, oldDtgFormat);

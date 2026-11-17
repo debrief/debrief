@@ -115,3 +115,6 @@ org.mwc.debrief.legacy/test_data/PackPresentation/designedFolderTest.pptx
 org.mwc.debrief.legacy/test_data/PackPresentation/designedFolderTest/
 # saved then deleted by the Lite TestFileRibbon UI test
 org.mwc.cmap.combined.feature/root_installs/sample_data/boat1.dpf
+
+# test sources may sit in a package called target
+!/*/test/**/target/

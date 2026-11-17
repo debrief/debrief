@@ -125,23 +125,6 @@ public class TimeDisplayPainter implements Plottable, DynamicPlottable, Extended
 		}
 	}
 
-	// ////////////////////////////////////////////////////////////////////////////////////////////////
-	// testing for this class
-	// ////////////////////////////////////////////////////////////////////////////////////////////////
-	static public class TimeDisplayPainterTest extends junit.framework.TestCase {
-		static public final String TEST_ALL_TEST_TYPE = "UNIT";
-
-		public TimeDisplayPainterTest(final String val) {
-			super(val);
-		}
-
-		public void testMyParams() {
-			MWC.GUI.Editable ed = new TimeDisplayPainter();
-			MWC.GUI.Editable.editableTesterSupport.testParams(ed, this);
-			ed = null;
-		}
-	}
-
 	private static final String DAYS = "Days";
 	private static final String HOURS = "Hours";
 	private static final String MINS = "Mins";

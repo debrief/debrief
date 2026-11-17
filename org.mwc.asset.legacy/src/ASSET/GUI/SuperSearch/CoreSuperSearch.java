@@ -225,7 +225,7 @@ public class CoreSuperSearch implements ASSET.Scenario.ScenarioSteppedListener {
 	//
 	// // move, and see if it has moved
 	// css._myScenario.step();
-	// super.assertTrue("We've moved", (pl.getLocation() != newLocation));
+	// assertTrue("We've moved", (pl.getLocation() != newLocation));
 	// System.out.println("range:" +
 	// MWC.Algorithms.Conversions.Degs2Yds(pl.getLocation().rangeFrom(newLocation)));
 	//

@@ -25,10 +25,7 @@ import ASSET.Models.Movement.SimpleDemandedStatus;
 import ASSET.Participants.DemandedStatus;
 import ASSET.Participants.Status;
 import ASSET.Scenario.ScenarioActivityMonitor;
-import ASSET.Util.SupportTesting;
-import MWC.GUI.Editable;
 import MWC.GenericData.Duration;
-import MWC.GenericData.WorldLocation;
 import MWC.GenericData.WorldSpeed;
 
 /**
@@ -131,62 +128,6 @@ public class Wait extends CoreDecision implements Serializable {
 				e.printStackTrace();
 				return super.getPropertyDescriptors();
 			}
-		}
-	}
-
-	//////////////////////////////////////////////////
-	// testing
-	//////////////////////////////////////////////////
-	static public class WaitTest extends SupportTesting.EditableTesting {
-		static public final String TEST_ALL_TEST_TYPE = "UNIT";
-
-		public WaitTest(final String val) {
-			super(val);
-		}
-
-		/**
-		 * get an object which we can test
-		 *
-		 * @return Editable object which we can check the properties for
-		 */
-		@Override
-		public Editable getEditable() {
-			return new Wait(null, "my name");
-		}
-
-		public void testSimple() {
-			final Duration dur = new Duration(12, Duration.SECONDS);
-			final Wait wt = new Wait(dur, "do a wait");
-
-			// ok, give it a test.
-			final Status stat = new Status(12, 0);
-			stat.setTime(0);
-			stat.setSpeed(new WorldSpeed(2, WorldSpeed.Kts));
-			stat.setLocation(new WorldLocation(0, 0, 0));
-			DemandedStatus res = new SimpleDemandedStatus(0, stat);
-
-			stat.setTime(stat.getTime() + 1000);
-			res = wt.decide(stat, null, res, null, null, stat.getTime());
-
-			// have we set the correct expiry time?
-			assertEquals("correct expiry time set", 13000, wt._expiryTime, 0);
-
-			// are we continuing in state?
-			assertNotNull("returned dem status", res);
-
-			res = wt.decide(stat, null, res, null, null, stat.getTime());
-			stat.setTime(stat.getTime() + 1000);
-
-			res = wt.decide(stat, null, res, null, null, stat.getTime());
-			stat.setTime(stat.getTime() + 10000);
-
-			res = wt.decide(stat, null, res, null, null, stat.getTime());
-			stat.setTime(stat.getTime() + 1000);
-			res = wt.decide(stat, null, res, null, null, stat.getTime());
-			stat.setTime(stat.getTime() + 1000);
-			res = wt.decide(stat, null, res, null, null, stat.getTime());
-			assertNull("dropped out", res);
-
 		}
 	}
 

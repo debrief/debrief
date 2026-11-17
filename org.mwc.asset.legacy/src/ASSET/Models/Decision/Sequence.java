@@ -19,11 +19,9 @@ import java.util.Vector;
 
 import ASSET.Models.DecisionType;
 import ASSET.Models.Detection.DetectionList;
-import ASSET.Models.Movement.SimpleDemandedStatus;
 import ASSET.Participants.DemandedStatus;
 import ASSET.Participants.Status;
 import ASSET.Scenario.ScenarioActivityMonitor;
-import ASSET.Util.SupportTesting;
 import MWC.GUI.Editable;
 
 /**
@@ -100,227 +98,6 @@ public class Sequence extends Waterfall {
 		}
 	}
 
-	//////////////////////////////////////////////////////////////////////////////////////////////////
-	// testing for this class
-	//////////////////////////////////////////////////////////////////////////////////////////////////
-	public static class SequenceTest extends SupportTesting.EditableTesting {
-		private static class MyDecision extends CoreDecision {
-			public DemandedStatus myRes = null;
-
-			public boolean hasRestarted = false;
-
-			public MyDecision() {
-				super("My Decision");
-			}
-
-			@Override
-			public DemandedStatus decide(final Status status, final ASSET.Models.Movement.MovementCharacteristics chars,
-					final DemandedStatus demStatus, final DetectionList detections,
-					final ScenarioActivityMonitor monitor, final long time) {
-				hasRestarted = false;
-				return myRes;
-			}
-
-			@Override
-			public Editable.EditorType getInfo() {
-				return null;
-			}
-
-			@Override
-			public String getVersion() {
-				return "$Date$";
-			}
-
-			@Override
-			public boolean hasEditor() {
-				return false;
-			}
-
-			/**
-			 * indicate to this model that its execution has been interrupted by another
-			 * (prob higher priority) model
-			 *
-			 * @param currentStatus
-			 */
-			@Override
-			public void interrupted(final Status currentStatus) {
-				// ignore.
-			}
-
-			@Override
-			public void restart() {
-				hasRestarted = true;
-			}
-
-		}
-
-		static public final String TEST_ALL_TEST_TYPE = "UNIT";
-
-		public SequenceTest(final String val) {
-			super(val);
-		}
-
-		/**
-		 * get an object which we can test
-		 *
-		 * @return Editable object which we can check the properties for
-		 */
-		@Override
-		public Editable getEditable() {
-			return new Sequence(true, "test behaviour");
-		}
-
-		public void testTheSequence() {
-			// ok, let's get going
-			final Sequence seq = new Sequence(true, MY_NAME);
-
-			// create a valid demanded status to test against
-			final SimpleDemandedStatus validA = new SimpleDemandedStatus(1, 12000);
-			final SimpleDemandedStatus validB = new SimpleDemandedStatus(1, 12000);
-			final SimpleDemandedStatus validD = new SimpleDemandedStatus(1, 12000);
-
-			// initialise the settings
-			seq.setIsAlive(true);
-			seq.setStayAlive(false);
-
-			// give it a trial run (without data)
-			final Status initialStat = new Status(12, 12000);
-			DemandedStatus ds = seq.decide(initialStat, null, null, null, null, 1200);
-
-			assertTrue("no demanded stat with empty behaviours", ds == null);
-			assertEquals("is now dead", seq.getIsAlive(), false);
-
-			// create a few behaviours
-			final MyDecision da = new MyDecision();
-			final MyDecision db = new MyDecision();
-			final MyDecision dc = new MyDecision();
-			final MyDecision dd = new MyDecision();
-
-			// and insert them
-			seq.insertAtHead(dc);
-			seq.insertAtHead(db);
-
-			// check they're in the correct order
-			assertEquals("b at head", seq.getModels().get(0), db);
-			assertEquals("c at foot", seq.getModels().get(1), dc);
-
-			// and a couple more
-			seq.insertAtHead(da);
-			seq.insertAtFoot(dd);
-
-			// check they're in the correct order
-			assertEquals("a at head", seq.getModels().get(0), da);
-			assertEquals("d at foot", seq.getModels().get(3), dd);
-
-			// ok, start testing the decisions themselves
-			assertEquals("the current decision is correctly set", seq._currentDecision, 0);
-			// bring it back to life
-			seq.setIsAlive(true);
-			assertEquals("is already alive", seq.getIsAlive(), true);
-			ds = seq.decide(null, null, null, null, null, 100);
-
-			// hey, they're all returning null - check we've died
-			assertEquals("we returned null", ds, null);
-			assertEquals("we've now died", seq.getIsAlive(), false);
-
-			// revive us, and set stay alive to true
-			seq.setStayAlive(true);
-			seq.setIsAlive(true);
-
-			ds = seq.decide(null, null, null, null, null, 100);
-			// hey, they're all returning null - check we've died
-			assertEquals("we returned null", ds, null);
-			assertEquals("we've stayed alive", seq.getIsAlive(), true);
-
-			// ok, give a behaviour and run it
-			da.myRes = validA;
-
-			ds = seq.decide(null, null, null, null, null, 100);
-
-			// hey, a returns valid
-			assertEquals("we returned correct result", ds, validA);
-			assertEquals("we've stayed alive", seq.getIsAlive(), true);
-			assertEquals("we've got the correct behaviour", seq._currentDecision, 0);
-
-			// now give b a behaviour and try again
-			db.myRes = validB;
-
-			ds = seq.decide(null, null, null, null, null, 100);
-
-			// hey, a returns valid
-			assertEquals("we returned correct result", ds, validA);
-			assertEquals("we've stayed alive", seq.getIsAlive(), true);
-			assertEquals("we've got the correct behaviour", seq._currentDecision, 0);
-
-			// ditch valid behaviour for A, to switch to B
-			da.myRes = null;
-
-			ds = seq.decide(null, null, null, null, null, 100);
-
-			// hey, a returns valid
-			assertEquals("we returned correct result", ds, validB);
-			assertEquals("we've stayed alive", seq.getIsAlive(), true);
-			assertEquals("we've got the correct behaviour", seq._currentDecision, 1);
-
-			// give A it's behaviour back, to check it gets ignored
-			da.myRes = validA;
-
-			ds = seq.decide(null, null, null, null, null, 100);
-
-			// hey, a returns valid
-			assertEquals("we returned correct result", ds, validB);
-			assertEquals("we've stayed alive", seq.getIsAlive(), true);
-			assertEquals("we've got the correct behaviour", seq._currentDecision, 1);
-
-			// check behaviours cascade down to D
-			db.myRes = null;
-			dd.myRes = validD;
-
-			ds = seq.decide(null, null, null, null, null, 100);
-
-			// hey, a returns valid
-			assertEquals("we returned correct result", ds, validD);
-			assertEquals("we've stayed alive", seq.getIsAlive(), true);
-			assertEquals("we've got the correct behaviour", seq._currentDecision, 3);
-
-			// and check we can cascade back to the start
-			dd.myRes = null;
-
-			// ensure we're set to stay alive
-			seq.setStayAlive(true);
-
-			ds = seq.decide(null, null, null, null, null, 100);
-
-			// hey, a returns valid
-			assertEquals("we returned correct result", ds, null);
-			assertEquals("we've stayed alive", seq.getIsAlive(), true);
-			assertEquals("we've got the correct behaviour", seq._currentDecision, 0);
-
-			// check they restarted
-			assertTrue("a has restarted", da.hasRestarted);
-			assertTrue("b has restarted", db.hasRestarted);
-			assertTrue("c has restarted", dc.hasRestarted);
-
-			// put some data back int
-			da.myRes = validA;
-			db.myRes = validB;
-			dd.myRes = validD;
-
-			// move forward a single step (to cancel the has restarted flags)
-			ds = seq.decide(null, null, null, null, null, 100);
-
-			assertEquals("a has restarted", da.hasRestarted, false);
-
-			// finally, try the reset
-			seq.restart();
-			assertTrue("a has restarted", da.hasRestarted);
-			assertTrue("b has restarted", db.hasRestarted);
-			assertTrue("c has restarted", dc.hasRestarted);
-
-		}
-
-	}
-
 	/**
 	 *
 	 */
@@ -329,7 +106,7 @@ public class Sequence extends Waterfall {
 	/**
 	 * our behaviour name
 	 */
-	private static final String MY_NAME = "Sequence";
+	static final String MY_NAME = "Sequence";
 
 	/**
 	 * the index of the current behaviour

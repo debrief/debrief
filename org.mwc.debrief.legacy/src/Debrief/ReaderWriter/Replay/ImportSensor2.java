@@ -109,46 +109,6 @@ import MWC.Utilities.TextFormatting.DebriefFormatDateTime;
  * class to parse a label from a line of text
  */
 public final class ImportSensor2 extends AbstractPlainLineImporter {
-	// ////////////////////////////////////////////////////////////////////////////////////////////////
-	// testing for this class
-	// ////////////////////////////////////////////////////////////////////////////////////////////////
-	static public final class testMe extends junit.framework.TestCase {
-		static public final String TEST_ALL_TEST_TYPE = "UNIT";
-
-		public testMe(final String val) {
-			super(val);
-		}
-
-		public final void testImport() throws ParseException {
-			final String lineA = ";SENSOR2: 20090722 041434.000 NONSUCH @B NULL 59.3 300.8 49.96 NULL Contact_bearings 0414";
-			final String lineB = ";SENSOR2: 20090722 041434.000 NONSUCH @B NULL 59.3 300.8 49.96 NULL \"Contact bearings\" 0414";
-			final String lineTabs = ";SENSOR2:	20090722	041434.000	NONSUCH	@B	NULL	59.3	300.8	49.96	NULL	\"Contact bearings\"	0414";
-			final String lineD = ";SENSOR2: 20090722 041434.000 \"NON SUCH\" @B NULL 59.3 NULL NULL NULL \"Contact bearings\" 0414";
-
-			final ImportSensor2 is2 = new ImportSensor2();
-			final SensorContactWrapper resA = (SensorContactWrapper) is2.readThisLine(lineA);
-			assertEquals("lineA failed", "Contact_bearings", resA.getSensorName());
-			assertEquals("lineA failed", "0414", resA.getLabel());
-			final SensorContactWrapper resB = (SensorContactWrapper) is2.readThisLine(lineB);
-			assertEquals("lineB failed", "0414", resB.getLabel());
-			final SensorContactWrapper resC = (SensorContactWrapper) is2.readThisLine(lineTabs);
-			assertEquals("lineTabs failed", "0414", resC.getLabel());
-			final SensorContactWrapper resD = (SensorContactWrapper) is2.readThisLine(lineD);
-			assertEquals("lineD failed", "0414", resD.getLabel());
-		}
-
-		public final void testInvalidImport() {
-			final String lineA = ";SENSOR2: 20090022 041434.000 NONSUCH @B NULL 59.3 300.8 49.96 NULL Contact_bearings 0414";
-
-			final ImportSensor2 is2 = new ImportSensor2();
-			SensorContactWrapper resA = null;
-			try {
-				resA = (SensorContactWrapper) is2.readThisLine(lineA);
-			} catch (final ParseException e) {
-			}
-			assertNull("should have failed", resA);
-		}
-	}
 
 	/**
 	 * the type for this string

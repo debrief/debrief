@@ -15,6 +15,9 @@
 
 package org.mwc.debrief.lite.headless;
 
+import static org.junit.jupiter.api.Assertions.*;
+
+
 import org.mwc.debrief.lite.LiteApplication;
 import org.mwc.debrief.lite.LiteSession;
 import org.mwc.debrief.lite.LiteTote;
@@ -30,13 +33,14 @@ import MWC.GenericData.HiResDate;
 import MWC.GenericData.Watchable;
 import MWC.GenericData.WatchableList;
 import MWC.GenericData.WorldLocation;
-import junit.framework.TestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Stepping through time with Lite's step control, and the tote's range,
  * bearing, course and speed against hand-calculated values.
  */
-public class TimeAndToteTest extends TestCase {
+public class TimeAndToteTest {
 
 	/** 1 Jan 2026 00:00 UTC */
 	private static final long T0 = 1767225600000L;
@@ -45,7 +49,7 @@ public class TimeAndToteTest extends TestCase {
 	/** the tote reads the primary and secondary at this time */
 	private static Watchable at(final WatchableList list, final HiResDate time) {
 		final Watchable[] found = list.getNearestTo(time);
-		assertTrue(list.getName() + " has a point at " + time, found != null && found.length > 0);
+		assertTrue(found != null && found.length > 0, list.getName() + " has a point at " + time);
 		return found[0];
 	}
 
@@ -55,8 +59,8 @@ public class TimeAndToteTest extends TestCase {
 	private TrackWrapper _ownship;
 	private TrackWrapper _contact;
 
-	@Override
-	protected void setUp() {
+	@BeforeEach
+	public void setUp() {
 		final LiteApplication app = HeadlessFixture.newApp();
 		final LiteSession session = HeadlessFixture.newSession(app);
 		_layers = session.getData();
@@ -81,47 +85,51 @@ public class TimeAndToteTest extends TestCase {
 		_stepper.changeTime(new HiResDate(T0));
 	}
 
+	@Test
 	public void testStepping() {
-		assertEquals("starts at the period start", T0 * 1000, _stepper.getCurrentTime().getMicros());
+		assertEquals(T0 * 1000, _stepper.getCurrentTime().getMicros(), "starts at the period start");
 
 		_stepper.doStep(true, false);
-		assertEquals("small step forward: +1 min", T0 * 1000 + MINUTE_MICROS, _stepper.getCurrentTime().getMicros());
+		assertEquals(T0 * 1000 + MINUTE_MICROS, _stepper.getCurrentTime().getMicros(), "small step forward: +1 min");
 
 		_stepper.doStep(true, true);
-		assertEquals("large step forward: +5 min", T0 * 1000 + 6 * MINUTE_MICROS,
-				_stepper.getCurrentTime().getMicros());
+		assertEquals(T0 * 1000 + 6 * MINUTE_MICROS, _stepper.getCurrentTime().getMicros(),
+				"large step forward: +5 min");
 
 		_stepper.doStep(false, false);
-		assertEquals("small step back: -1 min", T0 * 1000 + 5 * MINUTE_MICROS, _stepper.getCurrentTime().getMicros());
+		assertEquals(T0 * 1000 + 5 * MINUTE_MICROS, _stepper.getCurrentTime().getMicros(), "small step back: -1 min");
 
 		_stepper.doStep(true, true);
 		_stepper.doStep(true, true);
-		assertEquals("stepping past the end stops at the end", T0 * 1000 + 10 * MINUTE_MICROS,
-				_stepper.getCurrentTime().getMicros());
+		assertEquals(T0 * 1000 + 10 * MINUTE_MICROS, _stepper.getCurrentTime().getMicros(),
+				"stepping past the end stops at the end");
 
 		_stepper.doStep(false, true);
 		_stepper.doStep(false, true);
 		_stepper.doStep(false, true);
-		assertEquals("stepping before the start stops at the start", T0 * 1000, _stepper.getCurrentTime().getMicros());
+		assertEquals(T0 * 1000, _stepper.getCurrentTime().getMicros(), "stepping before the start stops at the start");
 	}
 
+	@Test
 	public void testToteFollowsTheStepper() {
 		_stepper.doStep(true, true);
-		assertEquals("the tote hears the new time", _stepper.getCurrentTime(), _tote.getCurrentTime());
+		assertEquals(_stepper.getCurrentTime(), _tote.getCurrentTime(), "the tote hears the new time");
 	}
 
+	@Test
 	public void testToteMembers() {
-		assertSame("first track is the primary", _ownship, _tote.getPrimary());
-		assertEquals("one secondary", 1, _tote.getSecondary().size());
-		assertSame("the other track is the secondary", _contact, _tote.getSecondary().get(0));
+		assertSame(_ownship, _tote.getPrimary(), "first track is the primary");
+		assertEquals(1, _tote.getSecondary().size(), "one secondary");
+		assertSame(_contact, _tote.getSecondary().get(0), "the other track is the secondary");
 
 		// Lite drops a tote member when its layer is removed
 		_layers.removeThisLayer(_contact);
-		assertTrue("secondary dropped with its layer", _tote.getSecondary().isEmpty());
+		assertTrue(_tote.getSecondary().isEmpty(), "secondary dropped with its layer");
 		_layers.removeThisLayer(_ownship);
-		assertNull("primary dropped with its layer", _tote.getPrimary());
+		assertNull(_tote.getPrimary(), "primary dropped with its layer");
 	}
 
+	@Test
 	public void testToteValues() {
 		_stepper.doStep(true, false);
 		final HiResDate now = _stepper.getCurrentTime();
@@ -131,18 +139,18 @@ public class TimeAndToteTest extends TestCase {
 		// contact is 1 nm due north of ownship
 		// Lite shows range in yards by default: 1 nm = 1852 m = 1852 / 0.9144 yds
 		final rangeCalc range = new rangeCalc();
-		assertEquals("range units", "yd", range.getUnits());
-		assertEquals("range (yds)", 1852 / 0.9144, range.calculate(primary, secondary, now), 1e-3);
-		assertEquals("bearing to contact (degs)", 0, new bearingCalc().calculate(primary, secondary, now), 1e-6);
+		assertEquals("yd", range.getUnits(), "range units");
+		assertEquals(1852 / 0.9144, range.calculate(primary, secondary, now), 1e-3, "range (yds)");
+		assertEquals(0, new bearingCalc().calculate(primary, secondary, now), 1e-6, "bearing to contact (degs)");
 
 		// course and speed are the primary's own
-		assertEquals("ownship course (degs)", 90, new courseCalc().calculate(primary, secondary, now), 1e-6);
-		assertEquals("ownship speed (kts)", 10, new speedCalc().calculate(primary, secondary, now), 1e-6);
+		assertEquals(90, new courseCalc().calculate(primary, secondary, now), 1e-6, "ownship course (degs)");
+		assertEquals(10, new speedCalc().calculate(primary, secondary, now), 1e-6, "ownship speed (kts)");
 
 		// and from the contact's point of view: ownship bears 180, 1 nm
-		assertEquals("bearing back to ownship (degs)", 180, new bearingCalc().calculate(secondary, primary, now),
-				1e-6);
-		assertEquals("contact course (degs)", 180, new courseCalc().calculate(secondary, primary, now), 1e-6);
-		assertEquals("contact speed (kts)", 5, new speedCalc().calculate(secondary, primary, now), 1e-6);
+		assertEquals(180, new bearingCalc().calculate(secondary, primary, now), 1e-6,
+				"bearing back to ownship (degs)");
+		assertEquals(180, new courseCalc().calculate(secondary, primary, now), 1e-6, "contact course (degs)");
+		assertEquals(5, new speedCalc().calculate(secondary, primary, now), 1e-6, "contact speed (kts)");
 	}
 }

@@ -107,41 +107,12 @@ import MWC.GenericData.WorldLocation;
 import MWC.Utilities.ReaderWriter.AbstractPlainLineImporter;
 import MWC.Utilities.ReaderWriter.XML.MWCXMLReader;
 import MWC.Utilities.TextFormatting.DebriefFormatDateTime;
-import junit.framework.TestCase;
 
 /**
  * class that is able to export a polygon - note the Replay file format doesn't
  * include polygons, so we only export it.
  */
 class ImportDynamicPolygon extends AbstractPlainLineImporter {
-
-	public static class TestImport extends TestCase {
-
-		public void testWithLabel() throws ParseException {
-			final String line = " ;POLY_RECT: @J \"Dynamic A\" 951212 051000.000 49.7303 0 0 N 4.16989 0 0 E 49.6405 0 0 N 4.39945 0 0 E label";
-			final ImportDynamicPolygon ip = new ImportDynamicPolygon();
-			final DynamicPolygonShapeWrapper res = (DynamicPolygonShapeWrapper) ip.readThisLine(line);
-			assertEquals("label", res.getLabel());
-			assertNotNull("read it in", res);
-			final PolygonShape polygon = (PolygonShape) res.getShape();
-			assertNotNull("found shape", polygon);
-
-			final Vector<PolygonNode> nodes = polygon.getPoints();
-			assertEquals(2, nodes.size());
-
-			assertEquals("1", nodes.get(0).getName());
-			WorldLocation loc = nodes.get(0).getLocation();
-			assertEquals("1 correct lat", 49.7303, loc.getLat(), 0.0001);
-			assertEquals("1 correct long", 4.16989, loc.getLong(), 0.0001);
-
-			assertEquals("2", nodes.get(1).getName());
-			loc = nodes.get(1).getLocation();
-			assertEquals("2 correct long", 49.6405, loc.getLat(), 0.0001);
-			assertEquals("2 correct lat", 4.39945, loc.getLong(), 0.0001);
-			assertEquals("Track name isn't correct", "Dynamic A", res.getTrackName());
-			assertEquals("Start DTG isn't correct", 818745000000000l, res.getStartDTG().getMicros());
-		}
-	}
 
 	/**
 	 * the type for this string

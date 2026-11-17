@@ -94,10 +94,6 @@
 package Debrief.ReaderWriter.Replay;
 
 import java.awt.Color;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.InputStream;
 import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.util.Enumeration;
@@ -106,9 +102,7 @@ import java.util.StringTokenizer;
 import Debrief.Wrappers.CompositeTrackWrapper;
 import Debrief.Wrappers.Track.PlanningSegment;
 import Debrief.Wrappers.Track.PlanningSegment.ClosingSegment;
-import Debrief.Wrappers.Track.TrackWrapper_Support.SegmentList;
 import MWC.GUI.Editable;
-import MWC.GUI.Layers;
 import MWC.GUI.Properties.PlanningLegCalcModelPropertyEditor;
 import MWC.GenericData.Duration;
 import MWC.GenericData.HiResDate;
@@ -118,60 +112,11 @@ import MWC.GenericData.WorldSpeed;
 import MWC.Utilities.ReaderWriter.AbstractPlainLineImporter;
 import MWC.Utilities.ReaderWriter.XML.MWCXMLReader;
 import MWC.Utilities.TextFormatting.DebriefFormatDateTime;
-import junit.framework.TestCase;
 
 /**
  * class to parse a label from a line of text
  */
 final public class ImportPlanningLegOrigin extends AbstractPlainLineImporter {
-
-	/**
-	 * @author Administrator
-	 *
-	 */
-	public static class PlanningLegImporterTest extends TestCase {
-
-		private final static String tracks = "../org.mwc.cmap.combined.feature/root_installs/sample_data/planning_tracks.rep";
-
-		public void testImport() throws FileNotFoundException {
-			final Layers tLayers = new Layers();
-
-			// start off with the ownship track
-			final File boatFile = new File(tracks);
-			assertTrue(boatFile.exists());
-			final InputStream bs = new FileInputStream(boatFile);
-
-			final ImportReplay trackImporter = new ImportReplay();
-			ImportReplay.initialise(new ImportReplay.testImport.TestParent(ImportReplay.IMPORT_AS_OTG, 0L));
-			trackImporter.importThis(tracks, bs, tLayers);
-
-			assertEquals("read in tracks", 2, tLayers.size());
-
-			// ok, now export one of them
-			final CompositeTrackWrapper ctw1 = (CompositeTrackWrapper) tLayers.findLayer("SENSOR_PLANNED");
-			assertNotNull("found planning leg", ctw1);
-			trackImporter.exportThis(ctw1);
-
-			final String output = trackImporter.getBuffer().toString();
-			assertNotNull("produced output");
-			assertTrue("has content", output.length() > 200); // was originally 388 cgars
-
-			final SegmentList legs1 = ctw1.getSegments();
-			assertEquals("correct number of legs", 5, legs1.size());
-
-			// and the other one
-			final CompositeTrackWrapper ctw = (CompositeTrackWrapper) tLayers.findLayer("SENSOR_PLANNED2");
-			assertNotNull("found planning leg", ctw);
-			trackImporter.exportThis(ctw);
-
-			final SegmentList legs = ctw.getSegments();
-			assertEquals("correct number of legs", 6, legs.size());
-
-			final PlanningSegment closer = (PlanningSegment) legs.last();
-			assertTrue("is closing segment", closer instanceof PlanningSegment.ClosingSegment);
-		}
-
-	}
 
 	public static final String CLOSING = "CLOSING";
 	/**

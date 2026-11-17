@@ -48,7 +48,6 @@ import ASSET.Util.XML.ScenarioHandler;
 import ASSET.Util.XML.Control.StandaloneObserverListHandler;
 import ASSET.Util.XML.Control.Observers.ScenarioControllerHandler;
 import MWC.Utilities.TextFormatting.GMTDateFormat;
-import junit.framework.TestCase;
 
 public class MultiScenarioPresenter extends CoreControllerPresenter {
 
@@ -103,50 +102,6 @@ public class MultiScenarioPresenter extends CoreControllerPresenter {
 		 * @param _myModel
 		 */
 		void setScenarios(MultiScenarioCore _myModel);
-	}
-
-	public static class TestMe extends TestCase {
-
-		/**
-		 * a stand-in for an interface: every method does nothing and returns null,
-		 * false or zero, except getUI(), which returns the given value
-		 */
-		@SuppressWarnings("unchecked")
-		private static <T> T stub(final Class<T> type, final Object getUIResult) {
-			return (T) java.lang.reflect.Proxy.newProxyInstance(type.getClassLoader(), new Class<?>[] { type },
-					(proxy, method, args) -> {
-						if ("getUI".equals(method.getName())) {
-							return getUIResult;
-						}
-						final Class<?> r = method.getReturnType();
-						if (r == boolean.class) {
-							return false;
-						} else if (r.isPrimitive() && r != void.class) {
-							return 0;
-						}
-						return null;
-					});
-		}
-
-		public TestMe(final String val) {
-			super(val);
-		}
-
-		@SuppressWarnings("synthetic-access")
-		public final void testRelativePathMethod() {
-			final UIDisplay ui = stub(UIDisplay.class, null);
-			final MultiScenarioDisplay display = stub(MultiScenarioDisplay.class, ui);
-			final MultiScenarioPresenter pres = new MultiScenarioPresenter(display, null);
-
-			assertEquals("failed to recognise drive", false, pres.isRelativePath(new File("c:\\test.rep")));
-			assertEquals("failed to root designator", false, pres.isRelativePath(new File("\\test.rep")));
-			assertEquals("failed to root designator", false, pres.isRelativePath(new File("\\\\test.rep")));
-			assertEquals("failed to root designator", false, pres.isRelativePath(new File("//test.rep")));
-			assertEquals("failed to root designator", false, pres.isRelativePath(new File("////test.rep")));
-			assertEquals("failed to recognise absolute ref", true, pres.isRelativePath(new File("test.rep")));
-			assertEquals("failed to recognise relative ref", true, pres.isRelativePath(new File("./test.rep")));
-			assertEquals("failed to recognise parent ref", true, pres.isRelativePath(new File("../test.rep")));
-		}
 	}
 
 	/**

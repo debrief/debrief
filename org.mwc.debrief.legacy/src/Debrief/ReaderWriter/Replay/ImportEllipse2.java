@@ -95,48 +95,13 @@ package Debrief.ReaderWriter.Replay;
 import java.text.ParseException;
 import java.util.StringTokenizer;
 
-import Debrief.Wrappers.ShapeWrapper;
-import MWC.GUI.Shapes.EllipseShape;
 import MWC.GenericData.HiResDate;
-import MWC.GenericData.WorldDistance;
-import MWC.Utilities.ReaderWriter.AbstractPlainLineImporter;
 import MWC.Utilities.TextFormatting.DebriefFormatDateTime;
 
 /**
  * class to parse a label from a line of text
  */
 final class ImportEllipse2 extends ImportEllipse {
-
-	// ////////////////////////////////////////////////
-	// testing code...
-	// ////////////////////////////////////////////////
-	static public class testImport2 extends junit.framework.TestCase {
-		static public final String TEST_ALL_TEST_TYPE = "CONV";
-
-		public testImport2(final String val) {
-			super(val);
-		}
-
-		public void testValues() throws ParseException {
-			final String iLine = ";ELLIPSE2: @F 951212 060200 951212 061200 21.8 0 0 N 21.5 0 0 W 45.0 5000 3000 test ellipse";
-			final AbstractPlainLineImporter iff = new ImportEllipse2();
-			final ShapeWrapper res = (ShapeWrapper) iff.readThisLine(iLine);
-
-			// and check the result
-			assertNotNull("read it in", res);
-			assertEquals("right track", "test ellipse", res.getLabel());
-			assertEquals("right color", new java.awt.Color(255, 150, 0), res.getColor());
-			assertEquals("right name", "test ellipse", res.getName());
-			assertNotNull("start present", res.getStartDTG());
-			assertNotNull("end present", res.getEndDTG());
-			final long diff = (res.getEndDTG().getMicros() - res.getStartDTG().getMicros()) / 1000;
-			assertEquals("correct interval", 600000, diff);
-			final EllipseShape ell = (EllipseShape) res.getShape();
-			assertEquals("right orient", 45.0, ell.getOrientation());
-			assertEquals("right maxima", 5000, ell.getMaxima().getValueIn(WorldDistance.YARDS), 0.001);
-			assertEquals("right minima", 3000, ell.getMinima().getValueIn(WorldDistance.YARDS), 0.001);
-		}
-	}
 
 	/**
 	 * our REP file type

@@ -23,62 +23,6 @@ import ASSET.Participants.Category;
 
 public class TargetType implements java.io.Serializable {
 
-	// ////////////////////////////////////////////////////////////////////
-	// member variables
-	// ////////////////////////////////////////////////////////////////////
-
-	public static class TargetType_Test extends junit.framework.TestCase {
-
-		public void testAND() {
-			final TargetType tt = new TargetType();
-			tt.setANDOperation(true);
-			tt.addTargetType(Category.Force.BLUE);
-			tt.addTargetType(Category.Environment.AIRBORNE);
-
-			final Category newCat = new Category(Category.Force.GREEN, Category.Environment.SUBSURFACE,
-					Category.Type.FISHING_VESSEL);
-			assertFalse("don't match - no matching types", tt.matches(newCat));
-
-			newCat.setEnvironment(Category.Environment.AIRBORNE);
-			assertFalse("don't match - not all types", tt.matches(newCat));
-
-			newCat.setForce(Category.Force.BLUE);
-			assertTrue("matches - all types", tt.matches(newCat));
-		}
-
-		public void testOR_1() {
-			final TargetType tt = new TargetType();
-			tt.setANDOperation(false);
-			tt.addTargetType(Category.Force.BLUE);
-			tt.addTargetType(Category.Environment.AIRBORNE);
-
-			final Category newCat = new Category(Category.Force.GREEN, Category.Environment.SUBSURFACE,
-					Category.Type.FISHING_VESSEL);
-			assertFalse("don't match - no matching types", tt.matches(newCat));
-
-			newCat.setEnvironment(Category.Environment.AIRBORNE);
-			assertTrue("matches - some types", tt.matches(newCat));
-
-			newCat.setForce(Category.Force.BLUE);
-			assertTrue("matches - all types", tt.matches(newCat));
-		}
-
-		public void testOR_2() {
-			final TargetType tt = new TargetType();
-			tt.setANDOperation(false);
-			tt.addTargetType(Category.Force.BLUE);
-			tt.addTargetType(Category.Force.GREEN);
-
-			final Category newCat = new Category(Category.Force.RED, Category.Environment.SUBSURFACE,
-					Category.Type.FISHING_VESSEL);
-			assertFalse("don't match - no matching types", tt.matches(newCat));
-
-			newCat.setEnvironment(Category.Force.BLUE);
-			assertTrue("matches - some types", tt.matches(newCat));
-		}
-
-	}
-
 	/**
 	 *
 	 */

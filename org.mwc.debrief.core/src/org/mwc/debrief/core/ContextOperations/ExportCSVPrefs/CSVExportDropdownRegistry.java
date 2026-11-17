@@ -16,7 +16,6 @@
 package org.mwc.debrief.core.ContextOperations.ExportCSVPrefs;
 
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
@@ -28,83 +27,7 @@ import java.util.Map;
 import org.eclipse.core.runtime.IStatus;
 import org.mwc.cmap.core.CorePlugin;
 
-import junit.framework.TestCase;
-
 public class CSVExportDropdownRegistry implements DropdownProvider {
-	public static class TestRegistry extends TestCase {
-		public void testBadines() {
-			final List<String> list = new ArrayList<String>();
-
-			list.add("//// comment line");
-			list.add("a-one");
-			list.add("a-two");
-			list.add("// SectionB");
-			list.add("b-one");
-			list.add("//SectionC");
-			list.add("c-one");
-			list.add("c-two");
-			list.add("c-three");
-
-			final Map<String, ArrayList<String>> fields = new HashMap<String, ArrayList<String>>();
-
-			assertTrue("should not be empty", fields.keySet().isEmpty());
-
-			processLines(list, fields);
-
-			assertFalse("should not be empty", fields.keySet().isEmpty());
-
-			assertEquals("has 3 sections", 3, fields.keySet().size(), 3);
-			assertEquals("section two empty", null, fields.get("SectionA"));
-			assertEquals("has 3 lines", 3, fields.get("SectionC").size());
-		}
-
-		public void testLines() {
-			final List<String> list = new ArrayList<String>();
-
-			list.add("//// comment line");
-			list.add("//SectionA");
-			list.add("a-one");
-			list.add("a-two");
-			list.add("// SectionB");
-			list.add("b-one");
-			list.add("//SectionC");
-			list.add("c-one");
-			list.add("c-two");
-			list.add("c-three");
-
-			final Map<String, ArrayList<String>> fields = new HashMap<String, ArrayList<String>>();
-
-			assertTrue("should not be empty", fields.keySet().isEmpty());
-
-			processLines(list, fields);
-
-			assertFalse("should not be empty", fields.keySet().isEmpty());
-
-			assertEquals("has 3 sections", 3, fields.keySet().size(), 3);
-			assertEquals("has 2 lines", 2, fields.get("SectionA").size());
-			assertEquals("has 1 lines", 1, fields.get("SectionB").size());
-			assertEquals("has 3 lines", 3, fields.get("SectionC").size());
-		}
-
-		public void testLoad() throws FileNotFoundException {
-			final String filename = "../org.mwc.cmap.combined.feature/root_installs/sample_data/other_formats/ExportWizard.csv";
-
-			// check it exists
-			assertTrue("can't find test data-file", new File(filename).exists());
-
-			final CSVExportDropdownRegistry reg = new CSVExportDropdownRegistry(filename);
-
-			// check empty
-			assertTrue("list object should be empty", reg.myFields.keySet().isEmpty());
-
-			reg.load();
-
-			assertFalse("no longer empty", reg.myFields.keySet().isEmpty());
-			assertEquals("has sections", 9, reg.myFields.keySet().size());
-
-			assertEquals("has 3 classifications", 3, reg.getValuesFor("CLASSIFICATION").size());
-		}
-	}
 
 	private static CSVExportDropdownRegistry ourInstance;
 
@@ -123,7 +46,7 @@ public class CSVExportDropdownRegistry implements DropdownProvider {
 		return ourInstance;
 	}
 
-	private static void processLines(final List<String> lines, final Map<String, ArrayList<String>> myFields) {
+	static void processLines(final List<String> lines, final Map<String, ArrayList<String>> myFields) {
 		String thisGroup = null;
 		for (final String nextLine : lines) {
 			// check it's not a comment marker
@@ -154,7 +77,7 @@ public class CSVExportDropdownRegistry implements DropdownProvider {
 
 	private String myFileName;
 
-	private final Map<String, ArrayList<String>> myFields = new HashMap<String, ArrayList<String>>();
+	final Map<String, ArrayList<String>> myFields = new HashMap<String, ArrayList<String>>();
 
 	public CSVExportDropdownRegistry() {
 		this(CorePlugin.getDefault().getPreferenceStore()
@@ -186,7 +109,7 @@ public class CSVExportDropdownRegistry implements DropdownProvider {
 	 *
 	 * @throws FileNotFoundException
 	 */
-	private void load() throws FileNotFoundException {
+	void load() throws FileNotFoundException {
 		if (getFileName() == null || getFileName().trim().length() == 0) {
 			CorePlugin.logError(IStatus.WARNING, Messages.ExportCSVRegistry_EmptyFile, null);
 			return;

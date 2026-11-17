@@ -25,7 +25,6 @@ import ASSET.ScenarioType;
 import ASSET.Models.Decision.TargetType;
 import ASSET.Models.Detection.DetectionEvent;
 import ASSET.Models.Detection.DetectionList;
-import ASSET.Util.SupportTesting;
 import MWC.Algorithms.LiveData.DataDoublet;
 import MWC.Algorithms.LiveData.IAttribute;
 import MWC.GUI.CanvasType;
@@ -102,54 +101,9 @@ public class DetectionObserver extends WatchParticipantObserver
 	 * happens when the two participants are within the specified range
 	 */
 	public static class StopOnProximityDetectionObserver extends StopOnDetectionObserver {
-		// ////////////////////////////////////////////////
-		// property testing
-		// ////////////////////////////////////////////////
-		public static class DetObserver2Test extends SupportTesting.EditableTesting {
-			/**
-			 * get an object which we can test
-			 *
-			 * @return Editable object which we can check the properties for
-			 */
-			@Override
-			public Editable getEditable() {
-				return new StopOnDetectionObserver(null, null, null, null, true);
-			}
-		}
-
 		/***************************************************************
 		 * constructor
 		 ***************************************************************/
-
-		// ////////////////////////////////////////////////
-		// property testing
-		// ////////////////////////////////////////////////
-		public static class DetObserver3Test extends SupportTesting.EditableTesting {
-			/**
-			 * get an object which we can test
-			 *
-			 * @return Editable object which we can check the properties for
-			 */
-			@Override
-			public Editable getEditable() {
-				return new StopOnProximityDetectionObserver(null, null, null, null, null, true);
-			}
-		}
-
-		// ////////////////////////////////////////////////
-		// property testing
-		// ////////////////////////////////////////////////
-		public static class ObserverTest extends SupportTesting.EditableTesting {
-			/**
-			 * get an object which we can test
-			 *
-			 * @return Editable object which we can check the properties for
-			 */
-			@Override
-			public Editable getEditable() {
-				return new DetectionObserver(null, null, "", null, true);
-			}
-		}
 
 		// ////////////////////////////////////////////////
 		// editable properties

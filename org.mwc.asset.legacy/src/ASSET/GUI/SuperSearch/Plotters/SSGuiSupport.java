@@ -6,7 +6,6 @@ import java.util.Enumeration;
 import ASSET.ParticipantType;
 import ASSET.ScenarioType;
 import ASSET.Scenario.MultiForceScenario;
-import ASSET.Util.SupportTesting;
 import MWC.GUI.Editable;
 import MWC.GUI.Plottable;
 import MWC.GUI.Properties.DebriefColors;
@@ -64,29 +63,6 @@ public class SSGuiSupport extends MWC.GUI.BaseLayer implements ASSET.Scenario.Pa
 			} catch (final java.beans.IntrospectionException e) {
 				return super.getPropertyDescriptors();
 			}
-		}
-	}
-
-	//////////////////////////////////////////////////////////////////////////////////////////////////
-	// testing for this class
-	//////////////////////////////////////////////////////////////////////////////////////////////////
-	public static class GuiSupportTest extends SupportTesting.EditableTesting {
-		static public final String TEST_ALL_TEST_TYPE = "UNIT";
-
-		public GuiSupportTest(final String val) {
-			super(val);
-		}
-
-		/**
-		 * get an object which we can test
-		 *
-		 * @return Editable object which we can check the properties for
-		 */
-		@Override
-		public Editable getEditable() {
-			final SSGuiSupport ed = new SSGuiSupport();
-			ed.setScenario(new MultiForceScenario());
-			return ed;
 		}
 	}
 
@@ -312,26 +288,6 @@ public class SSGuiSupport extends MWC.GUI.BaseLayer implements ASSET.Scenario.Pa
 			return getName();
 		}
 
-	}
-
-	public static class PartInfoTest extends SupportTesting.EditableTesting {
-		static public final String TEST_ALL_TEST_TYPE = "UNIT";
-
-		public PartInfoTest(final String val) {
-			super(val);
-		}
-
-		/**
-		 * get an object which we can test
-		 *
-		 * @return Editable object which we can check the properties for
-		 */
-		@Override
-		public Editable getEditable() {
-			final SSGuiSupport ed = new SSGuiSupport();
-			ed.setScenario(new MultiForceScenario());
-			return ed;
-		}
 	}
 
 	/**

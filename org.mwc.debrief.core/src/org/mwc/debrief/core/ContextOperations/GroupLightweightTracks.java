@@ -33,24 +33,18 @@ import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.operations.CMAPOperation;
 import org.mwc.cmap.core.property_support.RightClickSupport.RightClickContextItemGenerator;
 
-import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.TrackWrapper;
 import Debrief.Wrappers.Track.LightweightTrackWrapper;
-import MWC.GUI.BaseLayer;
 import MWC.GUI.Editable;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
-import MWC.GenericData.HiResDate;
-import MWC.GenericData.WorldLocation;
-import MWC.TacticalData.Fix;
-import junit.framework.TestCase;
 
 /**
  * @author ian.mayo
  */
 public class GroupLightweightTracks implements RightClickContextItemGenerator {
 
-	private static class GroupLightTracksOperation extends CMAPOperation {
+	static class GroupLightTracksOperation extends CMAPOperation {
 
 		/**
 		 * the parent to update on completion
@@ -92,68 +86,6 @@ public class GroupLightweightTracks implements RightClickContextItemGenerator {
 		public IStatus undo(final IProgressMonitor monitor, final IAdaptable info) throws ExecutionException {
 			CorePlugin.logError(IStatus.INFO, "Undo not permitted for merge operation", null);
 			return null;
-		}
-	}
-
-	public static class TestMe extends TestCase {
-		private FixWrapper create(final double lat, final double lon, final long date) {
-			return new FixWrapper(new Fix(new HiResDate(date), new WorldLocation(lat, lon, 0d), 2d, 4d));
-		}
-
-		public void testGroup() throws ExecutionException {
-			final Layers theLayers = new Layers();
-
-			final TrackWrapper tw = new TrackWrapper();
-			tw.setName("tw1");
-			tw.addFix(create(2, 3, 4000));
-			tw.addFix(create(2, 2, 5000));
-			tw.addFix(create(2, 4, 6000));
-			tw.addFix(create(2, 6, 7000));
-
-			final LightweightTrackWrapper l1 = new LightweightTrackWrapper();
-			l1.setName("l1");
-			l1.addFix(create(2, 3, 14000));
-			l1.addFix(create(2, 2, 15000));
-			l1.addFix(create(2, 4, 16000));
-			l1.addFix(create(2, 6, 17000));
-
-			final LightweightTrackWrapper l2 = new LightweightTrackWrapper();
-			l2.setName("l2");
-			l2.addFix(create(2, 3, 24000));
-			l2.addFix(create(2, 2, 25000));
-			l2.addFix(create(2, 4, 26000));
-			l2.addFix(create(2, 6, 27000));
-
-			final LightweightTrackWrapper l3 = new LightweightTrackWrapper();
-			l3.setName("l3");
-			l3.addFix(create(2, 3, 34000));
-			l3.addFix(create(2, 2, 35000));
-			l3.addFix(create(2, 4, 36000));
-			l3.addFix(create(2, 6, 37000));
-
-			final BaseLayer holder = new BaseLayer();
-			holder.setName("Light tracks");
-
-			holder.add(l1);
-			holder.add(l2);
-			holder.add(l3);
-
-			theLayers.addThisLayer(holder);
-			theLayers.addThisLayer(tw);
-
-			// check layers looks how we think
-			assertEquals("right num layers", 2, theLayers.size());
-			assertEquals("right num in holder", 3, holder.size());
-
-			final Editable[] selection = new Editable[] { l3, l1, tw };
-			final GroupLightTracksOperation oper = new GroupLightTracksOperation("Do generate", l2, theLayers,
-					selection);
-
-			oper.execute(null, null);
-
-			// check layers looks how we think
-			assertEquals("right num layers", 1, theLayers.size());
-			assertEquals("right num in holder", 1, holder.size());
 		}
 	}
 

@@ -186,25 +186,6 @@ public class LineShape extends PlainShape implements Editable, HasDraggableCompo
 		}
 	}
 
-	// ////////////////////////////////////////////////////////////////////////////////////////////////
-	// testing for this class
-	// ////////////////////////////////////////////////////////////////////////////////////////////////
-	static public class LineTest extends junit.framework.TestCase {
-		static public final String TEST_ALL_TEST_TYPE = "UNIT";
-
-		public LineTest(final String val) {
-			super(val);
-		}
-
-		public void testMyParams() {
-			final WorldLocation scrap = new WorldLocation(2d, 2d, 2d);
-			MWC.GUI.Editable ed = new LineShape(scrap, scrap);
-			MWC.GUI.Editable.editableTesterSupport.testParams(ed, this);
-			ed = null;
-		}
-
-	}
-
 	// ////////////////////////////////////////////////
 	// member variables
 	// ////////////////////////////////////////////////

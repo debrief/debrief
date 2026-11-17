@@ -20,7 +20,6 @@ import ASSET.Models.Decision.CoreDecision;
 import ASSET.Models.Movement.SimpleDemandedStatus;
 import ASSET.Participants.DemandedStatus;
 import ASSET.Participants.Status;
-import ASSET.Util.SupportTesting;
 import MWC.GUI.Editable;
 import MWC.GenericData.WorldDistance;
 import MWC.GenericData.WorldLocation;
@@ -66,74 +65,6 @@ public class Move extends CoreDecision implements java.io.Serializable {
 				e.printStackTrace();
 				return super.getPropertyDescriptors();
 			}
-		}
-	}
-
-	/**
-	 * ********************************************************************** test
-	 * this class
-	 * **********************************************************************
-	 */
-
-	public static class MoveTest extends SupportTesting.EditableTesting {
-		static public final String TEST_ALL_TEST_TYPE = "UNIT";
-
-		public MoveTest(final String name) {
-			super(name);
-		}
-
-		/**
-		 * get an object which we can test
-		 *
-		 * @return Editable object which we can check the properties for
-		 */
-		@Override
-		public Editable getEditable() {
-			final MWC.GUI.Editable ed = new Move();
-			return ed;
-		}
-
-		public void testTheMove() {
-			// ok, create some locations
-			final WorldLocation locA = new WorldLocation(0, 0, 12);
-			final WorldLocation locC = new WorldLocation(0, 3, 12);
-
-			final Move move = new Move();
-			move.setCourse(new Double(60));
-			move.setSpeed(new WorldSpeed(12, WorldSpeed.M_sec));
-			move.setDistance(new WorldDistance(3, WorldDistance.DEGS));
-
-			// check the initial values are correct
-			assertEquals("the course is set", move.getCourse().doubleValue(), 60, 0.01);
-			assertEquals("the speed is set", move.getSpeed().getValueIn(WorldSpeed.M_sec), 12, 0.01);
-			assertEquals("the distance is set", move.getDistance().getValueIn(WorldDistance.DEGS), 3, 0.01);
-
-			// change course to head east (to ease our testing)
-			move.setCourse(new Double(90));
-
-			final Status theStat = new Status(12, 12000);
-			theStat.setLocation(locA);
-			theStat.setSpeed(new WorldSpeed(12, WorldSpeed.Kts));
-
-			DemandedStatus res = move.decide(theStat, null, null, null, null, 1000);
-
-			// did it work?
-			assertEquals("course set correctly", ((SimpleDemandedStatus) res).getCourse(), 90, 0.01);
-			assertEquals("speed set correctly", ((SimpleDemandedStatus) res).getSpeed(), 12, 0.01);
-			assertEquals("depth not set", ((SimpleDemandedStatus) res).getHeight(), -12, 0.01);
-
-			assertEquals("target location set correctly", move._theDestination.subtract(locC).getRange(), 0, 0.001);
-
-			// fiddle with the depth
-			move.setHeight(new WorldDistance(-55, WorldDistance.METRES));
-
-			res = move.decide(theStat, null, null, null, null, 1000);
-
-			// did it work?
-			assertEquals("course set correctly", ((SimpleDemandedStatus) res).getCourse(), 90, 0.01);
-			assertEquals("speed set correctly", ((SimpleDemandedStatus) res).getSpeed(), 12, 0.01);
-			assertEquals("depth set", ((SimpleDemandedStatus) res).getHeight(), -55, 0.01);
-
 		}
 	}
 

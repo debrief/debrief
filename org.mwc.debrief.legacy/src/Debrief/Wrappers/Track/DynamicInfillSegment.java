@@ -45,34 +45,8 @@ import MWC.GenericData.WorldVector;
 import MWC.TacticalData.Fix;
 import MWC.Utilities.Errors.Trace;
 import MWC.Utilities.TextFormatting.FormatRNDateTime;
-import junit.framework.TestCase;
 
 public class DynamicInfillSegment extends TrackSegment implements ColoredWatchable, DeleteWithCare {
-
-	public static class TestInterp extends TestCase {
-		public void testRound() {
-			assertEquals(6000, roundToInterval(6100));
-			assertEquals(100, roundToInterval(100));
-			assertEquals(1000, roundToInterval(1100));
-			assertEquals(59000, roundToInterval(59900));
-			assertEquals(60000, roundToInterval(69900));
-			assertEquals(2220000, roundToInterval(2269900));
-		}
-
-		public void testSimple() {
-			// generate the location spline
-			final double[] times = new double[] { 500, 2000, 4000, 5000 };
-			final double[] longs = new double[] { 1d, 1d, 3d, 4d };
-			final double[] lats = new double[] { 1d, 2d, 4d, 5d };
-
-			final UnivariateInterpolator interpolator = new SplineInterpolator();
-			final UnivariateFunction latInterp = interpolator.interpolate(times, lats);
-			final UnivariateFunction longInterp = interpolator.interpolate(times, longs);
-
-			assertEquals(2.447, latInterp.value(2500), 0.01);
-			assertEquals(1.3421, longInterp.value(2500), 0.001);
-		}
-	}
 
 	public static final String RANDOM_INFILL = "RANDOM_INFILL";
 
@@ -219,7 +193,7 @@ public class DynamicInfillSegment extends TrackSegment implements ColoredWatchab
 		return res;
 	}
 
-	private static long roundToInterval(final double mean) {
+	static long roundToInterval(final double mean) {
 		final long res;
 		final long MINUTE = 60000;
 		final long SECOND = 1000;

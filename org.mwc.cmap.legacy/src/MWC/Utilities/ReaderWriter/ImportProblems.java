@@ -21,7 +21,6 @@ import java.util.List;
 
 import MWC.GUI.MessageProvider;
 import MWC.GUI.Dialogs.DialogFactory;
-import junit.framework.TestCase;
 
 /**
  * Collects the problems found while importing a file (malformed lines or
@@ -30,24 +29,6 @@ import junit.framework.TestCase;
  * silently going missing.
  */
 public class ImportProblems {
-
-	public static class ImportProblemsTest extends TestCase {
-		public void testSummary() {
-			final ImportProblems problems = new ImportProblems();
-			assertTrue(problems.isEmpty());
-			assertNull(problems.summary("file.rep"));
-			for (int i = 1; i <= MAX_LISTED + 5; i++) {
-				problems.add(i, "bad value", "line " + i);
-			}
-			problems.add("no line number");
-			assertEquals(MAX_LISTED + 6, problems.size());
-			final String summary = problems.summary("file.rep");
-			assertTrue(summary, summary.startsWith(MAX_LISTED + 6 + " problems found reading file.rep"));
-			assertTrue(summary, summary.contains("Line 1: bad value [line 1]"));
-			assertTrue(summary, summary.contains("...and 6 more"));
-			assertFalse(summary, summary.contains("no line number"));
-		}
-	}
 
 	/**
 	 * how many problems we list in the message shown to the analyst (they're all

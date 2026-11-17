@@ -25,7 +25,6 @@ SEVERITIES = ["Critical", "High", "Medium", "Low", "Negligible", "Unknown"]
 # generated Class-Path (org.mwc.debrief.lite/build.xml, lite.runtime.libraries).
 LITE_FOLDERS = [
     "org.mwc.cmap.legacy",
-    "org.mwc.cmap.legacy/libs",
     "org.mwc.debrief.legacy",
     "org.mwc.cmap.jfreechart",
     "org.mwc.cmap.geotools",

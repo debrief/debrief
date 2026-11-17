@@ -54,7 +54,6 @@ import Debrief.Wrappers.Track.TrackColorModeHelper.TrackColorMode;
 import Debrief.Wrappers.Track.TrackSegment;
 import Debrief.Wrappers.Track.TrackWrapper_Support;
 import Debrief.Wrappers.Track.TrackWrapper_Support.SegmentList;
-import Debrief.Wrappers.Track.TrackWrapper_Test;
 import Debrief.Wrappers.Track.WormInHoleOffset;
 import MWC.GUI.BaseLayer;
 import MWC.GUI.CanvasType;
@@ -390,7 +389,7 @@ public class TrackWrapper extends LightweightTrackWrapper implements WatchableLi
 	 *
 	 * @param newTrack
 	 * @param reference Note: these parameters are tested here
-	 * @see TrackWrapper_Test#testTrackMerge1()
+	 * (tested by TrackWrapper_Test.testTrackMerge1)
 	 */
 	private static void copyStyling(final TrackWrapper newTrack, final TrackWrapper reference) {
 		// Note: see link in javadoc for where these are tested

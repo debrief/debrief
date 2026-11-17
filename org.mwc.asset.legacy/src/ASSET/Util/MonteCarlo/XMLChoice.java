@@ -24,86 +24,6 @@ import org.w3c.dom.NodeList;
 import ASSET.Util.RandomGenerator;
 
 public final class XMLChoice implements XMLOperation {
-	/***************************************************************
-	 * member variables
-	 ***************************************************************/
-
-	public static class ChoiceTest extends junit.framework.TestCase {
-		public ChoiceTest(final String val) {
-			super(val);
-		}
-
-		public void test2WayDistribution() {
-			final XMLChoice choice = new XMLChoice();
-			choice._myList.add("a");
-			choice._myList.add("b");
-
-			final int size = 1000000;
-			int numA = 0;
-			int numB = 0;
-
-			for (int i = 0; i < size; i++) {
-				choice.newPermutation();
-				final String thisVal = choice.getValue();
-				if (thisVal.equals("a")) {
-					numA++;
-				}
-				if (thisVal.equals("b")) {
-					numB++;
-				}
-			}
-
-			// check the dist
-			assertEquals("correct num of a", size / 2, numA, 2000);
-			assertEquals("correct num of b", size / 2, numB, 2000);
-
-		}
-
-		public void test3WayDistribution() {
-			final XMLChoice choice = new XMLChoice();
-			choice._myList.add("a");
-			choice._myList.add("b");
-			choice._myList.add("c");
-
-			final int size = 1000000;
-			int numA = 0;
-			int numB = 0;
-			int numC = 0;
-
-			for (int i = 0; i < size; i++) {
-				choice.newPermutation();
-				final String thisVal = choice.getValue();
-				if (thisVal.equals("a")) {
-					numA++;
-				}
-				if (thisVal.equals("b")) {
-					numB++;
-				}
-				if (thisVal.equals("c")) {
-					numC++;
-				}
-			}
-
-			// check the dist
-			assertEquals("correct num of a", size / 3, numA, 2000);
-			assertEquals("correct num of b", size / 3, numB, 2000);
-			assertEquals("correct num of c", size / 3, numC, 2000);
-
-		}
-
-		public void testGenerate() {
-			final XMLChoice choice = new XMLChoice();
-			choice._myList.add("a");
-			choice._myList.add("b");
-			choice._myList.add("c");
-
-			assertEquals("they got stored", 3, choice._myList.size(), 0);
-
-			assertTrue("found a", choice._myList.contains("a"));
-			assertTrue("found b", choice._myList.contains("b"));
-			assertTrue("found c", choice._myList.contains("c"));
-		}
-	}
 
 	/**
 	 * the title of the name field
@@ -142,7 +62,7 @@ public final class XMLChoice implements XMLOperation {
 	 * the list of values to choose from
 	 *
 	 */
-	private final Vector<String> _myList;
+	final Vector<String> _myList;
 
 	/**
 	 * the element we will use for this permutation
@@ -156,7 +76,7 @@ public final class XMLChoice implements XMLOperation {
 	 */
 	private String _myName;
 
-	private XMLChoice() {
+	XMLChoice() {
 		_myList = new Vector<String>();
 	}
 

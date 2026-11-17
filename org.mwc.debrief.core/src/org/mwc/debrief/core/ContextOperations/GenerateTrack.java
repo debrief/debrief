@@ -55,7 +55,7 @@ import MWC.TacticalData.Fix;
  */
 public class GenerateTrack implements RightClickContextItemGenerator {
 
-	private static class ConvertTrack extends CMAPOperation {
+	static class ConvertTrack extends CMAPOperation {
 
 		private final Layers _layers;
 		private final Editable[] _subjects;
@@ -121,63 +121,6 @@ public class GenerateTrack implements RightClickContextItemGenerator {
 			return Status.OK_STATUS;
 		}
 
-	}
-
-	// ////////////////////////////////////////////////////////////////////////////////////////////////
-	// testing for this class
-	// ////////////////////////////////////////////////////////////////////////////////////////////////
-	static public final class testMe extends junit.framework.TestCase {
-		static public final String TEST_ALL_TEST_TYPE = "UNIT";
-
-		public testMe(final String val) {
-			super(val);
-		}
-
-		public final void testIWork() {
-			final Layers theLayers = new Layers();
-			final BaseLayer holder = new BaseLayer();
-			holder.setName("Trk");
-			theLayers.addThisLayer(holder);
-
-			WorldLocation lastLoc = null;
-			for (int i = 0; i < 4; i++) {
-				final WorldLocation thisLoc = new WorldLocation(0, i, 0, 'N', 0, 0, 0, 'W', 0);
-				if (lastLoc != null) {
-					// ok, add the line
-					final LineShape ls = new LineShape(lastLoc, thisLoc);
-
-					final long theDate1 = 20000000 + i * 60000;
-					final long theDate2 = 20000000 + i * 61000;
-
-					final ShapeWrapper sw = new ShapeWrapper("shape:" + i, ls, Color.red, new HiResDate(theDate1));
-					sw.setStartDTG(new HiResDate(theDate1));
-					sw.setEndDTG(new HiResDate(theDate2));
-					holder.add(sw);
-				}
-
-				// and remember the last location
-				lastLoc = thisLoc;
-			}
-
-			// ok, now do the interpolation
-			final ConvertTrack ct = new ConvertTrack("convert it", theLayers, new Editable[] { holder });
-
-			try {
-				ct.execute(null, null);
-			} catch (final ExecutionException e) {
-				fail("Exception thrown");
-			}
-
-			// check the track got generated
-			final TrackWrapper tw = (TrackWrapper) theLayers.findLayer("T_Trk");
-
-			// did we find it?
-			assertNotNull("track generated", tw);
-
-			// check we've got the right number of fixes
-			assertEquals("right num of fixes generated", tw.numFixes(), 4);
-
-		}
 	}
 
 	public static TrackWrapper generateTrackFor(final BaseLayer layer) {

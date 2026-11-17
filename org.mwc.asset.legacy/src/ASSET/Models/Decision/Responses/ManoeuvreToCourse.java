@@ -15,17 +15,13 @@
 
 package ASSET.Models.Decision.Responses;
 
-import ASSET.ParticipantType;
 import ASSET.Models.Detection.DetectionList;
 import ASSET.Models.Movement.SimpleDemandedStatus;
-import ASSET.Models.Sensor.CoreSensor;
 import ASSET.Participants.DemandedStatus;
 import ASSET.Participants.Status;
 import ASSET.Scenario.ScenarioActivityMonitor;
-import ASSET.Util.SupportTesting;
 import MWC.GUI.Editable;
 import MWC.GenericData.WorldDistance;
-import MWC.GenericData.WorldLocation;
 import MWC.GenericData.WorldSpeed;
 
 /**
@@ -74,102 +70,6 @@ public class ManoeuvreToCourse extends Response.CoreResponse {
 				return super.getPropertyDescriptors();
 			}
 		}
-	}
-
-	////////////////////////////////////////////////////
-	// testing support
-	////////////////////////////////////////////////////
-	public static class ManoeuvreToCourseTest extends SupportTesting.EditableTesting {
-		static public final String TEST_ALL_TEST_TYPE = "UNIT";
-
-		public ManoeuvreToCourseTest(final String name) {
-			super(name);
-		}
-
-		/**
-		 * get an object which we can test
-		 *
-		 * @return Editable object which we can check the properties for
-		 */
-		@Override
-		public Editable getEditable() {
-			return new ManoeuvreToCourse(null, false, null, false, null);
-		}
-
-		public void testIt() {
-			ManoeuvreToCourse mc = new ManoeuvreToCourse(new WorldSpeed(10, WorldSpeed.M_sec), true, new Float(20),
-					true, new WorldDistance(40, WorldDistance.METRES));
-
-			final ParticipantType cp = new ASSET.Models.Vessels.Surface(12);
-			final CoreSensor cs = new ASSET.Models.Sensor.Initial.BroadbandSensor(22);
-			ASSET.Models.Detection.DetectionEvent de = new ASSET.Models.Detection.DetectionEvent(1200, cp.getId(), null,
-					cs, new WorldDistance(33, WorldDistance.YARDS), // range
-					new WorldDistance(33, WorldDistance.YARDS), // estimated range
-					new Float(3), // course
-					null, null, null, new Float(22), null, cp);
-
-			final Status status = new Status(10, 10);
-			status.setLocation(new WorldLocation(2, 2, 2));
-			status.setSpeed(new WorldSpeed(12, WorldSpeed.M_sec));
-			status.setCourse(45);
-			DemandedStatus res = mc.direct(de, status, null, null, null, 1200);
-			SimpleDemandedStatus sds = (SimpleDemandedStatus) res;
-
-			// check we got something returned
-			assertNotNull("demanded status returned", res);
-
-			// check we correctly handled the relative aspects
-			assertEquals("correct relative course", 23, sds.getCourse(), 0.001);
-			assertEquals("correct relative speed", 32, sds.getSpeed(), 0.001);
-			assertEquals("correct absolute depth", 40, sds.getHeight(), 0.001);
-
-			// hey, let's not provide course or speed!
-			de = new ASSET.Models.Detection.DetectionEvent(1200, cp.getId(), null, cs, null, null, null, null, null,
-					null, null, null, cp);
-
-			res = mc.direct(de, status, null, null, null, 1200);
-			sds = (SimpleDemandedStatus) res;
-
-			// check we got something returned
-			assertNotNull("demanded status returned", res);
-
-			// check we correctly handled the relative aspects
-			assertEquals("correct relative course ignored", 45, sds.getCourse(), 0.001);
-			assertEquals("correct relative speed ignored", 12, sds.getSpeed(), 0.001);
-			assertEquals("correct absolute depth", 40, sds.getHeight(), 0.001);
-
-			// handle when there's missing data
-			de = new ASSET.Models.Detection.DetectionEvent(1200, cp.getId(), null, cs, null, null, new Float(33), null,
-					null, null, new Float(22), null, cp);
-
-			mc = new ManoeuvreToCourse(new WorldSpeed(10, WorldSpeed.M_sec), false, new Float(20), false,
-					new WorldDistance(40, WorldDistance.METRES));
-
-			res = mc.direct(de, status, null, null, null, 1200);
-			sds = (SimpleDemandedStatus) res;
-
-			// check we got something returned
-			assertNotNull("demanded status returned", res);
-
-			// check we correctly handled the relative aspects
-			assertEquals("correct absolute course", 20, sds.getCourse(), 0.001);
-			assertEquals("correct absolute speed", 10, sds.getSpeed(), 0.001);
-			assertEquals("correct absolute depth", 40, sds.getHeight(), 0.001);
-
-			mc = new ManoeuvreToCourse(null, false, null, false, null);
-
-			res = mc.direct(de, status, null, null, null, 1200);
-			sds = (SimpleDemandedStatus) res;
-
-			// check we got something returned
-			assertNotNull("demanded status returned", res);
-
-			// check we correctly handled the relative aspects
-			assertEquals("empty course", 45, sds.getCourse(), 0.001);
-			assertEquals("empty speed", 12, sds.getSpeed(), 0.001);
-			assertEquals("empty depth", -2, sds.getHeight(), 0.001);
-		}
-
 	}
 
 	/**

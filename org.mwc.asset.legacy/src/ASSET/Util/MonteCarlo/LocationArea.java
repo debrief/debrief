@@ -21,8 +21,6 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
-import ASSET.Util.RandomGenerator;
-import ASSET.Util.SupportTesting;
 import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldLocation;
 
@@ -31,33 +29,6 @@ import MWC.GenericData.WorldLocation;
  * specified rectangle
  */
 public final class LocationArea implements XMLObject {
-	// ////////////////////////////////////////////////
-	// property testing
-	// ////////////////////////////////////////////////
-	public static class LocAreaTest extends SupportTesting {
-		public LocAreaTest(final String s) {
-			super(s);
-		}
-
-		public void testArea() {
-
-			final WorldLocation wa = new WorldLocation(8, 0, 0);
-			final WorldLocation wb = new WorldLocation(10, 2, 0);
-			final WorldArea myArea = new WorldArea(wa, wb);
-			final int myModel = RandomGenerator.NORMAL;
-			final LocationArea la = new LocationArea(myArea, myModel);
-
-			// and get the locations
-			final int limit = 100;
-			for (int i = 0; i < limit; i++) {
-				la.newPermutation();
-				final WorldLocation thisLoc = la.thisPermutation();
-				assertTrue("generated location (" + thisLoc + ") isn't inside indicated area:" + myArea,
-						myArea.contains(thisLoc));
-			}
-		}
-
-	}
 
 	/**
 	 * the area within which the new locations are created

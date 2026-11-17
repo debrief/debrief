@@ -22,7 +22,6 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
 import ASSET.Util.RandomGenerator;
-import ASSET.Util.SupportTesting;
 import MWC.GenericData.WorldDistance;
 import MWC.GenericData.WorldLocation;
 import MWC.GenericData.WorldVector;
@@ -33,33 +32,6 @@ import MWC.Utilities.ReaderWriter.XML.Util.WorldDistanceHandler;
  * specified range of an origin
  */
 public final class LocationOffset implements XMLObject {
-	//////////////////////////////////////////////////
-	// property testing
-	//////////////////////////////////////////////////
-	public static class LocOffsetTest extends SupportTesting {
-		public LocOffsetTest(final String s) {
-			super(s);
-		}
-
-		public void testArea() {
-
-			final WorldDistance myDist = new WorldDistance(1, WorldDistance.DEGS);
-			final WorldLocation myOrigin = new WorldLocation(8, 0, 0);
-			final int myModel = RandomGenerator.NORMAL;
-			final LocationOffset la = new LocationOffset(myOrigin, myDist, myModel);
-
-			// and get the locations
-			final int limit = 100;
-			for (int i = 0; i < limit; i++) {
-				la.newPermutation();
-				final WorldLocation thisLoc = la.thisPermutation();
-				final WorldVector error = thisLoc.subtract(myOrigin);
-				final double rngDegs = error.getRange();
-				assertTrue("generated location isn't inside indicated area", rngDegs < 1);
-			}
-		}
-
-	}
 
 	private static final String OFFSET_NAME = "OffsetDistance";
 

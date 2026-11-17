@@ -96,40 +96,6 @@ public class BriefFormatLocation implements PlainFormatLocation {
 
 	}
 
-	//////////////////////////////////////////////////////////////////////////////////////////////////
-	// testing for this class
-	//////////////////////////////////////////////////////////////////////////////////////////////////
-	static public class FormatLocationTest extends junit.framework.TestCase {
-		static public final String TEST_ALL_TEST_TYPE = "UNIT";
-
-		public FormatLocationTest(final String val) {
-			super(val);
-		}
-
-		public void testFormatting() {
-			// try to check we've successfully created our degrees symbol
-			assertNotNull("failed to create degree symbol", DEGREE_SYMBOL);
-			assertEquals("degree symbol wrong length", 1, DEGREE_SYMBOL.length());
-
-			final WorldLocation la = new WorldLocation(0d, 0d, 0d);
-			String res1 = " 00" + DEGREE_SYMBOL + "00\'00.00\" 000" + DEGREE_SYMBOL + "00\'00.00\"";
-			super.assertEquals("first test", res1, BriefFormatLocation.toString(la));
-			la.setLat(-12.345);
-			la.setLong(22.432);
-			res1 = " 12" + DEGREE_SYMBOL + "20\'42.00\"S 022" + DEGREE_SYMBOL + "25\'55.20\"E";
-			super.assertEquals("second test", res1, BriefFormatLocation.toString(la));
-			la.setLat(12.34533);
-			la.setLong(-22.43222);
-			res1 = " 12" + DEGREE_SYMBOL + "20\'43.19\"N 022" + DEGREE_SYMBOL + "25\'55.99\"W";
-			super.assertEquals("third test", res1, BriefFormatLocation.toString(la));
-			la.setLat(82.345);
-			la.setLong(172.432);
-			res1 = " 82" + DEGREE_SYMBOL + "20\'42.00\"N 172" + DEGREE_SYMBOL + "25\'55.20\"E";
-			super.assertEquals("fourth test", res1, BriefFormatLocation.toString(la));
-
-		}
-	}
-
 	/**
 	 * degree symbol, obviously. Taken from helpful website at
 	 * http://www.fileformat.info/info/unicode/char/00b0/index.htm

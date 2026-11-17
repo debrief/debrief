@@ -16,6 +16,7 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.draw2d,
  org.mwc.asset.core,
  org.mwc.cmap.geotools
+Import-Package: org.junit.jupiter.api;version="[5.0.0,7.0.0)"
 Bundle-RequiredExecutionEnvironment: JavaSE-21
 Bundle-ActivationPolicy: lazy
 Bundle-Vendor: MWC

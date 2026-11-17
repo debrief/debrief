@@ -21,7 +21,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
-import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -41,110 +40,12 @@ import MWC.GUI.Properties.DebriefColors;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.WorldLocation;
 import MWC.TacticalData.Fix;
-import MWC.Utilities.TextFormatting.FormatRNDateTime;
 import MWC.Utilities.TextFormatting.GMTDateFormat;
-import junit.framework.TestCase;
 
 /**
  * @author ian.mayo
  */
 public class LogTrackLoader extends CoreLoader {
-
-	public static class TestLogImport extends TestCase {
-		public void testDateImport() throws ParseException {
-			final String testLine1 = "23-08-2014 02136 53,01-01-2014 11 00 12,31-08-2014 23 00 08,48.55566666666667,-9.359333333333334,8.922246514887131,318.8,9.349891895292325,319.2,303,48,-570.0,511.3,317.0,TA_DEPLOYED,70,64,-81.9,66.3,319.0,TB_DEPLOYED,1513.51,16.0,0.0,0.0,0.0,0.0,0.0,0.0";
-			final String testLine2 = "23-08-2014 02136 53,01-01-2014 12 00 12,31-08-2014 23 00 08,48.55566666666667,-9.359333333333334,8.922246514887131,318.8,9.349891895292325,319.2,303,48,-570.0,511.3,317.0,TA_DEPLOYED,70,64,-81.9,66.3,319.0,TB_DEPLOYED,1513.51,16.0,0.0,0.0,0.0,0.0,0.0,0.0";
-			final String testLine3 = "23-08-2014 02136 53,01-01-2014 13 00 12,31-08-2014 23 00 08,48.55566666666667,-9.359333333333334,8.922246514887131,318.8,9.349891895292325,319.2,303,48,-570.0,511.3,317.0,TA_DEPLOYED,70,64,-81.9,66.3,319.0,TB_DEPLOYED,1513.51,16.0,0.0,0.0,0.0,0.0,0.0,0.0";
-
-			// check the import, bit by bit
-			final LogTrackLoader loader = new LogTrackLoader();
-
-			final Date d1 = loader.dateFor(testLine1.split(",")[1]);
-			final Date d2 = loader.dateFor(testLine2.split(",")[1]);
-			final Date d3 = loader.dateFor(testLine3.split(",")[1]);
-
-			assertEquals("correct hours", "11:00:12", DateFormat.getTimeInstance().format(d1));
-			assertEquals("correct hours", "12:00:12", DateFormat.getTimeInstance().format(d2));
-			assertEquals("correct hours", "13:00:12", DateFormat.getTimeInstance().format(d3));
-		}
-
-		public void testDaylightSavings() throws ParseException {
-			final String testLine1 = "23-08-2014 02136 53,01-09-2014 11 00 12,31-08-2014 23 00 08,48.55566666666667,-9.359333333333334,8.922246514887131,318.8,9.349891895292325,319.2,303,48,-570.0,511.3,317.0,TA_DEPLOYED,70,64,-81.9,66.3,319.0,TB_DEPLOYED,1513.51,16.0,0.0,0.0,0.0,0.0,0.0,0.0";
-			final String testLine2 = "23-08-2014 02136 53,01-09-2014 12 00 12,31-08-2014 23 00 08,48.55566666666667,-9.359333333333334,8.922246514887131,318.8,9.349891895292325,319.2,303,48,-570.0,511.3,317.0,TA_DEPLOYED,70,64,-81.9,66.3,319.0,TB_DEPLOYED,1513.51,16.0,0.0,0.0,0.0,0.0,0.0,0.0";
-			final String testLine3 = "23-08-2014 02136 53,01-09-2014 13 00 12,31-08-2014 23 00 08,48.55566666666667,-9.359333333333334,8.922246514887131,318.8,9.349891895292325,319.2,303,48,-570.0,511.3,317.0,TA_DEPLOYED,70,64,-81.9,66.3,319.0,TB_DEPLOYED,1513.51,16.0,0.0,0.0,0.0,0.0,0.0,0.0";
-
-			// check the import, bit by bit
-			final LogTrackLoader loader = new LogTrackLoader();
-
-			final Date d1 = loader.dateFor(testLine1.split(",")[1]);
-			final Date d2 = loader.dateFor(testLine2.split(",")[1]);
-			final Date d3 = loader.dateFor(testLine3.split(",")[1]);
-
-			final SimpleDateFormat sdf = new GMTDateFormat("HH:mm:ss");
-
-			assertEquals("correct hours", "11:00:12", sdf.format(d1));
-			assertEquals("correct hours", "12:00:12", sdf.format(d2));
-			assertEquals("correct hours", "13:00:12", sdf.format(d3));
-		}
-
-		public void testDuffImport() throws ParseException {
-			final String testLine1 = "23-08-2014 02136 53,01-09-2014 00 00 12,31-08-2014 23 00 08,48.55566666666667,-9.359333333333334,8.922246514887131,318.8,9.349891895292325,319.2,303,48,-570.0,511.3,317.0,TA_DEPLOYED,70,64,-81.9,66.3,319.0,TB_DEPLOYED,1513.51,16.0,0.0,0.0,0.0,0.0,0.0,0.0";
-			final String testLine2 = "23-08-2014 02 36 53,01-09-2014 00 00 12,31-08-2014 23 00 08,48A.55566666666667,-9.359333333333334,8.922246514887131,318.8,9.349891895292325,319.2,303,48,-570.0,511.3,317.0,TA_DEPLOYED,70,64,-81.9,66.3,319.0,TB_DEPLOYED,1513.51,16.0,0.0,0.0,0.0,0.0,0.0,0.0";
-
-			// check our understanding
-			final String[] blocks = testLine1.split(",");
-			assertEquals("correct num", 29, blocks.length);
-
-			// check the import, bit by bit
-			final LogTrackLoader loader = new LogTrackLoader();
-
-			// and the date?
-			boolean thrown = false;
-			try {
-				@SuppressWarnings("unused")
-				final Date dt = loader.dateFor(blocks[0]);
-			} catch (final ParseException pe) {
-				thrown = true;
-			}
-			assertEquals("failed date parse", true, thrown);
-
-			thrown = false;
-			try {
-				@SuppressWarnings("unused")
-				final FixWrapper res = loader.readLine(testLine2);
-			} catch (final NumberFormatException pe) {
-				thrown = true;
-			}
-			assertEquals("failed number parse", true, thrown);
-		}
-
-		public void testImport() throws ParseException {
-			final String testLine = "23-08-2014 02 36 53,01-09-2014 09 13 14,31-08-2014 23 00 08,48.55566666666667,-9.359333333333334,8.922246514887131,318.8,9.349891895292325,319.2,303,48,-570.0,511.3,317.0,TA_DEPLOYED,70,64,-81.9,66.3,319.0,TB_DEPLOYED,1513.51,16.0,0.0,0.0,0.0,0.0,0.0,0.0";
-
-			// check our understanding
-			final String[] blocks = testLine.split(",");
-			assertEquals("correct num", 29, blocks.length);
-
-			// check the import, bit by bit
-			final LogTrackLoader loader = new LogTrackLoader();
-
-			// and the date?
-			final Date dt = loader.dateFor(blocks[0]);
-			assertEquals("correct date", "23-Aug-2014", DateFormat.getDateInstance().format(dt));
-			// note, 23rd Aug is summer, so daylight savings time is present in the
-			// next value
-			assertEquals("correct time", "03:36:53", DateFormat.getTimeInstance().format(dt));
-			assertEquals("correct millis", 1408761413000L, dt.getTime());
-
-			final FixWrapper res = loader.readLine(testLine);
-			assertEquals("correct lat", "010913.14", FormatRNDateTime.toString(res.getDTG().getDate().getTime()));
-			assertEquals("correct lat", 48.5556666, res.getLocation().getLat(), 0.001);
-			assertEquals("correct lon", -9.359333, res.getLocation().getLong(), 0.001);
-			assertEquals("correct course", 318.8, res.getCourseDegs(), 0.001);
-			assertEquals("correct speed", 8.922246, res.getSpeed(), 0.001);
-		}
-
-	}
 
 	private static String filename(final String fullPath) { // gets filename without extension
 		final int sep = fullPath.lastIndexOf(File.separator);
@@ -283,7 +184,7 @@ public class LogTrackLoader extends CoreLoader {
 		}
 	}
 
-	private FixWrapper readLine(final String thisLine) throws ParseException {
+	FixWrapper readLine(final String thisLine) throws ParseException {
 		// sample line
 		// 23-08-2014 02 36 53,01-09-2014 00 00 12,31-08-2014 23 00
 		// 08,48.55566666666667,-9.359333333333334,8.922246514887131,318.8,9.349891895292325,319.2,303,48,-570.0,511.3,317.0,TA_DEPLOYED,70,64,-81.9,66.3,319.0,TB_DEPLOYED,1513.51,16.0,0.0,0.0,0.0,0.0,0.0,0.0

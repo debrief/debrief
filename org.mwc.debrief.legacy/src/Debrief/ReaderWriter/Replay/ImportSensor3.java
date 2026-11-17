@@ -44,42 +44,6 @@ import MWC.Utilities.TextFormatting.DebriefFormatDateTime;
  * class to parse a label from a line of text
  */
 public final class ImportSensor3 extends AbstractPlainLineImporter {
-	// ////////////////////////////////////////////////////////////////////////////////////////////////
-	// testing for this class
-	// ////////////////////////////////////////////////////////////////////////////////////////////////
-	static public final class testMe extends junit.framework.TestCase {
-		static public final String TEST_ALL_TEST_TYPE = "UNIT";
-
-		public testMe(final String val) {
-			super(val);
-		}
-
-		public final void testImport() throws ParseException {
-			// final String lineA =
-			// ";SENSOR2: 20090722 041434.000 NONSUCH @B NULL 59.3 300.8 49.96 NULL
-			// Contact_bearings 0414";
-			// final String lineB =
-			// ";SENSOR2: 20090722 041434.000 NONSUCH @B NULL 59.3 300.8 49.96 NULL
-			// \"Contact bearings\" 0414";
-			// final String lineTabs =
-			// ";SENSOR2: 20090722 041434.000 NONSUCH @B NULL 59.3 300.8 49.96 NULL
-			// \"Contact bearings\" 0414";
-			// final String lineD =
-			// ";SENSOR2: 20090722 041434.000 \"NON SUCH\" @B NULL 59.3 NULL NULL NULL
-			// \"Contact bearings\" 0414";
-
-			// NOTE: This test just uses the mangled form of SENSOR3 output that we get from
-			// system G.
-			final String lineA = ";SENSOR3: 20090722 041434.000 NULL @@ NULL 0.0 NULL 155.55 0.001 NULL \"UNKNOWN\" \"UNKNOWN\"";
-
-			final ImportSensor3 is2 = new ImportSensor3();
-			final SensorContactWrapper resA = (SensorContactWrapper) is2.readThisLine(lineA);
-			assertEquals("lineA failed", "NULL", resA.getTrackName());
-			assertEquals("lineA failed", "UNKNOWN", resA.getSensorName());
-			assertEquals("lineA failed", "\"UNKNOWN\"", resA.getLabel());
-			assertEquals("correct freq", 155.55, resA.getFrequency(), 0.001);
-		}
-	}
 
 	/**
 	 * the type for this string

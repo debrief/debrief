@@ -15,6 +15,8 @@
 
 package org.mwc.debrief.lite.tests;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 import java.awt.Component;
 import java.awt.Container;
 import java.awt.Graphics2D;
@@ -27,6 +29,8 @@ import javax.swing.SwingUtilities;
 
 import org.geotools.geometry.DirectPosition2D;
 import org.geotools.geometry.Envelope2D;
+import org.junit.jupiter.api.Test;
+
 import org.mwc.debrief.lite.DebriefLiteApp;
 import org.mwc.debrief.lite.map.LiteMapPane;
 import org.opengis.referencing.operation.MathTransform;
@@ -99,7 +103,7 @@ public class TestMainWindowScreenshots extends BaseTestCase {
 	private void check(final String name, final BufferedImage image) throws Exception {
 		try {
 			GoldenImage.assertMatches("lite-window/" + name + ".png", image, CHANNEL_TOLERANCE, MAX_DIFFERENT);
-		} catch (final junit.framework.AssertionFailedError e) {
+		} catch (final AssertionError e) {
 			_failures.append(e.getMessage()).append('\n');
 		}
 	}
@@ -135,7 +139,7 @@ public class TestMainWindowScreenshots extends BaseTestCase {
 		Thread.sleep(SETTLE_MILLIS);
 		SwingUtilities.invokeAndWait(() -> {
 			final LiteMapPane map = findMapPane(frame().getContentPane());
-			assertNotNull("map pane", map);
+			assertNotNull(map, "map pane");
 			try {
 				final MathTransform degsToMap = DebriefLiteApp.getInstance().getProjection().getDataTransform();
 				final DirectPosition2D tl = new DirectPosition2D(-22, 59.75);
@@ -153,6 +157,7 @@ public class TestMainWindowScreenshots extends BaseTestCase {
 	 * one test, in a fixed order: Lite keeps state (status bar, selection) between
 	 * tests in the same JVM, and JUnit does not fix the order of test methods
 	 */
+	@Test
 	public void testMainWindow() throws Exception {
 		fixWindowAndMap();
 

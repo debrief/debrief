@@ -149,7 +149,6 @@ import java.awt.Point;
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
 import java.util.ArrayList;
-import java.util.Vector;
 
 import MWC.GUI.CanvasType;
 import MWC.GUI.Editable;
@@ -190,24 +189,6 @@ public class EllipseShape extends PlainShape implements Editable, HasDraggableCo
 			} catch (final IntrospectionException e) {
 				return super.getPropertyDescriptors();
 			}
-		}
-	}
-
-	//////////////////////////////////////////////////////////////////////////////////////////////////
-	// testing for this class
-	//////////////////////////////////////////////////////////////////////////////////////////////////
-	static public class EllipseTest extends junit.framework.TestCase {
-		static public final String TEST_ALL_TEST_TYPE = "UNIT";
-
-		public EllipseTest(final String val) {
-			super(val);
-		}
-
-		public void testMyParams() {
-			MWC.GUI.Editable ed = new EllipseShape(new WorldLocation(2d, 2d, 2d), 12d,
-					new WorldDistance(12d, WorldDistance.DEGS), new WorldDistance(12d, WorldDistance.DEGS));
-			MWC.GUI.Editable.editableTesterSupport.testParams(ed, this);
-			ed = null;
 		}
 	}
 

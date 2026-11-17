@@ -21,8 +21,6 @@ import java.io.Serializable;
 
 import ASSET.ScenarioType;
 import ASSET.Scenario.Genetic.ScenarioRunner;
-import ASSET.Util.SupportTesting;
-import MWC.GUI.Editable;
 import MWC.GenericData.Duration;
 
 /**
@@ -62,21 +60,6 @@ public class StopOnElapsedObserver extends CoreObserver
 				e.printStackTrace();
 				return super.getPropertyDescriptors();
 			}
-		}
-	}
-
-	//////////////////////////////////////////////////
-	// property testing
-	//////////////////////////////////////////////////
-	public static class TimeObsTest extends SupportTesting.EditableTesting {
-		/**
-		 * get an object which we can test
-		 *
-		 * @return Editable object which we can check the properties for
-		 */
-		@Override
-		public Editable getEditable() {
-			return new StopOnElapsedObserver(12, 12, 12, 12, "", true);
 		}
 	}
 

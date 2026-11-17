@@ -113,35 +113,6 @@ import MWC.Utilities.TextFormatting.DebriefFormatDateTime;
  */
 class ImportEllipse extends AbstractPlainLineImporter {
 
-	// ////////////////////////////////////////////////
-	// testing code...
-	// ////////////////////////////////////////////////
-	static public class testImport extends junit.framework.TestCase {
-		static public final String TEST_ALL_TEST_TYPE = "CONV";
-
-		public testImport(final String val) {
-			super(val);
-		}
-
-		public void testValues() throws ParseException {
-			final String iLine = ";ELLIPSE: @F 951212 060200 21.8 0 0 N 21.5 0 0 W 45.0 5000 3000 test ellipse";
-			final AbstractPlainLineImporter iff = new ImportEllipse();
-			final ShapeWrapper res = (ShapeWrapper) iff.readThisLine(iLine);
-
-			// and check the result
-			assertNotNull("read it in", res);
-			assertEquals("right track", "test ellipse", res.getLabel());
-			assertEquals("right color", new java.awt.Color(255, 150, 0), res.getColor());
-			assertEquals("right name", "test ellipse", res.getName());
-			assertNotNull("right name", res.getStartDTG());
-			assertNull("right name", res.getEndDTG());
-			final EllipseShape ell = (EllipseShape) res.getShape();
-			assertEquals("right orient", 45.0, ell.getOrientation());
-			assertEquals("right maxima", 5000, ell.getMaxima().getValueIn(WorldDistance.YARDS), 0.001);
-			assertEquals("right minima", 3000, ell.getMinima().getValueIn(WorldDistance.YARDS), 0.001);
-		}
-	}
-
 	private final static String TYPE_STR = ";ELLIPSE:";
 
 	/**

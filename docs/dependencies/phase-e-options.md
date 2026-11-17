@@ -5,23 +5,17 @@ For the owner's decision at Gate D (see [plan.md](plan.md), Phase E). Facts are 
 ## Decisions (owner, November 2026)
 
 1. **RCPTT: retire the runner, keep the scripts as a checklist, and plan a new small automated RCP UI suite** (SWTBot or current RCPTT) covering the main paths, written against the current product. It should be in place before the GeoTools upgrade (Phase D1), which changes the RCP map.
-2. **JUnit: full migration to JUnit 5.** This means moving the inline tests out of production classes first, then converting about 280 test classes. It is done in stages (below).
+2. **JUnit: full migration, to JUnit 6** (the owner chose 6.1.3 over 5.14.4: the same Jupiter API, and the current line). **Done**, in one PR rather than the four stages planned below:
+   - **Inline tests out of production code.** 353 test classes moved to a `test/` folder in each plugin, in the same package (334 nested in production classes, 19 whole files). Members the tests used were widened from `private` to package-private. Test-support code that tests in other plugins share (`Editable.editableTesterSupport`, `WatchableList.TestWatchables`, `TimeController.doTests`, the golden-file helpers) stays in production but no longer uses JUnit: it checks with `MWC.Utilities.Errors.Testing.Checks`. Developer `main()` methods that ran tests by hand were removed.
+   - **Converted to Jupiter** with OpenRewrite (`MigrateJUnitTestCase`, `JUnit4to5Migration`), then scripts for what it missed: JUnit 3 named constructors removed, `@Test` added to classes on custom `TestCase` bases, and assertion messages moved last using the argument types javac reported.
+   - **Runner.** `maven-surefire-plugin` runs each plugin's `test/` folder with the classpath Tycho computes (root `pom.xml`). The `test2` and `asset.test` suite bundles are gone. Lite's Ant build uses `<junitlauncher>` and compiles its tests apart from `debrief_lite.jar`. `org.mwc.debrief.editable.test` stays an OSGi test plugin, with JUnit 6 from the target platform.
+   - **JUnit 4 and hamcrest are gone**: from `cmap.legacy` (its re-export and `libs/`), the target platform, the shipped features and products, Lite's `lib/`, and Dependabot's rules.
+   - **More tests run.** Every class the old `test2` suite listed still runs. Tests that were in no suite (or, for ASSET, in no build) now run too. Those that fail were already broken and had never run, so they are `@Disabled` with the reason, for someone to fix or delete.
 3. **Stale test libraries: done.** jmock deleted; mockito-all removed, with its two users rewritten. The RCPTT runner is deleted and its scripts are now [a manual checklist](../testing/debrief-ng-smoke-checklist.md).
 
-### JUnit 5 migration: stages
+### JUnit migration: the stages as planned
 
-Each stage is its own PR or set of PRs, and CI stays green throughout.
-
-1. **Run both.** Add the JUnit Platform with the vintage and Jupiter engines:
-   - in Tycho Surefire (Jupiter and Platform bundles from the Eclipse release);
-   - in Lite's Ant build (`<junit>` → `<junitlauncher>`).
-   
-   Existing tests run unchanged; new tests can be Jupiter.
-2. **Move inline tests out of production code**, one plugin at a time, starting with the smaller ones and ending with `debrief.legacy` (51 files):
-   - each `TestMe` inner class moves to a test class in a test source folder;
-   - `junit.framework` leaves the bundles' `uses:` clauses and Lite's shipped `lib/`.
-3. **Convert to Jupiter**, plugin by plugin: `TestCase` → `@Test`, `assertEquals` argument order kept, suites → `@Suite` or Surefire includes. The golden-file and screenshot helpers (`GoldenFile`, `GoldenImage`) move to JUnit 5 assertions.
-4. **Remove JUnit 4**: the vintage engine, `junit.jar`, `hamcrest-core.jar`, and their Dependabot rules.
+The plan was four PRs (run both engines, move the tests out, convert, remove JUnit 4). The owner asked for one; see the decision above.
 
 The options and reasons follow, as written for the decision.
 

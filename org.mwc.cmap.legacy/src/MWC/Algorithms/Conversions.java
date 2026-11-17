@@ -16,64 +16,6 @@
 package MWC.Algorithms;
 
 final public class Conversions {
-	//////////////////////////////////////////////////////////////////////////////////////////////////
-	// testing for this class
-	//////////////////////////////////////////////////////////////////////////////////////////////////
-	static public class ConversionsTest extends junit.framework.TestCase {
-		static public final String TEST_ALL_TEST_TYPE = "CONV";
-
-		public ConversionsTest(final String val) {
-			super(val);
-		}
-
-		public void testValues() {
-			final double degs = 1;
-			assertEquals("degs 2 nm", 60, Conversions.Degs2Nm(degs), 0.01);
-			assertEquals("degs 2 km", 111.12, Conversions.Degs2Km(degs), 0.01);
-			assertEquals("degs 2 m", 111120.000, Conversions.Degs2m(degs), 0.01);
-			assertEquals("degs 2 yds", 121522.31, Conversions.Degs2Yds(degs), 0.01);
-			assertEquals("ft 2 m", 0.3048, Conversions.ft2m(1), 0.01);
-			assertEquals("m 2 ft", 1, Conversions.m2ft(0.3048), 0.01);
-			/**
-			 * note, we're not using Excel value for degs2yds, but RN approximation (6080/3)
-			 */
-		}
-
-		public void testNormaliseDegs() {
-			assertEquals(0d, Conversions.normaliseDegs(0), 1e-9);
-			assertEquals(0d, Conversions.normaliseDegs(360), 1e-9);
-			assertEquals(350d, Conversions.normaliseDegs(-10), 1e-9);
-			assertEquals(10d, Conversions.normaliseDegs(730), 1e-9);
-			assertEquals(180d, Conversions.normaliseDegs(-540), 1e-9);
-			assertEquals(359.5, Conversions.normaliseDegs(-0.5), 1e-9);
-		}
-
-		public void testSignedDegs() {
-			assertEquals(-10d, Conversions.signedDegs(350), 1e-9);
-			assertEquals(180d, Conversions.signedDegs(180), 1e-9);
-			assertEquals(180d, Conversions.signedDegs(-180), 1e-9);
-			assertEquals(-170d, Conversions.signedDegs(190), 1e-9);
-			assertEquals(10d, Conversions.signedDegs(730), 1e-9);
-			assertEquals(-10d, Conversions.signedDegs(-730), 1e-9);
-			assertEquals(170d, Conversions.signedDegs(-550), 1e-9);
-		}
-
-		public void testDegsDifference() {
-			// from 350 to 010 is +20, not -340
-			assertEquals(20d, Conversions.degsDifference(350, 10), 1e-9);
-			assertEquals(-20d, Conversions.degsDifference(10, 350), 1e-9);
-			assertEquals(-10d, Conversions.degsDifference(-175, 175), 1e-9);
-			assertEquals(0d, Conversions.degsDifference(45, 405), 1e-9);
-		}
-
-		public void testRadiansHelpers() {
-			assertEquals(Math.PI * 1.5, Conversions.normaliseRads(-Math.PI / 2), 1e-9);
-			assertEquals(0d, Conversions.normaliseRads(2 * Math.PI), 1e-9);
-			assertEquals(-Math.PI / 2, Conversions.signedRads(Math.PI * 1.5), 1e-9);
-			assertEquals(Math.PI, Conversions.signedRads(-Math.PI), 1e-9);
-			assertEquals(Degs2Rads(20), Conversions.radsDifference(Degs2Rads(350), Degs2Rads(10)), 1e-9);
-		}
-	}
 
 	/////////////////////////////////////////////////////////////
 	// member variables

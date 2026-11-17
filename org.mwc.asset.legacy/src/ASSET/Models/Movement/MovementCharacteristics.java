@@ -1,7 +1,6 @@
 
 package ASSET.Models.Movement;
 
-import ASSET.Util.SupportTesting;
 import MWC.GUI.Editable;
 import MWC.GenericData.WorldAcceleration;
 import MWC.GenericData.WorldDistance;
@@ -28,25 +27,6 @@ import MWC.GenericData.WorldSpeed;
  */
 
 public abstract class MovementCharacteristics implements MWC.GUI.Editable, java.io.Serializable {
-
-	//////////////////////////////////////////////////////
-	// member variables
-	//////////////////////////////////////////////////////
-
-	//////////////////////////////////////////////////
-	// testing
-	//////////////////////////////////////////////////
-	public static class MoveCharsTest extends SupportTesting.EditableTesting {
-		/**
-		 * get an object which we can test
-		 *
-		 * @return Editable object which we can check the properties for
-		 */
-		@Override
-		public Editable getEditable() {
-			return MovementCharacteristics.getSampleChars();
-		}
-	}
 
 	static public class MovementInfo extends MWC.GUI.Editable.EditorType {
 

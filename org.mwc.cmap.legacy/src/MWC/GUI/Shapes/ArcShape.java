@@ -146,7 +146,6 @@ import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
 
 import MWC.GUI.CanvasType;
-import MWC.GUI.Editable;
 import MWC.GUI.ExtendedCanvasType;
 import MWC.GUI.PlainWrapper;
 import MWC.GenericData.WorldArea;
@@ -193,24 +192,6 @@ public class ArcShape extends CircleShape {
 			} catch (final IntrospectionException e) {
 				return super.getPropertyDescriptors();
 			}
-		}
-	}
-
-	// ////////////////////////////////////////////////////////////////////////////////////////////////
-	// testing for this class
-	// ////////////////////////////////////////////////////////////////////////////////////////////////
-	static public class CircleTest extends junit.framework.TestCase {
-		static public final String TEST_ALL_TEST_TYPE = "UNIT";
-
-		public CircleTest(final String val) {
-			super(val);
-		}
-
-		public void testMyParams() {
-			Editable ed = new ArcShape(new WorldLocation(2d, 2d, 2d), new WorldDistance(2d, WorldDistance.YARDS), 12, 2,
-					true, true);
-			editableTesterSupport.testParams(ed, this);
-			ed = null;
 		}
 	}
 
