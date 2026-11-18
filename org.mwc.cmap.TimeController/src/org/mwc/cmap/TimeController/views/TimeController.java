@@ -60,6 +60,7 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
@@ -849,6 +850,15 @@ public class TimeController extends ViewPart implements ISelectionProvider, Time
 	 *
 	 * @param parent
 	 */
+	/**
+	 * stop the workbench's CSS theme restyling this widget, so it keeps the
+	 * colours set here (the time display is green on black). The theme otherwise
+	 * repaints its background in the theme's colour once the view is shown.
+	 */
+	private static void keepOwnColours(final Control control) {
+		control.setData("org.eclipse.e4.ui.css.disabled", Boolean.TRUE); //$NON-NLS-1$
+	}
+
 	private void buildInterface(final Composite parent) {
 		// ok, draw our wonderful GUI.
 		_wholePanel = new Composite(parent, SWT.BORDER);
@@ -867,6 +877,7 @@ public class TimeController extends ViewPart implements ISelectionProvider, Time
 		timePanel.setLayout(new GridLayout(2, false));
 		timePanel.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 		timePanel.setBackground(bColor);
+		keepOwnColours(timePanel);
 
 		_recordingLabel = new Label(timePanel, SWT.NONE);
 		final GridData recordingGrid = new GridData(GridData.FILL_HORIZONTAL);
@@ -875,6 +886,7 @@ public class TimeController extends ViewPart implements ISelectionProvider, Time
 		_recordingLabel.setFont(arialFont);
 		_recordingLabel.setForeground(fColor);
 		_recordingLabel.setBackground(bColor);
+		keepOwnColours(_recordingLabel);
 		_recordingLabel.setVisible(false);
 		_timeLabel = new Label(timePanel, SWT.NONE);
 		final GridData labelGrid = new GridData(GridData.FILL_HORIZONTAL);
@@ -887,6 +899,7 @@ public class TimeController extends ViewPart implements ISelectionProvider, Time
 		_timeLabel.setFont(arialFont);
 		_timeLabel.setForeground(fColor);
 		_timeLabel.setBackground(bColor);
+		keepOwnColours(_timeLabel);
 
 		// next create the time slider holder
 		_tNowSlider = new Scale(_wholePanel, SWT.NONE);

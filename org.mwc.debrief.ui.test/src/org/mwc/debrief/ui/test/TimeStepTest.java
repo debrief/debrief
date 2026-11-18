@@ -17,6 +17,7 @@ package org.mwc.debrief.ui.test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swtbot.eclipse.finder.widgets.SWTBotEditor;
@@ -66,6 +67,11 @@ public class TimeStepTest {
 		System.out.println("Time Controller: start " + start + ", next " + next + ", back " + back + ", end " + end);
 
 		assertEquals("95/12/12 05:00", start, "the start of sample.dpf");
+		// the time display is green on black, whatever the workbench theme
+		final RGB[] colours = UIThreadRunnable.syncExec(() -> new RGB[] {
+				view.bot().label(0).widget.getForeground().getRGB(), view.bot().label(0).widget.getBackground().getRGB() });
+		assertEquals(new RGB(33, 255, 22), colours[0], "the time is drawn in green");
+		assertEquals(new RGB(0, 0, 0), colours[1], "on black");
 		assertEquals("95/12/12 05:01", next, "a small step forward is a minute");
 		assertEquals(start, back, "a small step back returns to the start");
 		assertEquals("95/12/12 11:45", end, "the end of sample.dpf");
