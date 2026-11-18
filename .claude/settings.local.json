@@ -11,7 +11,13 @@
       "Bash(ls:*)",
       "Bash(grep:*)",
       "Bash(tree:*)",
-      "Bash(test:*)"
+      "Bash(test:*)",
+      "Bash(do:*)",
+      "Bash(git checkout *)",
+      "Bash(git pull *)",
+      "Bash(git ls-remote *)",
+      "Bash(gh pr *)",
+      "Skill(schedule)"
     ]
   }
 }
