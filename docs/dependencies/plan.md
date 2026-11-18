@@ -95,17 +95,17 @@ Versions are set at implementation time from Maven Central (latest stable); the 
 2. The `lite-ui-tests` job passes (`-DliteUiTests=true`).
 3. The golden-file tests pass unchanged. Any regeneration has to be explained in the PR.
 4. The scan artefact shows the target CVEs gone and no new High/Critical findings.
-5. Smoke test from the CI artefacts: start the product on Linux under xvfb with a screenshot. Open `sample.dpf` and export a narrative to Word. On Windows and macOS, a manual check by the owner, listed in the PR.
+5. Smoke test from the CI artefacts: start the product on Linux under xvfb with a screenshot. Open `sample.dpf` and export a narrative to Word. On Windows, a manual check by the owner, listed in the PR. macOS is checked only as a developer convenience (no Debrief user runs it); problems found there are fixed as they arise.
 6. Lite: run `dist/debrief-lite-<version>.zip`, open a REP file, step time.
 
 ## Gate A: before any restructuring
-**Waived** by the owner to start Phase B. Two conditions are still open: two weeks of green scheduled runs, and the owner's manual smoke test on Windows and macOS.
+**Waived** by the owner to start Phase B. Two conditions are still open: two weeks of green scheduled runs, and the owner's manual smoke test on Windows (the owner dropped macOS, November 2026: no Debrief user runs it).
 
 All of the following hold:
 - PRs 1–3+ are merged.
 - No High or Critical CVE is open without a written exception.
 - Golden-file and Lite UI tests pass on `develop` for 2 consecutive weeks of scheduled runs.
-- The owner has done the manual smoke test on Windows and macOS on a `develop` build.
+- The owner has done the manual smoke test on Windows on a `develop` build. macOS is not part of the gate: no Debrief user runs it, and the owner fixes anything found there downstream.
 
 ## Phase B: move jars to Maven (done)
 **Done** for the four planned plugins (debrief/debrief#5302–#5304). The owner waived Gate A and chose a different mechanism from the one first planned. The full detail is in [maven-jars.md](maven-jars.md).
@@ -157,7 +157,7 @@ Spec `specs/004-geotools/`.
 - **Replace `gt-swt-23-SNAPSHOT`.** GeoTools no longer publishes gt-swt, so we port the classes we use into `cmap.geotools`.
 - **Align** `gt-jdbc-spatialite`.
 - **Drop the GeoTools pins.** commons-text and hsqldb are no longer pinned by GeoTools.
-- **Acceptance:** the screenshot diffs are within tolerance; coordinates are within 1 m when projected and transformed back on the sample plots; and the full verification list passes. The coordinate check is ready: `ProjectionAccuracyTest` in Lite's headless tests (round trip within 1 m, agreement with an independent EPSG:3395 formula within 1 m, and a screen round trip within one pixel, for every fix in `sample.dpf`, `boat1.rep` and `uk_track.rep`).
+- **Acceptance:** the screenshot diffs (Lite's `MapRenderingTest` and Debrief NG's `MapScreenshotTest`) are within tolerance; coordinates are within 1 m when projected and transformed back on the sample plots; and the full verification list passes. The coordinate check is ready: `ProjectionAccuracyTest` in Lite's headless tests (round trip within 1 m, agreement with an independent EPSG:3395 formula within 1 m, and a screen round trip within one pixel, for every fix in `sample.dpf`, `boat1.rep` and `uk_track.rep`).
 
 ## Phase D2: Lite UI libraries (after Gate D; can run in parallel with D1)
 - **Radiance** 3.0.0 → current: flamingo ribbon, substance, trident; packages and API change.
@@ -169,7 +169,7 @@ Spec `specs/004-geotools/`.
 - **Postgres 8.3.** Done early, with the Pepys driver: all PostgreSQL support was removed (see PR 3+ item 2).
 
 ## Phase E: test tooling (after Phase B)
-**Decided** (owner, November 2026; options and stages in [phase-e-options.md](phase-e-options.md)): retire the RCPTT runner, keep its scripts as a manual checklist, and plan a new small RCP UI suite before Phase D1 (proposal: [rcp-ui-suite-plan.md](../testing/rcp-ui-suite-plan.md), SWTBot); migrate fully to JUnit 6 (done, in one PR: tests moved out of production code into each plugin's `test/` folder, converted to Jupiter, run by Surefire and Lite's `<junitlauncher>`; JUnit 4 and hamcrest removed everywhere); delete jmock and mockito-all (done). The two lines below are the original plan, kept for history.
+**Decided** (owner, November 2026; options and stages in [phase-e-options.md](phase-e-options.md)): retire the RCPTT runner, keep its scripts as a manual checklist, and add a new small RCP UI suite before Phase D1 (done: seven SWTBot scenarios in `org.mwc.debrief.ui.test`, see [rcp-ui-suite-plan.md](../testing/rcp-ui-suite-plan.md); its map screenshot is a D1 acceptance check); migrate fully to JUnit 6 (done, in one PR: tests moved out of production code into each plugin's `test/` folder, converted to Jupiter, run by Surefire and Lite's `<junitlauncher>`; JUnit 4 and hamcrest removed everywhere); delete jmock and mockito-all (done). The two lines below are the original plan, kept for history.
 
 - **JUnit 4.12 → JUnit 5** with the vintage engine. Tycho Surefire supports it, and the existing tests run unchanged.
 - **RCPTT runner 2.5.0** (about 600 committed jars): replace it with the current RCPTT Maven plugin, or retire it in favour of the screenshot and headless tests. **The owner decides at Gate D.**

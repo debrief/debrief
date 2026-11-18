@@ -4,11 +4,13 @@ A walkthrough of the Eclipse RCP product (Debrief NG), for acceptance checks suc
 
 It replaces the 22 RCPTT scripts in `org.mwc.debrief.ui_test`, which were retired in Phase E (see [phase-e-options.md](../dependencies/phase-e-options.md)). Each item below is one of those scripts, with the files it used and what it checked. The scripts had not run in CI and were no longer in the build. They remain in git history before this change.
 
+Items marked **(automated)** are covered by the SWTBot tests in `org.mwc.debrief.ui.test` ([rcp-ui-suite-plan.md](rcp-ui-suite-plan.md)), which CI runs on every pull request. Check them by hand only for a release or a phase's acceptance walkthrough.
+
 **Before you start:** do *File → New → Debrief Project* and tick *Add Debrief Samples*. That creates the `demo` project with `sample_data/`. When closing plots, choose *Don't Save*.
 
 ## Opening data
 
-- [ ] **Open `sample.dpf`.**
+- [ ] **Open `sample.dpf`.** **(automated: `OpenPlotTest`)**
   - It opens in the plot editor.
   - *Outline* lists `Annotations (0 items)`, `Misc (5 items)`, `Track:COLLINGWOOD`, `Track:NELSON` and `Narratives (19 items)`.
 - [ ] **New plot, then add data.**
@@ -56,14 +58,14 @@ It replaces the 22 RCPTT scripts in `org.mwc.debrief.ui_test`, which were retire
 - [ ] **Time Controller toolbar.**
   - The buttons are enabled: edit properties, filter to period, time bar, and the view menu.
   - The painter is *Normal* (selected), and *Snail* is available.
-- [ ] **Step through time.**
+- [ ] **Step through time.** **(automated: `TimeStepTest`)**
   - The time display is green on black.
   - Start, end, small and large steps forward and backward, and auto-play all move the vessels.
-- [ ] **Hide a shape.**
+- [ ] **Hide a shape.** **(automated: `HideUndoTest`)**
   - Select `NOGO DELTA` in *Outline*, then *Hide selected items*: *Properties* shows `Visible No`.
   - *Reveal selected items* sets it back to `Yes`.
 - [ ] **Hide a whole layer.** As above, with several items selected (*Multiple items/Visible*).
-- [ ] **Track Tote.**
+- [ ] **Track Tote.** **(automated: `ToteTest`)**
   - Make NELSON primary and COLLINGWOOD secondary.
   - The tote has 3 columns (Attribute, NELSON, COLLINGWOOD) and shows Range.
   - *Remove this track* takes a track out.
@@ -81,6 +83,6 @@ It replaces the 22 RCPTT scripts in `org.mwc.debrief.ui_test`, which were retire
 
 For each item: open `sen_tracks.rep`, choose a track mode, then drag `sen_ssk_sensor.dsf` and `sen_frig_sensor.dsf` from *Navigator* onto the plot and step through the import wizard.
 
-- [ ] **Add sensor data.** *Outline* shows `Track:Frigate/Sensors (5 items)`. The sensors take their default colours: blue `(R:0 G:100 B:189)` and red `(R:224 G:28 B:62)`.
+- [ ] **Add sensor data.** **(automated: `SensorImportTest`, apart from the import wizard and the colours)** *Outline* shows `Track:Frigate/Sensors (5 items)`. The sensors take their default colours: blue `(R:0 G:100 B:189)` and red `(R:224 G:28 B:62)`.
 - [ ] **Format sensor data.** Change sensor colours in *Properties* (to red and to yellow); the plot follows.
 - [ ] **Plot lock.** *Make Primary* on one track and *Make Secondary* on the other; *Track Tote* shows both, with the same time value (78937) for Frigate and New_SSK.

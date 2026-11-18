@@ -30,10 +30,14 @@
           <includes>
             <include>**/*Test.class</include>
           </includes>
-          <argLine>-Xmx2g -DbuildMode=true -Ddebrief.sampleData=${project.basedir}/../org.mwc.cmap.combined.feature/root_installs/sample_data</argLine>
+          <argLine>-Xmx2g -DbuildMode=true -Ddebrief.sampleData=${project.basedir}/../org.mwc.cmap.combined.feature/root_installs/sample_data -Ddebrief.golden.dir=${project.basedir}/../org.mwc.debrief.legacy/test_data/golden -Ddebrief.golden.failures=${project.build.directory}/golden-failures</argLine>
           <dependencies>
             <dependency>
               <artifactId>org.mwc.debrief.combined.feature</artifactId>
+              <type>eclipse-feature</type>
+            </dependency>
+            <dependency>
+              <artifactId>org.mwc.cmap.combined.feature</artifactId>
               <type>eclipse-feature</type>
             </dependency>
             <dependency>
