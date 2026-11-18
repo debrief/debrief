@@ -13,6 +13,9 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.swtbot.eclipse.finder,
  org.eclipse.swtbot.junit5_x,
  org.mwc.debrief.core,
- org.mwc.cmap.core
+ org.mwc.cmap.core,
+ org.mwc.cmap.plotViewer,
+ org.mwc.debrief.legacy,
+ org.mwc.cmap.legacy
 Import-Package: org.junit.jupiter.api;version="[5.0.0,7.0.0)",
  org.junit.jupiter.api.extension;version="[5.0.0,7.0.0)"
