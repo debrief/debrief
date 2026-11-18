@@ -83,4 +83,4 @@ The rest of the checklist stays manual: preferences, toolbar inventory, chart fe
 
 - Porting the remaining checklist items.
 - ASSET's RCP views. ASSET is no longer released.
-- Windows and macOS runs. CI is Linux only, and the manual walkthrough covers the others.
+- Windows and macOS runs. CI is Linux only; the manual walkthrough covers Windows. macOS is a developer convenience only (no Debrief user runs it).

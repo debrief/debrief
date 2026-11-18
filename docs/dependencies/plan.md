@@ -95,17 +95,17 @@ Versions are set at implementation time from Maven Central (latest stable); the 
 2. The `lite-ui-tests` job passes (`-DliteUiTests=true`).
 3. The golden-file tests pass unchanged. Any regeneration has to be explained in the PR.
 4. The scan artefact shows the target CVEs gone and no new High/Critical findings.
-5. Smoke test from the CI artefacts: start the product on Linux under xvfb with a screenshot. Open `sample.dpf` and export a narrative to Word. On Windows and macOS, a manual check by the owner, listed in the PR.
+5. Smoke test from the CI artefacts: start the product on Linux under xvfb with a screenshot. Open `sample.dpf` and export a narrative to Word. On Windows, a manual check by the owner, listed in the PR. macOS is checked only as a developer convenience (no Debrief user runs it); problems found there are fixed as they arise.
 6. Lite: run `dist/debrief-lite-<version>.zip`, open a REP file, step time.
 
 ## Gate A: before any restructuring
-**Waived** by the owner to start Phase B. Two conditions are still open: two weeks of green scheduled runs, and the owner's manual smoke test on Windows and macOS.
+**Waived** by the owner to start Phase B. Two conditions are still open: two weeks of green scheduled runs, and the owner's manual smoke test on Windows (the owner dropped macOS, November 2026: no Debrief user runs it).
 
 All of the following hold:
 - PRs 1–3+ are merged.
 - No High or Critical CVE is open without a written exception.
 - Golden-file and Lite UI tests pass on `develop` for 2 consecutive weeks of scheduled runs.
-- The owner has done the manual smoke test on Windows and macOS on a `develop` build.
+- The owner has done the manual smoke test on Windows on a `develop` build. macOS is not part of the gate: no Debrief user runs it, and the owner fixes anything found there downstream.
 
 ## Phase B: move jars to Maven (done)
 **Done** for the four planned plugins (debrief/debrief#5302–#5304). The owner waived Gate A and chose a different mechanism from the one first planned. The full detail is in [maven-jars.md](maven-jars.md).
