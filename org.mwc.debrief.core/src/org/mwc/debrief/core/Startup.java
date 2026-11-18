@@ -35,6 +35,7 @@ import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IEditorRegistry;
 import org.eclipse.ui.IPageLayout;
 import org.eclipse.ui.IPartListener;
@@ -288,6 +289,7 @@ public class Startup implements IStartup {
 
 				hideToolbarMode(window, window.getActivePage());
 				hideMenuMode(window, window.getActivePage());
+				activateCurrentEditor(window.getActivePage());
 
 				final IEditorRegistry editorRegistry = PlatformUI.getWorkbench().getEditorRegistry();
 				if (editorRegistry != null)
@@ -302,6 +304,24 @@ public class Startup implements IStartup {
 				}
 			}
 		});
+	}
+
+	/**
+	 * make the current editor the active part. A restored workbench can open
+	 * with a view (such as Project Explorer) active and the plot behind it; the
+	 * Time Controller, Track Tote and Outline follow the active part, so they
+	 * stay blank until the user clicks the plot.
+	 *
+	 * @param page the workbench page (may be null)
+	 */
+	public static void activateCurrentEditor(final IWorkbenchPage page) {
+		if (page == null) {
+			return;
+		}
+		final IEditorPart editor = page.getActiveEditor();
+		if (editor != null && page.getActivePart() != editor) {
+			page.activate(editor);
+		}
 	}
 
 	private void initialisePrefs() {
