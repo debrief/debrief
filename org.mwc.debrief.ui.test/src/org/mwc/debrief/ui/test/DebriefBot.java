@@ -374,7 +374,7 @@ final class DebriefBot {
 		project.open(null);
 	}
 
-	private static IFile sampleFile(final String name) throws Exception {
+	static IFile sampleFile(final String name) throws Exception {
 		final String dir = System.getProperty(SAMPLE_DATA_PROPERTY);
 		if (dir == null) {
 			throw new IllegalStateException("System property " + SAMPLE_DATA_PROPERTY + " is not set");
