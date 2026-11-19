@@ -204,88 +204,20 @@ public class JXCollapsiblePane extends JPanel {
 			 * Revalidate/Repaint the content container
 			 */
 			synchronized (ANIMATION_MUTEX) {
-				if (startDimension == finalDimension) {
-					animateTimer.stop();
-
-					if (useTransparency) {
-						animateAlpha = animationParams.alphaEnd;
-					}
-					// keep the content pane hidden when it is collapsed, other it may
-					// still receive focus.
-					if (finalDimension > minimunAnimationSize) {
-						currentDimension = -1;
-						wrapper.collapsedState = false;
-						validate();
-						JXCollapsiblePane.this.firePropertyChange("collapsed", collapseFiringState, false);
-						return;
-					} else {
-						wrapper.collapsedState = true;
-						// wrapper.getView().setVisible(false);
-						JXCollapsiblePane.this.firePropertyChange("collapsed", collapseFiringState, true);
-					}
+				if (startDimension == finalDimension && finishAnimation()) {
+					return;
 				}
 
 				final boolean contracting = startDimension > finalDimension;
-				final int delta = contracting ? -1 * animationParams.delta : animationParams.delta;
-				int newDimension;
-				if (direction.isVertical()) {
-					newDimension = wrapper.getHeight() + delta;
-				} else {
-					newDimension = wrapper.getWidth() + delta;
-				}
-				if (contracting) {
-					if (newDimension < finalDimension) {
-						newDimension = finalDimension;
-					}
-				} else {
-					if (newDimension > finalDimension) {
-						newDimension = finalDimension;
-					}
-				}
-				int dimension;
-				if (direction.isVertical()) {
-					dimension = wrapper.getView().getPreferredSize().height;
-				} else {
-					dimension = wrapper.getView().getPreferredSize().width;
-				}
+				final int newDimension = step(extent(wrapper.getSize()), animationParams.delta, finalDimension,
+						contracting);
 				if (useTransparency) {
-					animateAlpha = (float) newDimension / (float) dimension;
+					animateAlpha = (float) newDimension / (float) extent(wrapper.getView().getPreferredSize());
 				}
 
-				Rectangle bounds = wrapper.getBounds();
-
-				if (direction.isVertical()) {
-					final int oldHeight = bounds.height;
-					bounds.height = newDimension;
-					wrapper.setBounds(bounds);
-
-					if (direction.getFixedDirection(getComponentOrientation()) == Direction.DOWN) {
-						wrapper.setViewPosition(
-								new Point(0, wrapper.getView().getPreferredSize().height - newDimension));
-					} else {
-						wrapper.setViewPosition(new Point(0, newDimension));
-					}
-
-					bounds = getBounds();
-					bounds.height = (bounds.height - oldHeight) + newDimension;
-					currentDimension = bounds.height;
-				} else {
-					final int oldWidth = bounds.width;
-					bounds.width = newDimension;
-					wrapper.setBounds(bounds);
-
-					if (direction.getFixedDirection(getComponentOrientation()) == Direction.RIGHT) {
-						wrapper.setViewPosition(
-								new Point(wrapper.getView().getPreferredSize().width - newDimension, 0));
-					} else {
-						wrapper.setViewPosition(new Point(newDimension, 0));
-					}
-
-					bounds = getBounds();
-					bounds.width = (bounds.width - oldWidth) + newDimension;
-					currentDimension = bounds.width;
-				}
-
+				final int oldExtent = resizeWrapper(newDimension);
+				final Rectangle bounds = getBounds();
+				currentDimension = setExtent(bounds, extent(bounds.getSize()) - oldExtent + newDimension);
 				setBounds(bounds);
 				startDimension = newDimension;
 
@@ -293,29 +225,40 @@ public class JXCollapsiblePane extends JPanel {
 					// it happens the animateAlpha goes over the alphaStart/alphaEnd range
 					// this code ensures it stays in bounds. This behavior is seen when
 					// component such as JTextComponents are used in the container.
-					if (contracting) {
-						// alphaStart > animateAlpha > alphaEnd
-						if (animateAlpha < animationParams.alphaEnd) {
-							animateAlpha = animationParams.alphaEnd;
-						}
-						if (animateAlpha > animationParams.alphaStart) {
-							animateAlpha = animationParams.alphaStart;
-						}
-					} else {
-						// alphaStart < animateAlpha < alphaEnd
-						if (animateAlpha > animationParams.alphaEnd) {
-							animateAlpha = animationParams.alphaEnd;
-						}
-						if (animateAlpha < animationParams.alphaStart) {
-							animateAlpha = animationParams.alphaStart;
-						}
-					}
-
+					animateAlpha = clampAlpha(animateAlpha, animationParams.alphaStart, animationParams.alphaEnd,
+							contracting);
 					wrapper.setAlpha(animateAlpha);
 				}
 
 				validate();
 			}
+		}
+
+		/**
+		 * The animation has reached its final size: stop it and record the new state.
+		 *
+		 * @return true if the pane is now expanded, when the animation step ends here;
+		 *         false if it is collapsed, when the step still runs (to hide the
+		 *         content)
+		 */
+		private boolean finishAnimation() {
+			animateTimer.stop();
+
+			if (useTransparency) {
+				animateAlpha = animationParams.alphaEnd;
+			}
+			// keep the content pane hidden when it is collapsed, other it may
+			// still receive focus.
+			if (finalDimension > minimunAnimationSize) {
+				currentDimension = -1;
+				wrapper.collapsedState = false;
+				validate();
+				JXCollapsiblePane.this.firePropertyChange("collapsed", collapseFiringState, false);
+				return true;
+			}
+			wrapper.collapsedState = true;
+			JXCollapsiblePane.this.firePropertyChange("collapsed", collapseFiringState, true);
+			return false;
 		}
 
 		/**
@@ -1243,6 +1186,70 @@ public class JXCollapsiblePane extends JPanel {
 				final int direction) {
 			return 10;
 		}
+	}
+
+	/**
+	 * one animation step: moves {@code current} by {@code stepSize} towards
+	 * {@code target} (down if contracting, up if expanding) without passing it
+	 */
+	static int step(final int current, final int stepSize, final int target, final boolean contracting) {
+		if (contracting) {
+			return Math.max(current - stepSize, target);
+		}
+		return Math.min(current + stepSize, target);
+	}
+
+	/**
+	 * keeps the fade's alpha between its start and end values (start above end
+	 * when contracting, below it when expanding)
+	 */
+	static float clampAlpha(final float alpha, final float alphaStart, final float alphaEnd,
+			final boolean contracting) {
+		if (contracting) {
+			return Math.min(Math.max(alpha, alphaEnd), alphaStart);
+		}
+		return Math.max(Math.min(alpha, alphaEnd), alphaStart);
+	}
+
+	/** the part of a size that runs along the collapse direction */
+	int extent(final Dimension size) {
+		return direction.isVertical() ? size.height : size.width;
+	}
+
+	/**
+	 * sets the part of {@code bounds} that runs along the collapse direction
+	 *
+	 * @return the value set
+	 */
+	int setExtent(final Rectangle bounds, final int value) {
+		if (direction.isVertical()) {
+			bounds.height = value;
+		} else {
+			bounds.width = value;
+		}
+		return value;
+	}
+
+	/**
+	 * Resizes the wrapper along the collapse direction, and scrolls its view so the
+	 * content stays anchored to the edge the pane collapses towards.
+	 *
+	 * @return the wrapper's previous size along the collapse direction
+	 */
+	int resizeWrapper(final int newDimension) {
+		final Rectangle bounds = wrapper.getBounds();
+		final int oldExtent = extent(bounds.getSize());
+		setExtent(bounds, newDimension);
+		wrapper.setBounds(bounds);
+
+		final Direction fixed = direction.getFixedDirection(getComponentOrientation());
+		final int viewExtent = extent(wrapper.getView().getPreferredSize());
+		if (direction.isVertical()) {
+			wrapper.setViewPosition(new Point(0, fixed == Direction.DOWN ? viewExtent - newDimension : newDimension));
+		} else {
+			wrapper.setViewPosition(new Point(fixed == Direction.RIGHT ? viewExtent - newDimension : newDimension, 0));
+		}
+		return oldExtent;
 	}
 
 	/**

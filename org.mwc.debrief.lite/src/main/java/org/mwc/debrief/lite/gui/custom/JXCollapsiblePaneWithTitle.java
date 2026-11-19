@@ -106,93 +106,33 @@ public class JXCollapsiblePaneWithTitle extends JXCollapsiblePane {
 
 			@Override
 			public void mouseDragged(final MouseEvent event) {
-				if (dragging) {
-					int deltaMultiplier = 1;
-					if (direction == Direction.DOWN || direction == Direction.RIGHT) {
-						deltaMultiplier *= -1;
-					}
-
-					int delta;
-					if (direction.isVertical()) {
-						final int newDimensionDelta = (int) (event.getLocationOnScreen().getY() - dragLocation.getY());
-
-						delta = newDimensionDelta;
-					} else {
-						final int newDimensionDelta = (int) (event.getLocationOnScreen().getX() - dragLocation.getX());
-
-						delta = newDimensionDelta;
-					}
-					delta *= deltaMultiplier;
-
-					wrapper.getView().setVisible(true);
-
-					int newDimension;
-					if (direction.isVertical()) {
-						newDimension = wrapper.getHeight() + delta;
-					} else {
-						newDimension = wrapper.getWidth() + delta;
-					}
-					newDimension = Math.max(newDimension, getMinimunAnimationSize());
-
-					Rectangle bounds = wrapper.getBounds();
-
-					if (direction.isVertical()) {
-						final int oldHeight = bounds.height;
-						bounds.height = newDimension;
-						wrapper.setBounds(bounds);
-
-						if (direction.getFixedDirection(getComponentOrientation()) == Direction.DOWN) {
-							wrapper.setViewPosition(
-									new Point(0, wrapper.getView().getPreferredSize().height - newDimension));
-						} else {
-							wrapper.setViewPosition(new Point(0, newDimension));
-						}
-
-						bounds = getBounds();
-						final int maxheight = DebriefLiteApp.getInstance().getApplicationFrame().getHeight();
-						// minor adjustments +5
-						final int ribbonHeight = DebriefLiteApp.getInstance().getApplicationFrame().getRibbon()
-								.getHeight() + (titleLabel.getHeight() * 2) + 5;
-						if (bounds.height < maxheight - ribbonHeight) {
-							bounds.height = (bounds.height - oldHeight) + newDimension;
-						} else {
-							bounds.height = maxheight - ribbonHeight - 2;
-						}
-
-						bounds.width = 0;
-						currentDimension = bounds.height;
-					} else {
-						final int oldWidth = bounds.width;
-						bounds.width = newDimension;
-						wrapper.setBounds(bounds);
-
-						if (direction.getFixedDirection(getComponentOrientation()) == Direction.RIGHT) {
-							wrapper.setViewPosition(
-									new Point(wrapper.getView().getPreferredSize().width - newDimension, 0));
-						} else {
-							wrapper.setViewPosition(new Point(newDimension, 0));
-						}
-
-						bounds = getBounds();
-						final int maxwidth = DebriefLiteApp.getInstance().getApplicationFrame().getWidth();
-						// 30 is the width of titlebar.
-						if (bounds.width < maxwidth - titleLabel.getWidth()) {
-							bounds.width = (bounds.width - oldWidth) + newDimension;
-						} else {
-							bounds.width = maxwidth - titleLabel.getWidth() - 2;
-						}
-						bounds.height = 0;
-						currentDimension = bounds.width;
-					}
-
-					collapsiblePaneInstance.collapsed = newDimension == MIN_ANIMATION_SIZE;
-					collapsiblePaneInstance.setPreferredSize(new Dimension(bounds.width, bounds.height));
-					setBounds(bounds);
-
-					validate();
-
-					dragLocation = event.getLocationOnScreen();
+				if (!dragging) {
+					return;
 				}
+				final int delta = dragDelta(direction, dragLocation, event.getLocationOnScreen());
+				wrapper.getView().setVisible(true);
+
+				final int newDimension = Math.max(extent(wrapper.getSize()) + delta, getMinimunAnimationSize());
+				final int oldExtent = resizeWrapper(newDimension);
+
+				final Rectangle bounds = getBounds();
+				final int maxExtent = maxExtent(direction);
+				final int extent = extent(bounds.getSize());
+				currentDimension = setExtent(bounds,
+						extent < maxExtent ? extent - oldExtent + newDimension : maxExtent - 2);
+				if (direction.isVertical()) {
+					bounds.width = 0;
+				} else {
+					bounds.height = 0;
+				}
+
+				collapsiblePaneInstance.collapsed = newDimension == MIN_ANIMATION_SIZE;
+				collapsiblePaneInstance.setPreferredSize(new Dimension(bounds.width, bounds.height));
+				setBounds(bounds);
+
+				validate();
+
+				dragLocation = event.getLocationOnScreen();
 			}
 
 			@Override
@@ -212,5 +152,27 @@ public class JXCollapsiblePaneWithTitle extends JXCollapsiblePane {
 	@Override
 	public String getName() {
 		return titleLabel.getText();
+	}
+
+	/**
+	 * how far the title has been dragged along the pane's collapse direction,
+	 * signed so that a positive value enlarges the pane
+	 */
+	static int dragDelta(final Direction direction, final Point from, final Point to) {
+		final int raw = direction.isVertical() ? (int) (to.getY() - from.getY()) : (int) (to.getX() - from.getX());
+		return direction == Direction.DOWN || direction == Direction.RIGHT ? -raw : raw;
+	}
+
+	/**
+	 * the largest the pane may grow to along its collapse direction: the frame's
+	 * height less the ribbon and two title bars (plus 5 for minor adjustments), or
+	 * its width less the title bar
+	 */
+	private int maxExtent(final Direction direction) {
+		final var frame = DebriefLiteApp.getInstance().getApplicationFrame();
+		if (direction.isVertical()) {
+			return frame.getHeight() - (frame.getRibbon().getHeight() + titleLabel.getHeight() * 2 + 5);
+		}
+		return frame.getWidth() - titleLabel.getWidth();
 	}
 }
