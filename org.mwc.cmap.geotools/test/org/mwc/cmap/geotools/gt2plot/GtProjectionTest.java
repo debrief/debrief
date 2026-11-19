@@ -20,34 +20,17 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mwc.cmap.geotools.gt2plot.GtProjection.*;
 import org.mwc.cmap.geotools.gt2plot.GtProjection.*;
-import java.awt.Dimension;
-import java.awt.Point;
 import java.awt.Rectangle;
-import java.awt.geom.AffineTransform;
 import java.awt.geom.NoninvertibleTransformException;
-import java.util.Iterator;
 import org.geotools.geometry.Position2D;
 import org.geotools.geometry.jts.ReferencedEnvelope;
-import org.geotools.map.Layer;
 import org.geotools.map.MapContent;
-import org.geotools.map.MapViewport;
 import org.geotools.referencing.CRS;
-import org.geotools.referencing.operation.projection.ProjectionException;
 import org.junit.jupiter.api.Test;
-import org.geotools.api.geometry.BoundingBox;
-import org.geotools.api.geometry.MismatchedDimensionException;
 import org.geotools.api.referencing.FactoryException;
 import org.geotools.api.referencing.NoSuchAuthorityCodeException;
 import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
-import org.geotools.api.referencing.operation.MathTransform;
-import org.geotools.api.referencing.operation.TransformException;
 import Debrief.GUI.Frames.Application;
-import MWC.Algorithms.PlainProjection;
-import MWC.GUI.ExternallyManagedDataLayer;
-import MWC.GUI.GeoToolsHandler;
-import MWC.GUI.ToolParent;
-import MWC.GenericData.WorldArea;
-import MWC.GenericData.WorldLocation;
 
 public class GtProjectionTest {
 	@Test
