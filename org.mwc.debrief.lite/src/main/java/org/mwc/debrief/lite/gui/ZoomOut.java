@@ -25,8 +25,8 @@ import org.geotools.geometry.Position2D;
 import org.geotools.swing.JMapPane;
 import org.locationtech.jts.geom.Coordinate;
 import org.mwc.debrief.lite.DebriefLiteApp;
-import org.pushingpixels.flamingo.api.common.CommandAction;
-import org.pushingpixels.flamingo.api.common.CommandActionEvent;
+import org.pushingpixels.radiance.component.api.common.CommandAction;
+import org.pushingpixels.radiance.component.api.common.CommandActionEvent;
 
 import MWC.GUI.ToolParent;
 import MWC.GenericData.WorldArea;

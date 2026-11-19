@@ -19,8 +19,8 @@ import java.awt.event.ActionEvent;
 import org.geotools.swing.MapPane;
 import org.geotools.swing.action.MapAction;
 import org.geotools.swing.tool.CursorTool;
-import org.pushingpixels.flamingo.api.common.CommandAction;
-import org.pushingpixels.flamingo.api.common.CommandActionEvent;
+import org.pushingpixels.radiance.component.api.common.CommandAction;
+import org.pushingpixels.radiance.component.api.common.CommandActionEvent;
 
 public class DragElementAction extends MapAction implements CommandAction {
 

@@ -15,8 +15,8 @@
 
 package org.mwc.debrief.lite.shapes.actions;
 
-import org.pushingpixels.flamingo.api.common.CommandAction;
-import org.pushingpixels.flamingo.api.common.CommandActionEvent;
+import org.pushingpixels.radiance.component.api.common.CommandAction;
+import org.pushingpixels.radiance.component.api.common.CommandActionEvent;
 
 import Debrief.Tools.Palette.CreateLabel;
 import MWC.GUI.Layers;

@@ -34,8 +34,8 @@ import org.junit.jupiter.api.Test;
 import org.mwc.debrief.lite.DebriefLiteApp;
 import org.mwc.debrief.lite.map.LiteMapPane;
 import org.geotools.api.referencing.operation.MathTransform;
-import org.pushingpixels.flamingo.api.ribbon.JRibbon;
-import org.pushingpixels.flamingo.api.ribbon.JRibbonFrame;
+import org.pushingpixels.radiance.component.api.ribbon.JRibbon;
+import org.pushingpixels.radiance.component.api.ribbon.JRibbonFrame;
 
 import Debrief.Testing.GoldenImage;
 

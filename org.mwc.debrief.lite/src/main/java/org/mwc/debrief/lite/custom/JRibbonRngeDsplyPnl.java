@@ -23,8 +23,8 @@ import javax.swing.BoxLayout;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-import org.pushingpixels.flamingo.api.common.projection.Projection;
-import org.pushingpixels.flamingo.api.ribbon.synapse.model.ComponentPresentationModel;
+import org.pushingpixels.radiance.component.api.common.projection.Projection;
+import org.pushingpixels.radiance.component.api.ribbon.synapse.model.ComponentPresentationModel;
 
 /**
  * @author Ayesha

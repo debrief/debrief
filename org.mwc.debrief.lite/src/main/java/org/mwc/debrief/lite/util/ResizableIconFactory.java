@@ -19,22 +19,26 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Graphics;
 
-import org.pushingpixels.neon.api.icon.ResizableIcon;
+import org.pushingpixels.radiance.common.api.icon.RadianceIcon;
 
 
 /**
  * @author Ayesha
  *
  */
-public class ResizableIconFactory implements ResizableIcon {
+public class ResizableIconFactory implements RadianceIcon {
 
-	public static Factory factory(final ResizableIcon icon) {
-		return () -> new ResizableIconFactory(icon);
+	/**
+	 * Radiance calls the factory once for each icon it needs (each button state),
+	 * then resizes and recolours that icon, so each call gets its own copy
+	 */
+	public static Factory factory(final RadianceIcon icon) {
+		return () -> new ResizableIconFactory(icon instanceof ScaledImageIcon ? ((ScaledImageIcon) icon).copy() : icon);
 	}
 
-	private final ResizableIcon delegate;
+	private final RadianceIcon delegate;
 
-	public ResizableIconFactory(final ResizableIcon icon) {
+	public ResizableIconFactory(final RadianceIcon icon) {
 		delegate = icon;
 	}
 
@@ -54,9 +58,19 @@ public class ResizableIconFactory implements ResizableIcon {
 	}
 
 	@Override
+	public void setColorFilter(final ColorFilter colorFilter) {
+		delegate.setColorFilter(colorFilter);
+	}
+
+	@Override
 	public void setDimension(final Dimension arg0) {
 		delegate.setDimension(arg0);
 
+	}
+
+	@Override
+	public boolean supportsColorFilter() {
+		return delegate.supportsColorFilter();
 	}
 
 }

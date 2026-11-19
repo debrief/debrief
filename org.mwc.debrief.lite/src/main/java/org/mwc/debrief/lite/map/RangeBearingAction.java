@@ -23,8 +23,8 @@ import org.geotools.swing.MapPane;
 import org.geotools.swing.action.MapAction;
 import org.geotools.swing.tool.ZoomInTool;
 import org.geotools.api.referencing.operation.MathTransform;
-import org.pushingpixels.flamingo.api.common.CommandAction;
-import org.pushingpixels.flamingo.api.common.CommandActionEvent;
+import org.pushingpixels.radiance.component.api.common.CommandAction;
+import org.pushingpixels.radiance.component.api.common.CommandActionEvent;
 
 /**
  * An action for connect a control (probably a JButton) to the Range Bearing

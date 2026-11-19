@@ -28,16 +28,16 @@ import org.mwc.debrief.lite.DebriefLiteApp;
 import org.mwc.debrief.lite.undo.RedoAction;
 import org.mwc.debrief.lite.undo.UndoAction;
 import org.mwc.debrief.lite.util.ResizableIconFactory;
-import org.pushingpixels.flamingo.api.common.CommandAction;
-import org.pushingpixels.flamingo.api.common.CommandActionEvent;
-import org.pushingpixels.flamingo.api.common.RichTooltip;
+import org.pushingpixels.radiance.component.api.common.CommandAction;
+import org.pushingpixels.radiance.component.api.common.CommandActionEvent;
+import org.pushingpixels.radiance.component.api.common.RichTooltip;
 import org.mwc.debrief.lite.util.ScaledImageIcon;
-import org.pushingpixels.flamingo.api.common.model.Command;
-import org.pushingpixels.flamingo.api.common.projection.CommandButtonProjection;
-import org.pushingpixels.flamingo.api.ribbon.JRibbon;
-import org.pushingpixels.flamingo.api.ribbon.JRibbonBand;
-import org.pushingpixels.flamingo.api.ribbon.JRibbonBand.PresentationPriority;
-import org.pushingpixels.flamingo.api.ribbon.RibbonTask;
+import org.pushingpixels.radiance.component.api.common.model.Command;
+import org.pushingpixels.radiance.component.api.common.projection.CommandButtonProjection;
+import org.pushingpixels.radiance.component.api.ribbon.JRibbon;
+import org.pushingpixels.radiance.component.api.ribbon.JRibbonBand;
+import org.pushingpixels.radiance.component.api.ribbon.JRibbonBand.PresentationPriority;
+import org.pushingpixels.radiance.component.api.ribbon.RibbonTask;
 
 import Debrief.GUI.Frames.Application;
 import Debrief.GUI.Frames.Session;
@@ -119,21 +119,21 @@ public class DebriefRibbonLite {
 		liteMenu.startGroup();
 		final UndoAction undoAction = new UndoAction(session.getUndoBuffer());
 		final CommandButtonProjection<Command> undoCommand = MenuUtils.createCommand("Undo", "icons/24/undo.png",
-				undoAction, null, "Undo");
+				undoAction, "Undo");
 		// so that action has the command it has to enable/disable
 		undoAction.setActionCommand(undoCommand.getContentModel());
 		undoCommand.getContentModel().setActionEnabled(false);
 		// add the undoaction as observer for undobuffer
 		session.getUndoBuffer().addObserver(undoAction);
-		ribbon.addTaskbarCommand(undoCommand.getContentModel());
+		ribbon.addTaskbarCommand(undoCommand);
 		final RedoAction redoAction = new RedoAction(session.getUndoBuffer());
 		final CommandButtonProjection<Command> redoCommand = MenuUtils.createCommand("Redo", "icons/24/redo.png",
-				redoAction, null, "Redo");
+				redoAction, "Redo");
 
 		// so that action has the command it has to enable/disable
 		redoAction.setActionCommand(redoCommand.getContentModel());
 		redoCommand.getContentModel().setActionEnabled(false);
-		ribbon.addTaskbarCommand(redoCommand.getContentModel());
+		ribbon.addTaskbarCommand(redoCommand);
 
 		final CommandAction collapsePopup = new CommandAction() {
 
@@ -148,7 +148,7 @@ public class DebriefRibbonLite {
 		collapseCommand = addToggleCommand("Collapse", "icons/24/fit_to_win.png", collapsePopup);
 		// so that action has the command it has to enable/disable
 		collapseCommand.setActionEnabled(true);
-		ribbon.addTaskbarCommand(collapseCommand);
+		ribbon.addTaskbarCommand(collapseCommand.project(MenuUtils.buttonPresentation().build()));
 
 		// add the action as observer of undobuffer
 		session.getUndoBuffer().addObserver(redoAction);

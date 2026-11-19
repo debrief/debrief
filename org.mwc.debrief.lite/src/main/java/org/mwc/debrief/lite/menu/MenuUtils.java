@@ -26,21 +26,21 @@ import javax.swing.AbstractAction;
 import javax.swing.ImageIcon;
 
 import org.mwc.debrief.lite.util.ResizableIconFactory;
-import org.pushingpixels.flamingo.api.common.CommandAction;
-import org.pushingpixels.flamingo.api.common.CommandButtonPresentationState;
-import org.pushingpixels.flamingo.api.common.JCommandButton;
-import org.pushingpixels.flamingo.api.common.RichTooltip;
+import org.pushingpixels.radiance.theming.api.RadianceThemingSlices.IconFilterStrategy;
+import org.pushingpixels.radiance.component.api.common.CommandAction;
+import org.pushingpixels.radiance.component.api.common.CommandButtonPresentationState;
+import org.pushingpixels.radiance.component.api.common.JCommandButton;
+import org.pushingpixels.radiance.component.api.common.RichTooltip;
 import org.mwc.debrief.lite.util.ScaledImageIcon;
-import org.pushingpixels.flamingo.api.common.model.Command;
-import org.pushingpixels.flamingo.api.common.model.CommandButtonPresentationModel;
-import org.pushingpixels.flamingo.api.common.model.CommandToggleGroupModel;
-import org.pushingpixels.flamingo.api.common.popup.PopupPanelCallback;
-import org.pushingpixels.flamingo.api.common.popup.model.CommandPopupMenuPresentationModel;
-import org.pushingpixels.flamingo.api.common.projection.CommandButtonProjection;
-import org.pushingpixels.flamingo.api.ribbon.JRibbonBand;
-import org.pushingpixels.flamingo.api.ribbon.JRibbonBand.PresentationPriority;
-import org.pushingpixels.flamingo.api.ribbon.resize.CoreRibbonResizePolicies;
-import org.pushingpixels.flamingo.api.ribbon.resize.RibbonBandResizePolicy;
+import org.pushingpixels.radiance.component.api.common.model.Command;
+import org.pushingpixels.radiance.component.api.common.model.CommandButtonPresentationModel;
+import org.pushingpixels.radiance.component.api.common.model.CommandToggleGroupModel;
+import org.pushingpixels.radiance.component.api.common.popup.model.CommandPopupMenuPresentationModel;
+import org.pushingpixels.radiance.component.api.common.projection.CommandButtonProjection;
+import org.pushingpixels.radiance.component.api.ribbon.JRibbonBand;
+import org.pushingpixels.radiance.component.api.ribbon.JRibbonBand.PresentationPriority;
+import org.pushingpixels.radiance.component.api.ribbon.resize.CoreRibbonResizePolicies;
+import org.pushingpixels.radiance.component.api.ribbon.resize.RibbonBandResizePolicy;
 
 /**
  * @author Ayesha <ayesha.ma@gmail.com>
@@ -72,23 +72,15 @@ public class MenuUtils {
 	 * @param actionToAdd
 	 * @param mapBand
 	 * @param priority
-	 * @param popupCallback
 	 * @return CommandButtonProjection the projected command button
 	 */
 	public static CommandButtonProjection<Command> addCommand(final String commandName, final String imagePath,
 			final CommandAction actionToAdd, final JRibbonBand mapBand, final PresentationPriority priority,
-			final PopupPanelCallback popupCallback, final String tooltip) {
-		final CommandButtonProjection<Command> command = createCommand(commandName, imagePath, actionToAdd,
-				popupCallback, tooltip);
+			final String tooltip) {
+		final CommandButtonProjection<Command> command = createCommand(commandName, imagePath, actionToAdd, tooltip);
 
 		mapBand.addRibbonCommand(command, priority == null ? PresentationPriority.TOP : priority);
 		return command;
-	}
-
-	public static CommandButtonProjection<Command> addCommand(final String commandName, final String imagePath,
-			final CommandAction actionToAdd, final JRibbonBand mapBand, final PresentationPriority priority,
-			final String tooltip) {
-		return addCommand(commandName, imagePath, actionToAdd, mapBand, priority, null, tooltip);
 	}
 
 	public static CommandButtonProjection<Command> addCommandButton(final String commandName, final String imagePath,
@@ -98,15 +90,12 @@ public class MenuUtils {
 		 * Image zoominImage = createImage(imagePath); imageIcon =
 		 * ImageWrapperResizableIcon.getIcon(zoominImage, new Dimension( 16, 16)); }
 		 */
-		final CommandButtonProjection<Command> projectionModel = createCommand(commandName, imagePath, actionToAdd,
-				null, description);
-		final JCommandButton commandButton = new JCommandButton(projectionModel);
-		final RichTooltip.Builder builder = RichTooltip.builder();
-
 		final String desc = description != null ? description : "Description pending";
-
-		final RichTooltip richTooltip = builder.setTitle(commandName).addDescriptionSection(desc).build();
-		commandButton.setActionRichTooltip(richTooltip);
+		final RichTooltip richTooltip = RichTooltip.builder().setTitle(commandName).addDescriptionSection(desc)
+				.build();
+		final CommandButtonProjection<Command> projectionModel = createCommand(commandName, imagePath, actionToAdd,
+				richTooltip);
+		final JCommandButton commandButton = new JCommandButton(projectionModel);
 		commandButton.setName(commandName);
 		commandButton.addCommandListener(actionToAdd);
 		if (priority != null) {
@@ -120,7 +109,7 @@ public class MenuUtils {
 	 * commandName, final String imagePath, final CommandAction actionToAdd, final
 	 * CommandButtonPresentationState priority, final String tooltip) { final
 	 * CommandButtonProjection<Command> projectionModel = createCommand(commandName,
-	 * imagePath, actionToAdd, null, tooltip);
+	 * imagePath, actionToAdd, tooltip);
 	 * 
 	 * final JCommandToggleButton commandButton = new
 	 * JCommandToggleButton(projectionModel); commandButton.setName(commandName);
@@ -148,17 +137,22 @@ public class MenuUtils {
 		}
 		final Command command = builder.build();
 		final CommandButtonProjection<Command> projectionModel = command
-				.project(CommandButtonPresentationModel.builder().setActionKeyTip("NA")
-						// .setPopupCallback(popupCallback)
+				.project(buttonPresentation().setActionKeyTip("NA")
 						.setPopupMenuPresentationModel(
-								CommandPopupMenuPresentationModel.builder().setMaxVisibleMenuCommands(4).build())
+								CommandPopupMenuPresentationModel.builder().setMaxVisibleItems(4).build())
 						.build());
 		mapBand.addRibbonCommand(projectionModel, priority == null ? PresentationPriority.TOP : priority);
 		return command;
 	}
 
 	public static CommandButtonProjection<Command> createCommand(final String commandName, final String imagePath,
-			final CommandAction actionToAdd, final PopupPanelCallback popupCallback, final String tooltip) {
+			final CommandAction actionToAdd, final String tooltip) {
+		return createCommand(commandName, imagePath, actionToAdd, RichTooltip.builder().setTitle(tooltip).build());
+	}
+
+	/** a command with its icon, action and (action) rich tooltip, projected as a button */
+	static CommandButtonProjection<Command> createCommand(final String commandName, final String imagePath,
+			final CommandAction actionToAdd, final RichTooltip tooltip) {
 		ScaledImageIcon imageIcon = null;
 		if (imagePath != null) {
 			final Image zoominImage = createImage(imagePath);
@@ -167,17 +161,12 @@ public class MenuUtils {
 
 		final Command.Builder builder = Command.builder().setText(commandName)
 				.setIconFactory(ResizableIconFactory.factory(imageIcon)).setAction(actionToAdd)
-				.setActionRichTooltip(RichTooltip.builder().setTitle(tooltip).build());
-		/* ; */
+				.setActionRichTooltip(tooltip);
 
-		if (popupCallback != null) {
-			// builder.setPopupCallback(popupCallback);
-		}
 		final Command command = builder.build();
-		return command.project(CommandButtonPresentationModel.builder().setActionKeyTip("NA")
-				// .setPopupCallback(popupCallback)
+		return command.project(buttonPresentation().setActionKeyTip("NA")
 				.setPopupMenuPresentationModel(
-						CommandPopupMenuPresentationModel.builder().setMaxVisibleMenuCommands(4).build())
+						CommandPopupMenuPresentationModel.builder().setMaxVisibleItems(4).build())
 				.build());
 
 	}
@@ -205,6 +194,20 @@ public class MenuUtils {
 
 		final Command command = builder.build();
 		return command;
+	}
+
+	/**
+	 * the icon filters for a button: disabled icons take the colour of disabled
+	 * text (light grey), as in Radiance 3. Radiance 9's default greys them much
+	 * darker, so that disabled buttons looked enabled.
+	 */
+	public static final IconFilterStrategy[] ICON_FILTERS = { IconFilterStrategy.ORIGINAL,
+			IconFilterStrategy.ORIGINAL, IconFilterStrategy.THEMED_FOLLOW_TEXT };
+
+	/** a button presentation model builder with Lite's icon filters */
+	public static CommandButtonPresentationModel.Builder buttonPresentation() {
+		return CommandButtonPresentationModel.builder().setIconFilterStrategies(ICON_FILTERS[0], ICON_FILTERS[1],
+				ICON_FILTERS[2]);
 	}
 
 	public static Image createImage(final String imageName) {
