@@ -146,17 +146,18 @@ All of the following hold:
 - **No auto-merge.** We revisit this at Gate D.
 - **New CVEs. Done.** The weekly (and manual) run of `dependency-scan.yml` opens one issue per vulnerability and package in the shipped products, labelled `dependency-vulnerability` (`.github/scripts/scan_issues.py`). A finding with an open issue is not raised again; at most 20 new issues per run. Pull request runs only report. To accept a finding instead of fixing it, add an ignore rule to `.github/grype.yaml` naming the issue, then close it.
 
-## Gate D: before the major migrations
+## Gate D: before the major migrations (passed)
 - Phase B is complete.
 - Golden-file coverage now includes **screenshot diffs of map rendering**. It renders a fixed set of plots and a shapefile at fixed sizes, headless, and compares against references with a per-pixel tolerance. **Done:** `MapRenderingTest` in Lite's headless tests (see `org.mwc.debrief.legacy/test_data/golden/README.md`).
-- At least 4 bot update PRs have merged cleanly. (3 so far: the GitHub Actions groups #5287 and #5330, and the third-party jars group #5318.)
+- At least 4 bot update PRs have merged cleanly. **Met:** the GitHub Actions groups #5287, #5330 and #5334, and the third-party jars group #5318.
 
-## Phase D1: GeoTools 21.2 → current (after Gate D)
-Spec `specs/004-geotools/`.
-- **API change.** `org.opengis` → `org.geotools.api`, using GeoTools' migration script.
-- **Replace `gt-swt-23-SNAPSHOT`.** GeoTools no longer publishes gt-swt, so we port the classes we use into `cmap.geotools`.
-- **Align** `gt-jdbc-spatialite`.
-- **Drop the GeoTools pins.** commons-text and hsqldb are no longer pinned by GeoTools.
+## Phase D1: GeoTools 21.2 → 35.2 (after Gate D)
+- **Replace `gt-swt-23-SNAPSHOT`. Done** (PR A). Debrief used one method of it, `Utils.createStyle`; `ShapeFileStyles` in `cmap.geotools` replaces it.
+- **Fetch with Maven. Done** (PR B). `org.mwc.cmap.geotools.libs` fetches GeoTools 35.2 and its dependencies from repo.osgeo.org; the 92 committed jars are gone. The manifest is generated (see [maven-jars.md](maven-jars.md)). Dependabot watches the module.
+- **API change. Done** (PR B). `org.opengis` → `org.geotools.api` and JAI → Eclipse ImageN, by class name; `DirectPosition2D` → `Position2D`; `Envelope2D`, which GeoTools removed, → `ReferencedEnvelope` or `Rectangle2D`.
+- ~~**Align** `gt-jdbc-spatialite`~~: removed earlier with Pepys.
+- **Drop the GeoTools pins. Done.** commons-text and hsqldb now come at the versions GeoTools 35.2 asks for.
+- **Found on the way:** Debrief's GPX and DIS code used JAXB 2, which only the GeoTools 21 jars supplied. The libs module now names it; moving it to the plugins that use it is a follow-up.
 - **Acceptance:** the screenshot diffs (Lite's `MapRenderingTest` and Debrief NG's `MapScreenshotTest`) are within tolerance; coordinates are within 1 m when projected and transformed back on the sample plots; and the full verification list passes. The coordinate check is ready: `ProjectionAccuracyTest` in Lite's headless tests (round trip within 1 m, agreement with an independent EPSG:3395 formula within 1 m, and a screen round trip within one pixel, for every fix in `sample.dpf`, `boat1.rep` and `uk_track.rep`).
 
 ## Phase D2: Lite UI libraries (after Gate D; can run in parallel with D1)

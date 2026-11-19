@@ -43,7 +43,7 @@ import org.mwc.debrief.lite.map.RangeBearingAction;
 import org.mwc.debrief.lite.map.RangeBearingTool;
 import org.mwc.debrief.lite.util.ResizableIconFactory;
 import org.mwc.debrief.lite.view.actions.PanCommandAction;
-import org.opengis.referencing.operation.MathTransform;
+import org.geotools.api.referencing.operation.MathTransform;
 import org.pushingpixels.flamingo.api.common.CommandAction;
 import org.pushingpixels.flamingo.api.common.CommandActionEvent;
 import org.pushingpixels.flamingo.api.common.RichTooltip;

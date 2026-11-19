@@ -14,9 +14,9 @@
  *******************************************************************************/
 package org.mwc.cmap.naturalearth.wrapper;
 
-import org.geotools.data.simple.SimpleFeatureSource;
+import org.geotools.api.data.SimpleFeatureSource;
 import org.geotools.map.FeatureLayer;
-import org.geotools.styling.Style;
+import org.geotools.api.style.Style;
 import org.mwc.cmap.naturalearth.view.NEFeature;
 
 public class NEFeatureLayer extends FeatureLayer {

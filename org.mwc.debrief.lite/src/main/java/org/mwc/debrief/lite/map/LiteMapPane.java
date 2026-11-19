@@ -28,7 +28,7 @@ import java.awt.event.MouseListener;
 import java.awt.image.RenderedImage;
 import java.util.ArrayList;
 
-import org.geotools.geometry.DirectPosition2D;
+import org.geotools.geometry.Position2D;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.geotools.swing.JMapPane;
 import org.geotools.swing.MouseDragBox;
@@ -37,9 +37,9 @@ import org.geotools.swing.event.MapMouseEvent;
 import org.geotools.swing.event.MapMouseListener;
 import org.geotools.swing.tool.CursorTool;
 import org.mwc.debrief.lite.DebriefLiteApp;
-import org.opengis.geometry.MismatchedDimensionException;
-import org.opengis.referencing.operation.MathTransform;
-import org.opengis.referencing.operation.TransformException;
+import org.geotools.api.geometry.MismatchedDimensionException;
+import org.geotools.api.referencing.operation.MathTransform;
+import org.geotools.api.referencing.operation.TransformException;
 
 import Debrief.GUI.Frames.Application;
 import MWC.GUI.ToolParent;
@@ -170,7 +170,7 @@ public class LiteMapPane extends JMapPane {
 
 			void handleMouseMovement(final MapMouseEvent ev) {
 				// mouse pos in Map coordinates
-				final DirectPosition2D curPos = ev.getWorldPos();
+				final Position2D curPos = ev.getWorldPos();
 
 				if (curPos.getCoordinateReferenceSystem() != DefaultGeographicCRS.WGS84) {
 					try {

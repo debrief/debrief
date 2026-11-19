@@ -19,13 +19,13 @@ import java.awt.Color;
 import java.io.File;
 import java.io.IOException;
 
-import org.geotools.data.simple.SimpleFeatureSource;
+import org.geotools.api.data.SimpleFeatureSource;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.styling.SLD;
-import org.geotools.styling.Style;
-import org.geotools.styling.StyleFactory;
+import org.geotools.api.style.Style;
+import org.geotools.api.style.StyleFactory;
 import org.geotools.xml.styling.SLDParser;
-import org.opengis.feature.type.GeometryDescriptor;
+import org.geotools.api.feature.type.GeometryDescriptor;
 
 /**
  * The style for a shapefile layer: the shapefile's own SLD file if it has one
@@ -33,7 +33,7 @@ import org.opengis.feature.type.GeometryDescriptor;
  * style for its geometry type.
  *
  * <p>
- * This replaces {@code org.geotools.swt.utils.Utils.createStyle}, the only use
+ * This replaces {@code org.geotools.temporal.object.Utils.createStyle}, the only use
  * Debrief made of the gt-swt library, which GeoTools no longer publishes. The
  * fallback styles match the ones gt-swt used: blue outlines, with a
  * half-transparent cyan fill for polygons and points.

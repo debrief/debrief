@@ -185,6 +185,12 @@ jobs:
               working-directory: ./
               run: mvn clean verify -U -B -fae
 
+      # org.mwc.cmap.geotools's manifest lists the GeoTools jars that
+      # org.mwc.cmap.geotools.libs fetches: after the build has fetched them, fail if a version bump changed
+      # the jars without regenerating it
+      - name: Check the GeoTools manifest
+        run: python3 .github/scripts/geotools_manifest.py --check
+
       - name: Upload golden image failures
         # the actual and diff images of a failed screenshot test
         # (Debrief.Testing.GoldenImage)
@@ -375,13 +381,13 @@ jobs:
       # Builds only Lite and the bundles it requires. They are listed by hand
       # because -am follows Maven dependencies, not OSGi Require-Bundle, and
       # misses the target definition and org.mwc.debrief.thirdparty (which
-      # fetches the third-party jars) too. Keep this in step with
+      # fetches the third-party jars) and org.mwc.cmap.geotools.libs (GeoTools) too. Keep this in step with
       # org.mwc.debrief.lite/META-INF/MANIFEST.MF. -DliteUiTests=true turns on
       # the Ant junit run in org.mwc.debrief.lite/build.xml.
       - name: Build Lite and run its UI tests
         run: >-
           xvfb-run -a mvn -B verify -DliteUiTests=true -pl
-          org.mwc.debrief.thirdparty,org.mwc.debrief.targetplatforms,org.mwc.cmap.jfreechart,org.mwc.cmap.legacy,org.mwc.debrief.legacy,org.mwc.cmap.geotools,org.mwc.debrief.lite
+          org.mwc.debrief.thirdparty,org.mwc.cmap.geotools.libs,org.mwc.debrief.targetplatforms,org.mwc.cmap.jfreechart,org.mwc.cmap.legacy,org.mwc.debrief.legacy,org.mwc.cmap.geotools,org.mwc.debrief.lite
       - name: Upload golden image failures
         # the actual and diff images of a failed screenshot test
         # (Debrief.Testing.GoldenImage)

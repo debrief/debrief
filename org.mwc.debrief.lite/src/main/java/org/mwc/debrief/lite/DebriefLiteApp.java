@@ -16,6 +16,7 @@
 package org.mwc.debrief.lite;
 
 import java.awt.BorderLayout;
+import org.geotools.geometry.jts.ReferencedEnvelope;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Cursor;
@@ -57,8 +58,7 @@ import javax.swing.WindowConstants;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
-import org.geotools.geometry.DirectPosition2D;
-import org.geotools.geometry.Envelope2D;
+import org.geotools.geometry.Position2D;
 import org.geotools.map.MapContent;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.geotools.swing.JMapPane;
@@ -93,10 +93,10 @@ import org.mwc.debrief.lite.outline.OutlinePanelView;
 import org.mwc.debrief.lite.util.DoSaveAs;
 import org.mwc.debrief.lite.util.PlotFiles;
 import org.mwc.debrief.lite.util.ResizableIconFactory;
-import org.opengis.geometry.MismatchedDimensionException;
-import org.opengis.referencing.operation.MathTransform;
-import org.opengis.referencing.operation.NoninvertibleTransformException;
-import org.opengis.referencing.operation.TransformException;
+import org.geotools.api.geometry.MismatchedDimensionException;
+import org.geotools.api.referencing.operation.MathTransform;
+import org.geotools.api.referencing.operation.NoninvertibleTransformException;
+import org.geotools.api.referencing.operation.TransformException;
 import org.mwc.debrief.lite.util.ScaledImageIcon;
 import org.pushingpixels.flamingo.api.ribbon.JRibbonFrame;
 import org.pushingpixels.substance.api.SubstanceCortex;
@@ -436,14 +436,14 @@ public class DebriefLiteApp implements FileDropListener {
 
 	private static void setInitialArea(final JMapPane mapPane, final MathTransform transform) {
 		// give it a default viewport - overlooking Europe
-		final DirectPosition2D tl = new DirectPosition2D(-22, 59.75);
-		final DirectPosition2D br = new DirectPosition2D(37, 36.5);
+		final Position2D tl = new Position2D(-22, 59.75);
+		final Position2D br = new Position2D(37, 36.5);
 
 		try {
 			// convert to map units
 			transform.inverse().transform(tl, tl);
 			transform.inverse().transform(br, br);
-			final Envelope2D envelope = new Envelope2D(tl, br);
+			final ReferencedEnvelope envelope = new ReferencedEnvelope(tl.x, br.x, tl.y, br.y, tl.getCoordinateReferenceSystem());
 			mapPane.setDisplayArea(envelope);
 		} catch (MismatchedDimensionException | TransformException e) {
 			Application.logError2(ToolParent.ERROR, "Failure in setting initial viewport coverage", e);
@@ -936,7 +936,7 @@ public class DebriefLiteApp implements FileDropListener {
 
 			@Override
 			public void onMouseExited(final MapMouseEvent ev) {
-				final DirectPosition2D curPos = ev.getWorldPos();
+				final Position2D curPos = ev.getWorldPos();
 
 				if (ev.getWorldPos().getCoordinateReferenceSystem() != DefaultGeographicCRS.WGS84) {
 					try {
@@ -1150,8 +1150,8 @@ public class DebriefLiteApp implements FileDropListener {
 	}
 
 	public WorldArea getProjectionArea() {
-		final DirectPosition2D upperCorner = (DirectPosition2D) mapPane.getDisplayArea().getUpperCorner();
-		final DirectPosition2D bottomCorner = (DirectPosition2D) mapPane.getDisplayArea().getLowerCorner();
+		final Position2D upperCorner = (Position2D) mapPane.getDisplayArea().getUpperCorner();
+		final Position2D bottomCorner = (Position2D) mapPane.getDisplayArea().getLowerCorner();
 
 		if (bottomCorner.getCoordinateReferenceSystem() != DefaultGeographicCRS.WGS84
 				&& upperCorner.getCoordinateReferenceSystem() != DefaultGeographicCRS.WGS84) {
@@ -1560,8 +1560,8 @@ public class DebriefLiteApp implements FileDropListener {
 	}
 
 	public void updateProjectionArea() {
-		final DirectPosition2D upperCorner = (DirectPosition2D) mapPane.getDisplayArea().getUpperCorner();
-		final DirectPosition2D bottomCorner = (DirectPosition2D) mapPane.getDisplayArea().getLowerCorner();
+		final Position2D upperCorner = (Position2D) mapPane.getDisplayArea().getUpperCorner();
+		final Position2D bottomCorner = (Position2D) mapPane.getDisplayArea().getLowerCorner();
 
 		if (bottomCorner.getCoordinateReferenceSystem() != DefaultGeographicCRS.WGS84
 				&& upperCorner.getCoordinateReferenceSystem() != DefaultGeographicCRS.WGS84) {
