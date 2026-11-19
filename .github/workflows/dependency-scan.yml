@@ -54,13 +54,22 @@ jobs:
 
       # GeoTools and its ~100 runtime jars are fetched, not committed: fetch
       # them so Syft sees each jar (the pom lists only the direct modules).
-      # Uses the runner's own JDK 21 and Maven: the settings.xml that
-      # actions/setup-java writes made Maven fail to find Tycho on Central.
+      # Uses the runner's JDK 21 and a pinned Maven: the runner's own Maven
+      # changes with the image, and 3.10.1 fails to resolve tycho-maven-plugin
+      # (3.10.0 and 3.9.11 work).
       - name: Fetch the GeoTools jars
+        env:
+          MAVEN_VERSION: 3.9.11
         run: |
           export JAVA_HOME="$JAVA_HOME_21_X64"
-          mvn --version
-          mvn -B -ntp -pl org.mwc.cmap.geotools.libs generate-resources
+          base="https://archive.apache.org/dist/maven/maven-3/${MAVEN_VERSION}/binaries"
+          file="apache-maven-${MAVEN_VERSION}-bin.tar.gz"
+          curl -fsSL --retry 3 -o "$RUNNER_TEMP/$file" "$base/$file"
+          echo "$(curl -fsSL --retry 3 "$base/$file.sha512" | cut -d' ' -f1)  $RUNNER_TEMP/$file" | sha512sum -c -
+          tar xzf "$RUNNER_TEMP/$file" -C "$RUNNER_TEMP"
+          mvn="$RUNNER_TEMP/apache-maven-${MAVEN_VERSION}/bin/mvn"
+          "$mvn" --version
+          "$mvn" -B -ntp -pl org.mwc.cmap.geotools.libs generate-resources
 
       - name: Install Syft
         id: syft
