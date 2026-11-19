@@ -27,7 +27,6 @@
 	<classpathentry exported="true" kind="lib" path="gt-render-21.2.jar"/>
 	<classpathentry exported="true" kind="lib" path="gt-shapefile-21.2.jar"/>
 	<classpathentry exported="true" kind="lib" path="gt-swing-21.2.jar"/>
-	<classpathentry exported="true" kind="lib" path="gt-swt-23-SNAPSHOT.jar"/>
 	<classpathentry exported="true" kind="lib" path="gt-xml-21.2.jar"/>
 	<classpathentry exported="true" kind="lib" path="guava-33.7.2-jre.jar"/>
 	<classpathentry exported="true" kind="lib" path="hsqldb-2.7.4.jar"/>
