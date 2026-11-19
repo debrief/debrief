@@ -146,10 +146,10 @@ All of the following hold:
 - **No auto-merge.** We revisit this at Gate D.
 - **New CVEs. Done.** The weekly (and manual) run of `dependency-scan.yml` opens one issue per vulnerability and package in the shipped products, labelled `dependency-vulnerability` (`.github/scripts/scan_issues.py`). A finding with an open issue is not raised again; at most 20 new issues per run. Pull request runs only report. To accept a finding instead of fixing it, add an ignore rule to `.github/grype.yaml` naming the issue, then close it.
 
-## Gate D: before the major migrations
+## Gate D: before the major migrations (passed)
 - Phase B is complete.
 - Golden-file coverage now includes **screenshot diffs of map rendering**. It renders a fixed set of plots and a shapefile at fixed sizes, headless, and compares against references with a per-pixel tolerance. **Done:** `MapRenderingTest` in Lite's headless tests (see `org.mwc.debrief.legacy/test_data/golden/README.md`).
-- At least 4 bot update PRs have merged cleanly. (3 so far: the GitHub Actions groups #5287 and #5330, and the third-party jars group #5318.)
+- At least 4 bot update PRs have merged cleanly. **Met:** the GitHub Actions groups #5287, #5330 and #5334, and the third-party jars group #5318.
 
 ## Phase D1: GeoTools 21.2 → 35.2 (after Gate D)
 - **Replace `gt-swt-23-SNAPSHOT`. Done** (PR A). Debrief used one method of it, `Utils.createStyle`; `ShapeFileStyles` in `cmap.geotools` replaces it.
