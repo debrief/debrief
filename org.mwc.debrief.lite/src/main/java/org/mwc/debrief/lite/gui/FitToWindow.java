@@ -18,18 +18,18 @@ import java.awt.event.ActionEvent;
 
 import javax.swing.AbstractAction;
 
-import org.geotools.geometry.DirectPosition2D;
+import org.geotools.geometry.Position2D;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.geotools.swing.JMapPane;
 import org.mwc.debrief.lite.DebriefLiteApp;
 import org.mwc.debrief.lite.map.LiteMapPane;
-import org.opengis.geometry.MismatchedDimensionException;
-import org.opengis.referencing.FactoryException;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
-import org.opengis.referencing.operation.MathTransform;
-import org.opengis.referencing.operation.TransformException;
+import org.geotools.api.geometry.MismatchedDimensionException;
+import org.geotools.api.referencing.FactoryException;
+import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
+import org.geotools.api.referencing.operation.MathTransform;
+import org.geotools.api.referencing.operation.TransformException;
 import org.pushingpixels.flamingo.api.common.CommandAction;
 import org.pushingpixels.flamingo.api.common.CommandActionEvent;
 
@@ -72,8 +72,8 @@ public class FitToWindow extends AbstractAction implements CommandAction {
 				if (crs != DefaultGeographicCRS.WGS84) {
 					try {
 						final MathTransform degsToWorld = CRS.findMathTransform(DefaultGeographicCRS.WGS84, crs);
-						final DirectPosition2D tlDegs = new DirectPosition2D(long1, lat1);
-						final DirectPosition2D brDegs = new DirectPosition2D(long2, lat2);
+						final Position2D tlDegs = new Position2D(long1, lat1);
+						final Position2D brDegs = new Position2D(long2, lat2);
 						degsToWorld.transform(tlDegs, tlDegs);
 						degsToWorld.transform(brDegs, brDegs);
 						long1 = tlDegs.x;

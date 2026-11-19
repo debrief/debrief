@@ -23,14 +23,14 @@ import java.awt.event.MouseEvent;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 
-import org.geotools.geometry.DirectPosition2D;
+import org.geotools.geometry.Position2D;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.geotools.swing.AbstractMapPane;
 import org.geotools.swing.event.MapMouseEvent;
 import org.geotools.swing.tool.AbstractZoomTool;
-import org.opengis.geometry.MismatchedDimensionException;
-import org.opengis.referencing.operation.MathTransform;
-import org.opengis.referencing.operation.TransformException;
+import org.geotools.api.geometry.MismatchedDimensionException;
+import org.geotools.api.referencing.operation.MathTransform;
+import org.geotools.api.referencing.operation.TransformException;
 
 import Debrief.GUI.Frames.Application;
 import MWC.Algorithms.Conversions;
@@ -174,7 +174,7 @@ public class RangeBearingTool extends AbstractZoomTool {
 	public void onMouseDragged(final MapMouseEvent ev) {
 		if (ev.getButton() != MouseEvent.BUTTON3) {
 			// ok, sort out the range and bearing
-			final DirectPosition2D curPos = ev.getWorldPos();
+			final Position2D curPos = ev.getWorldPos();
 
 			// mouse pos in Map coordinates
 			if (ev.getWorldPos().getCoordinateReferenceSystem() != DefaultGeographicCRS.WGS84) {
@@ -213,7 +213,7 @@ public class RangeBearingTool extends AbstractZoomTool {
 	@Override
 	public void onMousePressed(final MapMouseEvent ev) {
 		if (!dragging && ev.getButton() != MouseEvent.BUTTON3) {
-			final DirectPosition2D startPosWorld = ev.getWorldPos();
+			final Position2D startPosWorld = ev.getWorldPos();
 
 			if (ev.getWorldPos().getCoordinateReferenceSystem() != DefaultGeographicCRS.WGS84) {
 				try {

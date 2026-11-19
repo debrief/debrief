@@ -15,13 +15,13 @@
 package org.mwc.debrief.lite.gui;
 
 import java.awt.Rectangle;
+import org.geotools.geometry.jts.ReferencedEnvelope;
 import java.awt.event.ActionEvent;
 import java.awt.geom.Point2D;
 
 import javax.swing.AbstractAction;
 
-import org.geotools.geometry.DirectPosition2D;
-import org.geotools.geometry.Envelope2D;
+import org.geotools.geometry.Position2D;
 import org.geotools.swing.JMapPane;
 import org.locationtech.jts.geom.Coordinate;
 import org.mwc.debrief.lite.DebriefLiteApp;
@@ -63,10 +63,10 @@ public class ZoomOut extends AbstractAction implements CommandAction {
 
 		// don't bother zooming out too far
 		if (newScale > 2.5E-5) {
-			final DirectPosition2D corner = new DirectPosition2D(centre.x - 0.5d * paneArea.getWidth() / newScale,
+			final Position2D corner = new Position2D(centre.x - 0.5d * paneArea.getWidth() / newScale,
 					centre.y + 0.5d * paneArea.getHeight() / newScale);
 
-			final Envelope2D newMapArea = new Envelope2D();
+			final ReferencedEnvelope newMapArea = new ReferencedEnvelope();
 			newMapArea.setFrameFromCenter(mapPos, corner);
 			_map.setDisplayArea(newMapArea);
 		}

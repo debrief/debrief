@@ -24,7 +24,7 @@ import javax.swing.JOptionPane;
 import javax.swing.event.ListDataEvent;
 import javax.swing.event.ListDataListener;
 
-import org.geotools.geometry.DirectPosition2D;
+import org.geotools.geometry.Position2D;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.mwc.debrief.lite.map.GeoToolMapRenderer;
 import org.mwc.debrief.lite.shapes.actions.ArcShapeCommandAction;
@@ -36,8 +36,8 @@ import org.mwc.debrief.lite.shapes.actions.LabelShapeCommandAction;
 import org.mwc.debrief.lite.shapes.actions.LineShapeCommandAction;
 import org.mwc.debrief.lite.shapes.actions.RectangularShapeCommandAction;
 import org.mwc.debrief.lite.util.ResizableIconFactory;
-import org.opengis.geometry.MismatchedDimensionException;
-import org.opengis.referencing.operation.TransformException;
+import org.geotools.api.geometry.MismatchedDimensionException;
+import org.geotools.api.referencing.operation.TransformException;
 import org.pushingpixels.flamingo.api.common.RichTooltip;
 import org.mwc.debrief.lite.util.ScaledImageIcon;
 import org.pushingpixels.flamingo.api.ribbon.JRibbon;
@@ -203,8 +203,8 @@ public class DebriefRibbonInsert {
 				final ReferencedEnvelope env = geoMapRenderer.getMapComponent().getViewport().getBounds();
 
 				// convert to degs
-				final DirectPosition2D tl = (DirectPosition2D) env.getUpperCorner();
-				final DirectPosition2D br = (DirectPosition2D) env.getLowerCorner();
+				final Position2D tl = (Position2D) env.getUpperCorner();
+				final Position2D br = (Position2D) env.getLowerCorner();
 				try {
 					geoMapRenderer.getTransform().transform(tl, tl);
 					geoMapRenderer.getTransform().transform(br, br);

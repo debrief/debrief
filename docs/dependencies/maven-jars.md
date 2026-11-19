@@ -61,7 +61,30 @@ Notes on `org.mwc.debrief.legacy`:
 
 Notes on `org.mwc.cmap.jfreechart`: the committed `jfreechart-1.0.19.jar` was Central's build plus three demo classes (`org.jfree.chart.demo`), which nothing used. The other 635 classes were byte-identical. The demo package's export is gone.
 
-All four plugins planned for Phase B are done. `cmap.geotools` waits for the GeoTools upgrade.
+All four plugins planned for Phase B are done.
+
+`cmap.geotools` (Phase D1) has its own module, `org.mwc.cmap.geotools.libs`,
+because GeoTools is published to the OSGeo repository
+(`repo.osgeo.org`), not Central, and brings about 100 jars. The module names
+the GeoTools modules Debrief uses (`geotools.version`) and copies them, with
+everything they need at runtime, into `org.mwc.cmap.geotools` under names of
+the form `groupId.artifactId.jar`. commons-io and commons-lang3 are left out:
+the bundle takes them from `cmap.legacy`. The bundle's `Bundle-ClassPath`,
+`Export-Package`, `build.properties` and `.classpath` list every jar, so they
+are generated: after a change that adds or drops a jar, run
+
+```bash
+mvn -pl org.mwc.cmap.geotools.libs generate-resources
+```
+
+```bash
+python3 .github/scripts/geotools_manifest.py
+```
+
+CI runs the script with `--check`. The module also fetches JAXB 2
+(`javax.xml.bind`), which is not GeoTools: Debrief's GPX code in
+`debrief.core` and the DIS plugin use it, and they used to get it from the
+GeoTools 21 jars.
 
 Test-only: JUnit 6 (`junit.version` in the root pom) is a test-scope dependency of every plugin, for its `test/` folder, and `org.mwc.debrief.thirdparty` copies the JUnit API jars into `org.mwc.debrief.lite/test-libs/` for Lite's Ant-built tests. None of them is shipped.
 

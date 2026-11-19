@@ -26,8 +26,7 @@ import java.awt.Rectangle;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.NoninvertibleTransformException;
 import java.util.Iterator;
-import org.geotools.geometry.DirectPosition2D;
-import org.geotools.geometry.Envelope2D;
+import org.geotools.geometry.Position2D;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.map.Layer;
 import org.geotools.map.MapContent;
@@ -35,13 +34,13 @@ import org.geotools.map.MapViewport;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.operation.projection.ProjectionException;
 import org.junit.jupiter.api.Test;
-import org.opengis.geometry.BoundingBox;
-import org.opengis.geometry.MismatchedDimensionException;
-import org.opengis.referencing.FactoryException;
-import org.opengis.referencing.NoSuchAuthorityCodeException;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
-import org.opengis.referencing.operation.MathTransform;
-import org.opengis.referencing.operation.TransformException;
+import org.geotools.api.geometry.BoundingBox;
+import org.geotools.api.geometry.MismatchedDimensionException;
+import org.geotools.api.referencing.FactoryException;
+import org.geotools.api.referencing.NoSuchAuthorityCodeException;
+import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
+import org.geotools.api.referencing.operation.MathTransform;
+import org.geotools.api.referencing.operation.TransformException;
 import Debrief.GUI.Frames.Application;
 import MWC.Algorithms.PlainProjection;
 import MWC.GUI.ExternallyManagedDataLayer;
@@ -60,10 +59,9 @@ public class GtProjectionTest {
 		mc.getViewport().setCoordinateReferenceSystem(crs);
 
 		// set a data area
-		final DirectPosition2D tlDegs = new DirectPosition2D(5, 1);
-		final DirectPosition2D brDegs = new DirectPosition2D(1, 5);
-		final Envelope2D env = new Envelope2D(tlDegs, brDegs);
-		final ReferencedEnvelope rEnv = new ReferencedEnvelope(env, crs);
+		final Position2D tlDegs = new Position2D(5, 1);
+		final Position2D brDegs = new Position2D(1, 5);
+		final ReferencedEnvelope rEnv = new ReferencedEnvelope(tlDegs.x, brDegs.x, tlDegs.y, brDegs.y, crs);
 		mc.getViewport().setBounds(rEnv);
 
 		// set a screen area
@@ -73,11 +71,11 @@ public class GtProjectionTest {
 		mc.getViewport().setMatchingAspectRatio(true);
 
 		// create a point to test
-		final DirectPosition2D degs = new DirectPosition2D(5, 4);
+		final Position2D degs = new Position2D(5, 4);
 
 		// and results object
-		final DirectPosition2D pixels = new DirectPosition2D();
-		final DirectPosition2D rDegs = new DirectPosition2D();
+		final Position2D pixels = new Position2D();
+		final Position2D rDegs = new Position2D();
 
 		// transform the test point
 		mc.getViewport().getWorldToScreen().transform(degs, pixels);
@@ -103,10 +101,9 @@ public class GtProjectionTest {
 		mc.getViewport().setCoordinateReferenceSystem(crs);
 
 		// set a data area
-		final DirectPosition2D tlDegs = new DirectPosition2D(45, -5);
-		final DirectPosition2D brDegs = new DirectPosition2D(41, -1);
-		final Envelope2D env = new Envelope2D(tlDegs, brDegs);
-		final ReferencedEnvelope rEnv = new ReferencedEnvelope(env, crs);
+		final Position2D tlDegs = new Position2D(45, -5);
+		final Position2D brDegs = new Position2D(41, -1);
+		final ReferencedEnvelope rEnv = new ReferencedEnvelope(tlDegs.x, brDegs.x, tlDegs.y, brDegs.y, crs);
 		mc.getViewport().setBounds(rEnv);
 
 		// set a screen area
@@ -117,29 +114,29 @@ public class GtProjectionTest {
 
 		// try with series of points
 		System.out.println(
-				"test 2:" + mc.getViewport().getWorldToScreen().transform(new DirectPosition2D(45, -4), null));
+				"test 2:" + mc.getViewport().getWorldToScreen().transform(new Position2D(45, -4), null));
 		System.out.println(
-				"test 2:" + mc.getViewport().getWorldToScreen().transform(new DirectPosition2D(44, -4), null));
+				"test 2:" + mc.getViewport().getWorldToScreen().transform(new Position2D(44, -4), null));
 		System.out.println(
-				"test 2:" + mc.getViewport().getWorldToScreen().transform(new DirectPosition2D(43, -4), null));
+				"test 2:" + mc.getViewport().getWorldToScreen().transform(new Position2D(43, -4), null));
 		System.out.println(
-				"test 2:" + mc.getViewport().getWorldToScreen().transform(new DirectPosition2D(42, -4), null));
+				"test 2:" + mc.getViewport().getWorldToScreen().transform(new Position2D(42, -4), null));
 		System.out.println(
-				"test 2:" + mc.getViewport().getWorldToScreen().transform(new DirectPosition2D(41, -4), null));
+				"test 2:" + mc.getViewport().getWorldToScreen().transform(new Position2D(41, -4), null));
 
 		// try with series of points
 		System.out.println(
-				"test 3:" + mc.getViewport().getWorldToScreen().transform(new DirectPosition2D(45, -5), null));
+				"test 3:" + mc.getViewport().getWorldToScreen().transform(new Position2D(45, -5), null));
 		System.out.println(
-				"test 3:" + mc.getViewport().getWorldToScreen().transform(new DirectPosition2D(45, -4), null));
+				"test 3:" + mc.getViewport().getWorldToScreen().transform(new Position2D(45, -4), null));
 		System.out.println(
-				"test 3:" + mc.getViewport().getWorldToScreen().transform(new DirectPosition2D(45, -3), null));
+				"test 3:" + mc.getViewport().getWorldToScreen().transform(new Position2D(45, -3), null));
 		System.out.println(
-				"test 3:" + mc.getViewport().getWorldToScreen().transform(new DirectPosition2D(45, -2), null));
+				"test 3:" + mc.getViewport().getWorldToScreen().transform(new Position2D(45, -2), null));
 		System.out.println(
-				"test 3:" + mc.getViewport().getWorldToScreen().transform(new DirectPosition2D(45, -1), null));
+				"test 3:" + mc.getViewport().getWorldToScreen().transform(new Position2D(45, -1), null));
 		System.out.println(
-				"test 3:" + mc.getViewport().getWorldToScreen().transform(new DirectPosition2D(45, 0), null));
+				"test 3:" + mc.getViewport().getWorldToScreen().transform(new Position2D(45, 0), null));
 
 	}
 

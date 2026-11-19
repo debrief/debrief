@@ -1,8 +1,10 @@
 # Dependency scan: an SBOM of the libraries committed to the repo, and a
 # vulnerability report against it.
 #
-# Debrief's third-party jars are committed, not managed by Maven, so nothing
-# else watches them. Syft identifies each jar (from the Maven metadata inside
+# Many of Debrief's third-party jars are committed, not managed by Maven, so
+# nothing else watches them. Of those Maven fetches, Syft reads the
+# org.mwc.debrief.thirdparty versions from its pom, and the GeoTools jars
+# themselves, which this workflow fetches first. Syft identifies each jar (from the Maven metadata inside
 # it, or failing that its manifest and file name) and native library; Grype
 # matches them against known vulnerabilities.
 #
@@ -50,6 +52,17 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v7
 
+      # GeoTools and its ~100 runtime jars are fetched, not committed: fetch
+      # them so Syft sees each jar (the pom lists only the direct modules).
+      - name: Set up Java
+        uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: '21'
+
+      - name: Fetch the GeoTools jars
+        run: mvn -B -ntp -pl org.mwc.cmap.geotools.libs generate-resources
+
       - name: Install Syft
         id: syft
         uses: anchore/sbom-action/download-syft@v0
@@ -71,6 +84,7 @@ jobs:
           "$SYFT" scan dir:. \
             --exclude './.git/**' \
             --exclude './contribs/**' \
+            --exclude './org.mwc.cmap.geotools.libs/**' \
             --source-name debrief --source-version "${GITHUB_SHA}" \
             -o syft-json=scan/sbom-debrief.syft.json \
             -o cyclonedx-json=scan/sbom-debrief.cdx.json
