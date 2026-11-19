@@ -99,7 +99,7 @@ Versions are set at implementation time from Maven Central (latest stable); the 
 6. Lite: run `dist/debrief-lite-<version>.zip`, open a REP file, step time.
 
 ## Gate A: before any restructuring
-**Waived** by the owner to start Phase B. Two conditions are still open: two weeks of green scheduled runs, and the owner's manual smoke test on Windows (the owner dropped macOS, November 2026: no Debrief user runs it).
+**Passed** (owner, 18 November 2026). It was waived earlier to start Phase B; the owner has since run the manual smoke test on Windows on a `develop` build and declared the gate passed. The smoke test found three problems, fixed in debrief/debrief#5335: the Time Controller's time display lost its black background, Debrief could open with the plot inactive (leaving the Time Controller, Track Tote and Outline blank), and the Gate A wording still asked for macOS (the owner dropped it, November 2026: no Debrief user runs it).
 
 All of the following hold:
 - PRs 1–3+ are merged.
@@ -149,7 +149,7 @@ All of the following hold:
 ## Gate D: before the major migrations
 - Phase B is complete.
 - Golden-file coverage now includes **screenshot diffs of map rendering**. It renders a fixed set of plots and a shapefile at fixed sizes, headless, and compares against references with a per-pixel tolerance. **Done:** `MapRenderingTest` in Lite's headless tests (see `org.mwc.debrief.legacy/test_data/golden/README.md`).
-- At least 4 bot update PRs have merged cleanly. (1 so far: the GitHub Actions group, #5287.)
+- At least 4 bot update PRs have merged cleanly. (3 so far: the GitHub Actions groups #5287 and #5330, and the third-party jars group #5318.)
 
 ## Phase D1: GeoTools 21.2 → current (after Gate D)
 Spec `specs/004-geotools/`.
