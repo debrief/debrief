@@ -27,7 +27,6 @@ import java.awt.event.MouseMotionListener;
 
 import javax.swing.SwingConstants;
 
-import org.jdesktop.swingx.JXLabel;
 import org.mwc.debrief.lite.DebriefLiteApp;
 
 public class JXCollapsiblePaneWithTitle extends JXCollapsiblePane {
@@ -38,7 +37,7 @@ public class JXCollapsiblePaneWithTitle extends JXCollapsiblePane {
 
 	private static final Integer MIN_ANIMATION_SIZE = 20;
 
-	private final JXLabel titleLabel;
+	private final RotatedLabel titleLabel;
 
 	// Variables used to implement the resize behavior.
 	private boolean dragging = false;
@@ -51,7 +50,7 @@ public class JXCollapsiblePaneWithTitle extends JXCollapsiblePane {
 		collapsiblePaneInstance.setPreferredSize(new Dimension(defaultSize, defaultSize));
 		collapsiblePaneInstance.setName(title);
 
-		titleLabel = new JXLabel(title, SwingConstants.CENTER);
+		titleLabel = new RotatedLabel(title, SwingConstants.CENTER);
 		titleLabel.setName("titleLabel");
 		final Dimension titleDimension;
 

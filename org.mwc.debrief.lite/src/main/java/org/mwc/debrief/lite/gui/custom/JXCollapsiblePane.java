@@ -25,9 +25,12 @@ import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.GraphicsConfiguration;
+import java.awt.Insets;
 import java.awt.LayoutManager;
 import java.awt.Point;
 import java.awt.Rectangle;
+import java.awt.Transparency;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
@@ -36,17 +39,13 @@ import java.beans.PropertyChangeListener;
 
 import javax.swing.AbstractAction;
 import javax.swing.JComponent;
+import javax.swing.JPanel;
 import javax.swing.JViewport;
 import javax.swing.Scrollable;
 import javax.swing.SwingUtilities;
 import javax.swing.Timer;
 import javax.swing.border.Border;
 
-import org.jdesktop.beans.JavaBean;
-import org.jdesktop.swingx.HorizontalLayout;
-import org.jdesktop.swingx.JXPanel;
-import org.jdesktop.swingx.VerticalLayout;
-import org.jdesktop.swingx.util.GraphicsUtilities;
 
 /**
  * <code>JXCollapsiblePane</code> provides a component which can collapse or
@@ -146,7 +145,7 @@ import org.jdesktop.swingx.util.GraphicsUtilities;
  * <p>
  * Note: <code>JXCollapsiblePane</code> requires its parent container to have a
  * {@link java.awt.LayoutManager} using {@link #getPreferredSize()} when
- * calculating its layout (example {@link org.jdesktop.swingx.VerticalLayout},
+ * calculating its layout (example {@link StackLayout},
  * {@link java.awt.BorderLayout}).
  *
  * @javabean.attribute name="isContainer" value="Boolean.TRUE" rtexpr="true"
@@ -161,8 +160,7 @@ import org.jdesktop.swingx.util.GraphicsUtilities;
  * @author <a href="mailto:fred@L2FProd.com">Frederic Lavigne</a>
  * @author Karl George Schaefer
  */
-@JavaBean
-public class JXCollapsiblePane extends JXPanel {
+public class JXCollapsiblePane extends JPanel {
 	/**
 	 * This class actual provides the animation support for scrolling up/down this
 	 * component. This listener is called whenever the animateTimer fires off. It
@@ -592,7 +590,7 @@ public class JXCollapsiblePane extends JXPanel {
 				// the component is translucent, so we need to render to
 				// an intermediate image before painting
 				// TODO should we cache this image? repaint to same image unless size changes?
-				final BufferedImage img = GraphicsUtilities.createCompatibleTranslucentImage(getWidth(), getHeight());
+				final BufferedImage img = translucentImage(getGraphicsConfiguration(), getWidth(), getHeight());
 				final Graphics2D gfx = img.createGraphics();
 
 				try {
@@ -730,8 +728,8 @@ public class JXCollapsiblePane extends JXPanel {
 	private final float ANIMATION_MIN_MULTIPLIER = 2.5f;
 
 	/**
-	 * Constructs a new JXCollapsiblePane with a {@link JXPanel} as content pane and
-	 * a vertical {@link VerticalLayout} with a gap of 2 pixels as layout manager
+	 * Constructs a new JXCollapsiblePane with a {@link ScrollablePanel} as content pane and
+	 * a vertical {@link StackLayout} with a gap of 2 pixels as layout manager
 	 * and a vertical orientation.
 	 */
 	public JXCollapsiblePane() {
@@ -739,7 +737,7 @@ public class JXCollapsiblePane extends JXPanel {
 	}
 
 	/**
-	 * Constructs a new JXCollapsiblePane with a {@link JXPanel} as content pane and
+	 * Constructs a new JXCollapsiblePane with a {@link ScrollablePanel} as content pane and
 	 * the specified direction.
 	 *
 	 * @param direction the direction to collapse the container
@@ -773,7 +771,7 @@ public class JXCollapsiblePane extends JXPanel {
 	 * @return the content pane
 	 */
 	protected Container createContentPane() {
-		return new JXPanel();
+		return new ScrollablePanel();
 	}
 
 	/**
@@ -1116,9 +1114,9 @@ public class JXCollapsiblePane extends JXPanel {
 		this.direction = direction;
 
 		if (direction.isVertical()) {
-			getContentPane().setLayout(new VerticalLayout(2));
+			getContentPane().setLayout(new StackLayout(true, 2));
 		} else {
-			getContentPane().setLayout(new HorizontalLayout(2));
+			getContentPane().setLayout(new StackLayout(false, 2));
 		}
 
 		firePropertyChange("direction", oldValue, getDirection());
@@ -1209,4 +1207,124 @@ public class JXCollapsiblePane extends JXPanel {
 	// }
 	// });
 	// }
+
+	/**
+	 * The default content pane: a panel that tracks the size of the viewport that
+	 * holds it, as swingx's JXPanel did. Without that the viewport leaves it at its
+	 * preferred size, and a pane collapsing to the right shows the wrong end of it.
+	 */
+	static class ScrollablePanel extends JPanel implements Scrollable {
+		private static final long serialVersionUID = 1L;
+
+		@Override
+		public Dimension getPreferredScrollableViewportSize() {
+			return getPreferredSize();
+		}
+
+		@Override
+		public int getScrollableBlockIncrement(final Rectangle visibleRect, final int orientation,
+				final int direction) {
+			return orientation == javax.swing.SwingConstants.VERTICAL ? visibleRect.height : visibleRect.width;
+		}
+
+		@Override
+		public boolean getScrollableTracksViewportHeight() {
+			return true;
+		}
+
+		@Override
+		public boolean getScrollableTracksViewportWidth() {
+			return true;
+		}
+
+		@Override
+		public int getScrollableUnitIncrement(final Rectangle visibleRect, final int orientation,
+				final int direction) {
+			return 10;
+		}
+	}
+
+	/**
+	 * a translucent image to paint into, compatible with the screen if there is
+	 * one (as swingx's GraphicsUtilities.createCompatibleTranslucentImage made)
+	 */
+	static BufferedImage translucentImage(final GraphicsConfiguration gc, final int width, final int height) {
+		final int w = Math.max(1, width);
+		final int h = Math.max(1, height);
+		if (gc != null) {
+			return gc.createCompatibleImage(w, h, Transparency.TRANSLUCENT);
+		}
+		return new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
+	}
+
+	/**
+	 * Lays out its children in a single column (or row), each at its preferred
+	 * height (or width), stretched to the container's width (or height), with a
+	 * fixed gap between them. It replaces swingx's VerticalLayout and
+	 * HorizontalLayout, which behaved the same way.
+	 */
+	static class StackLayout implements LayoutManager {
+		private final boolean vertical;
+		private final int gap;
+
+		StackLayout(final boolean vertical, final int gap) {
+			this.vertical = vertical;
+			this.gap = gap;
+		}
+
+		@Override
+		public void addLayoutComponent(final String name, final Component comp) {
+		}
+
+		@Override
+		public void layoutContainer(final Container parent) {
+			final Insets insets = parent.getInsets();
+			final int width = parent.getWidth() - insets.left - insets.right;
+			final int height = parent.getHeight() - insets.top - insets.bottom;
+			int pos = vertical ? insets.top : insets.left;
+			for (final Component c : parent.getComponents()) {
+				if (!c.isVisible()) {
+					continue;
+				}
+				final Dimension pref = c.getPreferredSize();
+				if (vertical) {
+					c.setBounds(insets.left, pos, width, pref.height);
+					pos += pref.height + gap;
+				} else {
+					c.setBounds(pos, insets.top, pref.width, height);
+					pos += pref.width + gap;
+				}
+			}
+		}
+
+		@Override
+		public Dimension minimumLayoutSize(final Container parent) {
+			return preferredLayoutSize(parent);
+		}
+
+		@Override
+		public Dimension preferredLayoutSize(final Container parent) {
+			final Insets insets = parent.getInsets();
+			int along = 0;
+			int across = 0;
+			int count = 0;
+			for (final Component c : parent.getComponents()) {
+				if (!c.isVisible()) {
+					continue;
+				}
+				final Dimension pref = c.getPreferredSize();
+				along += vertical ? pref.height : pref.width;
+				across = Math.max(across, vertical ? pref.width : pref.height);
+				count++;
+			}
+			along += Math.max(0, count - 1) * gap;
+			return vertical
+					? new Dimension(across + insets.left + insets.right, along + insets.top + insets.bottom)
+					: new Dimension(along + insets.left + insets.right, across + insets.top + insets.bottom);
+		}
+
+		@Override
+		public void removeLayoutComponent(final Component comp) {
+		}
+	}
 }

@@ -161,8 +161,8 @@ All of the following hold:
 - **Acceptance:** the screenshot diffs (Lite's `MapRenderingTest` and Debrief NG's `MapScreenshotTest`) are within tolerance; coordinates are within 1 m when projected and transformed back on the sample plots; and the full verification list passes. The coordinate check is ready: `ProjectionAccuracyTest` in Lite's headless tests (round trip within 1 m, agreement with an independent EPSG:3395 formula within 1 m, and a screen round trip within one pixel, for every fix in `sample.dpf`, `boat1.rep` and `uk_track.rep`).
 
 ## Phase D2: Lite UI libraries (after Gate D; can run in parallel with D1)
-- **Radiance** 3.0.0 → current: flamingo ribbon, substance, trident; packages and API change.
-- **swingx** 1.6.6-SNAPSHOT → a released fork, or remove it.
+- **Radiance** 3.0.0 → 9.0.0 (Maven Central, `org.pushing-pixels`): flamingo → component, substance → theming, trident → animation, neon → common; packages and API change. Next PR.
+- **swingx** 1.6.6-SNAPSHOT: **removed** (owner's choice). Lite used five classes, all in its collapsible side panels: `JXPanel` is now `JPanel`, `VerticalLayout`/`HorizontalLayout` a small `StackLayout`, `GraphicsUtilities` a JDK translucent image, and `JXLabel`'s rotated text a new `RotatedLabel`. The `@JavaBean` annotation (and its annotation processor) went with them.
 - **Acceptance:** Lite UI tests pass and screenshot diffs of the Lite main window are within tolerance. The owner does a manual walkthrough on all three operating systems. The window screenshots are ready: `TestMainWindowScreenshots` in the Lite UI tests (startup, each ribbon tab, and a loaded plot).
 
 ## Phase D3: Jackson 1 and the old Postgres drivers (after Gate A; can run in parallel with B)
