@@ -101,7 +101,8 @@ def main():
     args = ap.parse_args()
     names = jars()
     if not names:
-        sys.exit("No jars in %s: run mvn -pl org.mwc.cmap.geotools.libs generate-resources" % BUNDLE)
+        sys.exit("No jars in %s: run mvn -pl org.mwc.cmap.geotools.libs generate-resources"
+                 % BUNDLE)
     pkgs = packages(names)
     stale = []
     for rel, fn in (("META-INF/MANIFEST.MF", lambda t: manifest(t, names, pkgs)),
@@ -116,7 +117,8 @@ def main():
                 path.write_text(new)
     if args.check and stale:
         sys.exit("Out of date: %s. Run .github/scripts/geotools_manifest.py" % ", ".join(stale))
-    print("%d jars, %d packages%s" % (len(names), len(pkgs), "" if args.check else "; updated: " + (", ".join(stale) or "nothing")))
+    updated = "" if args.check else "; updated: " + (", ".join(stale) or "nothing")
+    print("%d jars, %d packages%s" % (len(names), len(pkgs), updated))
 
 
 if __name__ == "__main__":
