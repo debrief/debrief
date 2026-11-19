@@ -42,6 +42,7 @@ import javax.swing.JComponent;
 import javax.swing.JPanel;
 import javax.swing.JViewport;
 import javax.swing.Scrollable;
+import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.Timer;
 import javax.swing.border.Border;
@@ -1224,7 +1225,7 @@ public class JXCollapsiblePane extends JPanel {
 		@Override
 		public int getScrollableBlockIncrement(final Rectangle visibleRect, final int orientation,
 				final int direction) {
-			return orientation == javax.swing.SwingConstants.VERTICAL ? visibleRect.height : visibleRect.width;
+			return orientation == SwingConstants.VERTICAL ? visibleRect.height : visibleRect.width;
 		}
 
 		@Override
@@ -1318,9 +1319,9 @@ public class JXCollapsiblePane extends JPanel {
 				count++;
 			}
 			along += Math.max(0, count - 1) * gap;
-			return vertical
-					? new Dimension(across + insets.left + insets.right, along + insets.top + insets.bottom)
-					: new Dimension(along + insets.left + insets.right, across + insets.top + insets.bottom);
+			final int width = vertical ? across : along;
+			final int height = vertical ? along : across;
+			return new Dimension(width + insets.left + insets.right, height + insets.top + insets.bottom);
 		}
 
 		@Override
