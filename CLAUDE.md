@@ -89,7 +89,7 @@ Third-party jars that are on Maven Central are not committed: `org.mwc.debrief.t
 
 Keep library jars named on a plugin's `Bundle-ClassPath` at the bundle root, not in a subfolder such as `libs/`. Tycho turns each one into a dependency whose classifier is its path, and Maven 3.10 rejects a classifier containing `/` (`Invalid Collect Request: null`).
 
-Build with **JDK 21** and **Maven 3.9 or later**: Tycho 5 needs both. Bundles declare `JavaSE-21`; Tycho compiles with `<release>21</release>` and the Ant `<javac>` tasks set `release="21"`.
+Build with **JDK 21** and **Maven 3.9 or later**: Tycho 5 needs both. CI uses the Maven wrapper (`./mvnw`, pinned to 3.9.11 in `.mvn/wrapper/maven-wrapper.properties`, with a checksum) rather than the runner image's Maven: Maven 3.10.1 fails to resolve `tycho-maven-plugin` and some version ranges from Central. `./mvnw` works locally too. Bundles declare `JavaSE-21`; Tycho compiles with `<release>21</release>` and the Ant `<javac>` tasks set `release="21"`.
 
 ## Test Architecture
 
