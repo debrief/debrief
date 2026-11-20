@@ -556,7 +556,12 @@ public class OutlinePanelView extends SwingLayerManager implements ClipboardOwne
 		private final Map<String, ImageIcon> iconMap = new HashMap<String, ImageIcon>();
 
 		public OutlineRenderer() {
-			panel.setBackground(UIManager.getColor("Tree.textBackground"));
+			// the tree's own background, so rows match the space below them.
+			// Radiance 9 makes Tree.textBackground darker than Tree.background,
+			// and it fills each row, full width, with the renderer's colours
+			final Color background = UIManager.getColor("Tree.background");
+			panel.setBackground(background);
+			setBackgroundNonSelectionColor(background);
 			setOpaque(false);
 			panel.setOpaque(false);
 			panel.setLayout(new FlowLayout(FlowLayout.LEFT, 2, 0));
@@ -920,8 +925,9 @@ public class OutlinePanelView extends SwingLayerManager implements ClipboardOwne
 	@Override
 	protected void initForm() {
 		super.initForm(true);
+		// the theme's panel colour: Radiance 3 ignored an explicit background
+		// here, Radiance 9 paints it, and LIGHT_GRAY stood out as a grey band
 		final JPanel commandBar = new JPanel();
-		commandBar.setBackground(Color.LIGHT_GRAY);
 		commandBar.setLayout(new FlowLayout(FlowLayout.RIGHT));
 
 		// sort out the logical tests
