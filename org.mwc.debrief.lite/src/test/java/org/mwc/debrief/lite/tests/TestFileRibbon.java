@@ -139,9 +139,9 @@ public class TestFileRibbon extends BaseTestCase
     //do assertions here
     //outline view should have track nelson and by default should have layers chart features and background
     JXCollapsiblePaneWithTitle outlinePanel = (JXCollapsiblePaneWithTitle)TestUtils.getChildNamed(ribbonFrame,"Outline");
-    assertNotNull(outlinePanel);
-    assertTrue(outlinePanel.isVisible());
-    assertTrue(outlinePanel.isEnabled());
+    assertNotNull(outlinePanel, "outline panel");
+    assertTrue(outlinePanel.isVisible(), "outline panel visible");
+    assertTrue(outlinePanel.isEnabled(), "outline panel enabled");
     JTree tree = (JTree)TestUtils.getChildNamed(outlinePanel, "Layer Tree");
     assertEquals(tree.getModel().getChildCount(tree.getModel().getRoot()),3);
     DefaultMutableTreeNode node = (DefaultMutableTreeNode)tree.getModel().getChild(tree.getModel().getRoot(), 2);
@@ -178,9 +178,9 @@ public class TestFileRibbon extends BaseTestCase
     final JXCollapsiblePaneWithTitle outlinePanel =
         (JXCollapsiblePaneWithTitle) TestUtils.getChildNamed(ribbonFrame,
             "Outline");
-    assertNotNull(outlinePanel);
-    assertTrue(outlinePanel.isVisible());
-    assertTrue(outlinePanel.isEnabled());
+    assertNotNull(outlinePanel, "outline panel");
+    assertTrue(outlinePanel.isVisible(), "outline panel visible");
+    assertTrue(outlinePanel.isEnabled(), "outline panel enabled");
     final JTree tree = (JTree) TestUtils.getChildNamed(outlinePanel,
         "Layer Tree");
     assertEquals(tree.getModel().getChildCount(tree.getModel().getRoot()), 3);
@@ -361,9 +361,9 @@ public class TestFileRibbon extends BaseTestCase
     });
     JFrame ribbonFrame = DebriefLiteApp.getInstance().getApplicationFrame();
     JXCollapsiblePaneWithTitle outlinePanel = (JXCollapsiblePaneWithTitle)TestUtils.getChildNamed(ribbonFrame,"Outline");
-    assertNotNull(outlinePanel);
-    assertTrue(outlinePanel.isVisible());
-    assertTrue(outlinePanel.isEnabled());
+    assertNotNull(outlinePanel, "outline panel");
+    assertTrue(outlinePanel.isVisible(), "outline panel visible");
+    assertTrue(outlinePanel.isEnabled(), "outline panel enabled");
     JTree tree = (JTree)TestUtils.getChildNamed(outlinePanel, "Layer Tree");
     DefaultMutableTreeNode testnode = (DefaultMutableTreeNode)tree.getModel().getRoot();
     Enumeration<TreeNode> childnodes = testnode.children();
@@ -397,9 +397,9 @@ public class TestFileRibbon extends BaseTestCase
         .getApplicationFrame();
     assertTrue(ribbonFrame.getTitle().contains("boat1.rep"));
     JXCollapsiblePaneWithTitle outlinePanel = (JXCollapsiblePaneWithTitle)TestUtils.getChildNamed(ribbonFrame,"Outline");
-    assertNotNull(outlinePanel);
-    assertTrue(outlinePanel.isVisible());
-    assertTrue(outlinePanel.isEnabled());
+    assertNotNull(outlinePanel, "outline panel");
+    assertTrue(outlinePanel.isVisible(), "outline panel visible");
+    assertTrue(outlinePanel.isEnabled(), "outline panel enabled");
     final JTree tree = (JTree)TestUtils.getChildNamed(outlinePanel, "Layer Tree");
     assertEquals(tree.getModel().getChildCount(tree.getModel().getRoot()),3);
     DefaultMutableTreeNode node = (DefaultMutableTreeNode)tree.getModel().getChild(tree.getModel().getRoot(), 2);
@@ -547,8 +547,12 @@ public class TestFileRibbon extends BaseTestCase
       }
     });
 
-    Thread.sleep(5000);
-    assertTrue(ribbonFrame.getTitle().contains("sample.dpf"));
+    // the plot loads in the background: wait for its name in the title (up to
+    // 30 s) rather than a fixed sleep, which a slow CI runner can outlast
+    for (int i = 0; i < 150 && !ribbonFrame.getTitle().contains("sample.dpf"); ++i) {
+      Thread.sleep(200);
+    }
+    assertTrue(ribbonFrame.getTitle().contains("sample.dpf"), "expected sample.dpf in title, found " + ribbonFrame.getTitle());
     //verify the file got opened
     //do save and close
     
@@ -564,9 +568,9 @@ public class TestFileRibbon extends BaseTestCase
     });
     Thread.sleep(200);
     JXCollapsiblePaneWithTitle outlinePanel = (JXCollapsiblePaneWithTitle)TestUtils.getChildNamed(ribbonFrame,"Outline");
-    assertNotNull(outlinePanel);
-    assertTrue(outlinePanel.isVisible());
-    assertTrue(outlinePanel.isEnabled());
+    assertNotNull(outlinePanel, "outline panel");
+    assertTrue(outlinePanel.isVisible(), "outline panel visible");
+    assertTrue(outlinePanel.isEnabled(), "outline panel enabled");
     JTree tree = (JTree)TestUtils.getChildNamed(outlinePanel, "Layer Tree");
     assertEquals(tree.getModel().getChildCount(tree.getModel().getRoot()),7);
     

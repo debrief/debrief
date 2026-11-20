@@ -54,13 +54,12 @@ jobs:
 
       # GeoTools and its ~100 runtime jars are fetched, not committed: fetch
       # them so Syft sees each jar (the pom lists only the direct modules).
-      # Uses the runner's own JDK 21 and Maven: the settings.xml that
-      # actions/setup-java writes made Maven fail to find Tycho on Central.
+      # Uses the runner's JDK 21 and the Maven wrapper's pinned Maven.
       - name: Fetch the GeoTools jars
         run: |
           export JAVA_HOME="$JAVA_HOME_21_X64"
-          mvn --version
-          mvn -B -ntp -pl org.mwc.cmap.geotools.libs generate-resources
+          ./mvnw --version
+          ./mvnw -B -ntp -pl org.mwc.cmap.geotools.libs generate-resources
 
       - name: Install Syft
         id: syft
