@@ -74,6 +74,11 @@ abstract public class CoreTMASegment extends TrackSegment implements CanBePlotte
 	protected String _dragMsg;
 
 	/**
+	 * Position of the Draw
+	 */
+	protected WorldLocation _dragPosition;
+
+	/**
 	 * base constructor - sorts out the obvious
 	 *
 	 * @param courseDegs
@@ -160,7 +165,7 @@ abstract public class CoreTMASegment extends TrackSegment implements CanBePlotte
 			// ok, is this our first location?
 			if (tmaLastLoc == null) {
 				tmaLastLoc = new WorldLocation(getTrackStart());
-				firstEnd = new WorldLocation(tmaLastLoc);
+				_dragPosition = firstEnd = new WorldLocation(tmaLastLoc);
 			} else {
 				// calculate a new vector
 				final long timeDelta = thisTime - tmaLastDTG;
@@ -204,7 +209,7 @@ abstract public class CoreTMASegment extends TrackSegment implements CanBePlotte
 
 		// ok, plot the 1/2 way message
 		if (_dragMsg != null) {
-			writeMessage(dest, firstEnd);
+			// writeMessage(dest, firstEnd);
 		}
 	}
 
@@ -294,6 +299,12 @@ abstract public class CoreTMASegment extends TrackSegment implements CanBePlotte
 	 * @param origin  origin of stretch, probably one end of the track
 	 */
 	abstract public void stretch(double rngDegs, final WorldLocation origin);
+
+	public void writeMessage(final CanvasType dest) {
+		if (_dragMsg != null && _dragPosition != null) {
+			writeMessage(dest, _dragPosition);
+		}
+	}
 
 	private void writeMessage(final CanvasType dest, final WorldLocation firstEnd) {
 		final Point pt = dest.toScreen(firstEnd);
