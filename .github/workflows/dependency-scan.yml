@@ -58,7 +58,8 @@ jobs:
       - name: Fetch the GeoTools jars
         run: |
           export JAVA_HOME="$JAVA_HOME_21_X64"
-          ./mvnw --version
+          # the first ./mvnw call downloads Maven, and the wrapper does not retry
+          for n in 1 2 3; do ./mvnw --version && break; [ "$n" = 3 ] && exit 1; sleep 15; done
           ./mvnw -B -ntp -pl org.mwc.cmap.geotools.libs generate-resources
 
       - name: Install Syft
