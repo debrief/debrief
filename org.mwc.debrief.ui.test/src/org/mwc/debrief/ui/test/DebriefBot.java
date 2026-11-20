@@ -74,9 +74,37 @@ final class DebriefBot {
 	/** the size of the chart canvas in a screenshot */
 	static final Point CHART_SIZE = new Point(1400, 900);
 
+	/**
+	 * close every editor, unsaved, in every workbench window. Not SWTBot's
+	 * closeAllEditors: that sees only the active window, and under xvfb (no
+	 * window manager) no window may be active after a dialog closes. An editor
+	 * left open makes the next test reuse it, and an unsaved one makes the
+	 * workbench ask "Save changes?" at exit, which nobody answers.
+	 */
 	static void closeAllEditors() {
 		restoreLayout();
-		BOT.closeAllEditors();
+		UIThreadRunnable.syncExec(() -> {
+			for (final IWorkbenchWindow window : PlatformUI.getWorkbench().getWorkbenchWindows()) {
+				for (final IWorkbenchPage page : window.getPages()) {
+					page.closeAllEditors(false);
+				}
+			}
+		});
+	}
+
+	/** the workbench window: the active one, or the first if none is active */
+	static IWorkbenchWindow window() {
+		final IWorkbenchWindow active = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
+		return active != null ? active : PlatformUI.getWorkbench().getWorkbenchWindows()[0];
+	}
+
+	/** make the workbench window active again, as a dialog closing should */
+	static void activateWorkbench() {
+		UIThreadRunnable.syncExec(() -> {
+			final Shell shell = window().getShell();
+			shell.forceActive();
+			shell.setFocus();
+		});
 	}
 
 	/** open a file from the sample data in its editor, and wait for it */
@@ -85,7 +113,7 @@ final class DebriefBot {
 		final AtomicReference<Exception> failure = new AtomicReference<>();
 		UIThreadRunnable.syncExec(() -> {
 			try {
-				final IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
+				final IWorkbenchPage page = window().getActivePage();
 				IDE.openEditor(page, file, true);
 			} catch (final Exception e) {
 				failure.set(e);
@@ -107,7 +135,7 @@ final class DebriefBot {
 		final IFile file = sampleFile(name);
 		UIThreadRunnable.asyncExec(() -> {
 			try {
-				final IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
+				final IWorkbenchPage page = window().getActivePage();
 				IDE.openEditor(page, file, true);
 			} catch (final Exception e) {
 				throw new IllegalStateException(e);
@@ -141,11 +169,11 @@ final class DebriefBot {
 	static BufferedImage captureChart(final SWTBotEditor editor) {
 		final CorePlotEditor plot = plotEditor(editor);
 		UIThreadRunnable.syncExec(() -> {
-			final IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
+			final IWorkbenchPage page = window().getActivePage();
 			page.setPartState(page.getReference(plot), IWorkbenchPage.STATE_MAXIMIZED);
 			// size the window so the canvas is exactly CHART_SIZE, whatever the
 			// workbench's toolbars and borders take
-			final Shell shell = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell();
+			final Shell shell = window().getShell();
 			final Control canvas = plot.getChart().getCanvasControl();
 			for (int i = 0; i < 5; i++) {
 				final Point now = canvas.getSize();
@@ -221,8 +249,8 @@ final class DebriefBot {
 	/** restore any maximised part, so the next test sees the normal layout */
 	static void restoreLayout() {
 		UIThreadRunnable.syncExec(() -> {
-			PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell().setSize(1600, 1200);
-			final IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
+			window().getShell().setSize(1600, 1200);
+			final IWorkbenchPage page = window().getActivePage();
 			if (page.getActivePartReference() != null) {
 				page.setPartState(page.getActivePartReference(), IWorkbenchPage.STATE_RESTORED);
 			}
@@ -233,7 +261,7 @@ final class DebriefBot {
 	static SWTBotView showView(final String id) {
 		UIThreadRunnable.syncExec(() -> {
 			try {
-				PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().showView(id);
+				window().getActivePage().showView(id);
 			} catch (final Exception e) {
 				throw new IllegalStateException(e);
 			}
@@ -295,22 +323,12 @@ final class DebriefBot {
 	 * and the end of the error log, to show what held it up
 	 */
 	static SWTBotEditor editorAfterImport(final String name) {
+		final AtomicReference<IEditorReference> found = new AtomicReference<>();
 		BOT.waitUntil(new DefaultCondition() {
 			@Override
 			public boolean test() {
-				return UIThreadRunnable.syncExec(() -> {
-					// not the active window: there is none while a dialog has focus
-					for (final IWorkbenchWindow window : PlatformUI.getWorkbench().getWorkbenchWindows()) {
-						for (final IWorkbenchPage page : window.getPages()) {
-							for (final IEditorReference ref : page.getEditorReferences()) {
-								if (name.equals(ref.getTitle())) {
-									return true;
-								}
-							}
-						}
-					}
-					return false;
-				});
+				found.set(UIThreadRunnable.syncExec(() -> findEditor(name)));
+				return found.get() != null;
 			}
 
 			@Override
@@ -318,7 +336,31 @@ final class DebriefBot {
 				return "no editor '" + name + "' after its import. " + describeWorkbench();
 			}
 		});
-		return BOT.editorByTitle(name);
+		// SWTBot finds editors only in the active window, and after the import's
+		// dialogs close under xvfb there may be none: wrap the reference directly
+		activateWorkbench();
+		final SWTBotEditor editor = new SWTBotEditor(found.get(), BOT);
+		editor.setFocus();
+		return editor;
+	}
+
+	/**
+	 * the editor with this title in any workbench window (not the active one:
+	 * there is none while a dialog has focus), once its part exists; or null.
+	 * The reference and its title appear before the import finishes creating
+	 * the editor.
+	 */
+	private static IEditorReference findEditor(final String name) {
+		for (final IWorkbenchWindow window : PlatformUI.getWorkbench().getWorkbenchWindows()) {
+			for (final IWorkbenchPage page : window.getPages()) {
+				for (final IEditorReference ref : page.getEditorReferences()) {
+					if (name.equals(ref.getTitle()) && ref.getEditor(false) != null) {
+						return ref;
+					}
+				}
+			}
+		}
+		return null;
 	}
 
 	/** the open shells and editors, and the end of the error log */
@@ -407,7 +449,7 @@ final class DebriefBot {
 	static SWTBotView outline() {
 		UIThreadRunnable.syncExec(() -> {
 			try {
-				PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage()
+				window().getActivePage()
 						.showView("org.eclipse.ui.views.ContentOutline");
 			} catch (final Exception e) {
 				throw new IllegalStateException(e);
@@ -428,7 +470,7 @@ final class DebriefBot {
 		UIThreadRunnable.syncExec(() -> {
 			PlatformUI.getWorkbench().getIntroManager()
 					.closeIntro(PlatformUI.getWorkbench().getIntroManager().getIntro());
-			PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell().setSize(1600, 1200);
+			window().getShell().setSize(1600, 1200);
 		});
 
 		final IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();

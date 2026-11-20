@@ -22,7 +22,6 @@ import org.eclipse.swtbot.eclipse.finder.widgets.SWTBotView;
 import org.eclipse.swtbot.swt.finder.finders.UIThreadRunnable;
 import org.eclipse.swtbot.swt.finder.junit5.SWTBotJunit5Extension;
 import org.eclipse.ui.IWorkbenchPage;
-import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.ide.IDE;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
@@ -56,7 +55,7 @@ public class ActivateEditorTest {
 		// open the plot behind the Time Controller, without activating it
 		UIThreadRunnable.syncExec(() -> {
 			try {
-				IDE.openEditor(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage(), file, false);
+				IDE.openEditor(DebriefBot.window().getActivePage(), file, false);
 			} catch (final Exception e) {
 				throw new IllegalStateException(e);
 			}
@@ -65,7 +64,7 @@ public class ActivateEditorTest {
 		assertTrue(TimeStepTest.timeShown(time).startsWith("-----"), "the Time Controller is not attached yet: " + TimeStepTest.timeShown(time));
 
 		UIThreadRunnable.syncExec(() -> {
-			final IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
+			final IWorkbenchPage page = DebriefBot.window().getActivePage();
 			Startup.activateCurrentEditor(page);
 		});
 		DebriefBot.waitFor(() -> "95/12/12 05:00".equals(TimeStepTest.timeShown(time)),
