@@ -374,6 +374,8 @@ jobs:
   lite-ui-tests:
     name: Debrief Lite UI tests
     needs: changes
+    # a UI test left waiting on a dialog would otherwise hold the runner for 6 hours
+    timeout-minutes: 30
     if: needs.changes.outputs.software == 'true'
     runs-on: ubuntu-24.04
     permissions:
@@ -449,6 +451,8 @@ jobs:
   rcp-ui-tests:
     name: Debrief NG UI tests
     needs: changes
+    # a UI test left waiting on a dialog would otherwise hold the runner for 6 hours
+    timeout-minutes: 30
     if: needs.changes.outputs.software == 'true'
     runs-on: ubuntu-24.04
     permissions:

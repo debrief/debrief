@@ -157,7 +157,7 @@ All of the following hold:
 - **API change. Done** (PR B). `org.opengis` → `org.geotools.api` and JAI → Eclipse ImageN, by class name; `DirectPosition2D` → `Position2D`; `Envelope2D`, which GeoTools removed, → `ReferencedEnvelope` or `Rectangle2D`.
 - ~~**Align** `gt-jdbc-spatialite`~~: removed earlier with Pepys.
 - **Drop the GeoTools pins. Done.** commons-text and hsqldb now come at the versions GeoTools 35.2 asks for.
-- **Found on the way:** Debrief's GPX and DIS code used JAXB 2, which only the GeoTools 21 jars supplied. The libs module now names it; moving it to the plugins that use it is a follow-up.
+- **Found on the way:** Debrief's GPX and DIS code used JAXB 2, which only the GeoTools 21 jars supplied. **Moved. Done:** `org.mwc.debrief.thirdparty` fetches it (jaxb-api 2.3.1, jaxb-impl 2.3.9) into `org.mwc.debrief.core`, which exports `javax.xml.bind` for the DIS plugin and takes `javax.activation` from the target platform. Lite and the GeoTools bundle no longer carry it.
 - **Acceptance:** the screenshot diffs (Lite's `MapRenderingTest` and Debrief NG's `MapScreenshotTest`) are within tolerance; coordinates are within 1 m when projected and transformed back on the sample plots; and the full verification list passes. The coordinate check is ready: `ProjectionAccuracyTest` in Lite's headless tests (round trip within 1 m, agreement with an independent EPSG:3395 formula within 1 m, and a screen round trip within one pixel, for every fix in `sample.dpf`, `boat1.rep` and `uk_track.rep`).
 
 ## Phase D2: Lite UI libraries (after Gate D; can run in parallel with D1)
