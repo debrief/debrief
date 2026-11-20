@@ -48,6 +48,7 @@ build fetches them instead.
 | `org.mwc.cmap.legacy` | POI 5.5.1 (poi, poi-ooxml, poi-ooxml-lite, poi-scratchpad); xmlbeans 5.3.0; commons-codec 1.20.0, collections4 4.5.0, compress 1.28.0, csv 1.2, io 2.22.0, lang3 3.21.0, math3 3.6.1; curvesapi 1.08; SparseBitSet 1.3; log4j-api 2.26.1; Jackson 2.22.4 (annotations 2.22); joda-time 2.1 (junit 4.13.2 and hamcrest-core 1.3 were removed in Phase E) |
 | `org.mwc.cmap.core` | xstream 1.4.21 (mockito-all was removed in Phase E) |
 | `org.mwc.cmap.jfreechart` | jfreechart 1.0.19; jcommon 1.0.23 |
+| `org.mwc.debrief.core` | JAXB 2: jaxb-api 2.3.1, jaxb-impl 2.3.9 (exported for the DIS plugin; `javax.activation` comes from the target platform) |
 
 Notes on `org.mwc.debrief.legacy`:
 
@@ -81,10 +82,9 @@ mvn -pl org.mwc.cmap.geotools.libs generate-resources
 python3 .github/scripts/geotools_manifest.py
 ```
 
-CI runs the script with `--check`. The module also fetches JAXB 2
-(`javax.xml.bind`), which is not GeoTools: Debrief's GPX code in
-`debrief.core` and the DIS plugin use it, and they used to get it from the
-GeoTools 21 jars.
+CI runs the script with `--check`. JAXB 2 (`javax.xml.bind`), which
+Debrief's GPX code and the DIS plugin use and which used to come with the
+GeoTools 21 jars, is fetched into `org.mwc.debrief.core` instead (table above).
 
 Test-only: JUnit 6 (`junit.version` in the root pom) is a test-scope dependency of every plugin, for its `test/` folder, and `org.mwc.debrief.thirdparty` copies the JUnit API jars into `org.mwc.debrief.lite/test-libs/` for Lite's Ant-built tests. None of them is shipped.
 

@@ -69,14 +69,6 @@
     <dependency><groupId>org.geotools</groupId><artifactId>gt-swing</artifactId><version>${geotools.version}</version></dependency>
     <dependency><groupId>org.geotools</groupId><artifactId>gt-xml</artifactId><version>${geotools.version}</version></dependency>
     <dependency><groupId>org.geotools</groupId><artifactId>gt-cql</artifactId><version>${geotools.version}</version></dependency>
-    <!-- Not GeoTools: JAXB 2 (javax.xml.bind) for Debrief's own GPX code in
-         org.mwc.debrief.core and the DIS plugin. The old GeoTools 21 jars
-         brought it, and those plugins got it from this bundle's exports;
-         GeoTools 35 uses JAXB 4 (jakarta.xml.bind) instead. These coordinates
-         don't clash with GeoTools' JAXB 4 artifacts. To move to the plugins
-         that use it. -->
-    <dependency><groupId>javax.xml.bind</groupId><artifactId>jaxb-api</artifactId><version>2.3.1</version></dependency>
-    <dependency><groupId>com.sun.xml.bind</groupId><artifactId>jaxb-impl</artifactId><version>2.3.9</version></dependency>
   </dependencies>
 
   <build>

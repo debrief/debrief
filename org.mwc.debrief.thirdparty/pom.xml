@@ -321,6 +321,22 @@
       <version>1.0.19</version>
       <exclusions><exclusion><groupId>*</groupId><artifactId>*</artifactId></exclusion></exclusions>
     </dependency>
+    <!-- JAXB 2 (javax.xml.bind) for org.mwc.debrief.core's GPX code (with
+         EclipseLink MOXy as the provider) and the DIS plugin, which imports
+         it from org.mwc.debrief.core. GeoTools 35 uses JAXB 4 (jakarta.*).
+         javax.activation comes from the target platform's bundle. -->
+    <dependency>
+      <groupId>javax.xml.bind</groupId>
+      <artifactId>jaxb-api</artifactId>
+      <version>2.3.1</version>
+      <exclusions><exclusion><groupId>*</groupId><artifactId>*</artifactId></exclusion></exclusions>
+    </dependency>
+    <dependency>
+      <groupId>com.sun.xml.bind</groupId>
+      <artifactId>jaxb-impl</artifactId>
+      <version>2.3.9</version>
+      <exclusions><exclusion><groupId>*</groupId><artifactId>*</artifactId></exclusion></exclusions>
+    </dependency>
   </dependencies>
 
   <build>
@@ -408,6 +424,19 @@
               <overWriteReleases>true</overWriteReleases>
               <artifactItems>
                 <artifactItem><groupId>com.thoughtworks.xstream</groupId><artifactId>xstream</artifactId><destFileName>xstream.jar</destFileName></artifactItem>
+              </artifactItems>
+            </configuration>
+          </execution>
+          <execution>
+            <id>org.mwc.debrief.core</id>
+            <phase>generate-resources</phase>
+            <goals><goal>copy</goal></goals>
+            <configuration>
+              <outputDirectory>${project.basedir}/../org.mwc.debrief.core</outputDirectory>
+              <overWriteReleases>true</overWriteReleases>
+              <artifactItems>
+                <artifactItem><groupId>javax.xml.bind</groupId><artifactId>jaxb-api</artifactId><destFileName>jaxb-api.jar</destFileName></artifactItem>
+                <artifactItem><groupId>com.sun.xml.bind</groupId><artifactId>jaxb-impl</artifactId><destFileName>jaxb-impl.jar</destFileName></artifactItem>
               </artifactItems>
             </configuration>
           </execution>

@@ -8,9 +8,7 @@
 	<classpathentry exported="true" kind="lib" path="com.google.j2objc.j2objc-annotations.jar"/>
 	<classpathentry exported="true" kind="lib" path="com.google.re2j.re2j.jar"/>
 	<classpathentry exported="true" kind="lib" path="com.miglayout.miglayout-swing.jar"/>
-	<classpathentry exported="true" kind="lib" path="com.sun.activation.jakarta.activation.jar"/>
 	<classpathentry exported="true" kind="lib" path="com.sun.istack.istack-commons-runtime.jar"/>
-	<classpathentry exported="true" kind="lib" path="com.sun.xml.bind.jaxb-impl.jar"/>
 	<classpathentry exported="true" kind="lib" path="commons-pool.commons-pool.jar"/>
 	<classpathentry exported="true" kind="lib" path="io.airlift.aircompressor.jar"/>
 	<classpathentry exported="true" kind="lib" path="it.geosolutions.imageio-ext.imageio-ext-cog-commons.jar"/>
@@ -25,9 +23,7 @@
 	<classpathentry exported="true" kind="lib" path="jakarta.annotation.jakarta.annotation-api.jar"/>
 	<classpathentry exported="true" kind="lib" path="jakarta.inject.jakarta.inject-api.jar"/>
 	<classpathentry exported="true" kind="lib" path="jakarta.xml.bind.jakarta.xml.bind-api.jar"/>
-	<classpathentry exported="true" kind="lib" path="javax.activation.javax.activation-api.jar"/>
 	<classpathentry exported="true" kind="lib" path="javax.measure.unit-api.jar"/>
-	<classpathentry exported="true" kind="lib" path="javax.xml.bind.jaxb-api.jar"/>
 	<classpathentry exported="true" kind="lib" path="net.sf.geographiclib.GeographicLib-Java.jar"/>
 	<classpathentry exported="true" kind="lib" path="org.apache.commons.commons-text.jar"/>
 	<classpathentry exported="true" kind="lib" path="org.apache.xml.xml-commons-resolver.jar"/>
