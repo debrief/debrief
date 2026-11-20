@@ -1187,7 +1187,7 @@ public class OutlinePanelView extends SwingLayerManager implements ClipboardOwne
 			}
 		}
 
-	};
+	}
 
 	private void restoreCutContents() {
 		final Transferable tr = _cutContents;
@@ -1261,7 +1261,7 @@ public class OutlinePanelView extends SwingLayerManager implements ClipboardOwne
 				}
 			}
 		}
-	};
+	}
 
 
 }
