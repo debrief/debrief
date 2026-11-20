@@ -20,6 +20,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.lang.reflect.Method;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BooleanSupplier;
@@ -29,6 +30,7 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.ImageData;
@@ -47,7 +49,9 @@ import org.eclipse.swtbot.swt.finder.waits.DefaultCondition;
 import org.eclipse.swtbot.swt.finder.widgets.SWTBotTreeItem;
 import org.eclipse.swtbot.swt.finder.widgets.SWTBotShell;
 import org.eclipse.swtbot.swt.finder.widgets.SWTBotToolbarButton;
+import org.eclipse.ui.IEditorReference;
 import org.eclipse.ui.IWorkbenchPage;
+import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.ide.IDE;
 import org.mwc.cmap.plotViewer.editors.CorePlotEditor;
@@ -283,6 +287,67 @@ final class DebriefBot {
 				.orElseThrow(() -> new IllegalStateException("No Outline tool \"" + tooltip + "\""));
 		waitFor(button::isEnabled, "Outline tool \"" + tooltip + "\" was not enabled");
 		button.click();
+	}
+
+	/**
+	 * the editor that {@link #openSampleAsync} opened, once its import finishes;
+	 * if it doesn't appear, the failure lists the open shells, the open editors
+	 * and the end of the error log, to show what held it up
+	 */
+	static SWTBotEditor editorAfterImport(final String name) {
+		BOT.waitUntil(new DefaultCondition() {
+			@Override
+			public boolean test() {
+				return UIThreadRunnable.syncExec(() -> {
+					// not the active window: there is none while a dialog has focus
+					for (final IWorkbenchWindow window : PlatformUI.getWorkbench().getWorkbenchWindows()) {
+						for (final IWorkbenchPage page : window.getPages()) {
+							for (final IEditorReference ref : page.getEditorReferences()) {
+								if (name.equals(ref.getTitle())) {
+									return true;
+								}
+							}
+						}
+					}
+					return false;
+				});
+			}
+
+			@Override
+			public String getFailureMessage() {
+				return "no editor '" + name + "' after its import. " + describeWorkbench();
+			}
+		});
+		return BOT.editorByTitle(name);
+	}
+
+	/** the open shells and editors, and the end of the error log */
+	static String describeWorkbench() {
+		final StringBuilder res = new StringBuilder();
+		UIThreadRunnable.syncExec(() -> {
+			res.append("Shells:");
+			for (final Shell shell : Display.getDefault().getShells()) {
+				res.append(" [").append(shell.getText()).append(shell.isVisible() ? "" : " (hidden)")
+						.append(shell == Display.getDefault().getActiveShell() ? " (active)" : "").append(']');
+			}
+			res.append(". Editors:");
+			for (final IWorkbenchWindow window : PlatformUI.getWorkbench().getWorkbenchWindows()) {
+				for (final IWorkbenchPage page : window.getPages()) {
+					for (final IEditorReference ref : page.getEditorReferences()) {
+						res.append(" [").append(ref.getTitle()).append(']');
+					}
+				}
+			}
+			res.append(". Active window: ").append(PlatformUI.getWorkbench().getActiveWorkbenchWindow() != null);
+		});
+		res.append(". Error log ends:\n");
+		try {
+			final List<String> lines = Files.readAllLines(Platform.getLogFileLocation().toFile().toPath());
+			res.append(String.join("\n", lines.subList(Math.max(0, lines.size() - 40), lines.size())));
+		} catch (final Exception e) {
+			res.append("(no log: ").append(e).append(')');
+		}
+		return res.toString();
 	}
 
 	/** wait, up to SWTBot's timeout, until the check holds */
