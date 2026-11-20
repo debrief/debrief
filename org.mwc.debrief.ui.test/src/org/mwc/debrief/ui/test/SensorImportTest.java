@@ -55,7 +55,7 @@ public class SensorImportTest {
 	void importSensorData() throws Exception {
 		DebriefBot.openSampleAsync("sen_tracks.rep");
 		DebriefBot.answerTrackMode(true, 2);
-		final SWTBotEditor editor = DebriefBot.BOT.editorByTitle("sen_tracks.rep");
+		final SWTBotEditor editor = DebriefBot.editorAfterImport("sen_tracks.rep");
 		assertEquals(List.of("Track:Frigate", "Track:New_SSK"), DebriefBot.outlineLabels(), "the tracks of sen_tracks.rep");
 		final TrackWrapper frigate = (TrackWrapper) DebriefBot.layers(editor).findLayer("Frigate");
 		assertEquals(0, sensorCount(frigate), "the frigate starts with no sensors");

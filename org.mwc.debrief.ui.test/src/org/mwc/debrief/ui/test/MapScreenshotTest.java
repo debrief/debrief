@@ -62,7 +62,7 @@ public class MapScreenshotTest {
 	void repTrack() throws Exception {
 		DebriefBot.openSampleAsync("boat1.rep");
 		DebriefBot.answerTrackMode(true, 1);
-		final BufferedImage image = DebriefBot.captureChart(DebriefBot.BOT.editorByTitle("boat1.rep"));
+		final BufferedImage image = DebriefBot.captureChart(DebriefBot.editorAfterImport("boat1.rep"));
 		GoldenImage.assertMatches("rcp/boat1_rep.png", image, CHANNEL_TOLERANCE, MAX_DIFFERENT);
 	}
 }

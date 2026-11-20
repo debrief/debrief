@@ -52,6 +52,12 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v7
 
+      - name: Cache the pinned Maven
+        uses: actions/cache@v6
+        with:
+          path: ~/.m2/wrapper
+          key: maven-dist-${{ hashFiles('.mvn/wrapper/maven-wrapper.properties') }}
+
       # GeoTools and its ~100 runtime jars are fetched, not committed: fetch
       # them so Syft sees each jar (the pom lists only the direct modules).
       # Uses the runner's JDK 21 and the Maven wrapper's pinned Maven.

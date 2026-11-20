@@ -25,6 +25,7 @@ import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
+import java.awt.Taskbar;
 import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.DataFlavor;
@@ -829,8 +830,14 @@ public class DebriefLiteApp implements FileDropListener {
 
 		// lastly give us some backdrop data
 		loadBackdropdata(_theLayers);
-		theFrame.setApplicationIcon(ResizableIconFactory.factory(
-				ScaledImageIcon.getIcon(MenuUtils.createImage("icons/d_lite.png"), MenuUtils.ICON_SIZE_32)));
+		// Radiance 9's setApplicationIcon also sets the OS taskbar icon, calling
+		// Taskbar.getTaskbar() without checking that the platform has one: on most
+		// Linux desktops that throws on the event thread. The window icon below is
+		// set either way.
+		if (Taskbar.isTaskbarSupported()) {
+			theFrame.setApplicationIcon(ResizableIconFactory.factory(
+					ScaledImageIcon.getIcon(MenuUtils.createImage("icons/d_lite.png"), MenuUtils.ICON_SIZE_32)));
+		}
 		theFrame.setIconImage(new ImageIcon(ClassLoader.getSystemResource("icons/d_lite.png")).getImage());
 		theFrame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 		theFrame.setVisible(true);

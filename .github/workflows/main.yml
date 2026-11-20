@@ -121,6 +121,12 @@ jobs:
       # resolve tycho-maven-plugin or EMF's version range from Central.
       # The first ./mvnw call downloads the pinned Maven from Central; the
       # wrapper does not retry, so a network blip would fail the whole job
+      # Keep the pinned Maven itself, so most jobs don't download it at all
+      - name: Cache the pinned Maven
+        uses: actions/cache@v6
+        with:
+          path: ~/.m2/wrapper
+          key: maven-dist-${{ hashFiles('.mvn/wrapper/maven-wrapper.properties') }}
       - name: Fetch the pinned Maven
         run: |
           # Central's outages last a minute or two: back off 15, 30, 45, 60 s
@@ -384,6 +390,12 @@ jobs:
           java-version: '21'
       # The first ./mvnw call downloads the pinned Maven from Central; the
       # wrapper does not retry, so a network blip would fail the whole job
+      # Keep the pinned Maven itself, so most jobs don't download it at all
+      - name: Cache the pinned Maven
+        uses: actions/cache@v6
+        with:
+          path: ~/.m2/wrapper
+          key: maven-dist-${{ hashFiles('.mvn/wrapper/maven-wrapper.properties') }}
       - name: Fetch the pinned Maven
         run: |
           # Central's outages last a minute or two: back off 15, 30, 45, 60 s
@@ -453,6 +465,12 @@ jobs:
           java-version: '21'
       # The first ./mvnw call downloads the pinned Maven from Central; the
       # wrapper does not retry, so a network blip would fail the whole job
+      # Keep the pinned Maven itself, so most jobs don't download it at all
+      - name: Cache the pinned Maven
+        uses: actions/cache@v6
+        with:
+          path: ~/.m2/wrapper
+          key: maven-dist-${{ hashFiles('.mvn/wrapper/maven-wrapper.properties') }}
       - name: Fetch the pinned Maven
         run: |
           # Central's outages last a minute or two: back off 15, 30, 45, 60 s

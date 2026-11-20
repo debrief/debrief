@@ -45,7 +45,7 @@ public class ImportRepTest {
 	void importOverTheGround() throws Exception {
 		DebriefBot.openSampleAsync("boat1.rep");
 		DebriefBot.answerTrackMode(true, 1);
-		DebriefBot.BOT.editorByTitle("boat1.rep").setFocus();
+		DebriefBot.editorAfterImport("boat1.rep").setFocus();
 
 		final List<String> labels = DebriefBot.outlineLabels();
 		System.out.println("Outline of boat1.rep: " + labels);
