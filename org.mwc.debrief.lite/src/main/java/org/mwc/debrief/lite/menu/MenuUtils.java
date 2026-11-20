@@ -29,7 +29,6 @@ import org.mwc.debrief.lite.util.ResizableIconFactory;
 import org.pushingpixels.radiance.theming.api.RadianceThemingSlices.IconFilterStrategy;
 import org.pushingpixels.radiance.component.api.common.CommandAction;
 import org.pushingpixels.radiance.component.api.common.CommandButtonPresentationState;
-import org.pushingpixels.radiance.component.api.common.JCommandButton;
 import org.pushingpixels.radiance.component.api.common.RichTooltip;
 import org.mwc.debrief.lite.util.ScaledImageIcon;
 import org.pushingpixels.radiance.component.api.common.model.Command;
@@ -93,15 +92,14 @@ public class MenuUtils {
 		final String desc = description != null ? description : "Description pending";
 		final RichTooltip richTooltip = RichTooltip.builder().setTitle(commandName).addDescriptionSection(desc)
 				.build();
-		final CommandButtonProjection<Command> projectionModel = createCommand(commandName, imagePath, actionToAdd,
-				richTooltip);
-		final JCommandButton commandButton = new JCommandButton(projectionModel);
-		commandButton.setName(commandName);
-		commandButton.addCommandListener(actionToAdd);
+		final Command command = createCommand(commandName, imagePath, actionToAdd, richTooltip).getContentModel();
+		// the presentation state belongs on the projection: a flow band shows the
+		// button as its projection says (Radiance 9 defaults to icon only)
+		final CommandButtonPresentationModel.Builder presentation = buttonPresentation().setActionKeyTip("NA");
 		if (priority != null) {
-			commandButton.setPresentationState(priority);
+			presentation.setPresentationState(priority);
 		}
-		return projectionModel;
+		return command.project(presentation.build());
 	}
 
 	/*
