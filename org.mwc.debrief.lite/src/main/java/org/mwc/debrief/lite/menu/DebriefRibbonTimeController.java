@@ -494,8 +494,11 @@ public class DebriefRibbonTimeController {
 
 		final JPopupMenu menu = new JPopupMenu();
 
+		// MEDIUM (icon beside its label): the two-row flow band gives a BIG button
+		// (icon above label) about half its height in Radiance 9, which clips the
+		// label off, and SMALL shows the icon only
 		formatCommandButton = MenuUtils.addCommandButton("Format", "icons/24/time_config.png",
-				new ShowFormatAction(menu), CommandButtonPresentationState.SMALL, "Format time control");
+				new ShowFormatAction(menu), CommandButtonPresentationState.MEDIUM, "Format time control");
 		formatCommandButton.getContentModel().setActionEnabled(false);
 		_menuItem = new JCheckBoxMenuItem[timeFormats.length];
 		for (int i = 0; i < timeFormats.length; i++) {
