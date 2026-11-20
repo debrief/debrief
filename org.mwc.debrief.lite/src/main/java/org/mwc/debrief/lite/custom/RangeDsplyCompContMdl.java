@@ -19,10 +19,10 @@ import java.awt.Color;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 
-import org.pushingpixels.flamingo.api.common.RichTooltip;
-import org.pushingpixels.flamingo.api.ribbon.synapse.model.ComponentContentModel;
-import org.pushingpixels.neon.api.icon.ResizableIcon;
-import org.pushingpixels.neon.api.icon.ResizableIcon.Factory;
+import org.pushingpixels.radiance.component.api.common.RichTooltip;
+import org.pushingpixels.radiance.component.api.ribbon.synapse.model.ComponentContentModel;
+import org.pushingpixels.radiance.common.api.icon.RadianceIcon;
+import org.pushingpixels.radiance.common.api.icon.RadianceIcon.Factory;
 
 /**
  * @author Ayesha
@@ -32,7 +32,7 @@ public class RangeDsplyCompContMdl implements ComponentContentModel {
 
 	public static class Builder {
 		private final boolean isEnabled = true;
-		private ResizableIcon.Factory iconFactory;
+		private RadianceIcon.Factory iconFactory;
 		private String caption;
 		private RichTooltip richTooltip;
 		private String minValueText;
@@ -88,7 +88,7 @@ public class RangeDsplyCompContMdl implements ComponentContentModel {
 	}
 
 	private boolean isEnabled;
-	private ResizableIcon.Factory iconFactory;
+	private RadianceIcon.Factory iconFactory;
 	private String caption;
 	private String minValueText;
 	private String maxValueText;

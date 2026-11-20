@@ -30,8 +30,8 @@ import org.geotools.api.referencing.FactoryException;
 import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
 import org.geotools.api.referencing.operation.MathTransform;
 import org.geotools.api.referencing.operation.TransformException;
-import org.pushingpixels.flamingo.api.common.CommandAction;
-import org.pushingpixels.flamingo.api.common.CommandActionEvent;
+import org.pushingpixels.radiance.component.api.common.CommandAction;
+import org.pushingpixels.radiance.component.api.common.CommandActionEvent;
 
 import Debrief.GUI.Frames.Application;
 import MWC.Algorithms.PlainProjection;

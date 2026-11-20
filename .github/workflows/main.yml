@@ -119,8 +119,18 @@ jobs:
       # The build uses the Maven wrapper's pinned version (.mvn/wrapper), not
       # the runner image's Maven, which changes without notice: 3.10.1 could not
       # resolve tycho-maven-plugin or EMF's version range from Central.
-      - name: Show Maven version
-        run: ./mvnw --version
+      # The first ./mvnw call downloads the pinned Maven from Central; the
+      # wrapper does not retry, so a network blip would fail the whole job
+      - name: Fetch the pinned Maven
+        run: |
+          # Central's outages last a minute or two: back off 15, 30, 45, 60 s
+          for n in 1 2 3 4 5; do
+            ./mvnw --version && exit 0
+            echo "::warning::[attempt ${n}/5] the Maven wrapper could not fetch Maven"
+            [ "$n" = 5 ] || sleep $((15 * n))
+          done
+          echo "::error::the Maven wrapper could not fetch Maven after 5 attempts"
+          exit 1
 
       # Tycho otherwise re-resolves the whole Eclipse target platform from
       # remote P2 sites on every run. Restore only: Actions caches are
@@ -372,6 +382,18 @@ jobs:
         with:
           distribution: temurin
           java-version: '21'
+      # The first ./mvnw call downloads the pinned Maven from Central; the
+      # wrapper does not retry, so a network blip would fail the whole job
+      - name: Fetch the pinned Maven
+        run: |
+          # Central's outages last a minute or two: back off 15, 30, 45, 60 s
+          for n in 1 2 3 4 5; do
+            ./mvnw --version && exit 0
+            echo "::warning::[attempt ${n}/5] the Maven wrapper could not fetch Maven"
+            [ "$n" = 5 ] || sleep $((15 * n))
+          done
+          echo "::error::the Maven wrapper could not fetch Maven after 5 attempts"
+          exit 1
       - name: Restore Maven / Tycho cache
         uses: actions/cache/restore@v6
         with:
@@ -429,6 +451,18 @@ jobs:
         with:
           distribution: temurin
           java-version: '21'
+      # The first ./mvnw call downloads the pinned Maven from Central; the
+      # wrapper does not retry, so a network blip would fail the whole job
+      - name: Fetch the pinned Maven
+        run: |
+          # Central's outages last a minute or two: back off 15, 30, 45, 60 s
+          for n in 1 2 3 4 5; do
+            ./mvnw --version && exit 0
+            echo "::warning::[attempt ${n}/5] the Maven wrapper could not fetch Maven"
+            [ "$n" = 5 ] || sleep $((15 * n))
+          done
+          echo "::error::the Maven wrapper could not fetch Maven after 5 attempts"
+          exit 1
       - name: Restore Maven / Tycho cache
         uses: actions/cache/restore@v6
         with:

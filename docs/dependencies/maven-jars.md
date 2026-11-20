@@ -61,7 +61,7 @@ Notes on `org.mwc.debrief.legacy`:
 
 Notes on `org.mwc.cmap.jfreechart`: the committed `jfreechart-1.0.19.jar` was Central's build plus three demo classes (`org.jfree.chart.demo`), which nothing used. The other 635 classes were byte-identical. The demo package's export is gone.
 
-All four plugins planned for Phase B are done.
+All four plugins planned for Phase B are done. Since Phase D2, `org.mwc.debrief.lite` takes Radiance (`radiance.version`) the same way.
 
 `cmap.geotools` (Phase D1) has its own module, `org.mwc.cmap.geotools.libs`,
 because GeoTools is published to the OSGeo repository

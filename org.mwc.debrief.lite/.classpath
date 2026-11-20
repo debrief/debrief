@@ -12,11 +12,12 @@
 			<attribute name="maven.pomderived" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="radiance-flamingo-3.0.0.jar" sourcepath="C:/tmp-debrief/radiance-2.5.1/radiance-2.5.1/flamingo/build/libs/radiance-2.5.1-sources.jar"/>
-	<classpathentry kind="lib" path="radiance-neon-3.0.0.jar" sourcepath="C:/tmp-debrief/radiance-2.5.1/radiance-2.5.1/neon/build/libs/radiance-2.5.1-sources.jar"/>
-	<classpathentry kind="lib" path="radiance-substance-3.0.0.jar" sourcepath="C:/tmp-debrief/radiance-2.5.1/radiance-2.5.1/substance/build/libs/radiance-2.5.1-sources.jar"/>
-	<classpathentry kind="lib" path="radiance-substance-extras-3.0.0.jar"/>
-	<classpathentry kind="lib" path="radiance-trident-3.0.0.jar"/>
+	<classpathentry kind="lib" path="radiance-common.jar"/>
+	<classpathentry kind="lib" path="radiance-animation.jar"/>
+	<classpathentry kind="lib" path="radiance-theming.jar"/>
+	<classpathentry kind="lib" path="radiance-theming-extras.jar"/>
+	<classpathentry kind="lib" path="radiance-component.jar"/>
+	<classpathentry kind="lib" path="ephemeral-chroma-java.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-21">
 		<attributes>
 			<attribute name="module" value="true"/>

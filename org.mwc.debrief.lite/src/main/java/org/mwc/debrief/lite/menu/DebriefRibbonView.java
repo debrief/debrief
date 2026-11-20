@@ -44,24 +44,24 @@ import org.mwc.debrief.lite.map.RangeBearingTool;
 import org.mwc.debrief.lite.util.ResizableIconFactory;
 import org.mwc.debrief.lite.view.actions.PanCommandAction;
 import org.geotools.api.referencing.operation.MathTransform;
-import org.pushingpixels.flamingo.api.common.CommandAction;
-import org.pushingpixels.flamingo.api.common.CommandActionEvent;
-import org.pushingpixels.flamingo.api.common.RichTooltip;
+import org.pushingpixels.radiance.component.api.common.CommandAction;
+import org.pushingpixels.radiance.component.api.common.CommandActionEvent;
+import org.pushingpixels.radiance.component.api.common.RichTooltip;
 import org.mwc.debrief.lite.util.ScaledImageIcon;
-import org.pushingpixels.flamingo.api.common.model.Command;
-import org.pushingpixels.flamingo.api.common.model.CommandButtonPresentationModel;
-import org.pushingpixels.flamingo.api.common.model.CommandGroup;
-import org.pushingpixels.flamingo.api.common.model.CommandMenuContentModel;
-import org.pushingpixels.flamingo.api.common.model.CommandToggleGroupModel;
-import org.pushingpixels.flamingo.api.common.projection.CommandButtonProjection;
-import org.pushingpixels.flamingo.api.common.projection.Projection;
-import org.pushingpixels.flamingo.api.common.projection.Projection.ComponentSupplier;
-import org.pushingpixels.flamingo.api.ribbon.JRibbon;
-import org.pushingpixels.flamingo.api.ribbon.JRibbonBand;
-import org.pushingpixels.flamingo.api.ribbon.JRibbonBand.PresentationPriority;
-import org.pushingpixels.flamingo.api.ribbon.RibbonTask;
-import org.pushingpixels.flamingo.api.ribbon.synapse.model.ComponentPresentationModel;
-import org.pushingpixels.flamingo.api.ribbon.synapse.projection.ComponentProjection;
+import org.pushingpixels.radiance.component.api.common.model.Command;
+import org.pushingpixels.radiance.component.api.common.model.CommandButtonPresentationModel;
+import org.pushingpixels.radiance.component.api.common.model.CommandGroup;
+import org.pushingpixels.radiance.component.api.common.model.CommandMenuContentModel;
+import org.pushingpixels.radiance.component.api.common.model.CommandToggleGroupModel;
+import org.pushingpixels.radiance.component.api.common.projection.CommandButtonProjection;
+import org.pushingpixels.radiance.component.api.common.projection.Projection;
+import org.pushingpixels.radiance.component.api.common.projection.Projection.ComponentSupplier;
+import org.pushingpixels.radiance.component.api.ribbon.JRibbon;
+import org.pushingpixels.radiance.component.api.ribbon.JRibbonBand;
+import org.pushingpixels.radiance.component.api.ribbon.JRibbonBand.PresentationPriority;
+import org.pushingpixels.radiance.component.api.ribbon.RibbonTask;
+import org.pushingpixels.radiance.component.api.ribbon.synapse.model.ComponentPresentationModel;
+import org.pushingpixels.radiance.component.api.ribbon.synapse.projection.ComponentProjection;
 
 import MWC.Algorithms.PlainProjection;
 import MWC.GUI.Layers;
@@ -166,8 +166,8 @@ public class DebriefRibbonView {
 						.setAction(rangeAction)
 						.setToggle().inToggleGroup(mouseModeGroup)
 						.setActionRichTooltip(RichTooltip.builder().setTitle("Select Range Bearing").build())
-						.setSecondaryContentModel(popupMenuContentModel).build().project(CommandButtonPresentationModel
-								.builder().setPopupKeyTip("X").setTextClickAction().build());
+						.setSecondaryContentModel(popupMenuContentModel).build().project(MenuUtils
+								.buttonPresentation().setPopupKeyTip("X").setTextClick(CommandButtonPresentationModel.TextClick.ACTION).build());
 		final CommandAction changeUnits = new CommandAction() {
 			
 			@Override

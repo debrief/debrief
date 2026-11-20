@@ -37,9 +37,9 @@ import org.mwc.debrief.lite.gui.custom.JXCollapsiblePaneWithTitle;
 import org.mwc.debrief.lite.menu.DebriefRibbonFile;
 import org.mwc.debrief.lite.utils.TestUtils;
 import org.junit.jupiter.api.Test;
-import org.pushingpixels.flamingo.api.common.JCommandButton;
-import org.pushingpixels.flamingo.api.ribbon.JRibbonFrame;
-import org.pushingpixels.flamingo.internal.ui.ribbon.JBandControlPanel;
+import org.pushingpixels.radiance.component.api.common.JCommandButton;
+import org.pushingpixels.radiance.component.api.ribbon.JRibbonFrame;
+import org.pushingpixels.radiance.component.internal.ui.ribbon.JBandControlPanel;
 
 import Debrief.Wrappers.TrackWrapper;
 import MWC.GUI.Plottable;
@@ -507,7 +507,8 @@ public class TestFileRibbon extends BaseTestCase
     JFrame ribbonFrame = DebriefLiteApp.getInstance().getApplicationFrame();
     //wait for file chooser dialog
     JFileChooser fc=null;
-    final File file = new File("../org.mwc.cmap.combined.feature/root_installs/sample_data/sample.dpf").getAbsoluteFile();
+    // open a copy: the test saves the plot, which must not overwrite the shipped sample
+    final File file = copyToTempFolder(new File("../org.mwc.cmap.combined.feature/root_installs/sample_data/sample.dpf"));
     for(int i=0;fc == null;++i) {
 
     // wait for window to open and confirm it is open
@@ -726,4 +727,21 @@ public class TestFileRibbon extends BaseTestCase
 
   
 
+  /** a copy of a file, under the same name, in a new temporary folder */
+  private static File copyToTempFolder(final File original)
+  {
+    try
+    {
+      final java.nio.file.Path folder = java.nio.file.Files.createTempDirectory("lite-test");
+      final java.nio.file.Path copy = folder.resolve(original.getName());
+      java.nio.file.Files.copy(original.toPath(), copy);
+      copy.toFile().deleteOnExit();
+      folder.toFile().deleteOnExit();
+      return copy.toFile().getAbsoluteFile();
+    }
+    catch (final java.io.IOException e)
+    {
+      throw new java.io.UncheckedIOException(e);
+    }
+  }
 }

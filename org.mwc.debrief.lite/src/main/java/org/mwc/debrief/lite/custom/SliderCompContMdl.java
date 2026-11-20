@@ -21,9 +21,9 @@ import java.util.Calendar;
 
 import javax.swing.event.ChangeListener;
 
-import org.pushingpixels.flamingo.api.common.RichTooltip;
-import org.pushingpixels.flamingo.api.ribbon.synapse.model.ComponentContentModel;
-import org.pushingpixels.neon.api.icon.ResizableIcon;
+import org.pushingpixels.radiance.component.api.common.RichTooltip;
+import org.pushingpixels.radiance.component.api.ribbon.synapse.model.ComponentContentModel;
+import org.pushingpixels.radiance.common.api.icon.RadianceIcon;
 
 /**
  * @author Ayesha
@@ -32,7 +32,7 @@ import org.pushingpixels.neon.api.icon.ResizableIcon;
 public class SliderCompContMdl implements ComponentContentModel {
 	public static class Builder {
 		private boolean isEnabled = true;
-		private ResizableIcon.Factory iconFactory;
+		private RadianceIcon.Factory iconFactory;
 		private String caption;
 		private RichTooltip richTooltip;
 		private String text;
@@ -109,7 +109,7 @@ public class SliderCompContMdl implements ComponentContentModel {
 			return this;
 		}
 
-		public Builder setIconFactory(final ResizableIcon.Factory iconFactory) {
+		public Builder setIconFactory(final RadianceIcon.Factory iconFactory) {
 			this.iconFactory = iconFactory;
 			return this;
 		}
@@ -177,7 +177,7 @@ public class SliderCompContMdl implements ComponentContentModel {
 	}
 
 	private boolean isEnabled;
-	private ResizableIcon.Factory iconFactory;
+	private RadianceIcon.Factory iconFactory;
 	private String caption;
 	private String text;
 
@@ -215,7 +215,7 @@ public class SliderCompContMdl implements ComponentContentModel {
 	}
 
 	@Override
-	public ResizableIcon.Factory getIconFactory() {
+	public RadianceIcon.Factory getIconFactory() {
 		return iconFactory;
 	}
 
@@ -291,7 +291,7 @@ public class SliderCompContMdl implements ComponentContentModel {
 
 	}
 
-	public void setIconFactory(final ResizableIcon.Factory iconFactory) {
+	public void setIconFactory(final RadianceIcon.Factory iconFactory) {
 		this.iconFactory = iconFactory;
 	}
 

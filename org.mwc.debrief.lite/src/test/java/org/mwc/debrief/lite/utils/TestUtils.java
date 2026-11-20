@@ -25,20 +25,18 @@ import java.awt.Window;
 
 import javax.swing.JComboBox;
 import javax.swing.JMenu;
-import javax.swing.JPanel;
 
 import org.mwc.debrief.lite.DebriefLiteApp;
 import org.mwc.debrief.lite.custom.JRibbonLabel;
-import org.pushingpixels.flamingo.api.common.JCommandButton;
-import org.pushingpixels.flamingo.api.common.JCommandButtonStrip;
-import org.pushingpixels.flamingo.api.common.JScrollablePanel;
-import org.pushingpixels.flamingo.api.common.popup.JPopupPanel;
-import org.pushingpixels.flamingo.api.ribbon.AbstractRibbonBand;
-import org.pushingpixels.flamingo.api.ribbon.RibbonTask;
-import org.pushingpixels.flamingo.api.ribbon.synapse.JRibbonComboBox;
-import org.pushingpixels.flamingo.internal.ui.ribbon.JBandControlPanel;
-import org.pushingpixels.flamingo.internal.ui.ribbon.JFlowBandControlPanel;
-import org.pushingpixels.flamingo.internal.ui.ribbon.JRibbonComponent;
+import org.pushingpixels.radiance.component.api.common.model.Command;
+import org.pushingpixels.radiance.component.api.common.JCommandButton;
+import org.pushingpixels.radiance.component.api.common.JCommandButtonStrip;
+import org.pushingpixels.radiance.component.api.ribbon.AbstractRibbonBand;
+import org.pushingpixels.radiance.component.api.ribbon.RibbonTask;
+import org.pushingpixels.radiance.component.api.ribbon.synapse.JRibbonComboBox;
+import org.pushingpixels.radiance.component.internal.ui.ribbon.JBandControlPanel;
+import org.pushingpixels.radiance.component.internal.ui.ribbon.JFlowBandControlPanel;
+import org.pushingpixels.radiance.component.internal.ui.ribbon.JRibbonComponent;
 
 public class TestUtils
 {
@@ -169,17 +167,12 @@ public class TestUtils
     return combo;
   }
   
+  /** a button for the Save command in the Save button's popup */
   public static JCommandButton getSaveButton()
   {
-    JBandControlPanel liteBand = (JBandControlPanel)getRibbonBand(1,0).getComponent(0);
-    JCommandButton saveButton = ((JCommandButton)liteBand.getComponent(2));
-    JPopupPanel panel = (JPopupPanel)saveButton.getPopupCallback().getPopupPanel(saveButton);
-    JCommandButton saveDDButton =(JCommandButton)((JPanel)((JPanel)((JScrollablePanel)panel.getComponent(0)).getComponent(0)).getComponent(0)).getComponent(0);
-    
-    saveDDButton.setFireActionOnRollover(true);
-    System.out.println("Save Button:"+saveDDButton);
-    return saveDDButton;
+    return savePopupButton(0);
   }
+
   
   public static JCommandButton getSaveMainButton()
   {
@@ -188,16 +181,23 @@ public class TestUtils
     return saveButton;
   }
   
+  /** a button for the Save As command in the Save button's popup */
   public static JCommandButton getSaveASButton()
   {
-    JBandControlPanel liteBand = (JBandControlPanel)getRibbonBand(1,0).getComponent(0);
-    JCommandButton saveButton = ((JCommandButton)liteBand.getComponent(2));
-    JPopupPanel panel = (JPopupPanel)saveButton.getPopupCallback().getPopupPanel(saveButton);
-    
-    JCommandButton saveDDButton =(JCommandButton)((JPanel)((JPanel)((JScrollablePanel)panel.getComponent(0)).getComponent(0)).getComponent(0)).getComponent(1);
-    saveDDButton.setFireActionOnRollover(true);
-    return saveDDButton;
+    return savePopupButton(1);
   }
+
+  /**
+   * a button for one of the commands in the Save button's popup (Radiance 9
+   * builds the popup's buttons only when it shows, so project the command)
+   */
+  private static JCommandButton savePopupButton(final int index)
+  {
+    final Command save = (Command)getSaveMainButton().getContentModel();
+    final Command item = save.getSecondaryContentModel().getCommandGroups().get(0).getCommands().get(index);
+    return new JCommandButton(item.project());
+  }
+
   public static JCommandButtonStrip getTimeControllerCommands()
   {
     
@@ -218,12 +218,9 @@ public class TestUtils
   }
   public static JCommandButton getSaveAsButton()
   {
-    JBandControlPanel liteBand = (JBandControlPanel)getRibbonBand(1,0).getComponent(0);
-    JCommandButton saveButton = ((JCommandButton)liteBand.getComponent(2));
-    JPopupPanel panel = (JPopupPanel)saveButton.getPopupCallback().getPopupPanel(saveButton);
-    JCommandButton saveDDButton = (JCommandButton)TestUtils.getChildNamed(panel, "saveas");
-    return saveDDButton;
+    return savePopupButton(1);
   }
+
   
   
 }

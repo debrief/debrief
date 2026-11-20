@@ -52,6 +52,9 @@ updates:
         patterns: ["org.apache.pdfbox:*"]
       slf4j:
         patterns: ["org.slf4j:*"]
+      # Lite's Radiance modules share one version (radiance.version)
+      radiance:
+        patterns: ["org.pushing-pixels:*"]
       jackson:
         patterns: ["com.fasterxml.jackson.core:*"]
       # the JUnit 6 jars (junit.version in the root pom) move together

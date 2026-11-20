@@ -98,9 +98,9 @@ import org.geotools.api.referencing.operation.MathTransform;
 import org.geotools.api.referencing.operation.NoninvertibleTransformException;
 import org.geotools.api.referencing.operation.TransformException;
 import org.mwc.debrief.lite.util.ScaledImageIcon;
-import org.pushingpixels.flamingo.api.ribbon.JRibbonFrame;
-import org.pushingpixels.substance.api.SubstanceCortex;
-import org.pushingpixels.substance.api.skin.BusinessBlueSteelSkin;
+import org.pushingpixels.radiance.component.api.ribbon.JRibbonFrame;
+import org.pushingpixels.radiance.theming.api.RadianceThemingCortex;
+import org.pushingpixels.radiance.theming.api.skin.BusinessBlueSteelSkin;
 
 import Debrief.GUI.Frames.Application;
 import Debrief.GUI.Tote.Painters.PainterManager;
@@ -663,8 +663,8 @@ public class DebriefLiteApp implements FileDropListener {
 		System.setProperty("com.sun.media.jai.disableMediaLib", "true");
 
 		JFrame.setDefaultLookAndFeelDecorated(true);
-		if (SubstanceCortex.GlobalScope.getCurrentSkin() == null) {
-			SubstanceCortex.GlobalScope.setSkin(new BusinessBlueSteelSkin());
+		if (RadianceThemingCortex.GlobalScope.getCurrentSkin() == null) {
+			RadianceThemingCortex.GlobalScope.setSkin(new BusinessBlueSteelSkin());
 		}
 		final DisplaySplash splashScreen = new DisplaySplash(5);
 		final Thread t = new Thread(splashScreen);
