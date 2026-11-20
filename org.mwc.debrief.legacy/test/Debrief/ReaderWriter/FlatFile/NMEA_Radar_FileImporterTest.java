@@ -21,10 +21,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import Debrief.ReaderWriter.FlatFile.NMEA_Radar_FileImporter.*;
 import java.awt.Color;
 import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.StringReader;
@@ -36,7 +33,6 @@ import java.util.Enumeration;
 import java.util.List;
 import java.util.Optional;
 import Debrief.Wrappers.FixWrapper;
-import Debrief.Wrappers.TrackWrapper;
 import Debrief.Wrappers.Track.TrackSegment;
 import Debrief.Wrappers.Track.TrackWrapper_Support;
 import MWC.Algorithms.Conversions;
@@ -45,16 +41,13 @@ import MWC.GUI.ErrorLogger;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
 import MWC.GUI.Properties.DebriefColors;
-import MWC.GUI.Tools.Action;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.WorldDistance;
-import MWC.GenericData.WorldLocation;
 import MWC.GenericData.WorldVector;
 import MWC.TacticalData.Fix;
 import MWC.Utilities.TextFormatting.DebriefFormatDateTime;
 import MWC.Utilities.TextFormatting.GMTDateFormat;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 public class NMEA_Radar_FileImporterTest {
@@ -108,30 +101,6 @@ public class NMEA_Radar_FileImporterTest {
 	@BeforeEach
 	public void setUp() {
 		_logger.clear();
-	}
-
-	@Disabled("Its input file is not in the repository; the test was in no suite before the JUnit 6 migration, so it never ran")
-	@Test
-	public void testGoodLoadOnExisting() throws Exception {
-		final NMEA_Radar_FileImporter importer = new NMEA_Radar_FileImporter();
-		final Layers layers = new Layers();
-
-		final String ownship_track = "../org.mwc.cmap.combined.feature/root_installs/sample_data/700101_0106_R_Dev.txt";
-
-		assertTrue(new File(ownship_track).exists(), "input file exists");
-		
-		final WorldLocation origin = new WorldLocation(22.2, 33.3, 0d);
-
-
-		final InputStream is = new FileInputStream(ownship_track);
-		final Action action = importer.importThis(origin, is, layers, _logger);
-		action.execute();
-
-		assertEquals(17, layers.size(), "has data");
-
-		final TrackWrapper track = (TrackWrapper) layers.elementAt(0);
-
-		assertEquals(5, track.numFixes(), "correct fixes");
 	}
 
 	@Test

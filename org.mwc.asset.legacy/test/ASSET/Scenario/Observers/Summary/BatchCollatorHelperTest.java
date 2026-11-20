@@ -32,7 +32,6 @@ import MWC.Utilities.TextFormatting.GeneralFormat;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
-@Disabled("Asserts the store is null after it has been created; ASSET's tests were in no build before the JUnit 6 migration (org.mwc.asset.test was not in the reactor), so this never ran")
 public class BatchCollatorHelperTest extends SupportTesting {
 	static public final String TEST_ALL_TEST_TYPE = "UNIT";
 
@@ -87,7 +86,9 @@ public class BatchCollatorHelperTest extends SupportTesting {
 		// checking
 
 		// check we've stored them
-		assertNull(cc._myData, "store created");
+		// the non per-case collator keeps no per-case data (its store, now
+		// created up front, stays empty)
+		assertTrue(cc._myData == null || cc._myData.isEmpty(), "no per-case data stored");
 		assertNotNull(cc._myAverage, "items not stored");
 		assertEquals(4, cc._myAverage.counter, "correct count not recorded");
 
@@ -112,7 +113,9 @@ public class BatchCollatorHelperTest extends SupportTesting {
 		// checking
 
 		// check we've stored them
-		assertNull(cc._myData, "store created");
+		// the non per-case collator keeps no per-case data (its store, now
+		// created up front, stays empty)
+		assertTrue(cc._myData == null || cc._myData.isEmpty(), "no per-case data stored");
 		assertTrue(cc._myCounter > 0, "items not stored");
 		assertEquals(6, cc._myCounter, "correct count not recorded");
 
@@ -137,7 +140,9 @@ public class BatchCollatorHelperTest extends SupportTesting {
 		// checking
 
 		// check we've stored them
-		assertNull(cc._myData, "store created");
+		// the non per-case collator keeps no per-case data (its store, now
+		// created up front, stays empty)
+		assertTrue(cc._myData == null || cc._myData.isEmpty(), "no per-case data stored");
 		assertNotNull(cc._myList, "items not stored");
 		assertEquals(6, cc._myList.size(), "correct count not recorded");
 
@@ -162,7 +167,9 @@ public class BatchCollatorHelperTest extends SupportTesting {
 		// checking
 
 		// check we've stored them
-		assertNull(cc._myData, "store created");
+		// the non per-case collator keeps no per-case data (its store, now
+		// created up front, stays empty)
+		assertTrue(cc._myData == null || cc._myData.isEmpty(), "no per-case data stored");
 		assertNotNull(cc._myList, "items not stored");
 		assertEquals(6, cc._myList.size(), "correct count not recorded");
 
@@ -210,7 +217,9 @@ public class BatchCollatorHelperTest extends SupportTesting {
 		// checking
 
 		// check we've stored them
-		assertNull(cc._myData, "store created");
+		// the non per-case collator keeps no per-case data (its store, now
+		// created up front, stays empty)
+		assertTrue(cc._myData == null || cc._myData.isEmpty(), "no per-case data stored");
 		assertNotNull(cc._myList, "items not stored");
 		assertEquals(4, cc._myList.size(), "correct count not recorded");
 

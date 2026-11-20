@@ -97,7 +97,6 @@ public class JaxbGpx11HelperTest {
 		assertNotNull(fix.getTime());
 	}
 
-	@Disabled("Expects course 268.7 (degrees) but gets 4.69 (radians); it was in no suite before the JUnit 6 migration, so it never ran")
 	@Test
 	public void unmarshallTrackWithAllData() {
 		final Layers layers = helper.unmarshall(getClass().getResourceAsStream("gpx-1.1-data.xml"), null);
@@ -149,7 +148,7 @@ public class JaxbGpx11HelperTest {
 		final FixWrapper fix = (FixWrapper) segment.elements().nextElement();
 		assertNotNull(fix.getTime());
 
-		assertEquals(269.700, fix.getCourse(), 0.0000001);
+		assertEquals(269.700, fix.getCourseDegs(), 0.0000001);
 		assertTrue(fix.getArrowShowing());
 		assertFalse(fix.getLabelShowing());
 		assertFalse(fix.getLineShowing());

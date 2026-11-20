@@ -178,8 +178,6 @@ public class OptimiseTestTest {
 		assertEquals(2000, range, 0.0001, "wrong range");
 	}
 
-	// TODO FIX-TEST
-	@Disabled("Its plot file needs the Eclipse plot reader and a plot editor (it used a Mockito mock until Phase E); it was in no suite before the JUnit 6 migration, so it never ran")
 	@Test
 	public void testLoad() throws FileNotFoundException {
 		// get some data

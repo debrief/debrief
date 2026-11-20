@@ -42,7 +42,6 @@ import org.junit.jupiter.api.Test;
 public class JaxbGpx10HelperTest {
 	private final JaxbGpxHelper helper = new JaxbGpxHelper();
 
-	@Disabled("Expects course 268.7 (degrees) but gets 4.69 (radians); it was in no suite before the JUnit 6 migration, so it never ran")
 	@Test
 	public void unmarshallTrackWithAllData() {
 		final Layers layers = helper.unmarshall(getClass().getResourceAsStream("gpx_1_0.xml"), null);
@@ -80,8 +79,9 @@ public class JaxbGpx10HelperTest {
 		final FixWrapper fix = (FixWrapper) segment.elements().nextElement();
 		assertNotNull(fix.getTime());
 
-		assertEquals(268.7, fix.getCourse(), 0.1);
-		assertEquals(4.5, fix.getFix().getSpeed(), 0.1);
+		assertEquals(268.7, fix.getCourseDegs(), 0.1);
+		// GPX speed is in metres per second
+		assertEquals(MWC.Algorithms.Conversions.Mps2Kts(4.5), fix.getSpeed(), 0.01);
 	}
 
 }
