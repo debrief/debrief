@@ -123,12 +123,13 @@ jobs:
       # wrapper does not retry, so a network blip would fail the whole job
       - name: Fetch the pinned Maven
         run: |
-          for n in 1 2 3; do
+          # Central's outages last a minute or two: back off 15, 30, 45, 60 s
+          for n in 1 2 3 4 5; do
             ./mvnw --version && exit 0
-            echo "::warning::[attempt ${n}/3] the Maven wrapper could not fetch Maven"
-            sleep 15
+            echo "::warning::[attempt ${n}/5] the Maven wrapper could not fetch Maven"
+            [ "$n" = 5 ] || sleep $((15 * n))
           done
-          echo "::error::the Maven wrapper could not fetch Maven after 3 attempts"
+          echo "::error::the Maven wrapper could not fetch Maven after 5 attempts"
           exit 1
 
       # Tycho otherwise re-resolves the whole Eclipse target platform from
@@ -385,12 +386,13 @@ jobs:
       # wrapper does not retry, so a network blip would fail the whole job
       - name: Fetch the pinned Maven
         run: |
-          for n in 1 2 3; do
+          # Central's outages last a minute or two: back off 15, 30, 45, 60 s
+          for n in 1 2 3 4 5; do
             ./mvnw --version && exit 0
-            echo "::warning::[attempt ${n}/3] the Maven wrapper could not fetch Maven"
-            sleep 15
+            echo "::warning::[attempt ${n}/5] the Maven wrapper could not fetch Maven"
+            [ "$n" = 5 ] || sleep $((15 * n))
           done
-          echo "::error::the Maven wrapper could not fetch Maven after 3 attempts"
+          echo "::error::the Maven wrapper could not fetch Maven after 5 attempts"
           exit 1
       - name: Restore Maven / Tycho cache
         uses: actions/cache/restore@v6
@@ -453,12 +455,13 @@ jobs:
       # wrapper does not retry, so a network blip would fail the whole job
       - name: Fetch the pinned Maven
         run: |
-          for n in 1 2 3; do
+          # Central's outages last a minute or two: back off 15, 30, 45, 60 s
+          for n in 1 2 3 4 5; do
             ./mvnw --version && exit 0
-            echo "::warning::[attempt ${n}/3] the Maven wrapper could not fetch Maven"
-            sleep 15
+            echo "::warning::[attempt ${n}/5] the Maven wrapper could not fetch Maven"
+            [ "$n" = 5 ] || sleep $((15 * n))
           done
-          echo "::error::the Maven wrapper could not fetch Maven after 3 attempts"
+          echo "::error::the Maven wrapper could not fetch Maven after 5 attempts"
           exit 1
       - name: Restore Maven / Tycho cache
         uses: actions/cache/restore@v6

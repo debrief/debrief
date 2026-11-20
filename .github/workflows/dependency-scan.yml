@@ -59,7 +59,7 @@ jobs:
         run: |
           export JAVA_HOME="$JAVA_HOME_21_X64"
           # the first ./mvnw call downloads Maven, and the wrapper does not retry
-          for n in 1 2 3; do ./mvnw --version && break; [ "$n" = 3 ] && exit 1; sleep 15; done
+          for n in 1 2 3 4 5; do ./mvnw --version && break; [ "$n" = 5 ] && exit 1; sleep $((15 * n)); done
           ./mvnw -B -ntp -pl org.mwc.cmap.geotools.libs generate-resources
 
       - name: Install Syft
