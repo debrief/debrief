@@ -36,23 +36,24 @@ import org.mwc.debrief.lite.util.DoSave;
 import org.mwc.debrief.lite.util.DoSaveAs;
 import org.mwc.debrief.lite.util.PlotFiles;
 import org.mwc.debrief.lite.util.ResizableIconFactory;
-import org.pushingpixels.flamingo.api.common.CommandAction;
-import org.pushingpixels.flamingo.api.common.CommandActionEvent;
-import org.pushingpixels.flamingo.api.common.CommandButtonPresentationState;
+import org.pushingpixels.radiance.component.api.common.model.panel.MenuPopupPanelLayoutSpec;
+import org.pushingpixels.radiance.component.api.common.model.CommandPopupMenuPanelPresentationModel;
+import org.pushingpixels.radiance.component.api.common.CommandAction;
+import org.pushingpixels.radiance.component.api.common.CommandActionEvent;
+import org.pushingpixels.radiance.component.api.common.CommandButtonPresentationState;
 import org.mwc.debrief.lite.util.ScaledImageIcon;
-import org.pushingpixels.flamingo.api.common.model.Command;
-import org.pushingpixels.flamingo.api.common.model.CommandButtonPresentationModel;
-import org.pushingpixels.flamingo.api.common.model.CommandGroup;
-import org.pushingpixels.flamingo.api.common.model.CommandMenuContentModel;
-import org.pushingpixels.flamingo.api.common.model.CommandPanelContentModel;
-import org.pushingpixels.flamingo.api.common.model.CommandPanelPresentationModel;
-import org.pushingpixels.flamingo.api.common.popup.model.CommandPopupMenuPresentationModel;
-import org.pushingpixels.flamingo.api.common.projection.CommandButtonProjection;
-import org.pushingpixels.flamingo.api.ribbon.JRibbon;
-import org.pushingpixels.flamingo.api.ribbon.JRibbonBand;
-import org.pushingpixels.flamingo.api.ribbon.JRibbonBand.PresentationPriority;
-import org.pushingpixels.flamingo.api.ribbon.JRibbonFrame;
-import org.pushingpixels.flamingo.api.ribbon.RibbonTask;
+import org.pushingpixels.radiance.component.api.common.model.Command;
+import org.pushingpixels.radiance.component.api.common.model.CommandButtonPresentationModel;
+import org.pushingpixels.radiance.component.api.common.model.CommandGroup;
+import org.pushingpixels.radiance.component.api.common.model.CommandMenuContentModel;
+import org.pushingpixels.radiance.component.api.common.model.CommandPanelContentModel;
+import org.pushingpixels.radiance.component.api.common.popup.model.CommandPopupMenuPresentationModel;
+import org.pushingpixels.radiance.component.api.common.projection.CommandButtonProjection;
+import org.pushingpixels.radiance.component.api.ribbon.JRibbon;
+import org.pushingpixels.radiance.component.api.ribbon.JRibbonBand;
+import org.pushingpixels.radiance.component.api.ribbon.JRibbonBand.PresentationPriority;
+import org.pushingpixels.radiance.component.api.ribbon.JRibbonFrame;
+import org.pushingpixels.radiance.component.api.ribbon.RibbonTask;
 
 import Debrief.GUI.Frames.Application;
 import Debrief.GUI.Frames.Session;
@@ -299,9 +300,9 @@ public class DebriefRibbonFile {
 				PresentationPriority.TOP, "Open a new plot");
 
 		final CommandPopupMenuPresentationModel popupMenuPresentationModel = CommandPopupMenuPresentationModel.builder()
-				.setPanelPresentationModel(CommandPanelPresentationModel.builder().setToShowGroupLabels(false)
-						.setCommandPresentationState(CommandButtonPresentationState.FIT_TO_ICON)
-						.setCommandIconDimension(48).setMaxColumns(5).setMaxRows(3).build())
+				.setPanelPresentationModel(CommandPopupMenuPanelPresentationModel.builder().setToShowGroupLabels(false)
+						.setCommandPresentationState(CommandButtonPresentationState.SMALL_FIT_TO_ICON)
+						.setCommandIconDimension(new Dimension(48, 48)).setLayoutSpec(new MenuPopupPanelLayoutSpec(5, 3)).build())
 				.build();
 
 		final Image saveImage = MenuUtils.createImage("icons/16/save.png");
@@ -310,7 +311,10 @@ public class DebriefRibbonFile {
 				Command.builder().setText("Save").setAction(new DoSave(session, ribbon.getRibbonFrame()))
 						.setIconFactory(ResizableIconFactory.factory(imageIcon))
 						.setSecondaryContentModel(getSavePopupContentModel(session, ribbon.getRibbonFrame())).build()
-						.project(CommandButtonPresentationModel.builder()
+						// clicking the text opens the Save / Save As popup, as in Radiance 3
+						// (Radiance 9's default is to run the action)
+						.project(MenuUtils.buttonPresentation()
+								.setTextClick(CommandButtonPresentationModel.TextClick.POPUP)
 								.setPopupMenuPresentationModel(popupMenuPresentationModel).build()),
 				PresentationPriority.TOP);
 

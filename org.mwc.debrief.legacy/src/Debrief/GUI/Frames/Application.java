@@ -869,89 +869,86 @@ public abstract class Application implements ToolParent, ActionListener, FileDro
 	 * @param theFile the file to open
 	 */
 	public final void openFile(final File theFile) {
-		try {
 
-			// indicate that we are busy
-			this.setCursor(Cursor.WAIT_CURSOR);
+		// indicate that we are busy
+		this.setCursor(Cursor.WAIT_CURSOR);
 
-			Layers newLayers = null;
+		Layers newLayers = null;
 
-			// wrap the single file into a list
-			final File[] fList = new File[] { theFile };
+		// wrap the single file into a list
+		final File[] fList = new File[] { theFile };
 
-			final String suff = suffixOf(theFile.getName());
-			if (suff.equalsIgnoreCase(".DPL")) {
-				MWC.GUI.Dialogs.DialogFactory.showMessage("Open File", "Sorry DPL file format no longer supported");
+		final String suff = suffixOf(theFile.getName());
+		if (suff.equalsIgnoreCase(".DPL")) {
+			MWC.GUI.Dialogs.DialogFactory.showMessage("Open File", "Sorry DPL file format no longer supported");
+		} else {
+			if ((suff.equalsIgnoreCase(".REP")) || (suff.equalsIgnoreCase(".DSF"))
+					|| (suff.equalsIgnoreCase(".DTF"))) {
+				newLayers = new Layers();
+
+				BaseImportCaller caller = new BaseImportCaller(fList, newLayers) {
+					// handle completion of the full import process
+					@Override
+					public void allFilesFinished(final File[] fNames, final Layers newData) {
+						// create a new session, to hold this track
+						newSession(null);
+						final Session sess = getCurrentSession();
+
+						// did it work?
+						if (sess != null) {
+							sess.getData().addThis(newData);
+							sess.getData().fireExtended();
+						}
+
+						// finally configure the narratives
+						configureNarratives();
+
+						// put the cursor back to normal
+						restoreCursor();
+
+					}
+
+					// handle the completion of each file
+					@Override
+					public void fileFinished(final File fName, final Layers newData) {
+						addToMru(fName.getPath());
+					}
+				};
+
+				caller.start();
+				caller = null;
+
+				// forget the reference
+				newLayers = null;
+
+			} else if (suff.equalsIgnoreCase(".XML") || suff.equalsIgnoreCase(".DPF")) {
+
+				MWC.Utilities.ReaderWriter.ImportManager.BaseImportCaller caller = new MWC.Utilities.ReaderWriter.ImportManager.BaseImportCaller(
+						fList, null) {
+					// handle completion of the full import process
+					@Override
+					public void allFilesFinished(final File[] fNames, final Layers newData) {
+						configureNarratives();
+
+						// put the cursor back to normal
+						restoreCursor();
+
+					}
+
+					// handle the completion of each file
+					@Override
+					public void fileFinished(final File fName, final Layers newData) {
+						addToMru(fName.getPath());
+					}
+				};
+
+				caller.start();
+
+				caller = null;
+
 			} else {
-				if ((suff.equalsIgnoreCase(".REP")) || (suff.equalsIgnoreCase(".DSF"))
-						|| (suff.equalsIgnoreCase(".DTF"))) {
-					newLayers = new Layers();
-
-					BaseImportCaller caller = new BaseImportCaller(fList, newLayers) {
-						// handle completion of the full import process
-						@Override
-						public void allFilesFinished(final File[] fNames, final Layers newData) {
-							// create a new session, to hold this track
-							newSession(null);
-							final Session sess = getCurrentSession();
-
-							// did it work?
-							if (sess != null) {
-								sess.getData().addThis(newData);
-								sess.getData().fireExtended();
-							}
-
-							// finally configure the narratives
-							configureNarratives();
-
-							// put the cursor back to normal
-							restoreCursor();
-
-						}
-
-						// handle the completion of each file
-						@Override
-						public void fileFinished(final File fName, final Layers newData) {
-							addToMru(fName.getPath());
-						}
-					};
-
-					caller.start();
-					caller = null;
-
-					// forget the reference
-					newLayers = null;
-
-				} else if (suff.equalsIgnoreCase(".XML") || suff.equalsIgnoreCase(".DPF")) {
-
-					MWC.Utilities.ReaderWriter.ImportManager.BaseImportCaller caller = new MWC.Utilities.ReaderWriter.ImportManager.BaseImportCaller(
-							fList, null) {
-						// handle completion of the full import process
-						@Override
-						public void allFilesFinished(final File[] fNames, final Layers newData) {
-							configureNarratives();
-
-							// put the cursor back to normal
-							restoreCursor();
-
-						}
-
-						// handle the completion of each file
-						@Override
-						public void fileFinished(final File fName, final Layers newData) {
-							addToMru(fName.getPath());
-						}
-					};
-
-					caller.start();
-
-					caller = null;
-
-				} else {
-					Trace.trace("This file type is not handled:" + suff);
-				}
+				Trace.trace("This file type is not handled:" + suff);
 			}
-		} finally {
 		}
 	}
 

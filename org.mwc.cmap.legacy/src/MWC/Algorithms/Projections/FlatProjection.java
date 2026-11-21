@@ -398,7 +398,7 @@ public class FlatProjection extends PlainProjection {
 
 	@Override
 	public void zoom(final double value, final WorldArea area) {
-		// TODO: fix the algorithm so that the test would pass
+		// the algorithm is wrong: its test fails
 		if (getDataArea() == null || getScreenArea() == null) {
 			return;
 		}

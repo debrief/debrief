@@ -255,7 +255,7 @@ public class ObjectSpace {
 					if (returnType == char.class)
 						return (char) 0;
 					if (returnType == long.class)
-						return 0l;
+						return 0L;
 					if (returnType == short.class)
 						return (short) 0;
 					if (returnType == byte.class)

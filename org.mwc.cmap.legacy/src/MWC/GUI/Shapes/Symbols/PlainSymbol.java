@@ -253,10 +253,7 @@ abstract public class PlainSymbol implements java.io.Serializable, MWC.GUI.Edita
 	 * use a simplified symbol
 	 */
 	protected boolean showSimplifiedSymbol() {
-		if (getScaleVal() >= MWC.GUI.Shapes.Symbols.SymbolScalePropertyEditor.LARGE)
-			return false;
-		else
-			return true;
+		return getScaleVal() < MWC.GUI.Shapes.Symbols.SymbolScalePropertyEditor.LARGE;
 	}
 
 }

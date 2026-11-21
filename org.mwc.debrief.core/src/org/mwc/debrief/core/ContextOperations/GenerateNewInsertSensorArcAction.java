@@ -107,7 +107,6 @@ public class GenerateNewInsertSensorArcAction implements RightClickContextItemGe
 
 		@Override
 		public IStatus redo(final IProgressMonitor monitor, final IAdaptable info) throws ExecutionException {
-			// TODO Auto-generated method stub
 			return super.redo(monitor, info);
 		}
 

@@ -237,7 +237,6 @@ public class NatNarrativeViewer {
 			}
 		});
 		textMatcherEditor.setMode(TextMatcherEditor.CONTAINS);
-		;
 		styleConfig = new NarrativeViewerStyleConfiguration(preferenceStore);
 
 		buildTable();

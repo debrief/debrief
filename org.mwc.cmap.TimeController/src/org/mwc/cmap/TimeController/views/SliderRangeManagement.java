@@ -20,7 +20,7 @@ import MWC.GenericData.HiResDate;
 
 abstract class SliderRangeManagement {
 
-	private static final long DAY_STEP = 24 * 60 * 60000000L;
+	static final long DAY_STEP = 24 * 60 * 60000000L;
 
 	private static final long HOUR_STEP = 60 * 60000000L;
 

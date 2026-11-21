@@ -14,6 +14,7 @@
  *******************************************************************************/
 package org.mwc.debrief.lite.util;
 
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Graphics;
@@ -22,7 +23,7 @@ import java.awt.Image;
 import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 
-import org.pushingpixels.neon.api.icon.ResizableIcon;
+import org.pushingpixels.radiance.common.api.icon.RadianceIcon;
 
 /**
  * A ribbon icon drawn from a bitmap, that keeps its size when the screen is
@@ -34,7 +35,7 @@ import org.pushingpixels.neon.api.icon.ResizableIcon;
  * space units: the image is drawn at its own size, shrunk if needed to fit the
  * icon, and the zoom is left to Java2D.
  */
-public class ScaledImageIcon implements ResizableIcon {
+public class ScaledImageIcon implements RadianceIcon {
 
 	public static ScaledImageIcon getIcon(final Image image, final Dimension initialDim) {
 		return image == null ? null : new ScaledImageIcon(image, initialDim);
@@ -47,10 +48,24 @@ public class ScaledImageIcon implements ResizableIcon {
 	/** the image, reduced to the number of screen pixels last painted */
 	private BufferedImage cached;
 
+	/** recolours the image (for example greys it out when disabled), or null */
+	private ColorFilter colorFilter;
+
+	/** the image after the colour filter, or null */
+	private BufferedImage filtered;
+
 	public ScaledImageIcon(final Image image, final Dimension initialDim) {
 		this.image = image;
 		this.width = initialDim.width;
 		this.height = initialDim.height;
+	}
+
+	/**
+	 * a separate icon for the same image and size: Radiance asks for one per
+	 * button state and resizes and recolours each one
+	 */
+	public ScaledImageIcon copy() {
+		return new ScaledImageIcon(image, new Dimension(width, height));
 	}
 
 	/**
@@ -105,15 +120,16 @@ public class ScaledImageIcon implements ResizableIcon {
 	 * Shrinking by more than half in one go drops detail, so it is done in steps.
 	 */
 	private synchronized Image reduced(final int pixelWidth, final int pixelHeight) {
-		int w = image.getWidth(null);
-		int h = image.getHeight(null);
+		final Image source = source();
+		int w = source.getWidth(null);
+		int h = source.getHeight(null);
 		if (w <= pixelWidth && h <= pixelHeight) {
-			return image;
+			return source;
 		}
 		if (cached != null && cached.getWidth() == pixelWidth && cached.getHeight() == pixelHeight) {
 			return cached;
 		}
-		Image current = image;
+		Image current = source;
 		do {
 			w = Math.max(pixelWidth, w / 2);
 			h = Math.max(pixelHeight, h / 2);
@@ -132,5 +148,54 @@ public class ScaledImageIcon implements ResizableIcon {
 	public void setDimension(final Dimension newDimension) {
 		width = newDimension.width;
 		height = newDimension.height;
+	}
+
+	/** the image to draw: the original, or a recoloured copy */
+	private Image source() {
+		if (colorFilter == null) {
+			return image;
+		}
+		if (filtered == null) {
+			filtered = filter(image, colorFilter);
+		}
+		return filtered;
+	}
+
+	/** a copy of an image with each pixel's colour passed through a filter, keeping its alpha */
+	static BufferedImage filter(final Image image, final ColorFilter filter) {
+		final int w = Math.max(1, image.getWidth(null));
+		final int h = Math.max(1, image.getHeight(null));
+		final BufferedImage result = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
+		final Graphics2D g2 = result.createGraphics();
+		g2.drawImage(image, 0, 0, null);
+		g2.dispose();
+		for (int y = 0; y < h; y++) {
+			for (int x = 0; x < w; x++) {
+				final int argb = result.getRGB(x, y);
+				final int alpha = argb >>> 24;
+				if (alpha == 0) {
+					continue;
+				}
+				final Color c = filter.filter(new Color(argb & 0xFFFFFF));
+				result.setRGB(x, y, (alpha << 24) | (c.getRGB() & 0xFFFFFF));
+			}
+		}
+		return result;
+	}
+
+	/**
+	 * Radiance 9 recolours icons through this, for example to grey out a disabled
+	 * button (Radiance 3 did that itself)
+	 */
+	@Override
+	public synchronized void setColorFilter(final ColorFilter colorFilter) {
+		this.colorFilter = colorFilter;
+		filtered = null;
+		cached = null;
+	}
+
+	@Override
+	public boolean supportsColorFilter() {
+		return true;
 	}
 }

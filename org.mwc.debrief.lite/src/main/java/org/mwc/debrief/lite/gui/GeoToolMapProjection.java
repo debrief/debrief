@@ -19,18 +19,18 @@ import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.geom.AffineTransform;
 
-import org.geotools.geometry.DirectPosition2D;
+import org.geotools.geometry.Position2D;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.map.MapContent;
 import org.geotools.map.MapViewport;
 import org.geotools.referencing.CRS;
 import org.geotools.util.factory.Hints;
 import org.mwc.cmap.geotools.gt2plot.GeoToolsLayer;
-import org.opengis.geometry.MismatchedDimensionException;
-import org.opengis.referencing.FactoryException;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
-import org.opengis.referencing.operation.MathTransform;
-import org.opengis.referencing.operation.TransformException;
+import org.geotools.api.geometry.MismatchedDimensionException;
+import org.geotools.api.referencing.FactoryException;
+import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
+import org.geotools.api.referencing.operation.MathTransform;
+import org.geotools.api.referencing.operation.TransformException;
 
 import Debrief.GUI.Frames.Application;
 import MWC.Algorithms.PlainProjection;
@@ -124,8 +124,8 @@ public class GeoToolMapProjection extends PlainProjection implements GeoToolsHan
 
 	@Override
 	public Point toScreen(final WorldLocation val) {
-		final DirectPosition2D workDegs = new DirectPosition2D();
-		final DirectPosition2D workScreen = new DirectPosition2D();
+		final Position2D workDegs = new Position2D();
+		final Position2D workScreen = new Position2D();
 
 		Point res = null;
 		// and now for the actual projection bit
@@ -148,8 +148,8 @@ public class GeoToolMapProjection extends PlainProjection implements GeoToolsHan
 
 	@Override
 	public WorldLocation toWorld(final Point val) {
-		final DirectPosition2D workDegs = new DirectPosition2D();
-		final DirectPosition2D workScreen = new DirectPosition2D();
+		final Position2D workDegs = new Position2D();
+		final Position2D workScreen = new Position2D();
 
 		WorldLocation res = null;
 		workScreen.setLocation(val.x, val.y);

@@ -91,7 +91,6 @@ public class Trail extends CoreDecision implements java.io.Serializable {
 				if (myTarget.matches(thisTarget)) {
 					// yes, continue with this loop
 					res = true;
-				} else {
 				}
 			}
 

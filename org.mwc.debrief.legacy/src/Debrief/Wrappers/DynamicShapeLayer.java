@@ -251,7 +251,7 @@ public class DynamicShapeLayer extends BaseLayer implements DynamicPlottable, Wa
 	// }
 	// else
 	// {
-	// // FIXME if element isn't DynamicShapeWrapper we will ignore or paint it
+	// // if the element isn't a DynamicShapeWrapper it is ignored, or painted?
 	// // ???
 	// // thisP.paint(dest);
 	// }
@@ -260,7 +260,6 @@ public class DynamicShapeLayer extends BaseLayer implements DynamicPlottable, Wa
 
 	@Override
 	public PlainSymbol getSnailShape() {
-		// TODO Auto-generated method stub
 		return null;
 	}
 

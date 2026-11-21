@@ -7,8 +7,11 @@
 #    the jars keep their version-free file names. See
 #    docs/dependencies/maven-jars.md.
 #
-# Jars that are still committed (no matching artifact on Central, and
-# everything in org.mwc.cmap.geotools) are invisible to Dependabot.
+# 3. GeoTools and its dependencies, which org.mwc.cmap.geotools.libs fetches
+#    from the OSGeo repository into org.mwc.cmap.geotools.
+#
+# Jars that are still committed (no matching artifact on Central) are
+# invisible to Dependabot.
 # .github/workflows/dependency-scan.yml reports their vulnerabilities instead.
 # See docs/dependencies/plan.md.
 version: 2
@@ -49,6 +52,9 @@ updates:
         patterns: ["org.apache.pdfbox:*"]
       slf4j:
         patterns: ["org.slf4j:*"]
+      # Lite's Radiance modules share one version (radiance.version)
+      radiance:
+        patterns: ["org.pushing-pixels:*"]
       jackson:
         patterns: ["com.fasterxml.jackson.core:*"]
       # the JUnit 6 jars (junit.version in the root pom) move together
@@ -61,3 +67,27 @@ updates:
         update-types:
           - minor
           - patch
+
+  - package-ecosystem: maven
+    directory: /org.mwc.cmap.geotools.libs
+    target-branch: develop
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 5
+    ignore:
+      - dependency-name: "org.apache.maven.plugins:*"
+      - dependency-name: "org.eclipse.tycho:*"
+      # JAXB 2 for Debrief's GPX and DIS code: JAXB 3 and later moved to the
+      # jakarta.xml.bind packages, a code change
+      - dependency-name: "javax.xml.bind:jaxb-api"
+        versions: [">= 2.4"]
+      - dependency-name: "com.sun.xml.bind:jaxb-impl"
+        versions: [">= 3"]
+    # the GeoTools modules share one version (geotools.version): one PR.
+    # After a bump that adds or drops a jar, run
+    # .github/scripts/geotools_manifest.py; CI fails until it is run.
+    groups:
+      geotools:
+        patterns: ["org.geotools:*"]
+      jaxb2:
+        patterns: ["javax.xml.bind:*", "com.sun.xml.bind:*"]

@@ -79,6 +79,7 @@ public class SimulationRunner {
 									_terminated = true;
 									System.err.println("TERMINATING OUTPUTTER");
 								} catch (final Exception e) {
+									// exitValue() throws while the process is still running
 								}
 
 							} catch (final IOException e1) {

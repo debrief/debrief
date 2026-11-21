@@ -112,7 +112,7 @@ public class FileUtils {
 				try {
 					finInput.close();
 				} catch (final Throwable thr) {
-
+					// nothing more to do if closing fails
 				}
 			}
 			throw ioExec;
@@ -142,7 +142,7 @@ public class FileUtils {
 				try {
 					foutOutput.close();
 				} catch (final IOException ioExec2) {
-
+					// nothing more to do if closing fails
 				}
 			}
 
@@ -264,7 +264,7 @@ public class FileUtils {
 
 				for (int index = 0; index < files.length; index++) {
 					if (files[index].isDirectory()) {
-						// TODO: Performance: Implement this as a queue where you add to
+						// Performance: a queue where you add to
 						// the end and take from the beginning, it will be more efficient
 						// than the recursion
 						dirDeleted = deleteDirectoryContent(files[index]);
@@ -415,7 +415,6 @@ public class FileUtils {
 	 * @throws IOException - error in function
 	 */
 	public boolean isFileBinaryEqual(final File first, final File second) throws IOException {
-		// TODO: Test: Missing test
 		boolean retval = false;
 
 		if ((first.exists()) && (second.exists()) && (first.isFile()) && (second.isFile())) {

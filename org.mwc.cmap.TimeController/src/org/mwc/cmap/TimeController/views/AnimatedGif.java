@@ -136,6 +136,7 @@ public class AnimatedGif {
 										ms += 10;
 									Thread.sleep(ms);
 								} catch (final InterruptedException e) {
+									// interrupted: carry on
 								}
 
 								/*

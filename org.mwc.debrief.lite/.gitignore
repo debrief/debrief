@@ -2,3 +2,5 @@
 /temp.folder/
 /@dot/
 /test-libs/
+/radiance-*.jar
+/ephemeral-chroma-java.jar

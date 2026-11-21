@@ -242,7 +242,6 @@ public class NetworkPduSender implements IPduSender {
 		try {
 			socket.send(packet);
 		} catch (final IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}

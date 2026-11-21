@@ -280,15 +280,6 @@ abstract public class Session implements Serializable, Observer {
 
 	abstract public void closeGUI();
 
-	@Override
-	protected void finalize() {
-		try {
-			super.finalize();
-		} catch (final Throwable e) {
-			MWC.Utilities.Errors.Trace.trace(e);
-		}
-	}
-
 	/**
 	 * get the current clipboard
 	 */

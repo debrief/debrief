@@ -19,7 +19,7 @@ import java.io.File;
 
 import org.mwc.debrief.lite.DebriefLiteApp;
 import org.mwc.debrief.lite.menu.DebriefRibbonFile;
-import org.pushingpixels.flamingo.api.ribbon.JRibbonFrame;
+import org.pushingpixels.radiance.component.api.ribbon.JRibbonFrame;
 
 import Debrief.GUI.Frames.Session;
 

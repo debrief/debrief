@@ -102,10 +102,8 @@ abstract class Core_TA_Handler implements ExtensibleLineImporter, PlainLineImpor
 				return false;
 			else if (value1Name != null && !value1Name.equals(other.value1Name))
 				return false;
-			else if (value2Name != null && !value2Name.equals(other.value2Name))
-				return false;
 			else
-				return true;
+				return value2Name == null || value2Name.equals(other.value2Name);
 		}
 
 		@Override

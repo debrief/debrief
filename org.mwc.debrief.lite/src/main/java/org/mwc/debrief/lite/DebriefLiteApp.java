@@ -16,6 +16,7 @@
 package org.mwc.debrief.lite;
 
 import java.awt.BorderLayout;
+import org.geotools.geometry.jts.ReferencedEnvelope;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Cursor;
@@ -24,6 +25,7 @@ import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
+import java.awt.Taskbar;
 import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.DataFlavor;
@@ -57,8 +59,7 @@ import javax.swing.WindowConstants;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
-import org.geotools.geometry.DirectPosition2D;
-import org.geotools.geometry.Envelope2D;
+import org.geotools.geometry.Position2D;
 import org.geotools.map.MapContent;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.geotools.swing.JMapPane;
@@ -93,14 +94,14 @@ import org.mwc.debrief.lite.outline.OutlinePanelView;
 import org.mwc.debrief.lite.util.DoSaveAs;
 import org.mwc.debrief.lite.util.PlotFiles;
 import org.mwc.debrief.lite.util.ResizableIconFactory;
-import org.opengis.geometry.MismatchedDimensionException;
-import org.opengis.referencing.operation.MathTransform;
-import org.opengis.referencing.operation.NoninvertibleTransformException;
-import org.opengis.referencing.operation.TransformException;
+import org.geotools.api.geometry.MismatchedDimensionException;
+import org.geotools.api.referencing.operation.MathTransform;
+import org.geotools.api.referencing.operation.NoninvertibleTransformException;
+import org.geotools.api.referencing.operation.TransformException;
 import org.mwc.debrief.lite.util.ScaledImageIcon;
-import org.pushingpixels.flamingo.api.ribbon.JRibbonFrame;
-import org.pushingpixels.substance.api.SubstanceCortex;
-import org.pushingpixels.substance.api.skin.BusinessBlueSteelSkin;
+import org.pushingpixels.radiance.component.api.ribbon.JRibbonFrame;
+import org.pushingpixels.radiance.theming.api.RadianceThemingCortex;
+import org.pushingpixels.radiance.theming.api.skin.BusinessBlueSteelSkin;
 
 import Debrief.GUI.Frames.Application;
 import Debrief.GUI.Tote.Painters.PainterManager;
@@ -436,14 +437,14 @@ public class DebriefLiteApp implements FileDropListener {
 
 	private static void setInitialArea(final JMapPane mapPane, final MathTransform transform) {
 		// give it a default viewport - overlooking Europe
-		final DirectPosition2D tl = new DirectPosition2D(-22, 59.75);
-		final DirectPosition2D br = new DirectPosition2D(37, 36.5);
+		final Position2D tl = new Position2D(-22, 59.75);
+		final Position2D br = new Position2D(37, 36.5);
 
 		try {
 			// convert to map units
 			transform.inverse().transform(tl, tl);
 			transform.inverse().transform(br, br);
-			final Envelope2D envelope = new Envelope2D(tl, br);
+			final ReferencedEnvelope envelope = new ReferencedEnvelope(tl.x, br.x, tl.y, br.y, tl.getCoordinateReferenceSystem());
 			mapPane.setDisplayArea(envelope);
 		} catch (MismatchedDimensionException | TransformException e) {
 			Application.logError2(ToolParent.ERROR, "Failure in setting initial viewport coverage", e);
@@ -663,8 +664,8 @@ public class DebriefLiteApp implements FileDropListener {
 		System.setProperty("com.sun.media.jai.disableMediaLib", "true");
 
 		JFrame.setDefaultLookAndFeelDecorated(true);
-		if (SubstanceCortex.GlobalScope.getCurrentSkin() == null) {
-			SubstanceCortex.GlobalScope.setSkin(new BusinessBlueSteelSkin());
+		if (RadianceThemingCortex.GlobalScope.getCurrentSkin() == null) {
+			RadianceThemingCortex.GlobalScope.setSkin(new BusinessBlueSteelSkin());
 		}
 		final DisplaySplash splashScreen = new DisplaySplash(5);
 		final Thread t = new Thread(splashScreen);
@@ -829,8 +830,14 @@ public class DebriefLiteApp implements FileDropListener {
 
 		// lastly give us some backdrop data
 		loadBackdropdata(_theLayers);
-		theFrame.setApplicationIcon(ResizableIconFactory.factory(
-				ScaledImageIcon.getIcon(MenuUtils.createImage("icons/d_lite.png"), MenuUtils.ICON_SIZE_32)));
+		// Radiance 9's setApplicationIcon also sets the OS taskbar icon, calling
+		// Taskbar.getTaskbar() without checking that the platform has one: on most
+		// Linux desktops that throws on the event thread. The window icon below is
+		// set either way.
+		if (Taskbar.isTaskbarSupported()) {
+			theFrame.setApplicationIcon(ResizableIconFactory.factory(
+					ScaledImageIcon.getIcon(MenuUtils.createImage("icons/d_lite.png"), MenuUtils.ICON_SIZE_32)));
+		}
 		theFrame.setIconImage(new ImageIcon(ClassLoader.getSystemResource("icons/d_lite.png")).getImage());
 		theFrame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 		theFrame.setVisible(true);
@@ -876,7 +883,7 @@ public class DebriefLiteApp implements FileDropListener {
 		mapPane.addComponentListener(new ComponentAdapter() {
 			@Override
 			public void componentResized(final ComponentEvent e) {
-				// TODO . This must be changed once we update geotools.
+				// this must change once GeoTools is updated.
 				// Reverted ec7262026be4cbe07c7c521687703ddfa1acfb97
 				// I _think_ it is causing the behavior described here.
 				// here https://github.com/debrief/debrief/issues/4051#issuecomment-511193288
@@ -936,7 +943,7 @@ public class DebriefLiteApp implements FileDropListener {
 
 			@Override
 			public void onMouseExited(final MapMouseEvent ev) {
-				final DirectPosition2D curPos = ev.getWorldPos();
+				final Position2D curPos = ev.getWorldPos();
 
 				if (ev.getWorldPos().getCoordinateReferenceSystem() != DefaultGeographicCRS.WGS84) {
 					try {
@@ -1150,8 +1157,8 @@ public class DebriefLiteApp implements FileDropListener {
 	}
 
 	public WorldArea getProjectionArea() {
-		final DirectPosition2D upperCorner = (DirectPosition2D) mapPane.getDisplayArea().getUpperCorner();
-		final DirectPosition2D bottomCorner = (DirectPosition2D) mapPane.getDisplayArea().getLowerCorner();
+		final Position2D upperCorner = (Position2D) mapPane.getDisplayArea().getUpperCorner();
+		final Position2D bottomCorner = (Position2D) mapPane.getDisplayArea().getLowerCorner();
 
 		if (bottomCorner.getCoordinateReferenceSystem() != DefaultGeographicCRS.WGS84
 				&& upperCorner.getCoordinateReferenceSystem() != DefaultGeographicCRS.WGS84) {
@@ -1560,8 +1567,8 @@ public class DebriefLiteApp implements FileDropListener {
 	}
 
 	public void updateProjectionArea() {
-		final DirectPosition2D upperCorner = (DirectPosition2D) mapPane.getDisplayArea().getUpperCorner();
-		final DirectPosition2D bottomCorner = (DirectPosition2D) mapPane.getDisplayArea().getLowerCorner();
+		final Position2D upperCorner = (Position2D) mapPane.getDisplayArea().getUpperCorner();
+		final Position2D bottomCorner = (Position2D) mapPane.getDisplayArea().getLowerCorner();
 
 		if (bottomCorner.getCoordinateReferenceSystem() != DefaultGeographicCRS.WGS84
 				&& upperCorner.getCoordinateReferenceSystem() != DefaultGeographicCRS.WGS84) {

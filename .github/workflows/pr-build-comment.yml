@@ -15,7 +15,9 @@
 name: PR build comment
 
 on:
-  workflow_run:
+  # Safe here, as the header explains: runs the base branch's copy and never
+  # checks out or executes pull request code.
+  workflow_run: # zizmor: ignore[dangerous-triggers]
     workflows: ["Debrief CI"]
     types: [completed]
 

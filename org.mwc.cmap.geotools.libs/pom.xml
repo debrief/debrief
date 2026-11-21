@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    Debrief - the Open Source Maritime Analysis Application
+    http://debrief.info
+
+    (C) 2000-2026, Deep Blue C Technology Ltd
+
+    This library is free software; you can redistribute it and/or
+    modify it under the terms of the Eclipse Public License v1.0
+    (http://www.eclipse.org/legal/epl-v10.html)
+
+    This library is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ -->
+<!--
+  GeoTools and everything it needs, fetched into org.mwc.cmap.geotools.
+
+  Unlike org.mwc.debrief.thirdparty, this module keeps Maven's transitive
+  dependencies: GeoTools needs about a hundred jars, and they move together
+  when GeoTools does. Dependabot bumps ${geotools.version}.
+
+  Each jar is copied as <groupId>.<artifactId>[-<classifier>].jar (no
+  version), so cmap.geotools' MANIFEST.MF, build.properties and .classpath
+  stay put when versions change, and the names can't clash with other
+  plugins' jars in Lite's flat lib/ folder. The copied jars are git-ignored.
+
+  When a GeoTools release adds or drops a dependency, the build fails until
+  cmap.geotools' Bundle-ClassPath matches: regenerate it with
+  .github/scripts/geotools_manifest.py.
+
+  GeoTools is not on Maven Central: it comes from repo.osgeo.org.
+  See docs/dependencies/maven-jars.md.
+ -->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>org.mwc.debrief</groupId>
+    <artifactId>parent</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+  </parent>
+  <artifactId>org.mwc.cmap.geotools.libs</artifactId>
+  <packaging>pom</packaging>
+
+  <properties>
+    <geotools.version>35.2</geotools.version>
+  </properties>
+
+  <repositories>
+    <repository>
+      <id>osgeo</id>
+      <name>OSGeo releases (GeoTools)</name>
+      <url>https://repo.osgeo.org/repository/release/</url>
+      <snapshots><enabled>false</enabled></snapshots>
+    </repository>
+  </repositories>
+
+  <!-- the GeoTools modules Debrief uses; Maven adds what they need -->
+  <dependencies>
+    <dependency><groupId>org.geotools</groupId><artifactId>gt-main</artifactId><version>${geotools.version}</version></dependency>
+    <dependency><groupId>org.geotools</groupId><artifactId>gt-referencing</artifactId><version>${geotools.version}</version></dependency>
+    <dependency><groupId>org.geotools</groupId><artifactId>gt-epsg-hsql</artifactId><version>${geotools.version}</version></dependency>
+    <dependency><groupId>org.geotools</groupId><artifactId>gt-epsg-extension</artifactId><version>${geotools.version}</version></dependency>
+    <dependency><groupId>org.geotools</groupId><artifactId>gt-shapefile</artifactId><version>${geotools.version}</version></dependency>
+    <dependency><groupId>org.geotools</groupId><artifactId>gt-render</artifactId><version>${geotools.version}</version></dependency>
+    <dependency><groupId>org.geotools</groupId><artifactId>gt-geotiff</artifactId><version>${geotools.version}</version></dependency>
+    <dependency><groupId>org.geotools</groupId><artifactId>gt-image</artifactId><version>${geotools.version}</version></dependency>
+    <dependency><groupId>org.geotools</groupId><artifactId>gt-swing</artifactId><version>${geotools.version}</version></dependency>
+    <dependency><groupId>org.geotools</groupId><artifactId>gt-xml</artifactId><version>${geotools.version}</version></dependency>
+    <dependency><groupId>org.geotools</groupId><artifactId>gt-cql</artifactId><version>${geotools.version}</version></dependency>
+  </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <version>3.8.1</version>
+        <executions>
+          <execution>
+            <id>org.mwc.cmap.geotools</id>
+            <phase>generate-resources</phase>
+            <goals><goal>copy-dependencies</goal></goals>
+            <configuration>
+              <outputDirectory>${project.basedir}/../org.mwc.cmap.geotools</outputDirectory>
+              <includeScope>runtime</includeScope>
+              <stripVersion>true</stripVersion>
+              <prependGroupId>true</prependGroupId>
+              <overWriteReleases>true</overWriteReleases>
+              <!-- org.mwc.cmap.legacy, which cmap.geotools requires,
+                   already provides these (newer versions) -->
+              <excludeArtifactIds>commons-io,commons-lang3,commons-collections4</excludeArtifactIds>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+</project>

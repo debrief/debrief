@@ -64,7 +64,7 @@ public class Network {
 	}
 
 	public static class LightParticipant {
-		public int id;;
+		public int id;
 
 		public String name;
 
@@ -91,9 +91,9 @@ public class Network {
 	}
 
 	public static class LightScenario {
-		public String name;;
+		public String name;
 
-		public Vector<LightParticipant> listOfParticipants;;
+		public Vector<LightParticipant> listOfParticipants;
 
 		public LightScenario() {
 		};
@@ -197,7 +197,7 @@ public class Network {
 	}
 
 	public static class ScenUpdate {
-		public static final String PLAYING = "Started";;
+		public static final String PLAYING = "Started";
 
 		public static final String STEPPED = "Stepped";
 

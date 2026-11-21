@@ -173,7 +173,7 @@ public class DetectionEvent implements java.util.Comparator<DetectionEvent>, Ser
 	 * store the ambigous bearing
 	 *
 	 */
-	private Float _ambigBrg = null;;
+	private Float _ambigBrg = null;
 
 	/**
 	 * no-op constructor created in support of Kryo networking
@@ -260,13 +260,6 @@ public class DetectionEvent implements java.util.Comparator<DetectionEvent>, Ser
 		return res;
 	}
 
-	@Override
-	public boolean equals(final Object obj) {
-		final DetectionEvent d2 = (DetectionEvent) obj;
-
-		return (this == d2);
-
-	}
 
 	public double getAmbiguousBearing() {
 		return _ambigBrg;

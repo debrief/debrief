@@ -78,7 +78,7 @@ public interface ParticipantMovedListener extends java.util.EventListener {
 	/**
 	 * the scenario has restarted
 	 *
-	 * @param scenario TODO
+	 * @param scenario the scenario
 	 *
 	 */
 	public void restart(ScenarioType scenario);

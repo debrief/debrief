@@ -156,7 +156,7 @@ public class AISPositionB implements IAISMessage, IAISDecodable, Cloneable, IPos
 		this.msgTimestamp = new Timestamp(secs * 1000);
 
 //		/* time stamp bits 138-143 */
-//		// TODO: impelemt the rest bits
+//		// the rest of the bits are not decoded
 //		Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
 //		this.msgTimestamp = new Timestamp(cal.getTimeInMillis());
 

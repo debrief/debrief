@@ -60,8 +60,11 @@ public class DummyDataProvider implements IPDUProvider {
 				lastLoc = new EntityStatePdu();
 				dummyStates.put(hisId, lastLoc);
 
-				// and pre-populate it
-				lastLoc.setEntityID(ourID);
+				// and pre-populate it: each track has its own ID (not ours, which
+				// may be null, and would make every track the same entity)
+				final EntityID hisEntity = new EntityID();
+				hisEntity.setEntity(hisId);
+				lastLoc.setEntityID(hisEntity);
 				lastLoc.setTimestamp(1000 + ((long) (Math.random() * 1000) / 100 * 100));
 				final Vector3Double eLoc = new Vector3Double();
 				lastLoc.setEntityLocation(eLoc);
@@ -121,7 +124,6 @@ public class DummyDataProvider implements IPDUProvider {
 
 	@Override
 	public void detach() {
-		// TODO Auto-generated method stub
 
 	}
 

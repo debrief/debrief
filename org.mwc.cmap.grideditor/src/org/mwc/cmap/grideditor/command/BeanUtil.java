@@ -129,6 +129,7 @@ public class BeanUtil {
 		try {
 			setter = item.getClass().getMethod(setterName, descriptor.getType());
 		} catch (final NoSuchMethodException e) {
+			// no setter taking that type: try the next
 		}
 
 		// did it work?
@@ -138,12 +139,14 @@ public class BeanUtil {
 				try {
 					setter = item.getClass().getMethod(setterName, double.class);
 				} catch (final NoSuchMethodException e) {
+					// no setter taking that type: try the next
 				}
 			}
 			if (descriptor.getType() == Boolean.class)
 				try {
 					setter = item.getClass().getMethod(setterName, boolean.class);
 				} catch (final NoSuchMethodException e) {
+					// no setter taking that type: try the next
 				}
 		}
 

@@ -99,7 +99,7 @@ Versions are set at implementation time from Maven Central (latest stable); the 
 6. Lite: run `dist/debrief-lite-<version>.zip`, open a REP file, step time.
 
 ## Gate A: before any restructuring
-**Waived** by the owner to start Phase B. Two conditions are still open: two weeks of green scheduled runs, and the owner's manual smoke test on Windows (the owner dropped macOS, November 2026: no Debrief user runs it).
+**Passed** (owner, 18 November 2026). It was waived earlier to start Phase B; the owner has since run the manual smoke test on Windows on a `develop` build and declared the gate passed. The smoke test found three problems, fixed in debrief/debrief#5335: the Time Controller's time display lost its black background, Debrief could open with the plot inactive (leaving the Time Controller, Track Tote and Outline blank), and the Gate A wording still asked for macOS (the owner dropped it, November 2026: no Debrief user runs it).
 
 All of the following hold:
 - PRs 1–3+ are merged.
@@ -146,23 +146,28 @@ All of the following hold:
 - **No auto-merge.** We revisit this at Gate D.
 - **New CVEs. Done.** The weekly (and manual) run of `dependency-scan.yml` opens one issue per vulnerability and package in the shipped products, labelled `dependency-vulnerability` (`.github/scripts/scan_issues.py`). A finding with an open issue is not raised again; at most 20 new issues per run. Pull request runs only report. To accept a finding instead of fixing it, add an ignore rule to `.github/grype.yaml` naming the issue, then close it.
 
-## Gate D: before the major migrations
+## Gate D: before the major migrations (passed)
 - Phase B is complete.
 - Golden-file coverage now includes **screenshot diffs of map rendering**. It renders a fixed set of plots and a shapefile at fixed sizes, headless, and compares against references with a per-pixel tolerance. **Done:** `MapRenderingTest` in Lite's headless tests (see `org.mwc.debrief.legacy/test_data/golden/README.md`).
-- At least 4 bot update PRs have merged cleanly. (1 so far: the GitHub Actions group, #5287.)
+- At least 4 bot update PRs have merged cleanly. **Met:** the GitHub Actions groups #5287, #5330 and #5334, and the third-party jars group #5318.
 
-## Phase D1: GeoTools 21.2 → current (after Gate D)
-Spec `specs/004-geotools/`.
-- **API change.** `org.opengis` → `org.geotools.api`, using GeoTools' migration script.
-- **Replace `gt-swt-23-SNAPSHOT`.** GeoTools no longer publishes gt-swt, so we port the classes we use into `cmap.geotools`.
-- **Align** `gt-jdbc-spatialite`.
-- **Drop the GeoTools pins.** commons-text and hsqldb are no longer pinned by GeoTools.
+## Phase D1: GeoTools 21.2 → 35.2 (after Gate D)
+- **Replace `gt-swt-23-SNAPSHOT`. Done** (PR A). Debrief used one method of it, `Utils.createStyle`; `ShapeFileStyles` in `cmap.geotools` replaces it.
+- **Fetch with Maven. Done** (PR B). `org.mwc.cmap.geotools.libs` fetches GeoTools 35.2 and its dependencies from repo.osgeo.org; the 92 committed jars are gone. The manifest is generated (see [maven-jars.md](maven-jars.md)). Dependabot watches the module.
+- **API change. Done** (PR B). `org.opengis` → `org.geotools.api` and JAI → Eclipse ImageN, by class name; `DirectPosition2D` → `Position2D`; `Envelope2D`, which GeoTools removed, → `ReferencedEnvelope` or `Rectangle2D`.
+- ~~**Align** `gt-jdbc-spatialite`~~: removed earlier with Pepys.
+- **Drop the GeoTools pins. Done.** commons-text and hsqldb now come at the versions GeoTools 35.2 asks for.
+- **Found on the way:** Debrief's GPX and DIS code used JAXB 2, which only the GeoTools 21 jars supplied. **Moved. Done:** `org.mwc.debrief.thirdparty` fetches it (jaxb-api 2.3.1, jaxb-impl 2.3.9) into `org.mwc.debrief.core`, which exports `javax.xml.bind` for the DIS plugin and takes `javax.activation` from the target platform. Lite and the GeoTools bundle no longer carry it.
 - **Acceptance:** the screenshot diffs (Lite's `MapRenderingTest` and Debrief NG's `MapScreenshotTest`) are within tolerance; coordinates are within 1 m when projected and transformed back on the sample plots; and the full verification list passes. The coordinate check is ready: `ProjectionAccuracyTest` in Lite's headless tests (round trip within 1 m, agreement with an independent EPSG:3395 formula within 1 m, and a screen round trip within one pixel, for every fix in `sample.dpf`, `boat1.rep` and `uk_track.rep`).
 
 ## Phase D2: Lite UI libraries (after Gate D; can run in parallel with D1)
-- **Radiance** 3.0.0 → current: flamingo ribbon, substance, trident; packages and API change.
-- **swingx** 1.6.6-SNAPSHOT → a released fork, or remove it.
-- **Acceptance:** Lite UI tests pass and screenshot diffs of the Lite main window are within tolerance. The owner does a manual walkthrough on all three operating systems. The window screenshots are ready: `TestMainWindowScreenshots` in the Lite UI tests (startup, each ribbon tab, and a loaded plot).
+- **Radiance** 3.0.0 → 9.0.0. **Done** (PR 2). `org.mwc.debrief.thirdparty` fetches the five modules (`radiance.version`) and `ephemeral-chroma-java` from Central into Lite; the committed 3.0.0 jars are gone. flamingo → component, substance → theming, trident → animation, neon → common: packages renamed by class name, plus these API changes:
+  - icons: `ResizableIcon` → `RadianceIcon`, which now recolours icons through `setColorFilter`. `ScaledImageIcon` implements it, and the icon factory gives each button state its own icon copy, which Radiance 9 resizes and recolours separately.
+  - disabled icons: Radiance 9 greys them much darker than Radiance 3 did, so that disabled buttons looked enabled. `MenuUtils.buttonPresentation()` and `ICON_FILTERS` make them follow the disabled text colour (light grey), as before.
+  - the Save button: Radiance 9 runs a button's action when its text is clicked; Radiance 3 opened its popup. Save keeps the popup (`TextClick.POPUP`).
+  - smaller moves: `AbstractCommandButton` → `JCommandButton`; tooltips, text and icons set on the `Command`; `addTaskbarCommand` takes a projection; popup panels take a `MenuPopupPanelLayoutSpec`; the unused `PopupPanelCallback` parameter is gone.
+- **swingx** 1.6.6-SNAPSHOT: **removed** (owner's choice). Lite used five classes, all in its collapsible side panels: `JXPanel` is now `JPanel`, `VerticalLayout`/`HorizontalLayout` a small `StackLayout`, `GraphicsUtilities` a JDK translucent image, and `JXLabel`'s rotated text a new `RotatedLabel`. The `@JavaBean` annotation (and its annotation processor) went with them.
+- **Acceptance:** Lite UI tests pass and screenshot diffs of the Lite main window are within tolerance. The owner does a manual walkthrough on all three operating systems, following [debrief-lite-smoke-checklist.md](../testing/debrief-lite-smoke-checklist.md). The window screenshots are ready: `TestMainWindowScreenshots` in the Lite UI tests (startup, each ribbon tab, and a loaded plot).
 
 ## Phase D3: Jackson 1 and the old Postgres drivers (after Gate A; can run in parallel with B)
 - **Jackson 1 → Jackson 2. Done.** The GND JSON code (`cmap.legacy`: `GDataset`, `GPackage`, `GNDDocHandler`, `GNDStore`) and the ASSET cloud observers now use Jackson 2, with no deprecated calls. The Jackson 2 jars (2.22.4) moved down from `debrief.legacy` to `cmap.legacy`, which exports them to every layer; `cmap.geotools` drops its duplicate jackson-core. Golden tests in `GNDDocHandler.TestJSON` pin the track and narrative JSON to the exact strings Jackson 1 wrote, and two new tests cover the reader (`GNDDocument`, `GDataset`), which had none. All four 1.9.4 jars are deleted.

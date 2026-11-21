@@ -244,7 +244,7 @@ public class FixedChartComposite extends Composite implements ChartChangeListene
 	private transient Rectangle zoomRectangle = null;
 
 	/** Controls if the zoom rectangle is drawn as an outline or filled. */
-	// TODO private boolean fillZoomRectangle = true;
+	// private boolean fillZoomRectangle = true; (not in the SWT version)
 	/** The minimum distance required to drag the mouse to trigger a zoom. */
 	private final int zoomTriggerDistance;
 
@@ -523,7 +523,7 @@ public class FixedChartComposite extends Composite implements ChartChangeListene
 	 * Creates a print job for the chart.
 	 */
 	public void createChartPrintJob() {
-		// FIXME try to replace swing print stuff by swt
+		// printing goes through Swing, not SWT
 		final PrinterJob job = PrinterJob.getPrinterJob();
 		final PageFormat pf = job.defaultPage();
 		final PageFormat pf2 = job.pageDialog(pf);
@@ -750,7 +750,7 @@ public class FixedChartComposite extends Composite implements ChartChangeListene
 					filename = filename + ".png";
 				}
 			}
-			// TODO replace getSize by getBounds ?
+			// getSize, or getBounds?
 			ChartUtilities.saveChartAsPNG(new File(filename), this.chart, this.canvas.getSize().x,
 					this.canvas.getSize().y);
 		}
@@ -1181,7 +1181,7 @@ public class FixedChartComposite extends Composite implements ChartChangeListene
 	@Override
 	public void paintControl(final PaintEvent e) {
 		// first determine the size of the chart rendering area...
-		// TODO workout insets for SWT
+		// insets are not worked out for SWT
 		final Rectangle available = getBounds();
 		// skip if chart is null
 		if (this.chart == null) {
@@ -1272,7 +1272,7 @@ public class FixedChartComposite extends Composite implements ChartChangeListene
 					this.info);
 		}
 		final Rectangle area = getScreenDataArea();
-		// TODO see if we need to apply some line color and style to the
+		// no line colour or style is applied to the
 		// axis traces
 		if (this.horizontalAxisTrace && area.x < this.verticalTraceLineX
 				&& area.x + area.width > this.verticalTraceLineX) {

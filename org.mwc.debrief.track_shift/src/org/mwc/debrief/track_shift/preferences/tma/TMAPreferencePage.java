@@ -106,7 +106,6 @@ public class TMAPreferencePage extends FieldEditorPreferencePage implements IWor
 
 			@Override
 			public void widgetDefaultSelected(final SelectionEvent e) {
-				// TODO Auto-generated method stub
 
 			}
 

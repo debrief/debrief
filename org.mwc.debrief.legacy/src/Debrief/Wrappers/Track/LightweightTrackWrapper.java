@@ -694,7 +694,6 @@ public class LightweightTrackWrapper extends PlainWrapper
 
 			@Override
 			public void remove() {
-				// TODO Auto-generated method stub
 
 			}
 		};

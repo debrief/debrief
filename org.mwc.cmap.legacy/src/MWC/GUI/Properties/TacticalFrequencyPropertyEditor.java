@@ -22,11 +22,11 @@ import java.beans.PropertyEditorSupport;
  */
 public class TacticalFrequencyPropertyEditor extends PropertyEditorSupport {
 
-	private static final long _60_MINS = 60 * 60 * 1000l;
+	private static final long _60_MINS = 60 * 60 * 1000L;
 
-	private static final long _30_MINS = 30 * 60 * 1000l;
+	private static final long _30_MINS = 30 * 60 * 1000L;
 
-	private static final long _10_MINS = 10 * 60 * 1000l;
+	private static final long _10_MINS = 10 * 60 * 1000L;
 
 	/**
 	 * the currently selected frequency (in millis)
@@ -42,7 +42,7 @@ public class TacticalFrequencyPropertyEditor extends PropertyEditorSupport {
 	/**
 	 * the values to use for the tags in the list
 	 */
-	private final long _freqs[] = { 1 * 60 * 1000l, _10_MINS, _30_MINS, _60_MINS, 6 * _60_MINS, 12 * _60_MINS,
+	private final long _freqs[] = { 1 * 60 * 1000L, _10_MINS, _30_MINS, _60_MINS, 6 * _60_MINS, 12 * _60_MINS,
 			24 * _60_MINS, 48 * _60_MINS, 72 * _60_MINS };
 
 	@Override

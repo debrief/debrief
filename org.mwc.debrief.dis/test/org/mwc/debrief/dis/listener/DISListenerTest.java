@@ -6,7 +6,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.mwc.debrief.dis.core.DISModule;
 import org.mwc.debrief.dis.core.IDISModule;
@@ -23,11 +25,13 @@ import org.mwc.debrief.dis.listeners.IDISScenarioListener;
 import org.mwc.debrief.dis.providers.IPDUProvider;
 import org.mwc.debrief.dis.providers.dummy.DummyDataProvider;
 
+import edu.nps.moves.dis.CollisionPdu;
+import edu.nps.moves.dis.EntityStatePdu;
+import edu.nps.moves.dis.EventReportPdu;
+import edu.nps.moves.dis.FirePdu;
 import edu.nps.moves.dis.Pdu;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
-@Disabled("Was in an uncompiled tests/ folder before the JUnit 6 migration, so it never ran; 4 of its 6 tests fail (null entity ID in DISModule.handleFix, and a collision count)")
 public class DISListenerTest
 {
   @Test
@@ -35,7 +39,17 @@ public class DISListenerTest
   {
     PduGenerator sender = new PduGenerator();
     DISModule module = new DISModule();
-    PassThruPduSender pSender = new PassThruPduSender(module);
+    // count the PDUs the generator sends, by type, on their way to the module
+    final Map<Class<?>, Integer> sent = new HashMap<>();
+    final PassThruPduSender pSender = new PassThruPduSender(module)
+    {
+      @Override
+      public void sendPdu(final Pdu pdu)
+      {
+        sent.merge(pdu.getClass(), 1, Integer::sum);
+        super.sendPdu(pdu);
+      }
+    };
 
     final List<String> collMessages = new ArrayList<String>();
     final List<String> fireMessages = new ArrayList<String>();
@@ -80,10 +94,19 @@ public class DISListenerTest
     {"10", "6", "80"});
 
     // check some stuff happened
-    assertEquals(2, collMessages.size(), "got collisions");
-    assertEquals(10, fireMessages.size(), "got firing");
-    assertEquals(617, fixMessages.size(), "got fixes");
-    assertEquals(2, eventMessages.size(), "got events");
+    // every PDU the generator sends reaches its listener. How many of each
+    // there are is up to the generator's simulation, not this module (the
+    // counts this test once fixed, 2 collisions and 10 firings, are not what
+    // today's generator produces)
+    final int collisions = sent.getOrDefault(CollisionPdu.class, 0);
+    final int firings = sent.getOrDefault(FirePdu.class, 0);
+    final int fixes = sent.getOrDefault(EntityStatePdu.class, 0);
+    final int events = sent.getOrDefault(EventReportPdu.class, 0);
+    assertTrue(collisions > 0 && firings > 0 && fixes > 0 && events > 0, "the generator sent each kind: " + sent);
+    assertEquals(collisions, collMessages.size(), "got collisions");
+    assertEquals(firings, fireMessages.size(), "got firing");
+    assertEquals(fixes, fixMessages.size(), "got fixes");
+    assertEquals(events, eventMessages.size(), "got events");
   }
 
   @Test

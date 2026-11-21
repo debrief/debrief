@@ -30,8 +30,8 @@ import org.mwc.debrief.lite.gui.custom.JXCollapsiblePaneWithTitle;
 import org.mwc.debrief.lite.utils.TestUtils;
 
 import org.junit.jupiter.api.Test;
-import org.pushingpixels.flamingo.api.common.JCommandButton;
-import org.pushingpixels.flamingo.api.ribbon.JRibbonFrame;
+import org.pushingpixels.radiance.component.api.common.JCommandButton;
+import org.pushingpixels.radiance.component.api.ribbon.JRibbonFrame;
 
 /**
  * @author Ayesha
@@ -61,9 +61,9 @@ public class TestLiteLaunch extends BaseTestCase
     final JCommandButton item1 = (JCommandButton) taskbarComponents.get(0);
     final JCommandButton item2 = (JCommandButton) taskbarComponents.get(1);
     final JCommandButton item3 = (JCommandButton) taskbarComponents.get(2);
-    assertTrue(item1.getText().equals("Undo"));
-    assertTrue(item2.getText().equals("Redo"));
-    assertTrue(item3.getText().equals("Collapse"));
+    assertTrue(item1.getContentModel().getText().equals("Undo"));
+    assertTrue(item2.getContentModel().getText().equals("Redo"));
+    assertTrue(item3.getContentModel().getText().equals("Collapse"));
   }
 	@Test
 	public void testRibbonTabs()

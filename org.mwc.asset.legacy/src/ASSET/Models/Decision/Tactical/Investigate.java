@@ -542,7 +542,6 @@ public class Investigate extends CoreDecision implements java.io.Serializable {
 				if (Math.abs(tgtToWatch - watchPath) < 45) {
 					outsideTargetPath = 0.6;
 				}
-				;
 
 				watchPath = tgt.getStatus().getCourse();
 				tgtToWatch = Math.toDegrees(watchLoc.bearingFrom(tgtLoc));
@@ -556,7 +555,6 @@ public class Investigate extends CoreDecision implements java.io.Serializable {
 				if (Math.abs(tgtToWatch - watchPath) < 45) {
 					headingAwayFromTarget = 0.6;
 				}
-				;
 
 				// and calculate the range using a cost function
 				res = (toMe * 0.05 + toWatch) * outsideTargetPath * headingAwayFromTarget;

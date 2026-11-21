@@ -18,6 +18,8 @@ package org.mwc.debrief.lite.tests;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.Arrays;
+import java.util.List;
+import java.util.ArrayList;
 
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
@@ -27,16 +29,17 @@ import org.mwc.debrief.lite.DebriefLiteApp;
 import org.mwc.debrief.lite.utils.TestUtils;
 
 import org.junit.jupiter.api.Test;
-import org.pushingpixels.flamingo.api.common.JCommandButton;
-import org.pushingpixels.flamingo.api.common.JCommandButton.CommandButtonKind;
-import org.pushingpixels.flamingo.api.common.JCommandButtonStrip;
-import org.pushingpixels.flamingo.api.common.JScrollablePanel;
-import org.pushingpixels.flamingo.api.common.popup.JPopupPanel;
-import org.pushingpixels.flamingo.api.ribbon.AbstractRibbonBand;
-import org.pushingpixels.flamingo.api.ribbon.JRibbonFrame;
-import org.pushingpixels.flamingo.api.ribbon.RibbonTask;
-import org.pushingpixels.flamingo.internal.ui.ribbon.JBandControlPanel;
-import org.pushingpixels.flamingo.internal.ui.ribbon.JRibbonComponent;
+import org.pushingpixels.radiance.component.api.common.JCommandButton;
+import org.pushingpixels.radiance.component.api.common.JCommandButtonStrip;
+import org.pushingpixels.radiance.component.api.common.model.CommandMenuContentModel;
+import org.pushingpixels.radiance.component.api.common.model.CommandGroup;
+import org.pushingpixels.radiance.component.api.common.model.CommandButtonPresentationModel;
+import org.pushingpixels.radiance.component.api.common.model.Command;
+import org.pushingpixels.radiance.component.api.ribbon.AbstractRibbonBand;
+import org.pushingpixels.radiance.component.api.ribbon.JRibbonFrame;
+import org.pushingpixels.radiance.component.api.ribbon.RibbonTask;
+import org.pushingpixels.radiance.component.internal.ui.ribbon.JBandControlPanel;
+import org.pushingpixels.radiance.component.internal.ui.ribbon.JRibbonComponent;
 
 /**
  * @author Ayesha
@@ -61,7 +64,7 @@ public class TestMenus extends BaseTestCase
     assertTrue(fileMenu.getBandCount()==3);
     doAssertions(TestUtils.getRibbonBand(1,0),"File",new String[] {"New","Open","Save","Close"},false);
     // TODO: reinstate this test
-    // assertSaveAs(TestUtils.getRibbonBand(1,0));
+    assertSaveAs(TestUtils.getRibbonBand(1,0));
     doAssertions(TestUtils.getRibbonBand(1,1),"Import",new String[] {"Replay","Plot","NMEA","TIF","Nisida","Antares"},false);
     doAssertions(TestUtils.getRibbonBand(1,2),"Export",new String[] {"Clipboard"},false);
     }
@@ -114,14 +117,14 @@ public class TestMenus extends BaseTestCase
     assertRibbonLabel("Arc",(JCommandButton)liteBand.getComponent(5));
     assertRibbonLabel("Line",(JCommandButton)liteBand.getComponent(6));
     JCommandButton labelButton = ((JCommandButton)liteBand.getComponent(0));
-    assertTrue(labelButton.getText().equals("Label"));
+    assertTrue(labelButton.getContentModel().getText().equals("Label"));
     assertTrue(labelButton.isEnabled());
     }
   
   
   private void assertRibbonLabel(String string, JCommandButton component)
   {
-    assertEquals(component.getText(),string);
+    assertEquals(component.getContentModel().getText(),string);
     assertTrue(component.isEnabled());   
   }
 
@@ -153,8 +156,8 @@ public class TestMenus extends BaseTestCase
         if(isToggleButton) {
           assertTrue(liteBand.getComponent(i) instanceof JCommandButton);
           JCommandButton newButton = ((JCommandButton)liteBand.getComponent(i));
-          assertTrue(newButton.getText().equals(item));
-          if(Arrays.asList(disabledButtons).contains(newButton.getText())) {
+          assertTrue(newButton.getContentModel().getText().equals(item));
+          if(Arrays.asList(disabledButtons).contains(newButton.getContentModel().getText())) {
             assertFalse(newButton.isEnabled());
           }
           else {
@@ -164,8 +167,8 @@ public class TestMenus extends BaseTestCase
         else {
           assertTrue(liteBand.getComponent(i) instanceof JCommandButton);
           JCommandButton newButton = ((JCommandButton)liteBand.getComponent(i));
-          assertTrue(newButton.getText().equals(item));
-          if(Arrays.asList(disabledButtons).contains(newButton.getText())) {
+          assertTrue(newButton.getContentModel().getText().equals(item));
+          if(Arrays.asList(disabledButtons).contains(newButton.getContentModel().getText())) {
         	 // TODO: the close button is enabled here, the test
         	 // thinks it should be disabled
 //            assertFalse(newButton.isEnabled());
@@ -183,27 +186,28 @@ public class TestMenus extends BaseTestCase
   private void assertSaveAs(AbstractRibbonBand rb) {
     JBandControlPanel liteBand = (JBandControlPanel)rb.getComponent(0);
     JCommandButton newButton = ((JCommandButton)liteBand.getComponent(2));
-    assertTrue(newButton.getText().equals("Save"));
-    if(Arrays.asList(disabledButtons).contains(newButton.getText())) {
+    Command saveCommand = (Command)newButton.getContentModel();
+    assertEquals("Save", saveCommand.getText());
+    if(Arrays.asList(disabledButtons).contains(saveCommand.getText())) {
       assertFalse(newButton.isEnabled());
     }
     else {
       assertTrue(newButton.isEnabled());
     }
-    assertTrue(newButton.getCommandButtonKind().equals(CommandButtonKind.ACTION_AND_POPUP_MAIN_POPUP));
-    assertNotNull(newButton.getPopupCallback());
-    assertNotNull(newButton.getPopupCallback().getPopupPanel(newButton));
-    JPopupPanel panel = (JPopupPanel)newButton.getPopupCallback().getPopupPanel(newButton);
-    assertEquals(panel.getComponentCount(),1);
-    JCommandButton saveButton = (JCommandButton)TestUtils.getChildNamed(panel, "save");
-    assertEquals("Save",saveButton.getText());
-    JCommandButton saveAsButton = (JCommandButton)TestUtils.getChildNamed(panel, "saveas");
-    assertEquals("Save As",saveAsButton.getText());
-    
-    @SuppressWarnings("unchecked")
-    JScrollablePanel<JCommandButton> scrollPanel = (JScrollablePanel<JCommandButton>)panel.getComponent(0);
-    //3 as there is a panel to which the command buttons are added.
-    assertEquals(3,scrollPanel.getComponentCount());
+    // the button saves, and its popup offers Save and Save As; clicking its
+    // text opens the popup
+    assertNotNull(saveCommand.getAction());
+    assertEquals(CommandButtonPresentationModel.TextClick.POPUP,
+        ((CommandButtonPresentationModel)newButton.getPresentationModel()).getTextClick());
+    CommandMenuContentModel popup = saveCommand.getSecondaryContentModel();
+    assertNotNull(popup);
+    List<String> items = new ArrayList<>();
+    for (CommandGroup group : popup.getCommandGroups()) {
+      for (Command command : group.getCommands()) {
+        items.add(command.getText());
+      }
+    }
+    assertEquals(Arrays.asList("Save", "SaveAs"), items);
   }
   
   private void doAssertionsTimeController(AbstractRibbonBand rb)
@@ -248,7 +252,7 @@ public class TestMenus extends BaseTestCase
     assertEquals(label.getText(),"yy/MM/dd HH:mm:ss");
     JCommandButton formatButton = TestUtils.getEditTimeFormatButton();
     assertNotNull(formatButton);
-    assertEquals(formatButton.getText(),"Format");
+    assertEquals(formatButton.getContentModel().getText(),"Format");
     
   }
   private void doAssertionsTimeSlider(AbstractRibbonBand rb) {

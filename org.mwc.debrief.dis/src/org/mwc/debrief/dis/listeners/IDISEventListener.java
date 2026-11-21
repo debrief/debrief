@@ -13,7 +13,7 @@ public interface IDISEventListener {
 	 * @param time       time message sent
 	 * @param exerciseId unique id for this exercise
 	 * @param senderId   the id of the entity sending the message
-	 * @param hisName    TODO
+	 * @param hisName    the his name
 	 * @param eventType  the type of event (or -1 if unknown)
 	 * @param message    the string message content
 	 */

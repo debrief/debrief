@@ -157,9 +157,7 @@ public class LineItem extends ControlContribution {
 	}
 
 	public void setText(final String val) {
-		if (label == null) {
-		} else if (label.isDisposed()) {
-		} else {
+		if (label != null && !label.isDisposed()) {
 			label.setText(val);
 		}
 

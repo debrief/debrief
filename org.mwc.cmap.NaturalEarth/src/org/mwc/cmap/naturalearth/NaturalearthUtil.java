@@ -29,35 +29,35 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.swt.graphics.ImageData;
 import org.eclipse.swt.graphics.PaletteData;
 import org.eclipse.swt.graphics.RGB;
-import org.geotools.data.FeatureSource;
+import org.geotools.api.data.FeatureSource;
 import org.geotools.factory.CommonFactoryFinder;
-import org.geotools.styling.AnchorPoint;
-import org.geotools.styling.FeatureTypeStyle;
-import org.geotools.styling.Fill;
-import org.geotools.styling.Font;
-import org.geotools.styling.Graphic;
-import org.geotools.styling.Halo;
-import org.geotools.styling.LineSymbolizer;
-import org.geotools.styling.Mark;
-import org.geotools.styling.PointPlacement;
-import org.geotools.styling.PointSymbolizer;
-import org.geotools.styling.PolygonSymbolizer;
-import org.geotools.styling.Rule;
-import org.geotools.styling.Stroke;
-import org.geotools.styling.Style;
+import org.geotools.api.style.AnchorPoint;
+import org.geotools.api.style.FeatureTypeStyle;
+import org.geotools.api.style.Fill;
+import org.geotools.api.style.Font;
+import org.geotools.api.style.Graphic;
+import org.geotools.api.style.Halo;
+import org.geotools.api.style.LineSymbolizer;
+import org.geotools.api.style.Mark;
+import org.geotools.api.style.PointPlacement;
+import org.geotools.api.style.PointSymbolizer;
+import org.geotools.api.style.PolygonSymbolizer;
+import org.geotools.api.style.Rule;
+import org.geotools.api.style.Stroke;
+import org.geotools.api.style.Style;
 import org.geotools.styling.StyleBuilder;
-import org.geotools.styling.StyleFactory;
-import org.geotools.styling.Symbolizer;
-import org.geotools.styling.TextSymbolizer;
+import org.geotools.api.style.StyleFactory;
+import org.geotools.api.style.Symbolizer;
+import org.geotools.api.style.TextSymbolizer;
 import org.geotools.xml.styling.SLDParser;
 import org.locationtech.jts.geom.LineString;
 import org.locationtech.jts.geom.MultiLineString;
 import org.locationtech.jts.geom.MultiPolygon;
 import org.locationtech.jts.geom.Polygon;
 import org.mwc.cmap.naturalearth.view.NEFeatureStyle;
-import org.opengis.feature.simple.SimpleFeatureType;
-import org.opengis.feature.type.PropertyDescriptor;
-import org.opengis.filter.FilterFactory;
+import org.geotools.api.feature.simple.SimpleFeatureType;
+import org.geotools.api.feature.type.PropertyDescriptor;
+import org.geotools.api.filter.FilterFactory;
 
 public class NaturalearthUtil {
 	static StyleFactory styleFactory = CommonFactoryFinder.getStyleFactory();
@@ -72,7 +72,7 @@ public class NaturalearthUtil {
 		final AnchorPoint anchorPoint = sb.createAnchorPoint(sb.attributeExpression("X"), sb.attributeExpression("Y"));
 		final PointPlacement pointPlacement = sb.createPointPlacement(anchorPoint, null, sb.literalExpression(0));
 		final TextSymbolizer textSymbolizer = sb.createTextSymbolizer(sb.createFill(Color.BLACK),
-				new org.geotools.styling.Font[] { sb.createFont("Lucida Sans", 10), sb.createFont("Arial", 10) },
+				new org.geotools.api.style.Font[] { sb.createFont("Lucida Sans", 10), sb.createFont("Arial", 10) },
 				sb.createHalo(), sb.attributeExpression("name"), pointPlacement, null);
 
 		// creation of the Point symbolizer
@@ -336,7 +336,7 @@ public class NaturalearthUtil {
 		final Font font = sb.createFont("Arial", italic, bold, txtHeight);
 		final Halo halo = null; // sb.createHalo();
 		final Fill fill = styleFactory.createFill(filterFactory.literal(Color.BLACK), filterFactory.literal(0.5));
-		final TextSymbolizer textSymbolizer = sb.createTextSymbolizer(fill, new org.geotools.styling.Font[] { font },
+		final TextSymbolizer textSymbolizer = sb.createTextSymbolizer(fill, new org.geotools.api.style.Font[] { font },
 				halo, sb.attributeExpression("name"), pointPlacement, null);
 		textSymbolizer.getOptions().put("maxDisplacement", "150");
 		textSymbolizer.getOptions().put("autoWrap", "60");

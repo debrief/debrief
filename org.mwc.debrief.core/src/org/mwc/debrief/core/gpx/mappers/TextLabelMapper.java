@@ -76,7 +76,7 @@ public class TextLabelMapper implements DebriefJaxbContextAware {
 				lw.setSymbolVisible(textLabelExtension.isSymbolVisible());
 				lw.setVisible(textLabelExtension.isVisible());
 				lw.setSymbolSize(GpxUtil.resolveSymbolScale(textLabelExtension.getScale()));
-				// lw.setSymbolType(val) TODO
+				// lw.setSymbolType(val) is not mapped
 			} catch (final JAXBException e) {
 				CorePlugin.logError(IStatus.ERROR, "Error while mapping textLabel from GPX", e);
 			}

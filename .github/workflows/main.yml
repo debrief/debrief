@@ -116,8 +116,27 @@ jobs:
           # Tycho 5 needs JDK 21, and Java 21 is also Debrief's runtime.
           java-version: '21'
 
-      - name: Show Maven version
-        run: mvn --version
+      # The build uses the Maven wrapper's pinned version (.mvn/wrapper), not
+      # the runner image's Maven, which changes without notice: 3.10.1 could not
+      # resolve tycho-maven-plugin or EMF's version range from Central.
+      # The first ./mvnw call downloads the pinned Maven from Central; the
+      # wrapper does not retry, so a network blip would fail the whole job
+      # Keep the pinned Maven itself, so most jobs don't download it at all
+      - name: Cache the pinned Maven
+        uses: actions/cache@v6
+        with:
+          path: ~/.m2/wrapper
+          key: maven-dist-${{ hashFiles('.mvn/wrapper/maven-wrapper.properties') }}
+      - name: Fetch the pinned Maven
+        run: |
+          # Central's outages last a minute or two: back off 15, 30, 45, 60 s
+          for n in 1 2 3 4 5; do
+            ./mvnw --version && exit 0
+            echo "::warning::[attempt ${n}/5] the Maven wrapper could not fetch Maven"
+            [ "$n" = 5 ] || sleep $((15 * n))
+          done
+          echo "::error::the Maven wrapper could not fetch Maven after 5 attempts"
+          exit 1
 
       # Tycho otherwise re-resolves the whole Eclipse target platform from
       # remote P2 sites on every run. Restore only: Actions caches are
@@ -183,7 +202,13 @@ jobs:
         uses: GabrielBB/xvfb-action@v1
         with:
               working-directory: ./
-              run: mvn clean verify -U -B -fae
+              run: ./mvnw clean verify -U -B -fae
+
+      # org.mwc.cmap.geotools's manifest lists the GeoTools jars that
+      # org.mwc.cmap.geotools.libs fetches: after the build has fetched them, fail if a version bump changed
+      # the jars without regenerating it
+      - name: Check the GeoTools manifest
+        run: python3 .github/scripts/geotools_manifest.py --check
 
       - name: Upload golden image failures
         # the actual and diff images of a failed screenshot test
@@ -358,6 +383,8 @@ jobs:
   lite-ui-tests:
     name: Debrief Lite UI tests
     needs: changes
+    # a UI test left waiting on a dialog would otherwise hold the runner for 6 hours
+    timeout-minutes: 30
     if: needs.changes.outputs.software == 'true'
     runs-on: ubuntu-24.04
     permissions:
@@ -372,6 +399,24 @@ jobs:
         with:
           distribution: temurin
           java-version: '21'
+      # The first ./mvnw call downloads the pinned Maven from Central; the
+      # wrapper does not retry, so a network blip would fail the whole job
+      # Keep the pinned Maven itself, so most jobs don't download it at all
+      - name: Cache the pinned Maven
+        uses: actions/cache@v6
+        with:
+          path: ~/.m2/wrapper
+          key: maven-dist-${{ hashFiles('.mvn/wrapper/maven-wrapper.properties') }}
+      - name: Fetch the pinned Maven
+        run: |
+          # Central's outages last a minute or two: back off 15, 30, 45, 60 s
+          for n in 1 2 3 4 5; do
+            ./mvnw --version && exit 0
+            echo "::warning::[attempt ${n}/5] the Maven wrapper could not fetch Maven"
+            [ "$n" = 5 ] || sleep $((15 * n))
+          done
+          echo "::error::the Maven wrapper could not fetch Maven after 5 attempts"
+          exit 1
       - name: Restore Maven / Tycho cache
         uses: actions/cache/restore@v6
         with:
@@ -384,13 +429,13 @@ jobs:
       # Builds only Lite and the bundles it requires. They are listed by hand
       # because -am follows Maven dependencies, not OSGi Require-Bundle, and
       # misses the target definition and org.mwc.debrief.thirdparty (which
-      # fetches the third-party jars) too. Keep this in step with
+      # fetches the third-party jars) and org.mwc.cmap.geotools.libs (GeoTools) too. Keep this in step with
       # org.mwc.debrief.lite/META-INF/MANIFEST.MF. -DliteUiTests=true turns on
       # the Ant junit run in org.mwc.debrief.lite/build.xml.
       - name: Build Lite and run its UI tests
         run: >-
-          xvfb-run -a mvn -B verify -DliteUiTests=true -pl
-          org.mwc.debrief.thirdparty,org.mwc.debrief.targetplatforms,org.mwc.cmap.jfreechart,org.mwc.cmap.legacy,org.mwc.debrief.legacy,org.mwc.cmap.geotools,org.mwc.debrief.lite
+          xvfb-run -a ./mvnw -B verify -DliteUiTests=true -pl
+          org.mwc.debrief.thirdparty,org.mwc.cmap.geotools.libs,org.mwc.debrief.targetplatforms,org.mwc.cmap.jfreechart,org.mwc.cmap.legacy,org.mwc.debrief.legacy,org.mwc.cmap.geotools,org.mwc.debrief.lite
       - name: Upload golden image failures
         # the actual and diff images of a failed screenshot test
         # (Debrief.Testing.GoldenImage)
@@ -428,10 +473,25 @@ jobs:
         with:
           distribution: temurin
           java-version: '21'
-      - name: Show Maven version
-        run: mvn --version
+      # The first ./mvnw call downloads the pinned Maven from Central; the
+      # wrapper does not retry, so a network blip would fail the whole job
+      - name: Cache the pinned Maven
+        uses: actions/cache@v6
+        with:
+          path: ~/.m2/wrapper
+          key: maven-dist-${{ hashFiles('.mvn/wrapper/maven-wrapper.properties') }}
+      - name: Fetch the pinned Maven
+        run: |
+          # Central's outages last a minute or two: back off 15, 30, 45, 60 s
+          for n in 1 2 3 4 5; do
+            ./mvnw --version && exit 0
+            echo "::warning::[attempt ${n}/5] the Maven wrapper could not fetch Maven"
+            [ "$n" = 5 ] || sleep $((15 * n))
+          done
+          echo "::error::the Maven wrapper could not fetch Maven after 5 attempts"
+          exit 1
       - name: Build and run tests
-        run: mvn -B clean verify -fae -pl '!org.mwc.debrief.product'
+        run: ./mvnw -B clean verify -fae -pl '!org.mwc.debrief.product'
       - name: Upload golden image failures
         if: failure()
         uses: actions/upload-artifact@v7
@@ -455,6 +515,8 @@ jobs:
   rcp-ui-tests:
     name: Debrief NG UI tests
     needs: changes
+    # a UI test left waiting on a dialog would otherwise hold the runner for 6 hours
+    timeout-minutes: 30
     if: needs.changes.outputs.software == 'true'
     runs-on: ubuntu-24.04
     permissions:
@@ -469,6 +531,24 @@ jobs:
         with:
           distribution: temurin
           java-version: '21'
+      # The first ./mvnw call downloads the pinned Maven from Central; the
+      # wrapper does not retry, so a network blip would fail the whole job
+      # Keep the pinned Maven itself, so most jobs don't download it at all
+      - name: Cache the pinned Maven
+        uses: actions/cache@v6
+        with:
+          path: ~/.m2/wrapper
+          key: maven-dist-${{ hashFiles('.mvn/wrapper/maven-wrapper.properties') }}
+      - name: Fetch the pinned Maven
+        run: |
+          # Central's outages last a minute or two: back off 15, 30, 45, 60 s
+          for n in 1 2 3 4 5; do
+            ./mvnw --version && exit 0
+            echo "::warning::[attempt ${n}/5] the Maven wrapper could not fetch Maven"
+            [ "$n" = 5 ] || sleep $((15 * n))
+          done
+          echo "::error::the Maven wrapper could not fetch Maven after 5 attempts"
+          exit 1
       - name: Restore Maven / Tycho cache
         uses: actions/cache/restore@v6
         with:
@@ -482,10 +562,10 @@ jobs:
       # build and install them first, without their unit tests (the main
       # build runs those), then run the UI test plugin against them.
       - name: Build Debrief NG
-        run: mvn -B install -DskipTests -pl '!org.mwc.debrief.product'
+        run: ./mvnw -B install -DskipTests -pl '!org.mwc.debrief.product'
       - name: Run the Debrief NG UI tests
         run: >-
-          xvfb-run -a -s "-screen 0 1600x1200x24" mvn -B verify -DrcpUiTests=true
+          xvfb-run -a -s "-screen 0 1600x1200x24" ./mvnw -B verify -DrcpUiTests=true
           -pl org.mwc.debrief.targetplatforms,org.mwc.debrief.ui.test
       - name: Upload Debrief NG UI test reports
         if: always()

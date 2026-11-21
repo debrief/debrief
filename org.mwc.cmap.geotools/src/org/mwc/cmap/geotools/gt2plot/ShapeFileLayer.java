@@ -19,13 +19,12 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
-import org.geotools.data.FileDataStore;
-import org.geotools.data.FileDataStoreFinder;
-import org.geotools.data.simple.SimpleFeatureSource;
+import org.geotools.api.data.FileDataStore;
+import org.geotools.api.data.FileDataStoreFinder;
+import org.geotools.api.data.SimpleFeatureSource;
 import org.geotools.map.FeatureLayer;
 import org.geotools.map.Layer;
-import org.geotools.styling.Style;
-import org.geotools.swt.utils.Utils;
+import org.geotools.api.style.Style;
 
 import Debrief.GUI.Frames.Application;
 import MWC.GUI.ExternallyManagedDataLayer;
@@ -64,7 +63,7 @@ public class ShapeFileLayer extends GeoToolsLayer {
 			if (openFile.exists()) {
 				store = FileDataStoreFinder.getDataStore(openFile);
 				final SimpleFeatureSource featureSource = store.getFeatureSource();
-				final Style style = Utils.createStyle(openFile, featureSource);
+				final Style style = ShapeFileStyles.createStyle(openFile, featureSource);
 				res = new FeatureLayer(featureSource, style);
 			} else {
 				System.err.println("can't find this file");

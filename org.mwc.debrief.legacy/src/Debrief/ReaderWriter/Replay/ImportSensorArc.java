@@ -107,7 +107,7 @@ final class ImportSensorArc extends AbstractPlainLineImporter {
 		builder.append(" ");
 		// symbology
 		builder.append(ImportReplay.replaySymbolFor(sacw.getColor(), null));
-		// FIXME - issue #1186 - Additional symbology codes
+		// not written yet: additional symbology codes (issue #1186)
 		// builder.append(ImportReplay.replaySymbolForLineStyle(sacw.getLineStyle()));
 
 		builder.append(" ");

@@ -16,6 +16,7 @@
 package org.mwc.debrief.lite.tests;
 
 import static org.junit.jupiter.api.Assertions.*;
+import org.geotools.geometry.jts.ReferencedEnvelope;
 
 import java.awt.Component;
 import java.awt.Container;
@@ -27,15 +28,14 @@ import java.util.concurrent.atomic.AtomicReference;
 import javax.swing.JRootPane;
 import javax.swing.SwingUtilities;
 
-import org.geotools.geometry.DirectPosition2D;
-import org.geotools.geometry.Envelope2D;
+import org.geotools.geometry.Position2D;
 import org.junit.jupiter.api.Test;
 
 import org.mwc.debrief.lite.DebriefLiteApp;
 import org.mwc.debrief.lite.map.LiteMapPane;
-import org.opengis.referencing.operation.MathTransform;
-import org.pushingpixels.flamingo.api.ribbon.JRibbon;
-import org.pushingpixels.flamingo.api.ribbon.JRibbonFrame;
+import org.geotools.api.referencing.operation.MathTransform;
+import org.pushingpixels.radiance.component.api.ribbon.JRibbon;
+import org.pushingpixels.radiance.component.api.ribbon.JRibbonFrame;
 
 import Debrief.Testing.GoldenImage;
 
@@ -142,11 +142,11 @@ public class TestMainWindowScreenshots extends BaseTestCase {
 			assertNotNull(map, "map pane");
 			try {
 				final MathTransform degsToMap = DebriefLiteApp.getInstance().getProjection().getDataTransform();
-				final DirectPosition2D tl = new DirectPosition2D(-22, 59.75);
-				final DirectPosition2D br = new DirectPosition2D(37, 36.5);
+				final Position2D tl = new Position2D(-22, 59.75);
+				final Position2D br = new Position2D(37, 36.5);
 				degsToMap.transform(tl, tl);
 				degsToMap.transform(br, br);
-				map.setDisplayArea(new Envelope2D(tl, br));
+				map.setDisplayArea(new ReferencedEnvelope(tl.x, br.x, tl.y, br.y, null));
 			} catch (final Exception e) {
 				throw new RuntimeException(e);
 			}

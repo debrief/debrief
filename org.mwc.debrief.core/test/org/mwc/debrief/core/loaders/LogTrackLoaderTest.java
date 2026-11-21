@@ -26,10 +26,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
-import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
@@ -49,7 +49,6 @@ import MWC.Utilities.TextFormatting.GMTDateFormat;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
-@Disabled("Expects UK date formats (23-Aug-2014) but formats with the JVM's default locale; it was in no suite before the JUnit 6 migration, so it never ran")
 public class LogTrackLoaderTest {
 	@Test
 	public void testDateImport() throws ParseException {
@@ -64,9 +63,9 @@ public class LogTrackLoaderTest {
 		final Date d2 = loader.dateFor(testLine2.split(",")[1]);
 		final Date d3 = loader.dateFor(testLine3.split(",")[1]);
 
-		assertEquals("11:00:12", DateFormat.getTimeInstance().format(d1), "correct hours");
-		assertEquals("12:00:12", DateFormat.getTimeInstance().format(d2), "correct hours");
-		assertEquals("13:00:12", DateFormat.getTimeInstance().format(d3), "correct hours");
+		assertEquals("11:00:12", new GMTDateFormat("HH:mm:ss", Locale.UK).format(d1), "correct hours");
+		assertEquals("12:00:12", new GMTDateFormat("HH:mm:ss", Locale.UK).format(d2), "correct hours");
+		assertEquals("13:00:12", new GMTDateFormat("HH:mm:ss", Locale.UK).format(d3), "correct hours");
 	}
 
 	@Test
@@ -134,10 +133,10 @@ public class LogTrackLoaderTest {
 
 		// and the date?
 		final Date dt = loader.dateFor(blocks[0]);
-		assertEquals("23-Aug-2014", DateFormat.getDateInstance().format(dt), "correct date");
-		// note, 23rd Aug is summer, so daylight savings time is present in the
-		// next value
-		assertEquals("03:36:53", DateFormat.getTimeInstance().format(dt), "correct time");
+		assertEquals("23-Aug-2014", new GMTDateFormat("dd-MMM-yyyy", Locale.UK).format(dt), "correct date");
+		// the log is in GMT (formatting with the JVM's zone and locale made this
+		// pass only on a UK machine, where August's BST showed 03:36:53)
+		assertEquals("02:36:53", new GMTDateFormat("HH:mm:ss", Locale.UK).format(dt), "correct time");
 		assertEquals(1408761413000L, dt.getTime(), "correct millis");
 
 		final FixWrapper res = loader.readLine(testLine);

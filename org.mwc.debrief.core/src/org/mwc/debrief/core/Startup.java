@@ -338,7 +338,7 @@ public class Startup implements IStartup {
 		addDescriptor(registry, descriptors, "org.eclipse.debug.ui.DebugPerspective");
 		addDescriptor(registry, descriptors, "org.eclipse.team.ui.TeamSynchronizingPerspective");
 
-		// FIXME this method doesn't work on Eclipse E4 (Juno/Kepler)
+		// this method doesn't work on Eclipse E4 (Juno/Kepler)
 		if (registry instanceof IExtensionChangeHandler && !descriptors.isEmpty()) {
 			final IExtensionChangeHandler handler = (IExtensionChangeHandler) registry;
 			handler.removeExtension(null, descriptors.toArray());

@@ -52,6 +52,11 @@ final public class SteppingBoundedInteger extends java.beans.PropertyEditorSuppo
 		return res;
 	}
 
+	@Override
+	public int hashCode() {
+		return getCurrent();
+	}
+
 	///////////////////////////////////
 	// member functions
 	//////////////////////////////////

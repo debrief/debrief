@@ -64,29 +64,30 @@ import org.mwc.debrief.lite.gui.LiteStepControl.TimeLabel;
 import org.mwc.debrief.lite.gui.custom.RangeSlider;
 import org.mwc.debrief.lite.map.GeoToolMapRenderer;
 import org.mwc.debrief.lite.properties.PropertiesDialog;
-import org.pushingpixels.flamingo.api.common.AbstractCommandButton;
-import org.pushingpixels.flamingo.api.common.CommandAction;
-import org.pushingpixels.flamingo.api.common.CommandActionEvent;
-import org.pushingpixels.flamingo.api.common.CommandButtonPresentationState;
-import org.pushingpixels.flamingo.api.common.RichTooltip;
+import org.mwc.debrief.lite.util.ResizableIconFactory;
+import org.pushingpixels.radiance.component.api.common.JCommandButton;
+import org.pushingpixels.radiance.component.api.common.CommandAction;
+import org.pushingpixels.radiance.component.api.common.CommandActionEvent;
+import org.pushingpixels.radiance.component.api.common.CommandButtonPresentationState;
+import org.pushingpixels.radiance.component.api.common.RichTooltip;
 import org.mwc.debrief.lite.util.ScaledImageIcon;
-import org.pushingpixels.flamingo.api.common.model.Command;
-import org.pushingpixels.flamingo.api.common.model.CommandGroup;
-import org.pushingpixels.flamingo.api.common.model.CommandStripPresentationModel;
-import org.pushingpixels.flamingo.api.common.model.CommandToggleGroupModel;
-import org.pushingpixels.flamingo.api.common.projection.CommandButtonProjection;
-import org.pushingpixels.flamingo.api.common.projection.CommandStripProjection;
-import org.pushingpixels.flamingo.api.common.projection.Projection;
-import org.pushingpixels.flamingo.api.common.projection.Projection.ComponentSupplier;
-import org.pushingpixels.flamingo.api.ribbon.JFlowRibbonBand;
-import org.pushingpixels.flamingo.api.ribbon.JRibbon;
-import org.pushingpixels.flamingo.api.ribbon.JRibbonBand;
-import org.pushingpixels.flamingo.api.ribbon.JRibbonBand.PresentationPriority;
-import org.pushingpixels.flamingo.api.ribbon.RibbonTask;
-import org.pushingpixels.flamingo.api.ribbon.resize.CoreRibbonResizePolicies;
-import org.pushingpixels.flamingo.api.ribbon.resize.RibbonBandResizePolicy;
-import org.pushingpixels.flamingo.api.ribbon.synapse.model.ComponentPresentationModel;
-import org.pushingpixels.flamingo.api.ribbon.synapse.projection.ComponentProjection;
+import org.pushingpixels.radiance.component.api.common.model.Command;
+import org.pushingpixels.radiance.component.api.common.model.CommandGroup;
+import org.pushingpixels.radiance.component.api.common.model.CommandStripPresentationModel;
+import org.pushingpixels.radiance.component.api.common.model.CommandToggleGroupModel;
+import org.pushingpixels.radiance.component.api.common.projection.CommandButtonProjection;
+import org.pushingpixels.radiance.component.api.common.projection.CommandStripProjection;
+import org.pushingpixels.radiance.component.api.common.projection.Projection;
+import org.pushingpixels.radiance.component.api.common.projection.Projection.ComponentSupplier;
+import org.pushingpixels.radiance.component.api.ribbon.JFlowRibbonBand;
+import org.pushingpixels.radiance.component.api.ribbon.JRibbon;
+import org.pushingpixels.radiance.component.api.ribbon.JRibbonBand;
+import org.pushingpixels.radiance.component.api.ribbon.JRibbonBand.PresentationPriority;
+import org.pushingpixels.radiance.component.api.ribbon.RibbonTask;
+import org.pushingpixels.radiance.component.api.ribbon.resize.CoreRibbonResizePolicies;
+import org.pushingpixels.radiance.component.api.ribbon.resize.RibbonBandResizePolicy;
+import org.pushingpixels.radiance.component.api.ribbon.synapse.model.ComponentPresentationModel;
+import org.pushingpixels.radiance.component.api.ribbon.synapse.projection.ComponentProjection;
 
 import Debrief.GUI.Tote.StepControl;
 import Debrief.GUI.Tote.Painters.SnailPainter2;
@@ -192,9 +193,9 @@ public class DebriefRibbonTimeController {
 	}
 
 	private static abstract class LiteStepperListener implements StepperListener {
-		private final AbstractCommandButton _playBtn;
+		private final JCommandButton _playBtn;
 
-		private LiteStepperListener(final AbstractCommandButton playCommandButton) {
+		private LiteStepperListener(final JCommandButton playCommandButton) {
 			_playBtn = playCommandButton;
 		}
 
@@ -327,7 +328,7 @@ public class DebriefRibbonTimeController {
 
 	private static JFlowRibbonBand control;
 
-	private static AbstractCommandButton playButton;
+	private static JCommandButton playButton;
 
 	private static Command square;
 
@@ -493,8 +494,11 @@ public class DebriefRibbonTimeController {
 
 		final JPopupMenu menu = new JPopupMenu();
 
+		// MEDIUM (icon beside its label): the two-row flow band gives a BIG button
+		// (icon above label) about half its height in Radiance 9, which clips the
+		// label off, and SMALL shows the icon only
 		formatCommandButton = MenuUtils.addCommandButton("Format", "icons/24/time_config.png",
-				new ShowFormatAction(menu), CommandButtonPresentationState.SMALL, "Format time control");
+				new ShowFormatAction(menu), CommandButtonPresentationState.MEDIUM, "Format time control");
 		formatCommandButton.getContentModel().setActionEnabled(false);
 		_menuItem = new JCheckBoxMenuItem[timeFormats.length];
 		for (int i = 0; i < timeFormats.length; i++) {
@@ -521,7 +525,10 @@ public class DebriefRibbonTimeController {
 						fastForwardCommand, endCommand, propertiesCommand),
 				CommandStripPresentationModel.builder()
 						.setOrientation(CommandStripPresentationModel.StripOrientation.HORIZONTAL)
-						.setHorizontalGapScaleFactor(0.8).setVerticalGapScaleFactor(1.4).build());
+						.setHorizontalGapScaleFactor(0.8).setVerticalGapScaleFactor(1.4)
+						.setIconFilterStrategies(MenuUtils.ICON_FILTERS[0], MenuUtils.ICON_FILTERS[1],
+								MenuUtils.ICON_FILTERS[2])
+						.build());
 		topButtonCommands = commandStripProjection.getContentModel().getCommands();
 		// setTopCommandsEnabled(topButtonCommands, false);
 		control.addFlowComponent(commandStripProjection);
@@ -683,7 +690,7 @@ public class DebriefRibbonTimeController {
 					dialog.setVisible(true);
 				}
 			}
-		}, null, tooltip_edit_normalmode_props);
+		}, tooltip_edit_normalmode_props);
 		final CommandToggleGroupModel displayModeGroup = new CommandToggleGroupModel();
 		normalToggle = MenuUtils.addCommandToggleButton("Normal", "icons/48/normal.png", new CommandAction() {
 
@@ -832,7 +839,7 @@ public class DebriefRibbonTimeController {
 				dialog.setLocationRelativeTo(null);
 				dialog.setVisible(true);
 			}
-		}, null, props_square_highlighter);
+		}, props_square_highlighter);
 		square = MenuUtils.addCommandToggleButton("Square", "icons/48/square.png", new CommandAction() {
 
 			@Override
@@ -952,7 +959,7 @@ public class DebriefRibbonTimeController {
 
 	}
 
-	public static void updatePlayBtnUI(final AbstractCommandButton playCommandButton, final boolean isPlaying) {
+	public static void updatePlayBtnUI(final JCommandButton playCommandButton, final boolean isPlaying) {
 
 		final String image;
 		if (isPlaying)
@@ -964,19 +971,18 @@ public class DebriefRibbonTimeController {
 
 		final RichTooltip.Builder builder = RichTooltip.builder();
 		final RichTooltip richTooltip = builder.setTitle("Timer").addDescriptionSection(tooltip).build();
-		playCommandButton.setActionRichTooltip(richTooltip);
+		playCommandButton.getContentModel().setActionRichTooltip(richTooltip);
 		SwingUtilities.invokeLater(() -> {
 			// switch the icon
 			final Image playStopinImage = MenuUtils.createImage(image);
 			final ScaledImageIcon imageIcon = ScaledImageIcon.getIcon(playStopinImage,
 					MenuUtils.ICON_SIZE_16);
 
-			playCommandButton.setExtraText(tooltip);
-			// playCommand.setIconFactory(ResizableIconFactory.factory(imageIcon));
-
-			playCommandButton.setIcon(imageIcon);
+			// Radiance 9 keeps the text and icon on the command (the content model)
+			playCommandButton.getContentModel().setExtraText(tooltip);
+			playCommandButton.getContentModel().setIconFactory(ResizableIconFactory.factory(imageIcon));
 			if (playButton != playCommandButton)
-				playButton.setIcon(imageIcon);
+				playButton.getContentModel().setIconFactory(ResizableIconFactory.factory(imageIcon));
 		});
 
 	}
