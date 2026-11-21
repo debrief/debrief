@@ -23,6 +23,7 @@ import java.lang.reflect.Method;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.function.BooleanSupplier;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -365,7 +366,9 @@ final class DebriefBot {
 
 	/** the open shells and editors, and the end of the error log */
 	static String describeWorkbench() {
-		final StringBuilder res = new StringBuilder();
+		// threads first, from this (non-UI) thread: if the UI thread is stuck, the
+		// syncExec below never returns, and these show where it and the import are
+		final StringBuilder res = new StringBuilder(threadDump()).append('\n');
 		UIThreadRunnable.syncExec(() -> {
 			res.append("Shells:");
 			for (final Shell shell : Display.getDefault().getShells()) {
@@ -388,6 +391,39 @@ final class DebriefBot {
 			res.append(String.join("\n", lines.subList(Math.max(0, lines.size() - 40), lines.size())));
 		} catch (final Exception e) {
 			res.append("(no log: ").append(e).append(')');
+		}
+		return res.toString();
+	}
+
+	/**
+	 * the stacks of the threads running Debrief, SWT or JFace code (the UI
+	 * thread, a progress-service worker such as ModalContext): enough to see
+	 * where an import that never finishes is waiting
+	 */
+	static String threadDump() {
+		final StringBuilder res = new StringBuilder("Threads:");
+		for (final Map.Entry<Thread, StackTraceElement[]> e : Thread.getAllStackTraces().entrySet()) {
+			final StackTraceElement[] stack = e.getValue();
+			boolean ours = false;
+			for (final StackTraceElement frame : stack) {
+				final String c = frame.getClassName();
+				if (c.startsWith("org.mwc.") || c.startsWith("Debrief.") || c.startsWith("MWC.")
+						|| c.startsWith("org.eclipse.swt.") || c.startsWith("org.eclipse.jface.")) {
+					ours = true;
+					break;
+				}
+			}
+			if (!ours) {
+				continue;
+			}
+			final Thread th = e.getKey();
+			res.append("\n\"").append(th.getName()).append("\" ").append(th.getState());
+			for (int i = 0; i < Math.min(stack.length, 30); i++) {
+				res.append("\n\tat ").append(stack[i]);
+			}
+			if (stack.length > 30) {
+				res.append("\n\t... ").append(stack.length - 30).append(" more");
+			}
 		}
 		return res.toString();
 	}

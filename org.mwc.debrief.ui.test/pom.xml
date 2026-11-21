@@ -25,6 +25,9 @@
           <providerHint>junit6</providerHint>
           <useUIHarness>true</useUIHarness>
           <useUIThread>false</useUIThread>
+          <!-- the suite takes about a minute: kill a test JVM that hangs (an
+               import stuck in the UI) after 15, not the job's 30 -->
+          <forkedProcessTimeoutInSeconds>900</forkedProcessTimeoutInSeconds>
           <product>org.mwc.debrief.core.Debrief</product>
           <application>org.eclipse.ui.ide.workbench</application>
           <includes>
