@@ -821,15 +821,6 @@ abstract public class AnalysisView extends PlainView implements MWC.GUI.DragDrop
 
 	}
 
-	@Override
-	protected final void finalize() {
-		try {
-			super.finalize();
-		} catch (final Throwable t) {
-			t.printStackTrace();
-		}
-	}
-
 	public final PlainChart getChart() {
 		return _theChart;
 	}

@@ -179,7 +179,6 @@ public class CSVExportStatusObserver extends RecordStatusToFileObserverType {
 	@Override
 	protected void writeTheseDetectionDetails(final ParticipantType pt, final DetectionList detections,
 			final long dtg) {
-		// TODO Auto-generated method stub
 
 	}
 
@@ -203,7 +202,6 @@ public class CSVExportStatusObserver extends RecordStatusToFileObserverType {
 
 	@Override
 	protected void writeThisDecisionDetail(final NetworkParticipant pt, final String activity, final long dtg) {
-		// TODO Auto-generated method stub
 
 	}
 

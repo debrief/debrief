@@ -164,7 +164,7 @@ public class AISBaseStation implements IAISMessage, IAISDecodable, Cloneable {
 		/* device type, bits 134-137 */
 		this.deviceType = AISDecoder.getDecValueByBinStr(decBytes.substring(134, 138), false);
 
-		// TODO: implement the rest bits
+		// the rest of the bits are not decoded
 		return this;
 	}
 

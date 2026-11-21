@@ -10,10 +10,10 @@ public interface IDISStopListener {
 	 * the scenario has stopped
 	 *
 	 * @param time
-	 * @param appId   TODO
+	 * @param appId   the app id
 	 * @param eid
 	 * @param reason
-	 * @param numRuns TODO
+	 * @param numRuns the number of runs
 	 */
 	void stop(long time, int appId, short eid, short reason, long numRuns);
 

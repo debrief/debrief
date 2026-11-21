@@ -184,6 +184,11 @@ public class LatLongHelper extends EditorHelper {
 			return res;
 		}
 
+		@Override
+		public int hashCode() {
+			return getValue().hashCode();
+		}
+
 		private void firePropertyChanged(final String type) {
 			final PropertyChangeEvent event = new PropertyChangeEvent(this, type, _originalLocation, getLocation());
 			_pSupport.firePropertyChange(event);

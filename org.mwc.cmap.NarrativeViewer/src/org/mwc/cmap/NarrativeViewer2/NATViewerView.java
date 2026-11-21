@@ -858,10 +858,6 @@ public class NATViewerView extends ViewPart implements PropertyChangeListener, I
 	 */
 	@Override
 	public void propertyChange(final PropertyChangeEvent evt) {
-		// are we syncing with time?
-		if (_followTime.isChecked()) {
-
-		}
 	}
 
 	private void refreshColor(final Layer layer) {

@@ -295,7 +295,6 @@ public class DynamicInfillSegment extends TrackSegment implements ColoredWatchab
 				}
 			};
 		}
-		;
 
 		if (_wrapperListener == null) {
 			_wrapperListener = new PropertyChangeListener() {
@@ -305,7 +304,6 @@ public class DynamicInfillSegment extends TrackSegment implements ColoredWatchab
 				}
 			};
 		}
-		;
 	}
 
 	public void clear() {
@@ -341,14 +339,6 @@ public class DynamicInfillSegment extends TrackSegment implements ColoredWatchab
 
 		// ok, produce an initial version
 		reconstruct();
-	}
-
-	@Override
-	protected void finalize() throws Throwable {
-		super.finalize();
-
-		// ditch the listeners
-		clear();
 	}
 
 	/**

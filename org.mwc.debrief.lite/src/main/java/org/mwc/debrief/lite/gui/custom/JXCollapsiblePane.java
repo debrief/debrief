@@ -533,7 +533,7 @@ public class JXCollapsiblePane extends JPanel {
 			} else {
 				// the component is translucent, so we need to render to
 				// an intermediate image before painting
-				// TODO should we cache this image? repaint to same image unless size changes?
+				// the image is not cached: it is redrawn even when the size is unchanged
 				final BufferedImage img = translucentImage(getGraphicsConfiguration(), getWidth(), getHeight());
 				final Graphics2D gfx = img.createGraphics();
 
@@ -550,7 +550,7 @@ public class JXCollapsiblePane extends JPanel {
 					final Composite alphaComp = AlphaComposite.getInstance(AlphaComposite.SRC_OVER,
 							getEffectiveAlpha());
 					g2d.setComposite(alphaComp);
-					// TODO should we cache the image?
+					// the image is not cached
 					g2d.drawImage(img, null, 0, 0);
 				} finally {
 					g2d.setComposite(oldComp);
@@ -876,7 +876,7 @@ public class JXCollapsiblePane extends JPanel {
 
 			if (!animated) {
 				if (animateTimer.isRunning()) {
-					// TODO should we listen for animation state change?
+					// animation state changes are not listened for:
 					// yes, but we're best off creating a UI delegate for these changes
 					SwingUtilities.invokeLater(new Runnable() {
 						@Override

@@ -270,8 +270,6 @@ public class DragDropSupport implements DragSourceListener, DropTargetListener {
 
 		if (LocalSelectionTransfer.getTransfer().isSupportedType(event.dataType)) {
 			LocalSelectionTransfer.getTransfer().setSelection(sel);
-		} else {
-
 		}
 		event.data = sel;
 	}

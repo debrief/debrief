@@ -198,6 +198,7 @@ public final class AWTApplication extends Application {
 			// IM Thread.sleep(3000);
 
 		} catch (final Exception e) {
+			MWC.Utilities.Errors.Trace.trace(e);
 		}
 
 //IM    d3.dispose();
@@ -205,6 +206,7 @@ public final class AWTApplication extends Application {
 		try {
 			Thread.sleep(100);
 		} catch (final Exception e) {
+			// interrupted: carry on
 		}
 
 		theFrame.show();

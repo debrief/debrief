@@ -423,7 +423,7 @@ abstract public class PlainPropertyEditor implements PropertyChangeListener {
 
 				doThis(it.setter, it.data, it.newValue);
 				it.editorInfo.fireChanged(it.data, it.propertyName, it.oldValue, it.newValue);
-				// TODO We are calling it after every change, and we are forcing to update UI
+				// this is called after every change, and it forces the UI to update
 				// again anda
 				// again.
 				// Maybe it could be done once at the end.
@@ -802,8 +802,7 @@ abstract public class PlainPropertyEditor implements PropertyChangeListener {
 
 	private void assignEditors() {
 		// try for a custom editor first
-		if (_theCustomEditor != null) {
-		} else {
+		if (_theCustomEditor == null) {
 			if (_theProperties != null) {
 
 				// introspection here we come

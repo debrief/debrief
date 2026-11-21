@@ -72,15 +72,15 @@ import MWC.GenericData.TimePeriod;
  */
 public class TimeFrequencyPropertyEditor extends PropertyEditorSupport {
 
-	public static final long _60_MINS = 60 * 60 * 1000000l;
+	public static final long _60_MINS = 60 * 60 * 1000000L;
 
-	public static final long _30_MINS = 30 * 60 * 1000000l;
+	public static final long _30_MINS = 30 * 60 * 1000000L;
 
-	public static final long _15_MINS = 15 * 60 * 1000000l;
+	public static final long _15_MINS = 15 * 60 * 1000000L;
 
-	public static final long _10_MINS = 10 * 60 * 1000000l;
+	public static final long _10_MINS = 10 * 60 * 1000000L;
 
-	public static final long _5_MINS = 5 * 60 * 1000000l;
+	public static final long _5_MINS = 5 * 60 * 1000000L;
 
 	/**
 	 * the value used to represent ALL items
@@ -105,8 +105,8 @@ public class TimeFrequencyPropertyEditor extends PropertyEditorSupport {
 	/**
 	 * the values to use for the tags in the list
 	 */
-	private final long _freqs[] = { SHOW_ALL_FREQUENCY, 1 * 1000000l, 5 * 1000000l, 10 * 1000000l, 30 * 1000000l,
-			1 * 60 * 1000000l, 2 * 60 * 1000000l, 3 * 60 * 1000000l, _5_MINS, 6 * 60 * 1000000l, _10_MINS, _15_MINS,
+	private final long _freqs[] = { SHOW_ALL_FREQUENCY, 1 * 1000000L, 5 * 1000000L, 10 * 1000000L, 30 * 1000000L,
+			1 * 60 * 1000000L, 2 * 60 * 1000000L, 3 * 60 * 1000000L, _5_MINS, 6 * 60 * 1000000L, _10_MINS, _15_MINS,
 			_30_MINS, _60_MINS, 2 * _60_MINS, 6 * _60_MINS, 12 * _60_MINS, 24 * _60_MINS, 48 * _60_MINS, 72 * _60_MINS,
 			0 };
 

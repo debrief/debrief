@@ -675,23 +675,19 @@ public abstract class FilteredNatTable extends Composite {
 					public void run() {
 						final boolean initial = initialText != null && initialText.equals(text);
 
-						try {
 
-							updateGridData(text);
+						updateGridData(text);
 
-							if (text.length() > 0 && !initial) {
+						if (text.length() > 0 && !initial) {
 
-								// enabled toolbar - there is text to clear
-								// and the list is currently being filtered
-								updateToolbar(true);
+							// enabled toolbar - there is text to clear
+							// and the list is currently being filtered
+							updateToolbar(true);
 
-							} else {
-								// disabled toolbar - there is no text to clear
-								// and the list is currently not filtered
-								updateToolbar(false);
-							}
-						} finally {
-
+						} else {
+							// disabled toolbar - there is no text to clear
+							// and the list is currently not filtered
+							updateToolbar(false);
 						}
 					}
 				});

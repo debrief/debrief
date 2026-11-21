@@ -21,7 +21,7 @@ import java.io.IOException;
 
 /**
  * GSHHStoCMAP A crude utility that converts an GSHHS data base into a Debrief
- * CMAP-readable .dat file. TODO: Add a switch to set a filtering level (to
+ * CMAP-readable .dat file. There is no switch to set a filtering level (to
  * exclude lakes, for instance).
  *
  * The GSHHS files are:

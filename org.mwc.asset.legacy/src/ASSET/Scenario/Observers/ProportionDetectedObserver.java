@@ -237,8 +237,7 @@ public class ProportionDetectedObserver extends ASSET.Scenario.Observers.Detecti
 
 		final EntryHolder eh = new EntryHolder(tgt, host);
 
-		if ((_validDetections == null) || (_validDetections.contains(eh))) {
-		} else {
+		if (_validDetections != null && !_validDetections.contains(eh)) {
 			// create combined entry
 			_validDetections.add(eh);
 		}

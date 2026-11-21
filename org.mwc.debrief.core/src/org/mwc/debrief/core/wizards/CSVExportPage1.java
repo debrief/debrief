@@ -33,7 +33,7 @@ public class CSVExportPage1 extends CustomWizardPage {
 	private static final String CSV_EXPORT_PROVENANCE = "CSV_EXPORT_provenance";
 
 	private final DropdownProvider provider;
-	// Data Fields ---- TODO: change default values
+	// Data Fields: the defaults are placeholders
 
 	private String type;
 

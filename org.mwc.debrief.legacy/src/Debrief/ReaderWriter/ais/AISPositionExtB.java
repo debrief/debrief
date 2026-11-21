@@ -179,8 +179,8 @@ public class AISPositionExtB extends AISPositionB {
 //		int length = dimensionA + dimensionB;
 //		int width = dimensionC + dimensionD;
 
-		// TODO: impelemt the rest bits
-		// TODO: implement vesselType, cargoType, countryId, msgSrc
+		// the rest of the bits are not decoded:
+		// vesselType, cargoType, countryId and msgSrc are not read
 
 		final Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
 		this.msgTimestamp = new Timestamp(cal.getTimeInMillis());
@@ -194,7 +194,7 @@ public class AISPositionExtB extends AISPositionB {
 			return false;
 		if (o == this)
 			return true;
-		if (!o.getClass().equals(o.getClass()))
+		if (!getClass().equals(o.getClass()))
 			return false;
 
 		final AISPositionExtB that = (AISPositionExtB) o;
@@ -204,6 +204,12 @@ public class AISPositionExtB extends AISPositionB {
 				&& this.dimensionD == that.dimensionD && this.countryId == that.countryId;
 
 		return same;
+	}
+
+	@Override
+	public int hashCode() {
+		return 31 * super.hashCode()
+				+ java.util.Objects.hash(shipType, dimensionA, dimensionB, dimensionC, dimensionD, countryId);
 	}
 
 	public int getCountryId() {

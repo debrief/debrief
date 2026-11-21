@@ -216,7 +216,6 @@ public class GenerateTUASolution implements RightClickContextItemGenerator {
 		// did it work?
 		if (dialog.getReturnCode() == Window.OK) {
 			final TMAWrapper newSolWrapper = wizard.getSolutionWrapper();
-			;
 			final TMAContactWrapper newSol = wizard.getSolution();
 			final TrackWrapper theTrack = wizard.getTrack();
 			// ok, go for it.

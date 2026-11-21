@@ -295,7 +295,7 @@ public class MultiScenarioCommandLine {
 	 *
 	 * @param scenario        the scenario file
 	 * @param control         the control file
-	 * @param outputDirectory TODO
+	 * @param outputDirectory the output directory
 	 * @return null for success, message for failure
 	 * @throws XPathExpressionException
 	 */

@@ -116,9 +116,7 @@ public class ScenarioWrapper extends Layers {
 			} else {
 				// aaah, one last check - just check it's not an instance of the
 				// scenario wrapper
-				if (thisLayer instanceof ScenarioLayer) {
-
-				} else
+				if (!(thisLayer instanceof ScenarioLayer))
 					this.removeThisLayer(thisLayer);
 			}
 		}

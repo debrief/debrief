@@ -131,8 +131,7 @@ public class PduGenerator implements NetworkPduSender.IDISControlMessageListener
 				}
 
 				// did we find it?
-				if (myTarget != null) {
-				} else {
+				if (myTarget == null) {
 					// target lost, forget about it
 					final String theMsg = "target for:" + id + " was lost, was:" + targetId;
 					sendMessage(EXERCISE_ID, lastTime, IDISEventListener.EVENT_TACTICS_CHANGE, sampleId, theMsg,

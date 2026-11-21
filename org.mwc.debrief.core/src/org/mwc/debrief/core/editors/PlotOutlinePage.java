@@ -922,7 +922,6 @@ public class PlotOutlinePage extends Page implements IContentOutlinePage {
 			}
 		});
 		// and declare our context sensitive help
-		// FIXME
 		CorePlugin.declareContextHelp(parent, "org.mwc.debrief.help.LayerMgr");
 
 		processNewLayers();

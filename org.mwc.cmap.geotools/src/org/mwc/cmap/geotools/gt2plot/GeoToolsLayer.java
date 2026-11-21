@@ -15,6 +15,8 @@
 
 package org.mwc.cmap.geotools.gt2plot;
 
+import java.lang.ref.Cleaner;
+
 import java.io.File;
 import java.util.Iterator;
 
@@ -30,6 +32,12 @@ import MWC.GUI.ToolParent;
 import it.geosolutions.imageio.stream.input.spi.URLImageInputStreamSpi;
 
 public abstract class GeoToolsLayer extends ExternallyManagedDataLayer {
+
+	/** disposes layers whose GeoToolsLayer is collected without clearMap() */
+	private static final Cleaner CLEANER = Cleaner.create();
+
+	/** disposes the current layer: by clearMap(), or by the cleaner */
+	private Cleaner.Cleanable _layerCleanup;
 	/**
 	 *
 	 */
@@ -86,20 +94,16 @@ public abstract class GeoToolsLayer extends ExternallyManagedDataLayer {
 			if (_myMap != null) {
 				_myMap.removeLayer(_myLayer);
 			}
-			_myLayer.dispose();
+			// disposes the layer (once), as the cleaner would if we were collected
+			if (_layerCleanup != null) {
+				_layerCleanup.clean();
+				_layerCleanup = null;
+			} else {
+				_myLayer.dispose();
+			}
 			_myLayer = null;
 		}
 		_myMap = null;
-	}
-
-	@Override
-	protected void finalize() throws Throwable {
-		// ok, ditch the layer
-		if (_myLayer != null)
-			_myLayer.dispose();
-
-		// and let the parent do it's stuff
-		super.finalize();
 	}
 
 	public Layer getLayer() {
@@ -129,6 +133,11 @@ public abstract class GeoToolsLayer extends ExternallyManagedDataLayer {
 		final File openFile = new File(super.getFilename());
 		if (openFile != null && openFile.exists()) {
 			_myLayer = loadLayer(openFile);
+			if (_myLayer != null) {
+				// dispose of the layer if we're collected without clearMap: capture
+				// the layer, not this object
+				_layerCleanup = CLEANER.register(this, _myLayer::dispose);
+			}
 		} else {
 			Application.logError2(2, "GeoTools file not found:" + super.getFilename(), null);
 			// CorePlugin.showMessage("Load GIS dataset", "Sorry, can't find the file:\n" +

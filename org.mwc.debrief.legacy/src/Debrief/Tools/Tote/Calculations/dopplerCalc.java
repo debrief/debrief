@@ -52,7 +52,6 @@ public class dopplerCalc extends plainCalc {
 
 			final double rxSpeedKts = primary.getSpeed();
 			final double txSpeedKts = secondary.getSpeed();
-			;
 
 			final double rxCourseDegs = Math.toDegrees(primary.getCourse());
 			final double txCourseDegs = Math.toDegrees(secondary.getCourse());

@@ -848,7 +848,7 @@ abstract public class StepControl implements Editable, MWC.Utilities.Timer.Timer
 			// what's the elapsed time
 			final long elapsed = DTG.getMicros() - Tzero;
 
-			if (Math.abs(elapsed) > 1000000000000l) {
+			if (Math.abs(elapsed) > 1000000000000L) {
 				res = "N/A";
 			} else {
 

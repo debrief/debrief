@@ -150,7 +150,6 @@ public class AdditionalProviderWrapper implements Editable, HasEditables, Serial
 
 	@Override
 	public boolean hasOrderedChildren() {
-		// TODO Auto-generated method stub
 		return false;
 	}
 

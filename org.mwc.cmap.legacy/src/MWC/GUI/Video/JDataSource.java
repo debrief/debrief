@@ -54,6 +54,7 @@ public class JDataSource extends PushBufferDataSource {
 			if (started)
 				stop();
 		} catch (final IOException e) {
+			// nothing more to do if stopping fails
 		}
 		connected = false;
 	}

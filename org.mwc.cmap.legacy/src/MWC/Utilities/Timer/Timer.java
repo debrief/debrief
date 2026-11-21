@@ -39,7 +39,7 @@ public class Timer extends Object implements java.io.Serializable {
 				try {
 					sleep(delay);
 				} catch (final InterruptedException e) {
-
+					// interrupted: carry on
 				} catch (final Exception e) {
 					System.err.println("Exception in time-stepper");
 					e.printStackTrace();

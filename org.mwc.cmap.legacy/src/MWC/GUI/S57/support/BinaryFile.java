@@ -36,6 +36,8 @@
 
 package MWC.GUI.S57.support;
 
+import java.lang.ref.Cleaner;
+
 import java.io.EOFException;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -180,6 +182,32 @@ public class BinaryFile {
 
 	private InputReader inputReader = null;
 
+	/** closes the open reader if this file is collected without close() */
+	private static final Cleaner CLEANER = Cleaner.create();
+
+	/** the reader the cleaner closes: it must not refer to this BinaryFile */
+	private static final class ReaderState implements Runnable {
+		InputReader reader;
+
+		@Override
+		public void run() {
+			if (reader != null) {
+				try {
+					reader.close();
+				} catch (final IOException e) {
+					// the file is being collected: nobody to report this to
+				}
+				reader = null;
+			}
+		}
+	}
+
+	private final ReaderState readerState = new ReaderState();
+
+	{
+		CLEANER.register(this, readerState);
+	}
+
 	/**
 	 * The byte order of the underlying file. (<code>true</code>== MSB-First ==
 	 * big-endian)
@@ -197,6 +225,7 @@ public class BinaryFile {
 	 */
 	public BinaryFile(final File f) throws IOException {
 		inputReader = new FileInputReader(f);
+		readerState.reader = inputReader;
 	}
 
 	/**
@@ -368,6 +397,7 @@ public class BinaryFile {
 			inputReader.close();
 		}
 		inputReader = null;
+		readerState.reader = null;
 	}
 
 	/**
@@ -375,11 +405,6 @@ public class BinaryFile {
 	 *
 	 * @exception Throwable what it throws.
 	 */
-	@Override
-	public void finalize() throws Throwable {
-		close();
-	}
-
 	/**
 	 * Get the index of the next character to be read
 	 *
@@ -638,6 +663,7 @@ public class BinaryFile {
 			Debug.output("Setting inputReader");
 		}
 		inputReader = reader;
+		readerState.reader = reader;
 	}
 
 	/**

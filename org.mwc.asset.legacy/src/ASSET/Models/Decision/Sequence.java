@@ -161,9 +161,7 @@ public class Sequence extends Waterfall {
 		String activity = null;
 
 		// just check we're still alive
-		if (!this.getIsAlive()) {
-
-		} else {
+		if (this.getIsAlive()) {
 
 			// step through our list
 			int index;

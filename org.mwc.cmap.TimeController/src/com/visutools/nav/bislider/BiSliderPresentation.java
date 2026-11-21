@@ -423,6 +423,7 @@ public class BiSliderPresentation implements Serializable, MouseListener, MouseM
 
 			JComponent1.repaint();
 		} catch (final Exception Exception_Arg) {
+			// a value the slider can't take: keep the old one
 		}
 
 		Ctrl.requestFocus();
@@ -1832,7 +1833,7 @@ public class BiSliderPresentation implements Serializable, MouseListener, MouseM
 		final Graphics2D Graphics2 = (Graphics2D) Graphics_Arg;
 		// System.out.println("getLookAndFeel="+UIManager.getLookAndFeel().getName());
 		// System.out.println("getCurrentTheme="+MetalLookAndFeel.getCurrentTheme().getName());
-		// TODO : Ocean Theme
+		// the Ocean theme is not handled
 		if (UIManager.getLookAndFeel().getName().equals("Metal")) {
 			if (Dragging == LEFT_RULER || Dragging == SHIFT_LEFT_RULER || Dragging == ALT_LEFT_RULER)
 				paintThumb(Graphics_Arg, true, TheLeft_Polygon, MetalLookAndFeel.getPrimaryControlShadow(),
@@ -1974,7 +1975,7 @@ public class BiSliderPresentation implements Serializable, MouseListener, MouseM
 				TheRight_Polygon.addPoint(RightValue - 2 - TriangleSide, Margin_Ruler_Top - 1);
 			}
 		} else if (Ctrl.getSize().width == 0 || Ctrl.getSize().height == 0) {
-
+			// not laid out yet: nothing to place
 		} else {
 			System.err.println("\nsetRulerValues()");
 			System.err.println("  Size              = " + Ctrl.getSize());

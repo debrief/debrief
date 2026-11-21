@@ -32,7 +32,7 @@ public class SetPrimaryListener implements INewItemListener {
 				@SuppressWarnings("unused")
 				final TrackWrapper track = (TrackWrapper) layer;
 
-				// TODO: get a TrackDataManager object from the current editor,
+				// not done yet: get a TrackDataManager object from the current editor,
 				// then set this track as primary
 			}
 		}

@@ -174,9 +174,7 @@ abstract public class CoreEditorAction extends AbstractHandler
 		// right - we get called when radio buttons get de-selected. We only want to
 		// fire
 		// the event for the 'new action' - that's the action that's checked.
-		if (action == null) {
-
-		} else if ((action.getStyle() == IAction.AS_RADIO_BUTTON) && (!action.isChecked())) {
+		if (action != null && action.getStyle() == IAction.AS_RADIO_BUTTON && !action.isChecked()) {
 			// no, drop out
 			return;
 		}

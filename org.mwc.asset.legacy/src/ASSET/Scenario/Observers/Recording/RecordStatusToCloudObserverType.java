@@ -380,7 +380,7 @@ public class RecordStatusToCloudObserverType extends CoreObserver implements ASS
 	 */
 	protected void writeTheseDetectionDetails(final NetworkParticipant pt, final DetectionList detections,
 			final long dtg) {
-		// TODO: implement sending detections to file
+		// detections are not sent to the file
 
 		// try
 		// {

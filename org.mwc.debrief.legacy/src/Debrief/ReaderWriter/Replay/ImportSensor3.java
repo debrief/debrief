@@ -110,7 +110,7 @@ public final class ImportSensor3 extends AbstractPlainLineImporter {
 		// [or the single word NULL], frequency accuracy (Hz), range(yds)
 		// [or the single word NULL], sensor name, label (to end of line)
 
-		// TODO:
+		// still to do here:
 		// 1. produce some sample lines in unit tests, check they import corectly
 		// 2. extend the SensorDataWrapper element to include bearing accuracy &
 		// frequency accuracy data

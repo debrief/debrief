@@ -311,7 +311,6 @@ abstract public class CoreEditableWizardPage extends WizardPage {
 		try {
 			getPrefs().flush();
 		} catch (final BackingStoreException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
