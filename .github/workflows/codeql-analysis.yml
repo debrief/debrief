@@ -50,6 +50,27 @@ jobs:
         # Prefix the list here with "+" to use these queries and those in the config file.
         # queries: ./path/to/local/query, your-org/your-repo/queries@main
 
+    # Autobuild runs ./mvnw, which downloads the pinned Maven from Central and
+    # doesn't retry: keep Maven in the cache and fetch it here with retries
+    # first, as main.yml does, so a brief Central outage doesn't fail the scan
+    - name: Cache the pinned Maven
+      if: matrix.language == 'java'
+      uses: actions/cache@v6
+      with:
+        path: ~/.m2/wrapper
+        key: maven-dist-${{ hashFiles('.mvn/wrapper/maven-wrapper.properties') }}
+    - name: Fetch the pinned Maven
+      if: matrix.language == 'java'
+      run: |
+        # Central's outages last a minute or two: back off 15, 30, 45, 60 s
+        for n in 1 2 3 4 5; do
+          ./mvnw --version && exit 0
+          echo "::warning::[attempt ${n}/5] the Maven wrapper could not fetch Maven"
+          [ "$n" = 5 ] || sleep $((15 * n))
+        done
+        echo "::error::the Maven wrapper could not fetch Maven after 5 attempts"
+        exit 1
+
     # Autobuild attempts to build any compiled languages  (C/C++, C#, or Java).
     # If this step fails, then you should remove it and run the build manually (see below)
     - name: Autobuild
