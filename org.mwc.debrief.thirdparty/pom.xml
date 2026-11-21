@@ -331,12 +331,6 @@
       <version>2.3.1</version>
       <exclusions><exclusion><groupId>*</groupId><artifactId>*</artifactId></exclusion></exclusions>
     </dependency>
-    <dependency>
-      <groupId>com.sun.xml.bind</groupId>
-      <artifactId>jaxb-impl</artifactId>
-      <version>2.3.9</version>
-      <exclusions><exclusion><groupId>*</groupId><artifactId>*</artifactId></exclusion></exclusions>
-    </dependency>
   </dependencies>
 
   <build>
@@ -436,7 +430,6 @@
               <overWriteReleases>true</overWriteReleases>
               <artifactItems>
                 <artifactItem><groupId>javax.xml.bind</groupId><artifactId>jaxb-api</artifactId><destFileName>jaxb-api.jar</destFileName></artifactItem>
-                <artifactItem><groupId>com.sun.xml.bind</groupId><artifactId>jaxb-impl</artifactId><destFileName>jaxb-impl.jar</destFileName></artifactItem>
               </artifactItems>
             </configuration>
           </execution>

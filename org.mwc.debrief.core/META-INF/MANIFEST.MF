@@ -5,8 +5,7 @@ Bundle-SymbolicName: org.mwc.debrief.core; singleton:=true
 Bundle-Version: 1.0.415
 Bundle-ClassPath: debrief_core.jar,
  eclipselink.jar,
- jaxb-api.jar,
- jaxb-impl.jar
+ jaxb-api.jar
 Bundle-Activator: org.mwc.debrief.core.DebriefPlugin
 Bundle-Vendor: MWC
 Bundle-Localization: plugin
