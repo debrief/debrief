@@ -123,7 +123,7 @@ abstract public class PatternBuilderType implements MWC.GUI.Editable {
 	/**
 	 * the time increment before the next buoy is dropped
 	 */
-	private long _theBuoyPatternLifetime = 1000l * 1000 * 60 * 60; // 1 hour expressed in micros
+	private long _theBuoyPatternLifetime = 1000L * 1000 * 60 * 60; // 1 hour expressed in micros
 	/**
 	 * whether we show the label for each buoy
 	 */

@@ -209,7 +209,7 @@ public class AmbiguityResolver {
 
 	}
 
-	static final long OS_TURN_MIN_TIME_INTERVAL = 180l;
+	static final long OS_TURN_MIN_TIME_INTERVAL = 180L;
 
 	static final double OS_TURN_MIN_COURSE_CHANGE = 10d;
 

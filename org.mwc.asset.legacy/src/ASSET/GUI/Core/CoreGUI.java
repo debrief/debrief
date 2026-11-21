@@ -335,15 +335,6 @@ abstract public class CoreGUI {
 	 */
 	abstract protected void constructorSteps();
 
-	@Override
-	protected void finalize() {
-		try {
-			super.finalize();
-		} catch (final Throwable t) {
-			t.printStackTrace();
-		}
-	}
-
 	/**
 	 * fit the data to the current view
 	 */

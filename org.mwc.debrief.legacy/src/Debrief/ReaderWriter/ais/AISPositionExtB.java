@@ -194,7 +194,7 @@ public class AISPositionExtB extends AISPositionB {
 			return false;
 		if (o == this)
 			return true;
-		if (!o.getClass().equals(o.getClass()))
+		if (!getClass().equals(o.getClass()))
 			return false;
 
 		final AISPositionExtB that = (AISPositionExtB) o;
@@ -204,6 +204,12 @@ public class AISPositionExtB extends AISPositionB {
 				&& this.dimensionD == that.dimensionD && this.countryId == that.countryId;
 
 		return same;
+	}
+
+	@Override
+	public int hashCode() {
+		return 31 * super.hashCode()
+				+ java.util.Objects.hash(shipType, dimensionA, dimensionB, dimensionC, dimensionD, countryId);
 	}
 
 	public int getCountryId() {

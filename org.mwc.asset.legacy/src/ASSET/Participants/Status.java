@@ -94,7 +94,7 @@ public class Status implements java.io.Serializable {
 	/**
 	 * the set of states we're in
 	 */
-	private States _myStates = null;;
+	private States _myStates = null;
 
 	/**
 	 * SPECIAL constructor created to help Kryo get status objects across the LAN
@@ -157,6 +157,12 @@ public class Status implements java.io.Serializable {
 			res = true;
 
 		return res;
+	}
+
+	@Override
+	public int hashCode() {
+		// location and course: equals() also compares the speed, by identity
+		return 31 * getLocation().hashCode() + Double.hashCode(getCourse() == 0d ? 0d : getCourse());
 	}
 
 	/**

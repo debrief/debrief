@@ -352,10 +352,10 @@ public final class NarrativeViewer extends MWC.GUI.Properties.Swing.SwingCustomE
 		final NarrativeWrapper nw = new NarrativeWrapper("test");
 		int ct = 1;
 		for (int i = 0; i < 15; i++) {
-			nw.add(new NarrativeEntry("TRK", new HiResDate(2134234234l + i * 1222567000), ":" + ct++ + " some text"));
-			nw.add(new NarrativeEntry("TRK", new HiResDate(2534234234l + i * 1222054300), ":" + ct++
+			nw.add(new NarrativeEntry("TRK", new HiResDate(2134234234L + i * 1222567000), ":" + ct++ + " some text"));
+			nw.add(new NarrativeEntry("TRK", new HiResDate(2534234234L + i * 1222054300), ":" + ct++
 					+ " some text2 some text2 some text2 some text2 some text2 some text2 some text2 some text2 some text2 some text2 "));
-			nw.add(new NarrativeEntry("TRK", new HiResDate(2734234234l + i), ":" + ct++ + " some text3"));
+			nw.add(new NarrativeEntry("TRK", new HiResDate(2734234234L + i), ":" + ct++ + " some text3"));
 		}
 
 		final NarrativeViewer nv = new NarrativeViewer();
@@ -373,7 +373,7 @@ public final class NarrativeViewer extends MWC.GUI.Properties.Swing.SwingCustomE
 		doMe.addActionListener(new java.awt.event.ActionListener() {
 			@Override
 			public void actionPerformed(final java.awt.event.ActionEvent e) {
-				nv.newTime(new HiResDate(2734234234l));
+				nv.newTime(new HiResDate(2734234234L));
 			}
 		});
 

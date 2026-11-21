@@ -58,24 +58,3 @@ public class MessageDialog extends WorkDialog implements ActionListener {
 		super.doLayout();
 	}
 }
-
-class MessagePanel extends Postcard {
-	/**
-	 *
-	 */
-	private static final long serialVersionUID = 1L;
-	private Label label;
-
-	public MessagePanel(final Image image, final String message) {
-		super(image, new Panel());
-		getPanel().add(label = new Label(message, Label.CENTER));
-	}
-
-	public MessagePanel(final String message) {
-		this(null, message);
-	}
-
-	public void setMessage(final String message) {
-		label.setText(message);
-	}
-}

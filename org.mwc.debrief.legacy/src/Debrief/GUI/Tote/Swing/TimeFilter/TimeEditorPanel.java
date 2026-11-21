@@ -273,9 +273,9 @@ final public class TimeEditorPanel extends JPanel {
 	 */
 	private static final long serialVersionUID = 1L;
 
-	private static final long T_30_MINS = 30l * 60 * 1000 * 1000;
+	private static final long T_30_MINS = 30L * 60 * 1000 * 1000;
 
-	private static final long T_30_DAYS = 30l * 24 * 60 * 60 * 60 * 1000 * 1000;
+	private static final long T_30_DAYS = 30L * 24 * 60 * 60 * 60 * 1000 * 1000;
 
 	/**
 	 * utility method to wrap the watchable in a labelled object whihc indicates if

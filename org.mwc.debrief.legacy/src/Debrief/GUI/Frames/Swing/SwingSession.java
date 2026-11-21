@@ -271,15 +271,6 @@ public final class SwingSession extends Session implements MyMetalToolBarUI.Tool
 
 	}
 
-	@Override
-	protected final void finalize() {
-		try {
-			super.finalize();
-		} catch (final Throwable e) {
-			MWC.Utilities.Errors.Trace.trace(e);
-		}
-	}
-
 	/**
 	 * @return the Panel we are using for this session
 	 */

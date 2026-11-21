@@ -890,10 +890,7 @@ public abstract class ButtonBase extends Canvas {
 	protected boolean isValidBevelSize(final int i) {
 		final Dimension s = getSize();
 
-		if (i < 0 || i >= (s.width / 2) || i >= (s.height / 2))
-			return false;
-		else
-			return true;
+		return !(i < 0 || i >= (s.width / 2) || i >= (s.height / 2));
 	}
 
 	/**
@@ -911,11 +908,7 @@ public abstract class ButtonBase extends Canvas {
 		if (string == null || string.equals(""))
 			return true;
 
-		if (string.equals(GeneralUtils.frameTarget_self) || string.equals(GeneralUtils.frameTarget_parent)
-				|| string.equals(GeneralUtils.frameTarget_top) || string.equals(GeneralUtils.frameTarget_blank))
-			return true;
-		else
-			return false;
+		return string.equals(GeneralUtils.frameTarget_self) || string.equals(GeneralUtils.frameTarget_parent) || string.equals(GeneralUtils.frameTarget_top) || string.equals(GeneralUtils.frameTarget_blank);
 	}
 
 	/**

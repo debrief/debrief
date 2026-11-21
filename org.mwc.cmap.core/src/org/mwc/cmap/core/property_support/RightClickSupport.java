@@ -378,7 +378,7 @@ public class RightClickSupport {
 	/**
 	 * list of actions to be added to context-menu on right-click
 	 */
-	private static Vector<RightClickContextItemGenerator> _additionalRightClickItems = null;;
+	private static Vector<RightClickContextItemGenerator> _additionalRightClickItems = null;
 
 	/**
 	 * whether we've checked for any one that extends teh right click support via

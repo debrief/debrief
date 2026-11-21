@@ -181,7 +181,7 @@ public class MultiPathPresenter {
 	private static final String SVP_FILE = "SVP_FILE";
 	public static final int DEFAULT_DEPTH = 50;
 
-	private static final String DEPTH_VAL = "DEPTH_VAL";;
+	private static final String DEPTH_VAL = "DEPTH_VAL";
 
 	protected final Display _display;
 	protected final MultiPathModel _model;

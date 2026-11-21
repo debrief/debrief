@@ -661,8 +661,8 @@ public class ZoneChart extends Composite {
 
 					break;
 				}
-				default:
-				case ZOOM: {
+				case ZOOM:
+				default: {
 					// we fire super.mouseUp at the end of the method, we don't
 					// need to do it here
 					break;
