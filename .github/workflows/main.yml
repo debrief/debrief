@@ -424,6 +424,9 @@ jobs:
       # org.mwc.debrief.lite/META-INF/MANIFEST.MF. -DliteUiTests=true turns on
       # the Ant junit run in org.mwc.debrief.lite/build.xml.
       - name: Build Lite and run its UI tests
+        # TEMPORARY: regenerate the golden images, to refresh lite-window/*.png
+        env:
+          DEBRIEF_GOLDEN_REGENERATE: 'true'
         run: >-
           xvfb-run -a ./mvnw -B verify -DliteUiTests=true -pl
           org.mwc.debrief.thirdparty,org.mwc.cmap.geotools.libs,org.mwc.debrief.targetplatforms,org.mwc.cmap.jfreechart,org.mwc.cmap.legacy,org.mwc.debrief.legacy,org.mwc.cmap.geotools,org.mwc.debrief.lite
@@ -437,6 +440,12 @@ jobs:
           path: org.mwc.debrief.lite/target/golden-failures/
           if-no-files-found: ignore
 
+      - name: Upload regenerated lite-window images (TEMPORARY)
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: regenerated-lite-window
+          path: org.mwc.debrief.legacy/test_data/golden/lite-window/
       - name: Upload Lite UI test reports
         if: always()
         uses: actions/upload-artifact@v7
