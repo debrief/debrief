@@ -65,7 +65,6 @@ public class SliderRangeManagementTest {
 	}
 
 	@SuppressWarnings("deprecation")
-	@Disabled("Expects minute steps but gets day steps; it was in no suite before the JUnit 6 migration, so it never ran")
 	@Test
 	public void testRanges() {
 
@@ -113,12 +112,14 @@ public class SliderRangeManagementTest {
 		maxR = new HiResDate(new Date(2090, 1, 1, 12, 0, 1));
 		slider.resetRange(minR, maxR);
 
-		assertEquals(MINUTE_STEP, slider._timeScalar, "is in minutes mode");
+		// 81 years is 42,602,400 minutes: over the slider's 100,000 steps, so it
+		// runs in days (the test predates that limit, when this was minutes)
+		assertEquals(DAY_STEP, slider._timeScalar, "is in days mode");
 		assertEquals(true, _isEnabled, "is enabled");
 		assertEquals(0, _minVal, "correct for large range");
-		assertEquals(42602400, _maxVal, "correct for large range");
+		assertEquals(81 * 365 + 20, _maxVal, "correct for large range (20 leap days)");
 		assertEquals(1, _small, "correct for large range");
-		assertEquals(6000000, _large, "correct for large range");
+		assertEquals(700, _large, "correct for large range");
 		assertEquals(0, _drag, "correct for large range");
 
 	}

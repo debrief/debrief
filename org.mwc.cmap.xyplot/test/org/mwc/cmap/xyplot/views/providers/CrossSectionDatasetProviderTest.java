@@ -48,12 +48,10 @@ import MWC.GenericData.WorldLocation;
 import MWC.TacticalData.Fix;
 import MWC.Utilities.TextFormatting.GMTDateFormat;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
-@Disabled("setUp builds the time \"10:60\", which the strict GMTDateFormat rejects; the test was in no suite before the JUnit 6 migration, so it never ran")
 public final class CrossSectionDatasetProviderTest {
-	DateFormat _dateFormat = new GMTDateFormat("dd-mm-yyyy HH:mm");
+	DateFormat _dateFormat = new GMTDateFormat("dd-MM-yyyy HH:mm");
 	HiResDate[] _times;
 	int TIME_ARRAY_SIZE = 7;
 
@@ -69,9 +67,10 @@ public final class CrossSectionDatasetProviderTest {
 		_line = new LineShape(start, end);
 
 		_times = new HiResDate[TIME_ARRAY_SIZE];
+		// every 10 minutes from 10:00 (building "10:60" as text broke the parse)
+		final long start10 = _dateFormat.parse("09-09-2013 10:00").getTime();
 		for (int i = 0; i < TIME_ARRAY_SIZE; i++) {
-			final Date dateVal = _dateFormat.parse("09-09-2013 10:" + i * 10);
-			_times[i] = new HiResDate(dateVal);
+			_times[i] = new HiResDate(new Date(start10 + i * 10 * 60 * 1000L));
 		}
 
 		_track = new TrackWrapper();
