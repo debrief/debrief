@@ -102,6 +102,8 @@ Tests use **JUnit 6 (Jupiter)**: `@Test`, `org.junit.jupiter.api.Assertions` (me
 
 - **Debrief NG UI tests**: SWTBot tests of the RCP product's workbench in `org.mwc.debrief.ui.test` (an `eclipse-test-plugin`), only in the build with `-DrcpUiTests=true` and under a display; CI's `rcp-ui-tests` job runs them under xvfb. They cover the seven scenarios in [docs/testing/rcp-ui-suite-plan.md](docs/testing/rcp-ui-suite-plan.md): opening a plot, a screenshot of the plot editor's map (`rcp/*.png` golden images), REP import, time stepping, the tote, hide and undo, and sensor import. Shared steps are in `DebriefBot`. SWTBot needs JUnit 4 and hamcrest in that plugin's test runtime (nothing shipped includes them), so its pom names the `junit6` provider.
 
+- **macOS**: CI's `macos-tests` job runs the same build and tests (not the UI suites) on an Apple Silicon runner, to catch SWT, font and locale differences. On a Mac, golden images use a `macos/` reference set beside the Linux one (see `org.mwc.debrief.legacy/test_data/golden/README.md`).
+
 What the UI tests don't cover yet is in the manual checklists: [docs/testing/debrief-ng-smoke-checklist.md](docs/testing/debrief-ng-smoke-checklist.md) for Debrief NG and [docs/testing/debrief-lite-smoke-checklist.md](docs/testing/debrief-lite-smoke-checklist.md) for Lite.
 
 ## Project Structure
