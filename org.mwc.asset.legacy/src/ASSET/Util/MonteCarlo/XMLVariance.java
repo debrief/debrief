@@ -565,6 +565,11 @@ public final class XMLVariance {
 		return res;
 	}
 
+	@Override
+	public final int hashCode() {
+		return java.util.Objects.hashCode(_myName);
+	}
+
 	/**
 	 * get the id of this obkect
 	 */

@@ -15,8 +15,8 @@
 
 package org.mwc.debrief.lite.custom;
 
-import org.pushingpixels.flamingo.api.ribbon.synapse.model.ComponentPresentationModel;
-import org.pushingpixels.flamingo.api.ribbon.synapse.projection.ComponentProjection;
+import org.pushingpixels.radiance.component.api.ribbon.synapse.model.ComponentPresentationModel;
+import org.pushingpixels.radiance.component.api.ribbon.synapse.projection.ComponentProjection;
 
 /**
  * @author Ayesha

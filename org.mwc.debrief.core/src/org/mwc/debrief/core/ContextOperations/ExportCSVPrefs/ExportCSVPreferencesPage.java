@@ -170,7 +170,6 @@ public class ExportCSVPreferencesPage extends FieldEditorPreferencePage implemen
 
 	@Override
 	public void init(final IWorkbench workbench) {
-		// TODO Auto-generated method stub
 	}
 
 	private boolean isEnabled() {

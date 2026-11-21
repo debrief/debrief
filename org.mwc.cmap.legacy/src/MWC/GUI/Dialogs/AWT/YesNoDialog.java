@@ -95,24 +95,3 @@ public class YesNoDialog extends WorkDialog {
 		yesButton.setLabel(label);
 	}
 }
-
-class YesNoPanel extends Postcard {
-	/**
-	 *
-	 */
-	private static final long serialVersionUID = 1L;
-	private Label label;
-
-	public YesNoPanel(final Image image, final String question) {
-		super(image, new Panel());
-		getPanel().add(label = new Label(question, Label.CENTER));
-	}
-
-	public YesNoPanel(final String question) {
-		this(null, question);
-	}
-
-	public void setMessage(final String question) {
-		label.setText(question);
-	}
-}

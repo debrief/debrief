@@ -170,6 +170,7 @@ public class Test {
 						try {
 							sleep(20);
 						} catch (final InterruptedException InterruptedException_Arg) {
+							// interrupted: carry on
 						}
 						BiSlider2.repaint();
 						Thread.yield();
@@ -179,6 +180,7 @@ public class Test {
 						try {
 							sleep(20);
 						} catch (final InterruptedException InterruptedException_Arg) {
+							// interrupted: carry on
 						}
 						BiSlider2.repaint();
 						Thread.yield();

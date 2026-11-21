@@ -193,6 +193,15 @@ public final class WorldPath implements java.io.Serializable {
 		return equals;
 	}
 
+	@Override
+	public final int hashCode() {
+		int res = _myPoints.size();
+		for (final WorldLocation loc : _myPoints) {
+			res = 31 * res + loc.hashCode();
+		}
+		return res;
+	}
+
 	/**
 	 * get the bounds of the area
 	 */

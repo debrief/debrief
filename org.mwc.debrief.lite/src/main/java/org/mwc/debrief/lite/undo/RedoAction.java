@@ -21,10 +21,10 @@ import java.util.Observer;
 
 import javax.swing.AbstractAction;
 
-import org.pushingpixels.flamingo.api.common.CommandAction;
-import org.pushingpixels.flamingo.api.common.CommandActionEvent;
-import org.pushingpixels.flamingo.api.common.RichTooltip;
-import org.pushingpixels.flamingo.api.common.model.Command;
+import org.pushingpixels.radiance.component.api.common.CommandAction;
+import org.pushingpixels.radiance.component.api.common.CommandActionEvent;
+import org.pushingpixels.radiance.component.api.common.RichTooltip;
+import org.pushingpixels.radiance.component.api.common.model.Command;
 
 import MWC.GUI.Tools.Action;
 import MWC.GUI.Undo.UndoBuffer;

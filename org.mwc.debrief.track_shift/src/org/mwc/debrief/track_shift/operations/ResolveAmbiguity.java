@@ -108,13 +108,11 @@ public class ResolveAmbiguity implements RightClickContextItemGenerator {
 
 		@Override
 		public IStatus redo(final IProgressMonitor monitor, final IAdaptable info) throws ExecutionException {
-			// TODO
 			return Status.OK_STATUS;
 		}
 
 		@Override
 		public IStatus undo(final IProgressMonitor monitor, final IAdaptable info) throws ExecutionException {
-			// TODO:
 			return Status.OK_STATUS;
 		}
 

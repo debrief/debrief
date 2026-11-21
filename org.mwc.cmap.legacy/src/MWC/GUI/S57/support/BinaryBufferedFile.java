@@ -65,6 +65,7 @@ public class BinaryBufferedFile extends BinaryFile {
 		try {
 			bf = new BinaryBufferedFile(name, buffersize);
 		} catch (final IOException ioe) {
+			// callers check for null: the file can't be opened
 		}
 		return bf;
 	}

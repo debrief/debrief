@@ -21,8 +21,8 @@ import javax.swing.event.ChangeListener;
 import org.mwc.debrief.lite.gui.GeoToolMapProjection;
 import org.mwc.debrief.lite.gui.LiteStepControl;
 import org.mwc.debrief.lite.map.GeoToolMapRenderer;
-import org.opengis.referencing.operation.MathTransform;
-import org.pushingpixels.flamingo.api.ribbon.JRibbon;
+import org.geotools.api.referencing.operation.MathTransform;
+import org.pushingpixels.radiance.component.api.ribbon.JRibbon;
 
 import Debrief.GUI.Frames.Session;
 import MWC.GUI.Layers;

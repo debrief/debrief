@@ -181,7 +181,7 @@ public class NarrativeConfigurationModel implements AbstractNarrativeConfigurati
 
 	@Override
 	public void setActiveNarrative(final NarrativeEntry narrative, final boolean check) {
-		// TODO We should move this out of here
+		// this belongs somewhere else
 		Boolean oldValue = null;
 		Boolean newValue = null;
 		for (final AbstractSelection<NarrativeEntry> currentNarrative : _narrativeSelection) {

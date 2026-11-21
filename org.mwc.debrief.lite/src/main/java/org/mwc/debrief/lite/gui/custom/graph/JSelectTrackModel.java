@@ -83,7 +83,7 @@ public class JSelectTrackModel implements AbstractTrackConfiguration {
 
 	@Override
 	public void setActiveTrack(final TrackWrapper track, final boolean check) {
-		// TODO this should be moved to somewhere else.
+		// this belongs somewhere else
 		Boolean oldValue = null;
 		Boolean newValue = null;
 		for (final AbstractSelection<TrackWrapper> currentTrack : _tracks) {

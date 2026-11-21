@@ -19,8 +19,8 @@ import java.awt.event.ActionEvent;
 
 import org.geotools.swing.MapPane;
 import org.geotools.swing.action.PanAction;
-import org.pushingpixels.flamingo.api.common.CommandAction;
-import org.pushingpixels.flamingo.api.common.CommandActionEvent;
+import org.pushingpixels.radiance.component.api.common.CommandAction;
+import org.pushingpixels.radiance.component.api.common.CommandActionEvent;
 
 import MWC.GUI.ToolParent;
 

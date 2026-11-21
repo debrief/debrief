@@ -380,7 +380,7 @@ public class DDFModule implements DDFConstants {
 				fpDDF = new BinaryBufferedFile(fileName);
 			}
 		} catch (final IOException ioe) {
-
+			MWC.Utilities.Errors.Trace.trace(ioe);
 		}
 	}
 

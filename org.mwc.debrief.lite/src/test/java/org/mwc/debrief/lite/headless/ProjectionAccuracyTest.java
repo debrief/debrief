@@ -23,7 +23,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.geotools.geometry.DirectPosition2D;
+import org.geotools.geometry.Position2D;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.map.MapContent;
 import org.geotools.referencing.CRS;
@@ -34,7 +34,7 @@ import org.mwc.debrief.lite.LiteApplication;
 import org.mwc.debrief.lite.LiteSession;
 import org.mwc.debrief.lite.gui.GeoToolMapProjection;
 import org.mwc.debrief.lite.util.PlotFiles;
-import org.opengis.referencing.operation.MathTransform;
+import org.geotools.api.referencing.operation.MathTransform;
 
 import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.TrackWrapper;
@@ -141,15 +141,15 @@ public class ProjectionAccuracyTest {
 				double worstTrip = 0;
 				double worstFormula = 0;
 				for (final WorldLocation loc : fixes) {
-					final DirectPosition2D degs = new DirectPosition2D(loc.getLong(), loc.getLat());
-					final DirectPosition2D metres = new DirectPosition2D();
+					final Position2D degs = new Position2D(loc.getLong(), loc.getLat());
+					final Position2D metres = new Position2D();
 					toMap.transform(degs, metres);
 
 					final double[] expected = mercator(loc.getLat(), loc.getLong());
 					worstFormula = Math.max(worstFormula,
 							Math.hypot(metres.x - expected[0], metres.y - expected[1]));
 
-					final DirectPosition2D back = new DirectPosition2D();
+					final Position2D back = new Position2D();
 					fromMap.transform(metres, back);
 					worstTrip = Math.max(worstTrip, metresBetween(loc, new WorldLocation(back.y, back.x, 0)));
 				}

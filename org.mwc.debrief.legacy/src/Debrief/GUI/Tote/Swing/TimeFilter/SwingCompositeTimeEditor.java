@@ -449,7 +449,7 @@ public final class SwingCompositeTimeEditor extends javax.swing.JPanel
 			break;
 		}
 		case HOUR_STEPS: {
-			SCALE_FACTOR = 60l * 60 * 1000 * 1000;
+			SCALE_FACTOR = 60L * 60 * 1000 * 1000;
 			break;
 		}
 

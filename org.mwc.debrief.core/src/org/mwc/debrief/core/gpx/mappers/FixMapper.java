@@ -129,8 +129,8 @@ public class FixMapper implements DebriefJaxbContextAware {
 
 				trackPoint.setCourse(Math.toRadians(MWCXMLReader.readThisDouble(fixExtension.getCourse())));
 				trackPoint.setLabel(fixExtension.getLabel());
-				final double speedMS = MWCXMLReader.readThisDouble(fixExtension.getSpeed());
-				trackPoint.setSpeed(MWC.Algorithms.Conversions.Mps2Kts(speedMS));
+				// knots, as in Debrief's other formats (the GPX speed element is m/s)
+				trackPoint.setSpeed(MWCXMLReader.readThisDouble(fixExtension.getSpeed()));
 				final LocationPropertyEditor locationConverter = new LocationPropertyEditor();
 				locationConverter.setAsText(fixExtension.getLabelLocation().value());
 				trackPoint.setLabelLocation((Integer) locationConverter.getValue());

@@ -190,6 +190,11 @@ public final class WorldArea implements Serializable {
 		return res;
 	}
 
+	@Override
+	final public int hashCode() {
+		return 31 * getTopLeft().hashCode() + getBottomRight().hashCode();
+	}
+
 	/**
 	 * extend the area to include this new area. Includes a normalise operation
 	 */

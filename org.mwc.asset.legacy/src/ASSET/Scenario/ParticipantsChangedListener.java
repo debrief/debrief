@@ -38,7 +38,7 @@ public interface ParticipantsChangedListener extends java.util.EventListener {
 	/**
 	 * the scenario has restarted, reset
 	 *
-	 * @param scenario TODO
+	 * @param scenario the scenario
 	 *
 	 */
 	public void restart(ScenarioType scenario);

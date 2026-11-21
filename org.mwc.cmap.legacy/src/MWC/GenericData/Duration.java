@@ -218,6 +218,11 @@ final public class Duration implements Serializable {
 		return res;
 	}
 
+	@Override
+	final public int hashCode() {
+		return Long.hashCode(_myDuration);
+	}
+
 	/**
 	 * get this duration as millis
 	 */

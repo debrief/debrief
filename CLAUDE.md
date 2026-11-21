@@ -85,11 +85,11 @@ mvn clean install -pl org.mwc.debrief.thirdparty,org.mwc.debrief.core
 mvn verify -pl org.mwc.debrief.thirdparty,org.mwc.cmap.jfreechart,org.mwc.cmap.legacy
 ```
 
-Third-party jars that are on Maven Central are not committed: `org.mwc.debrief.thirdparty` (first in the reactor) copies them into each plugin folder under version-free names such as `pdfbox.jar`, and they are git-ignored. After a fresh clone, and before building one plugin or opening the projects in Eclipse, run `mvn -pl org.mwc.debrief.thirdparty generate-resources`. To change a version, edit that module's `pom.xml` only. See [docs/dependencies/maven-jars.md](docs/dependencies/maven-jars.md).
+Third-party jars that are on Maven Central are not committed: `org.mwc.debrief.thirdparty` (first in the reactor) copies them into each plugin folder under version-free names such as `pdfbox.jar`, and they are git-ignored. After a fresh clone, and before building one plugin or opening the projects in Eclipse, run `mvn -pl org.mwc.debrief.thirdparty generate-resources`. To change a version, edit that module's `pom.xml` only. GeoTools is fetched the same way by `org.mwc.cmap.geotools.libs` (from repo.osgeo.org) into `org.mwc.cmap.geotools`; after adding or dropping a GeoTools jar, run `.github/scripts/geotools_manifest.py`. See [docs/dependencies/maven-jars.md](docs/dependencies/maven-jars.md).
 
 Keep library jars named on a plugin's `Bundle-ClassPath` at the bundle root, not in a subfolder such as `libs/`. Tycho turns each one into a dependency whose classifier is its path, and Maven 3.10 rejects a classifier containing `/` (`Invalid Collect Request: null`).
 
-Build with **JDK 21** and **Maven 3.9 or later**: Tycho 5 needs both. Bundles declare `JavaSE-21`; Tycho compiles with `<release>21</release>` and the Ant `<javac>` tasks set `release="21"`.
+Build with **JDK 21** and **Maven 3.9 or later**: Tycho 5 needs both. CI uses the Maven wrapper (`./mvnw`, pinned to 3.9.11 in `.mvn/wrapper/maven-wrapper.properties`, with a checksum) rather than the runner image's Maven: Maven 3.10.1 fails to resolve `tycho-maven-plugin` and some version ranges from Central. `./mvnw` works locally too. Bundles declare `JavaSE-21`; Tycho compiles with `<release>21</release>` and the Ant `<javac>` tasks set `release="21"`.
 
 ## Test Architecture
 
@@ -102,7 +102,7 @@ Tests use **JUnit 6 (Jupiter)**: `@Test`, `org.junit.jupiter.api.Assertions` (me
 
 - **Debrief NG UI tests**: SWTBot tests of the RCP product's workbench in `org.mwc.debrief.ui.test` (an `eclipse-test-plugin`), only in the build with `-DrcpUiTests=true` and under a display; CI's `rcp-ui-tests` job runs them under xvfb. They cover the seven scenarios in [docs/testing/rcp-ui-suite-plan.md](docs/testing/rcp-ui-suite-plan.md): opening a plot, a screenshot of the plot editor's map (`rcp/*.png` golden images), REP import, time stepping, the tote, hide and undo, and sensor import. Shared steps are in `DebriefBot`. SWTBot needs JUnit 4 and hamcrest in that plugin's test runtime (nothing shipped includes them), so its pom names the `junit6` provider.
 
-What the UI tests don't cover yet is in the manual checklist, [docs/testing/debrief-ng-smoke-checklist.md](docs/testing/debrief-ng-smoke-checklist.md).
+What the UI tests don't cover yet is in the manual checklists: [docs/testing/debrief-ng-smoke-checklist.md](docs/testing/debrief-ng-smoke-checklist.md) for Debrief NG and [docs/testing/debrief-lite-smoke-checklist.md](docs/testing/debrief-lite-smoke-checklist.md) for Lite.
 
 ## Project Structure
 

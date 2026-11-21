@@ -15,7 +15,6 @@
 
 package org.mwc.debrief.track_shift.magic;
 
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.Iterator;
@@ -214,7 +213,18 @@ public class OptimiseTest {
 		final Layers res = new Layers();
 		final String path = "../org.mwc.debrief.track_shift/src/org/mwc/debrief/track_shift/magic/";
 		final String fName = "midflow2.xml";
-		final InputStream is = new FileInputStream(path + fName);
+		// importing into a set of layers reads a <layers> element, so hand it just
+		// that part of the plot file (the whole plot needs a GUI session)
+		final String plot;
+		try {
+			plot = new String(java.nio.file.Files.readAllBytes(java.nio.file.Paths.get(path + fName)),
+					java.nio.charset.StandardCharsets.UTF_8);
+		} catch (final java.io.IOException e) {
+			throw new FileNotFoundException(path + fName + ": " + e.getMessage());
+		}
+		final String layersXml = plot.substring(plot.indexOf("<layers"),
+				plot.indexOf("</layers>") + "</layers>".length());
+		final InputStream is = new java.io.ByteArrayInputStream(layersXml.getBytes(java.nio.charset.StandardCharsets.UTF_8));
 		reader.importThis(fName, is, res);
 		return res;
 	}

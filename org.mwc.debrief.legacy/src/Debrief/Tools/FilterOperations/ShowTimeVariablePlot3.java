@@ -191,7 +191,7 @@ public final class ShowTimeVariablePlot3 implements FilterOperation {
 		}
 
 		public final void doWMF(final String dir) {
-			// TODO: reinstate this
+			// disabled for now:
 
 			// get the old background colour
 			final Paint oldColor = _xyPlot.getBackgroundPaint();
@@ -280,7 +280,7 @@ public final class ShowTimeVariablePlot3 implements FilterOperation {
 		 * @param thisColor         the colour of this point
 		 * @param connectToPrevious whether to connect to the previous one
 		 * @param provider          something to do something with.
-		 * @param parentIsVisible   TODO
+		 * @param parentIsVisible   the parent is visible
 		 */
 		void add(Series thisSeries, HiResDate theTime, double data, Color thisColor, boolean connectToPrevious,
 				ColouredDataItem.OffsetProvider provider, boolean parentIsVisible);

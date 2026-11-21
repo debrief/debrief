@@ -185,7 +185,7 @@ public class AISPositionA implements IAISMessage, IAISDecodable, Cloneable, IPos
 		final int secs = AISDecoder.getDecValueByBinStr(decBytes.substring(137, 143), false);
 		this.msgTimestamp = new Timestamp(secs * 1000);
 
-		// TODO: implement the rest bits
+		// the rest of the bits are not decoded
 		return this;
 	}
 

@@ -178,7 +178,6 @@ abstract public class Save extends PlainTool {
 
 	@Override
 	public String getImage() {
-		// TODO Auto-generated method stub
 		return super.getImage();
 	}
 

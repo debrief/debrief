@@ -683,7 +683,6 @@ public class SwingCanvas extends javax.swing.JComponent implements CanvasType, E
 		} else {
 			if (_dblBuff != null) {
 				res = _dblBuff.getGraphics();
-			} else {
 			}
 		}
 

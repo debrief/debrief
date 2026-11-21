@@ -56,7 +56,7 @@ public class CSVExportPage2 extends CustomWizardPage {
 	}
 
 	private final DropdownProvider provider;
-	// Data Fields ---- TODO: change default values
+	// Data Fields: the defaults are placeholders
 	private String caseNumber = "D-112/12";
 
 	private String classification;

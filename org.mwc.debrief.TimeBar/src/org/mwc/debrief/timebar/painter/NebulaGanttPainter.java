@@ -51,100 +51,6 @@ import org.mwc.debrief.timebar.model.TimeSpot;
 
 import MWC.GUI.Editable;
 
-class GanttChartSettings extends DefaultSettings {
-	@Override
-	public boolean allowArrowKeysToScrollChart() {
-		return true;
-	}
-
-	@Override
-	public boolean allowInfiniteHorizontalScrollBar() {
-		return false;
-	}
-
-	@Override
-	public boolean drawEventsDownToTheHourAndMinute() {
-		return true;
-	}
-
-	@Override
-	public boolean drawFullPercentageBar() {
-		return false;
-	}
-
-	@Override
-	public String getDefaultAdvancedTooltipText() {
-		return "";
-	}
-
-	@Override
-	public Locale getDefaultLocale() {
-		return Locale.UK;
-	}
-
-	@Override
-	public int getInitialZoomLevel() {
-		return ZOOM_HOURS_NORMAL;
-	}
-
-	@Override
-	public String getTextDisplayFormat() {
-		return "#name#";
-	}
-
-	@Override
-	public boolean showToolTips() {
-		return true;
-	}
-
-}
-
-class GanttPaintManager extends AbstractPaintManager {
-	@Override
-	public void drawImage(final GanttComposite ganttComposite, final ISettings settings,
-			final IColorManager colorManager, final GanttEvent event, final GC gc, final Image image,
-			final boolean threeDee, final int dayWidth, final int xLoc, final int yStart, final Rectangle fullBounds) {
-		int y = yStart;
-		int x = xLoc;
-
-		// draw a cross in a box if image is null
-		if (image == null) {
-			gc.setForeground(colorManager.getBlack());
-			gc.drawRectangle(x, y, dayWidth, settings.getEventHeight());
-			gc.drawLine(x, y, x + dayWidth, y + settings.getEventHeight());
-			gc.drawLine(x + dayWidth, y, x, y + settings.getEventHeight());
-			return;
-		}
-
-		// can it fit?
-		final Rectangle bounds = image.getBounds();
-		if (settings.scaleImageToDayWidth() && bounds.width > dayWidth) {
-			// shrink image
-			final ImageData id = image.getImageData();
-			final int diff = id.width - dayWidth;
-			id.width -= diff;
-			id.height -= diff;
-			final Image temp = new Image(Display.getDefault(), id);
-
-			final int negY = (bounds.height - settings.getEventHeight());
-			if (negY > 0) {
-				y += negY / 2;
-			}
-
-			gc.drawImage(temp, x, y);
-			temp.dispose();
-			return;
-		} else {
-			// center it x-wise
-			x -= bounds.width / 2;
-			// x -= Math.abs(bounds.width - dayWidth) / 2;
-		}
-
-		gc.drawImage(image, x, y);
-
-	}
-}
-
 public class NebulaGanttPainter implements ITimeBarsPainter {
 	GanttChart _chart;
 	Map<IEventEntry, GanttEvent> _eventEntries = new HashMap<IEventEntry, GanttEvent>();
@@ -160,7 +66,7 @@ public class NebulaGanttPainter implements ITimeBarsPainter {
 
 			@Override
 			public void mouseDoubleClick(final MouseEvent e) {
-				// TODO: do not do anything if an event was double-clicked
+				// a double-click is handled like a single click
 				final Date clickedAt = _chart.getGanttComposite().getDateAt(e.x).getTime();
 				if (_earliestEvent.getStartDate().getTime().compareTo(clickedAt) > 0) {
 					// it is too early

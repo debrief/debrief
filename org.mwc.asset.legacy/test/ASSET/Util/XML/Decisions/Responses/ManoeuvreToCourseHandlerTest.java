@@ -36,10 +36,13 @@ public class ManoeuvreToCourseHandlerTest {
 				ManoeuvreToCourseHandler.exportThis(scenario, scen, doc);
 				doc.appendChild(scen);
 
-				// ok, we should be done now
-
-			} catch (final ParserConfigurationException e) {
-				e.printStackTrace();
+				// write out the element the handler produced (this never wrote
+				// anything, so the import read an empty stream)
+				javax.xml.transform.TransformerFactory.newInstance().newTransformer().transform(
+						new javax.xml.transform.dom.DOMSource(scen.getFirstChild()),
+						new javax.xml.transform.stream.StreamResult(os));
+			} catch (final ParserConfigurationException | javax.xml.transform.TransformerException e) {
+				throw new IllegalStateException(e);
 			}
 		}
 
@@ -68,7 +71,6 @@ public class ManoeuvreToCourseHandlerTest {
 	ManoeuvreToCourse resp = null;
 
 
-	@Disabled("Cannot read its input file; ASSET's tests were in no build before the JUnit 6 migration (org.mwc.asset.test was not in the reactor), so this never ran")
 	@Test
 	public void testTheTrail() {
 		// ok, let's go for it

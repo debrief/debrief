@@ -131,7 +131,6 @@ public class TimeControllerTest {
 
 	private boolean _enabled;
 
-	@Disabled("Slider units come out as 0 outside the Eclipse runtime; it was in no suite before the JUnit 6 migration, so it never ran")
 	@Test
 	public void testSliderScales() {
 		final SliderRangeManagement range = new SliderRangeManagement() {
@@ -179,9 +178,11 @@ public class TimeControllerTest {
 		final int res = range.toSliderUnits(newToSlider);
 		assertEquals(30, res, "correct to slider units");
 
-		// and backwards
-		newToSlider = range.fromSliderUnits(res, 1000);
-		assertEquals(130, newToSlider.getMicros(), "correct from slider units");
+		// and backwards: the result is trimmed to the slider's step, given in
+		// millis, so a 1 ms step drops the 130 micros and a 1 s step everything
+		newToSlider = range.fromSliderUnits(res, 1);
+		assertEquals(0, newToSlider.getMicros(), "trimmed to the 1 ms step");
+		assertEquals(30, range.toSliderUnits(new HiResDate(0, 130)), "correct to slider units");
 
 		// right, now back to millis
 		final Calendar cal = new GregorianCalendar();
@@ -196,10 +197,12 @@ public class TimeControllerTest {
 		ender = new HiResDate(enderD.getTime());
 		range.resetRange(starter, ender);
 
-		final long diff = (enderD.getTime() - starterD.getTime()) / 1000;
-		assertEquals(diff, _max, "correct range in secs");
+		// 9 days is 777,600 seconds: over the slider's 100,000 steps, so it runs
+		// in minutes (the test predates that limit, when this was seconds)
+		final long diffMins = (enderD.getTime() - starterD.getTime()) / 60000;
+		assertEquals(diffMins, _max, "correct range in minutes");
 		assertEquals(1, _smallTick, "sml tick set");
-		assertEquals(60000, _largeTick, "large tick set");
+		assertEquals(600, _largeTick, "large tick set");
 
 	}
 

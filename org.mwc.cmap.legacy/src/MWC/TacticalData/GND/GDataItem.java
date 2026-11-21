@@ -265,7 +265,7 @@ public class GDataItem implements Plottable, TimeStampedDataItem, HasNonBeanProp
 
 	@Override
 	public void setDTG(final HiResDate date) {
-		// TODO: somehow, handle this!
+		// not handled
 	}
 
 	@Override

@@ -62,6 +62,11 @@ public class BoundedInteger {
 		return res;
 	}
 
+	@Override
+	public int hashCode() {
+		return getCurrent();
+	}
+
 	///////////////////////////////////
 	// nested classes
 	//////////////////////////////////

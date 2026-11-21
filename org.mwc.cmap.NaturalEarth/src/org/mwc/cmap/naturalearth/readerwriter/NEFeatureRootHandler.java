@@ -77,13 +77,10 @@ abstract public class NEFeatureRootHandler extends MWC.Utilities.ReaderWriter.XM
 
 			res = output.toString();
 		} catch (final TransformerConfigurationException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (final ParserConfigurationException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (final TransformerException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 

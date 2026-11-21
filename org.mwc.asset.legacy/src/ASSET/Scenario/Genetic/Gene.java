@@ -163,10 +163,9 @@ public class Gene implements Comparable<Gene> {
 		if (_myList.size() != other._myList.size()) {
 			res = false;
 		} else {
+			final Iterator<XMLVariance> it_a = _myList.getIterator();
+			final Iterator<XMLVariance> it_b = other._myList.getIterator();
 			for (int i = 0; i < _myList.size(); i++) {
-				final Iterator<XMLVariance> it_a = _myList.getIterator();
-				final Iterator<XMLVariance> it_b = other._myList.getIterator();
-
 				final XMLVariance mine = it_a.next();
 				final XMLVariance his = it_b.next();
 
@@ -180,6 +179,11 @@ public class Gene implements Comparable<Gene> {
 		}
 
 		return res;
+	}
+
+	@Override
+	public int hashCode() {
+		return _myList.size();
 	}
 
 	/**

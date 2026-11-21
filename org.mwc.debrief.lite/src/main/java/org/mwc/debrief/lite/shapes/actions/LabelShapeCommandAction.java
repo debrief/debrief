@@ -15,8 +15,8 @@
 
 package org.mwc.debrief.lite.shapes.actions;
 
-import org.pushingpixels.flamingo.api.common.CommandAction;
-import org.pushingpixels.flamingo.api.common.CommandActionEvent;
+import org.pushingpixels.radiance.component.api.common.CommandAction;
+import org.pushingpixels.radiance.component.api.common.CommandActionEvent;
 
 import Debrief.Tools.Palette.CreateLabel;
 import MWC.GUI.Layers;
@@ -37,7 +37,6 @@ public final class LabelShapeCommandAction extends CreateLabel implements Comman
 	public LabelShapeCommandAction(final ToolParent theParent, final PropertiesPanel thePanel, final Layers theData,
 			final BoundsProvider bounds, final String theName, final String theImage) {
 		super(theParent, thePanel, theData, bounds, theName, theImage);
-		// TODO Auto-generated constructor stub
 	}
 
 	@Override

@@ -23,8 +23,8 @@ import javax.swing.JSlider;
 import javax.swing.event.ChangeEvent;
 
 import org.mwc.debrief.lite.gui.custom.RangeSlider;
-import org.pushingpixels.flamingo.api.common.projection.Projection;
-import org.pushingpixels.flamingo.api.ribbon.synapse.model.ComponentPresentationModel;
+import org.pushingpixels.radiance.component.api.common.projection.Projection;
+import org.pushingpixels.radiance.component.api.ribbon.synapse.model.ComponentPresentationModel;
 
 public class JRibbonRangeSlider extends RangeSlider {
 

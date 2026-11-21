@@ -48,6 +48,7 @@ build fetches them instead.
 | `org.mwc.cmap.legacy` | POI 5.5.1 (poi, poi-ooxml, poi-ooxml-lite, poi-scratchpad); xmlbeans 5.3.0; commons-codec 1.20.0, collections4 4.5.0, compress 1.28.0, csv 1.2, io 2.22.0, lang3 3.21.0, math3 3.6.1; curvesapi 1.08; SparseBitSet 1.3; log4j-api 2.26.1; Jackson 2.22.4 (annotations 2.22); joda-time 2.1 (junit 4.13.2 and hamcrest-core 1.3 were removed in Phase E) |
 | `org.mwc.cmap.core` | xstream 1.4.21 (mockito-all was removed in Phase E) |
 | `org.mwc.cmap.jfreechart` | jfreechart 1.0.19; jcommon 1.0.23 |
+| `org.mwc.debrief.core` | JAXB 2: jaxb-api 2.3.1, jaxb-impl 2.3.9 (exported for the DIS plugin; `javax.activation` comes from the target platform) |
 
 Notes on `org.mwc.debrief.legacy`:
 
@@ -61,7 +62,29 @@ Notes on `org.mwc.debrief.legacy`:
 
 Notes on `org.mwc.cmap.jfreechart`: the committed `jfreechart-1.0.19.jar` was Central's build plus three demo classes (`org.jfree.chart.demo`), which nothing used. The other 635 classes were byte-identical. The demo package's export is gone.
 
-All four plugins planned for Phase B are done. `cmap.geotools` waits for the GeoTools upgrade.
+All four plugins planned for Phase B are done. Since Phase D2, `org.mwc.debrief.lite` takes Radiance (`radiance.version`) the same way.
+
+`cmap.geotools` (Phase D1) has its own module, `org.mwc.cmap.geotools.libs`,
+because GeoTools is published to the OSGeo repository
+(`repo.osgeo.org`), not Central, and brings about 100 jars. The module names
+the GeoTools modules Debrief uses (`geotools.version`) and copies them, with
+everything they need at runtime, into `org.mwc.cmap.geotools` under names of
+the form `groupId.artifactId.jar`. commons-io and commons-lang3 are left out:
+the bundle takes them from `cmap.legacy`. The bundle's `Bundle-ClassPath`,
+`Export-Package`, `build.properties` and `.classpath` list every jar, so they
+are generated: after a change that adds or drops a jar, run
+
+```bash
+mvn -pl org.mwc.cmap.geotools.libs generate-resources
+```
+
+```bash
+python3 .github/scripts/geotools_manifest.py
+```
+
+CI runs the script with `--check`. JAXB 2 (`javax.xml.bind`), which
+Debrief's GPX code and the DIS plugin use and which used to come with the
+GeoTools 21 jars, is fetched into `org.mwc.debrief.core` instead (table above).
 
 Test-only: JUnit 6 (`junit.version` in the root pom) is a test-scope dependency of every plugin, for its `test/` folder, and `org.mwc.debrief.thirdparty` copies the JUnit API jars into `org.mwc.debrief.lite/test-libs/` for Lite's Ant-built tests. None of them is shipped.
 

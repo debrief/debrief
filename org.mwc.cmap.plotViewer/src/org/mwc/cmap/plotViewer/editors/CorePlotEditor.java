@@ -923,7 +923,7 @@ public abstract class CorePlotEditor extends EditorPart implements IResourceProv
 			@Override
 			public void eventTriggered(final String type, final Object part, final IWorkbenchPart parentPart) {
 				final ISelectionProvider iS = (ISelectionProvider) part;
-				// TODO- make it possible for use to indicate if highlights get
+				// it is not possible to choose whether highlights get
 				// plotted (prob via Layer Manager)
 				// iS.addSelectionChangedListener(_selectionChangeListener);
 			}
@@ -932,7 +932,7 @@ public abstract class CorePlotEditor extends EditorPart implements IResourceProv
 			@Override
 			public void eventTriggered(final String type, final Object part, final IWorkbenchPart parentPart) {
 				final ISelectionProvider iS = (ISelectionProvider) part;
-				// TODO- make it possible for use to indicate if highlights get
+				// it is not possible to choose whether highlights get
 				// plotted (prob via Layer Manager)
 				// iS.removeSelectionChangedListener(_selectionChangeListener);
 			}

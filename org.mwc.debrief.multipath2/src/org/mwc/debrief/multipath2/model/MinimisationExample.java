@@ -47,27 +47,6 @@ package org.mwc.debrief.multipath2.model;
 import flanagan.math.Minimisation;
 import flanagan.math.MinimisationFunction;
 
-// Class to evaluate the function z = a + x^2 + 3y^4
-// where a is fixed and the values of x and y
-// (x[0] and x[1] in this method) are the
-// current values in the minimisation method.
-class MinimFunct implements MinimisationFunction {
-
-	private double a = 0.0D;
-
-	// evaluation function
-	@Override
-	public double function(final double[] x) {
-		final double z = a + x[0] * x[0] + 3.0D * Math.pow(x[1], 4);
-		return z;
-	}
-
-	// Method to set a
-	public void setA(final double a) {
-		this.a = a;
-	}
-}
-
 // Class to demonstrate minimisation method, Minimisation nelderMead
 public class MinimisationExample {
 

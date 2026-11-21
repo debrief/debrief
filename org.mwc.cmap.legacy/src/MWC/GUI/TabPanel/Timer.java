@@ -330,6 +330,7 @@ public class Timer implements Runnable, java.io.Serializable {
 					thread.suspend();
 			}
 		} catch (final InterruptedException e) {
+			// interrupted: carry on
 		}
 	}
 

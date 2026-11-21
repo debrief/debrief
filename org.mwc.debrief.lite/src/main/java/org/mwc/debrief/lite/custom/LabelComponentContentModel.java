@@ -22,9 +22,9 @@ import java.beans.PropertyChangeSupport;
 
 import javax.swing.border.Border;
 
-import org.pushingpixels.flamingo.api.common.RichTooltip;
-import org.pushingpixels.flamingo.api.ribbon.synapse.model.ComponentContentModel;
-import org.pushingpixels.neon.api.icon.ResizableIcon;
+import org.pushingpixels.radiance.component.api.common.RichTooltip;
+import org.pushingpixels.radiance.component.api.ribbon.synapse.model.ComponentContentModel;
+import org.pushingpixels.radiance.common.api.icon.RadianceIcon;
 
 /**
  * @author Ayesha
@@ -34,7 +34,7 @@ public class LabelComponentContentModel implements ComponentContentModel {
 
 	public static class Builder {
 		private final boolean isEnabled = true;
-		private ResizableIcon.Factory iconFactory;
+		private RadianceIcon.Factory iconFactory;
 		private String caption;
 		private RichTooltip richTooltip;
 		private String text;
@@ -105,7 +105,7 @@ public class LabelComponentContentModel implements ComponentContentModel {
 	}
 
 	private boolean isEnabled;
-	private ResizableIcon.Factory iconFactory;
+	private RadianceIcon.Factory iconFactory;
 	private String caption;
 	private String text;
 
@@ -148,7 +148,7 @@ public class LabelComponentContentModel implements ComponentContentModel {
 	}
 
 	@Override
-	public ResizableIcon.Factory getIconFactory() {
+	public RadianceIcon.Factory getIconFactory() {
 		return iconFactory;
 	}
 

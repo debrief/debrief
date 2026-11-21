@@ -34,7 +34,7 @@ public class CoreFreqImportDialog extends TitleAreaDialog {
 	}
 
 	protected Object[] getDataSet() {
-		return new Long[] { 0l, 5000l, 15000l, 60000l, 300000l, 600000l, 3600000l, Long.MAX_VALUE };
+		return new Long[] { 0L, 5000L, 15000L, 60000L, 300000L, 600000L, 3600000L, Long.MAX_VALUE };
 	}
 
 	@Override

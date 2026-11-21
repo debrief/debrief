@@ -26,8 +26,8 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 
 import org.mwc.debrief.lite.DebriefLiteApp;
 import org.mwc.debrief.lite.menu.DebriefRibbonFile;
-import org.pushingpixels.flamingo.api.common.CommandAction;
-import org.pushingpixels.flamingo.api.common.CommandActionEvent;
+import org.pushingpixels.radiance.component.api.common.CommandAction;
+import org.pushingpixels.radiance.component.api.common.CommandActionEvent;
 
 import Debrief.GUI.Frames.Session;
 

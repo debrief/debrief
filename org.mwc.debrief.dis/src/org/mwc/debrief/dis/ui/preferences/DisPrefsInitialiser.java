@@ -7,7 +7,6 @@ import org.mwc.debrief.dis.DisActivator;
 public class DisPrefsInitialiser extends AbstractPreferenceInitializer {
 
 	public DisPrefsInitialiser() {
-		// TODO Auto-generated constructor stub
 	}
 
 	@Override

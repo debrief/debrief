@@ -59,7 +59,6 @@ abstract public class TimeSeriesTmpCore extends TimeSeriesCore {
 
 	@Override
 	public String getName() {
-		// TODO Auto-generated method stub
 		return null;
 	}
 

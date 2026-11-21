@@ -94,6 +94,12 @@ public class DTGHelper extends EditorHelper {
 			return res;
 		}
 
+		@Override
+		public int hashCode() {
+			// equals() compares the times
+			return Long.hashCode(getValue().getMicros());
+		}
+
 		protected void firePropertyChanged(final String propName) {
 		}
 

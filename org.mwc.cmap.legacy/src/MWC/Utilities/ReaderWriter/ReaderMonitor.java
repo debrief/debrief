@@ -140,14 +140,6 @@ public class ReaderMonitor extends BufferedReader {
 	 * finalise, time to close the progress bar
 	 *
 	 */
-	@Override
-	protected void finalize() throws Throwable {
-		super.finalize();
-		if (_provider != null)
-			_provider.done();
-
-	}
-
 	/**
 	 * override the readLine method, to tell us were at a new line
 	 *

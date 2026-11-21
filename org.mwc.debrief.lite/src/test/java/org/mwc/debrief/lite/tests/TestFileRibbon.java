@@ -37,9 +37,9 @@ import org.mwc.debrief.lite.gui.custom.JXCollapsiblePaneWithTitle;
 import org.mwc.debrief.lite.menu.DebriefRibbonFile;
 import org.mwc.debrief.lite.utils.TestUtils;
 import org.junit.jupiter.api.Test;
-import org.pushingpixels.flamingo.api.common.JCommandButton;
-import org.pushingpixels.flamingo.api.ribbon.JRibbonFrame;
-import org.pushingpixels.flamingo.internal.ui.ribbon.JBandControlPanel;
+import org.pushingpixels.radiance.component.api.common.JCommandButton;
+import org.pushingpixels.radiance.component.api.ribbon.JRibbonFrame;
+import org.pushingpixels.radiance.component.internal.ui.ribbon.JBandControlPanel;
 
 import Debrief.Wrappers.TrackWrapper;
 import MWC.GUI.Plottable;
@@ -139,9 +139,9 @@ public class TestFileRibbon extends BaseTestCase
     //do assertions here
     //outline view should have track nelson and by default should have layers chart features and background
     JXCollapsiblePaneWithTitle outlinePanel = (JXCollapsiblePaneWithTitle)TestUtils.getChildNamed(ribbonFrame,"Outline");
-    assertNotNull(outlinePanel);
-    assertTrue(outlinePanel.isVisible());
-    assertTrue(outlinePanel.isEnabled());
+    assertNotNull(outlinePanel, "outline panel");
+    assertTrue(outlinePanel.isVisible(), "outline panel visible");
+    assertTrue(outlinePanel.isEnabled(), "outline panel enabled");
     JTree tree = (JTree)TestUtils.getChildNamed(outlinePanel, "Layer Tree");
     assertEquals(tree.getModel().getChildCount(tree.getModel().getRoot()),3);
     DefaultMutableTreeNode node = (DefaultMutableTreeNode)tree.getModel().getChild(tree.getModel().getRoot(), 2);
@@ -178,9 +178,9 @@ public class TestFileRibbon extends BaseTestCase
     final JXCollapsiblePaneWithTitle outlinePanel =
         (JXCollapsiblePaneWithTitle) TestUtils.getChildNamed(ribbonFrame,
             "Outline");
-    assertNotNull(outlinePanel);
-    assertTrue(outlinePanel.isVisible());
-    assertTrue(outlinePanel.isEnabled());
+    assertNotNull(outlinePanel, "outline panel");
+    assertTrue(outlinePanel.isVisible(), "outline panel visible");
+    assertTrue(outlinePanel.isEnabled(), "outline panel enabled");
     final JTree tree = (JTree) TestUtils.getChildNamed(outlinePanel,
         "Layer Tree");
     assertEquals(tree.getModel().getChildCount(tree.getModel().getRoot()), 3);
@@ -361,9 +361,9 @@ public class TestFileRibbon extends BaseTestCase
     });
     JFrame ribbonFrame = DebriefLiteApp.getInstance().getApplicationFrame();
     JXCollapsiblePaneWithTitle outlinePanel = (JXCollapsiblePaneWithTitle)TestUtils.getChildNamed(ribbonFrame,"Outline");
-    assertNotNull(outlinePanel);
-    assertTrue(outlinePanel.isVisible());
-    assertTrue(outlinePanel.isEnabled());
+    assertNotNull(outlinePanel, "outline panel");
+    assertTrue(outlinePanel.isVisible(), "outline panel visible");
+    assertTrue(outlinePanel.isEnabled(), "outline panel enabled");
     JTree tree = (JTree)TestUtils.getChildNamed(outlinePanel, "Layer Tree");
     DefaultMutableTreeNode testnode = (DefaultMutableTreeNode)tree.getModel().getRoot();
     Enumeration<TreeNode> childnodes = testnode.children();
@@ -397,9 +397,9 @@ public class TestFileRibbon extends BaseTestCase
         .getApplicationFrame();
     assertTrue(ribbonFrame.getTitle().contains("boat1.rep"));
     JXCollapsiblePaneWithTitle outlinePanel = (JXCollapsiblePaneWithTitle)TestUtils.getChildNamed(ribbonFrame,"Outline");
-    assertNotNull(outlinePanel);
-    assertTrue(outlinePanel.isVisible());
-    assertTrue(outlinePanel.isEnabled());
+    assertNotNull(outlinePanel, "outline panel");
+    assertTrue(outlinePanel.isVisible(), "outline panel visible");
+    assertTrue(outlinePanel.isEnabled(), "outline panel enabled");
     final JTree tree = (JTree)TestUtils.getChildNamed(outlinePanel, "Layer Tree");
     assertEquals(tree.getModel().getChildCount(tree.getModel().getRoot()),3);
     DefaultMutableTreeNode node = (DefaultMutableTreeNode)tree.getModel().getChild(tree.getModel().getRoot(), 2);
@@ -507,7 +507,8 @@ public class TestFileRibbon extends BaseTestCase
     JFrame ribbonFrame = DebriefLiteApp.getInstance().getApplicationFrame();
     //wait for file chooser dialog
     JFileChooser fc=null;
-    final File file = new File("../org.mwc.cmap.combined.feature/root_installs/sample_data/sample.dpf").getAbsoluteFile();
+    // open a copy: the test saves the plot, which must not overwrite the shipped sample
+    final File file = copyToTempFolder(new File("../org.mwc.cmap.combined.feature/root_installs/sample_data/sample.dpf"));
     for(int i=0;fc == null;++i) {
 
     // wait for window to open and confirm it is open
@@ -547,8 +548,12 @@ public class TestFileRibbon extends BaseTestCase
       }
     });
 
-    Thread.sleep(5000);
-    assertTrue(ribbonFrame.getTitle().contains("sample.dpf"));
+    // the plot loads in the background: wait for its name in the title (up to
+    // 30 s) rather than a fixed sleep, which a slow CI runner can outlast
+    for (int i = 0; i < 150 && !ribbonFrame.getTitle().contains("sample.dpf"); ++i) {
+      Thread.sleep(200);
+    }
+    assertTrue(ribbonFrame.getTitle().contains("sample.dpf"), "expected sample.dpf in title, found " + ribbonFrame.getTitle());
     //verify the file got opened
     //do save and close
     
@@ -564,9 +569,9 @@ public class TestFileRibbon extends BaseTestCase
     });
     Thread.sleep(200);
     JXCollapsiblePaneWithTitle outlinePanel = (JXCollapsiblePaneWithTitle)TestUtils.getChildNamed(ribbonFrame,"Outline");
-    assertNotNull(outlinePanel);
-    assertTrue(outlinePanel.isVisible());
-    assertTrue(outlinePanel.isEnabled());
+    assertNotNull(outlinePanel, "outline panel");
+    assertTrue(outlinePanel.isVisible(), "outline panel visible");
+    assertTrue(outlinePanel.isEnabled(), "outline panel enabled");
     JTree tree = (JTree)TestUtils.getChildNamed(outlinePanel, "Layer Tree");
     assertEquals(tree.getModel().getChildCount(tree.getModel().getRoot()),7);
     
@@ -722,4 +727,21 @@ public class TestFileRibbon extends BaseTestCase
 
   
 
+  /** a copy of a file, under the same name, in a new temporary folder */
+  private static File copyToTempFolder(final File original)
+  {
+    try
+    {
+      final java.nio.file.Path folder = java.nio.file.Files.createTempDirectory("lite-test");
+      final java.nio.file.Path copy = folder.resolve(original.getName());
+      java.nio.file.Files.copy(original.toPath(), copy);
+      copy.toFile().deleteOnExit();
+      folder.toFile().deleteOnExit();
+      return copy.toFile().getAbsoluteFile();
+    }
+    catch (final java.io.IOException e)
+    {
+      throw new java.io.UncheckedIOException(e);
+    }
+  }
 }

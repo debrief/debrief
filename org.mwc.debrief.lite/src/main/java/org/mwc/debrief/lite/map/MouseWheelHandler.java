@@ -17,7 +17,6 @@ package org.mwc.debrief.lite.map;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 
-import org.geotools.geometry.Envelope2D;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.swing.MapPane;
 import org.geotools.swing.event.MapMouseAdapter;
@@ -116,7 +115,7 @@ public class MouseWheelHandler extends MapMouseAdapter {
 		final Rectangle2D current = new Rectangle2D.Double(bounds.getMinX(), bounds.getMinY(), bounds.getWidth(),
 				bounds.getHeight());
 		map.setDisplayArea(
-				new Envelope2D(bounds.getCoordinateReferenceSystem(), zoomedArea(current, anchor, zoomFactor(wheelRotation))));
+				new ReferencedEnvelope(zoomedArea(current, anchor, zoomFactor(wheelRotation)), bounds.getCoordinateReferenceSystem()));
 
 		if (_afterZoom != null) {
 			_afterZoom.run();

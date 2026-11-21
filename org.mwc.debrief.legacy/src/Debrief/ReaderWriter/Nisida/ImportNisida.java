@@ -283,7 +283,7 @@ public class ImportNisida {
 				try {
 					br.close();
 				} catch (IOException e) {
-
+					// nothing more to do if closing fails
 				}
 			}
 		}

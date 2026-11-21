@@ -146,7 +146,7 @@ public class SelectImportModeDialog extends ThreadSafeDialog<ImportSettings> imp
 				return super.getText(element);
 			}
 		});
-		comboViewer.setInput(new Long[] { 0l, 5000l, 15000l, 60000l, 300000l, 600000l, 3600000l, Long.MAX_VALUE });
+		comboViewer.setInput(new Long[] { 0L, 5000L, 15000L, 60000L, 300000L, 600000L, 3600000L, Long.MAX_VALUE });
 
 		comboViewer.getCombo().setLayoutData(new GridData(GridData.FILL_HORIZONTAL | GridData.GRAB_HORIZONTAL));
 		comboViewer.setSelection(new StructuredSelection(Long.valueOf(_resampleFrequency)));

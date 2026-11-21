@@ -29,6 +29,7 @@
   <modules>
     <!-- first: copies third-party jars from Maven Central into the plugins -->
     <module>org.mwc.debrief.thirdparty</module>
+    <module>org.mwc.cmap.geotools.libs</module>
 
 
     <module>org.freehep</module>

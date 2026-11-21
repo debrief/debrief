@@ -113,7 +113,6 @@ public final class MultiParticipantGenerator {
 	 */
 	void loadVariances(final Document document) throws XPathExpressionException {
 		XPathExpression xpe = null;
-		;
 		try {
 			xpe = NamespaceContextProvider.createPath("//" + GENERATOR_TYPE);
 		} catch (final XPathExpressionException e) {

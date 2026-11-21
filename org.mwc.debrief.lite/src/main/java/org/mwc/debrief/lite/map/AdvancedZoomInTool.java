@@ -15,11 +15,11 @@
 package org.mwc.debrief.lite.map;
 
 import java.awt.Point;
+import java.awt.geom.Rectangle2D;
 import java.awt.event.MouseEvent;
 import java.awt.geom.Point2D;
 
-import org.geotools.geometry.DirectPosition2D;
-import org.geotools.geometry.Envelope2D;
+import org.geotools.geometry.Position2D;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.map.MapViewport;
 import org.geotools.swing.event.MapMouseEvent;
@@ -42,7 +42,7 @@ public class AdvancedZoomInTool extends ZoomInTool {
 	public AdvancedZoomInTool(final ToolParent parent) {
 		super();
 		startPosDevice = new Point();
-		startPosWorld = new DirectPosition2D();
+		startPosWorld = new Position2D();
 		dragged = false;
 		_toolParent = parent;
 	}
@@ -120,12 +120,13 @@ public class AdvancedZoomInTool extends ZoomInTool {
 
 		final MapViewport view = ev.getSource().getMapContent().getViewport();
 		final ReferencedEnvelope existingArea = view.getBounds();
-		final DirectPosition2D startWorld = new DirectPosition2D(startPosWorld);
-		final Envelope2D selectedArea = new Envelope2D(startWorld, ev.getWorldPos());
-		final DirectPosition2D desiredCenter = new DirectPosition2D(selectedArea.getCenterX(),
+		final Position2D startWorld = new Position2D(startPosWorld);
+		final Rectangle2D.Double selectedArea = new Rectangle2D.Double();
+		selectedArea.setFrameFromDiagonal(startWorld, ev.getWorldPos());
+		final Position2D desiredCenter = new Position2D(selectedArea.getCenterX(),
 				selectedArea.getCenterY());
 		final Coordinate centerC = ev.getSource().getMapContent().getViewport().getBounds().centre();
-		final DirectPosition2D actualCenter = new DirectPosition2D(centerC.x, centerC.y);
+		final Position2D actualCenter = new Position2D(centerC.x, centerC.y);
 		// final double deltaX = actualCenter.getX() - desiredCenter.getX();
 		// final double deltaY = actualCenter.getY() - desiredCenter.getY();
 
@@ -143,10 +144,10 @@ public class AdvancedZoomInTool extends ZoomInTool {
 			final double deltaX3 = existingArea.getMaxX() - actualCenter.getX();
 			final double deltaY3 = existingArea.getMinY() - actualCenter.getY();
 
-			final DirectPosition2D corner = new DirectPosition2D(desiredCenter.x + deltaX3 * scaleVal,
+			final Position2D corner = new Position2D(desiredCenter.x + deltaX3 * scaleVal,
 					desiredCenter.y + deltaY3 * scaleVal);
 
-			final Envelope2D newMapArea = new Envelope2D();
+			final ReferencedEnvelope newMapArea = new ReferencedEnvelope();
 			newMapArea.setFrameFromCenter(desiredCenter, corner);
 
 			ev.getSource().setDisplayArea(newMapArea);

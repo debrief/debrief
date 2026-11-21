@@ -63,7 +63,6 @@ public class SWTCanvasTest {
 	static public final String TEST_ALL_TEST_TYPE = "CONV";
 
 
-	@Disabled("Fails outside the Eclipse runtime (clipboard text is null); it was in no suite before the JUnit 6 migration, so it never ran")
 	@Test
 	public void testClipboardTextManagement() {
 		WorldLocation theLoc = new WorldLocation(12.3, 12.555555, 1.2);
@@ -98,7 +97,7 @@ public class SWTCanvasTest {
 		assertNotNull(loc3, "is a location string");
 
 		loc3 = CorePlugin.fromClipboard("-12.5t 14.5");
-		assertNotNull(loc3, "is not a location string");
+		assertNull(loc3, "is not a location string");
 
 		loc3 = CorePlugin.fromClipboard("12 01 02 N 14 12 32 W");
 		assertNotNull(loc3, "is a location string");

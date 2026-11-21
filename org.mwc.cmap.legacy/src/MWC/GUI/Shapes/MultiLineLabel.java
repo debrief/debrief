@@ -151,8 +151,8 @@ public class MultiLineLabel extends Canvas {
 		y = line_ascent + (size.height - num_lines * line_height) / 2;
 		for (int i = 0; i < num_lines; i++, y += line_height) {
 			switch (alignment) {
-			default:
 			case LEFT:
+			default:
 				x = margin_width;
 				break;
 			case CENTER:

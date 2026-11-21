@@ -37,7 +37,7 @@ import org.mwc.debrief.lite.LiteApplication;
 import org.mwc.debrief.lite.LiteSession;
 import org.mwc.debrief.lite.gui.GeoToolMapProjection;
 import org.mwc.debrief.lite.util.PlotFiles;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
+import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
 
 import Debrief.Testing.GoldenImage;
 import MWC.GUI.Layers;

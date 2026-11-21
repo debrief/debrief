@@ -380,6 +380,13 @@ public class WorldLocation implements Serializable, Cloneable {
 		return res;
 	}
 
+	// equals() allows a little tolerance on latitude and longitude, so only
+	// depth, compared exactly, can be hashed (0.0 and -0.0 are equal)
+	@Override
+	final public int hashCode() {
+		return Double.hashCode(_theDepth == 0d ? 0d : _theDepth);
+	}
+
 	final public boolean equals(final WorldLocation o) {
 
 		boolean res = true;

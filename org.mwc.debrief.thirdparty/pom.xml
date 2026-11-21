@@ -39,6 +39,11 @@
   <artifactId>org.mwc.debrief.thirdparty</artifactId>
   <packaging>pom</packaging>
 
+  <properties>
+    <!-- Lite's Radiance modules (see below) -->
+    <radiance.version>9.0.0</radiance.version>
+  </properties>
+
   <!-- The jars, one per entry. Only the jar itself is copied: the
        exclusions keep Maven from fetching transitive dependencies, which
        the plugins don't take this way. -->
@@ -213,6 +218,45 @@
       <version>5.4.1</version>
       <exclusions><exclusion><groupId>*</groupId><artifactId>*</artifactId></exclusion></exclusions>
     </dependency>
+    <!-- org.mwc.debrief.lite: Radiance, the Swing ribbon (component), look and
+         feel (theming) and animation libraries. The modules share one version. -->
+    <dependency>
+      <groupId>org.pushing-pixels</groupId>
+      <artifactId>radiance-common</artifactId>
+      <version>${radiance.version}</version>
+      <exclusions><exclusion><groupId>*</groupId><artifactId>*</artifactId></exclusion></exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.pushing-pixels</groupId>
+      <artifactId>radiance-animation</artifactId>
+      <version>${radiance.version}</version>
+      <exclusions><exclusion><groupId>*</groupId><artifactId>*</artifactId></exclusion></exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.pushing-pixels</groupId>
+      <artifactId>radiance-theming</artifactId>
+      <version>${radiance.version}</version>
+      <exclusions><exclusion><groupId>*</groupId><artifactId>*</artifactId></exclusion></exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.pushing-pixels</groupId>
+      <artifactId>radiance-theming-extras</artifactId>
+      <version>${radiance.version}</version>
+      <exclusions><exclusion><groupId>*</groupId><artifactId>*</artifactId></exclusion></exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.pushing-pixels</groupId>
+      <artifactId>radiance-component</artifactId>
+      <version>${radiance.version}</version>
+      <exclusions><exclusion><groupId>*</groupId><artifactId>*</artifactId></exclusion></exclusions>
+    </dependency>
+    <!-- needed at runtime by radiance-theming -->
+    <dependency>
+      <groupId>org.pushing-pixels</groupId>
+      <artifactId>ephemeral-chroma-java</artifactId>
+      <version>2.0.0</version>
+      <exclusions><exclusion><groupId>*</groupId><artifactId>*</artifactId></exclusion></exclusions>
+    </dependency>
     <!-- org.mwc.debrief.lite test-libs/: JUnit 6, to compile and run Lite's tests
          (the forked test JVMs need the engine on their classpath). Never shipped. -->
     <dependency>
@@ -275,6 +319,22 @@
       <groupId>org.jfree</groupId>
       <artifactId>jfreechart</artifactId>
       <version>1.0.19</version>
+      <exclusions><exclusion><groupId>*</groupId><artifactId>*</artifactId></exclusion></exclusions>
+    </dependency>
+    <!-- JAXB 2 (javax.xml.bind) for org.mwc.debrief.core's GPX code (with
+         EclipseLink MOXy as the provider) and the DIS plugin, which imports
+         it from org.mwc.debrief.core. GeoTools 35 uses JAXB 4 (jakarta.*).
+         javax.activation comes from the target platform's bundle. -->
+    <dependency>
+      <groupId>javax.xml.bind</groupId>
+      <artifactId>jaxb-api</artifactId>
+      <version>2.3.1</version>
+      <exclusions><exclusion><groupId>*</groupId><artifactId>*</artifactId></exclusion></exclusions>
+    </dependency>
+    <dependency>
+      <groupId>com.sun.xml.bind</groupId>
+      <artifactId>jaxb-impl</artifactId>
+      <version>2.3.9</version>
       <exclusions><exclusion><groupId>*</groupId><artifactId>*</artifactId></exclusion></exclusions>
     </dependency>
   </dependencies>
@@ -368,6 +428,19 @@
             </configuration>
           </execution>
           <execution>
+            <id>org.mwc.debrief.core</id>
+            <phase>generate-resources</phase>
+            <goals><goal>copy</goal></goals>
+            <configuration>
+              <outputDirectory>${project.basedir}/../org.mwc.debrief.core</outputDirectory>
+              <overWriteReleases>true</overWriteReleases>
+              <artifactItems>
+                <artifactItem><groupId>javax.xml.bind</groupId><artifactId>jaxb-api</artifactId><destFileName>jaxb-api.jar</destFileName></artifactItem>
+                <artifactItem><groupId>com.sun.xml.bind</groupId><artifactId>jaxb-impl</artifactId><destFileName>jaxb-impl.jar</destFileName></artifactItem>
+              </artifactItems>
+            </configuration>
+          </execution>
+          <execution>
             <id>org.mwc.cmap.jfreechart</id>
             <phase>generate-resources</phase>
             <goals><goal>copy</goal></goals>
@@ -377,6 +450,23 @@
               <artifactItems>
                 <artifactItem><groupId>org.jfree</groupId><artifactId>jcommon</artifactId><destFileName>jcommon.jar</destFileName></artifactItem>
                 <artifactItem><groupId>org.jfree</groupId><artifactId>jfreechart</artifactId><destFileName>jfreechart.jar</destFileName></artifactItem>
+              </artifactItems>
+            </configuration>
+          </execution>
+          <execution>
+            <id>org.mwc.debrief.lite</id>
+            <phase>generate-resources</phase>
+            <goals><goal>copy</goal></goals>
+            <configuration>
+              <outputDirectory>${project.basedir}/../org.mwc.debrief.lite</outputDirectory>
+              <overWriteReleases>true</overWriteReleases>
+              <artifactItems>
+                <artifactItem><groupId>org.pushing-pixels</groupId><artifactId>radiance-common</artifactId><destFileName>radiance-common.jar</destFileName></artifactItem>
+                <artifactItem><groupId>org.pushing-pixels</groupId><artifactId>radiance-animation</artifactId><destFileName>radiance-animation.jar</destFileName></artifactItem>
+                <artifactItem><groupId>org.pushing-pixels</groupId><artifactId>radiance-theming</artifactId><destFileName>radiance-theming.jar</destFileName></artifactItem>
+                <artifactItem><groupId>org.pushing-pixels</groupId><artifactId>radiance-theming-extras</artifactId><destFileName>radiance-theming-extras.jar</destFileName></artifactItem>
+                <artifactItem><groupId>org.pushing-pixels</groupId><artifactId>radiance-component</artifactId><destFileName>radiance-component.jar</destFileName></artifactItem>
+                <artifactItem><groupId>org.pushing-pixels</groupId><artifactId>ephemeral-chroma-java</artifactId><destFileName>ephemeral-chroma-java.jar</destFileName></artifactItem>
               </artifactItems>
             </configuration>
           </execution>

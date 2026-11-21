@@ -409,6 +409,7 @@ public final class SwingApplication extends Application {
 			// load the coastline data in the background
 			new MWC.GUI.Chart.Painters.CoastPainter(this);
 		} catch (final Exception e) {
+			MWC.Utilities.Errors.Trace.trace(e);
 		}
 
 		/**

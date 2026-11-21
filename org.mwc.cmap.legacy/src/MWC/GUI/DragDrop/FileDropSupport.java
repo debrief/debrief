@@ -159,6 +159,7 @@ public class FileDropSupport implements DropTargetListener {
 			} catch (final UnsupportedFlavorException e) {
 				System.out.println("NOT SUPPORTED");
 			} catch (final IOException e) {
+				MWC.Utilities.Errors.Trace.trace(e);
 			}
 		} else {
 			p1.rejectDrop();
@@ -184,10 +185,7 @@ public class FileDropSupport implements DropTargetListener {
 
 		// check if this matches
 		final int index = _suffixes.indexOf(theSuffix);
-		if (index != -1)
-			return true;
-		else
-			return false;
+		return index != -1;
 	}
 
 	/**
