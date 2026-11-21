@@ -540,7 +540,7 @@ public class SwingLayerManager extends SwingCustomEditor
 			} catch (final InvocationTargetException e) {
 				e.printStackTrace();
 			} catch (final InterruptedException e) {
-				e.printStackTrace();
+				Thread.currentThread().interrupt();
 			}
 		}
 	}

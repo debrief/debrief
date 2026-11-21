@@ -277,6 +277,7 @@ public class WMFGraphics extends Graphics implements MWC.GUI.CanvasType {
 		try {
 			pixelgrabber.grabPixels();
 		} catch (final InterruptedException interruptedexception) {
+			Thread.currentThread().interrupt();
 			return false;
 		}
 
@@ -353,6 +354,7 @@ public class WMFGraphics extends Graphics implements MWC.GUI.CanvasType {
 		try {
 			pixelgrabber.grabPixels();
 		} catch (final InterruptedException interruptedexception) {
+			Thread.currentThread().interrupt();
 			return false;
 		}
 
@@ -863,6 +865,7 @@ public class WMFGraphics extends Graphics implements MWC.GUI.CanvasType {
 					else
 						wmf.createPatternBrush(is, i, i_112_);
 				} catch (final InterruptedException interruptedexception) {
+					Thread.currentThread().interrupt();
 					wmf.createBrushIndirect(0, foreground, brushhatch);
 				}
 			} else

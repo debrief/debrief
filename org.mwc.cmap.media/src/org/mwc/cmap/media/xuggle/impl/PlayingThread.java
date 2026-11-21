@@ -290,7 +290,7 @@ public class PlayingThread extends Thread {
 						setPriority(MIN_PRIORITY);
 					}
 				} catch (final InterruptedException ex) {
-					// ignore
+					Thread.currentThread().interrupt();
 				}
 			}
 		}
@@ -447,7 +447,7 @@ public class PlayingThread extends Thread {
 			try {
 				this.join();
 			} catch (final InterruptedException ex) {
-				// ignore
+				Thread.currentThread().interrupt();
 			}
 		}
 	}

@@ -39,10 +39,8 @@ public class Timer extends Object implements java.io.Serializable {
 				try {
 					sleep(delay);
 				} catch (final InterruptedException e) {
-					// interrupted: carry on
-				} catch (final Exception e) {
-					System.err.println("Exception in time-stepper");
-					e.printStackTrace();
+					// stop() interrupts the sleep: end without firing another tick
+					return;
 				}
 				fireTimerEvent();
 				if (onceOnly)
@@ -71,7 +69,7 @@ public class Timer extends Object implements java.io.Serializable {
 	private final PropertyChangeSupport propertySupport;
 
 	/** The flag indicating whether the timer is running */
-	boolean running;
+	volatile boolean running;
 
 	/**
 	 * If true, the timer stops after firing the first onTime, if false it keeps
@@ -192,8 +190,8 @@ public class Timer extends Object implements java.io.Serializable {
 	public synchronized void stop() {
 		if (!running)
 			return;
+		running = false;
 		timerThread.interrupt();
 		timerThread = null;
-		running = false;
 	}
 }

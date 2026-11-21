@@ -182,7 +182,8 @@ public class PerformanceGraph implements IDISGeneralPDUListener, IDISScenarioLis
 					try {
 						Thread.sleep(1000);
 					} catch (final InterruptedException e) {
-						e.printStackTrace();
+						// asked to stop: end the graph's thread
+						return;
 					}
 				}
 			}

@@ -1425,7 +1425,8 @@ public abstract class ButtonBase extends Canvas {
 				tracker.addImage(buttonImage, 0);
 				tracker.waitForID(0);
 			} catch (final InterruptedException e) {
-				// interrupted: carry on
+				// carry on with the image as it is, keep the interrupt
+				Thread.currentThread().interrupt();
 			}
 		}
 

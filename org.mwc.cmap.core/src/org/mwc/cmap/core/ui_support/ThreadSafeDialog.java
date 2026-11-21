@@ -15,6 +15,7 @@
 package org.mwc.cmap.core.ui_support;
 
 import java.lang.reflect.Method;
+import java.util.concurrent.CountDownLatch;
 
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.swt.widgets.Display;
@@ -73,29 +74,26 @@ public abstract class ThreadSafeDialog<T> extends Dialog {
 			return selection = internalOpenDialog();
 		}
 
-		final Object lock = new Object();
+		// the UI thread opens the dialog later and counts down when it closes.
+		// (Waiting on a monitor lost the wake-up when the UI thread got the lock
+		// first: it held it while the modal dialog was open, notified nobody, and
+		// this thread then waited for ever: an import stuck after its dialogs.)
+		final CountDownLatch closed = new CountDownLatch(1);
 
-		final Display current = Display.getDefault();
-
-		current.asyncExec(new Runnable() {
-			@Override
-			public void run() {
-				synchronized (lock) {
-					try {
-						selection = internalOpenDialog();
-					} finally {
-						lock.notify();
-					}
-				}
+		Display.getDefault().asyncExec(() -> {
+			try {
+				selection = internalOpenDialog();
+			} finally {
+				closed.countDown();
 			}
 		});
 
-		synchronized (lock) {
-			try {
-				lock.wait();
-			} catch (final InterruptedException e) {
-				e.printStackTrace();
-			}
+		try {
+			closed.await();
+		} catch (final InterruptedException e) {
+			// stop waiting, keep the interrupt for our caller; no selection yet
+			Thread.currentThread().interrupt();
+			return null;
 		}
 		return selection;
 	}

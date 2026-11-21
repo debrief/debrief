@@ -41,7 +41,7 @@ public class Util {
 			tracker.addImage(image, 0);
 			tracker.waitForID(0);
 		} catch (final InterruptedException e) {
-			MWC.Utilities.Errors.Trace.trace(e);
+			Thread.currentThread().interrupt();
 		}
 	}
 
