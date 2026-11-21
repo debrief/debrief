@@ -179,8 +179,8 @@ public class AISPositionExtB extends AISPositionB {
 //		int length = dimensionA + dimensionB;
 //		int width = dimensionC + dimensionD;
 
-		// TODO: impelemt the rest bits
-		// TODO: implement vesselType, cargoType, countryId, msgSrc
+		// the rest of the bits are not decoded:
+		// vesselType, cargoType, countryId and msgSrc are not read
 
 		final Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
 		this.msgTimestamp = new Timestamp(cal.getTimeInMillis());

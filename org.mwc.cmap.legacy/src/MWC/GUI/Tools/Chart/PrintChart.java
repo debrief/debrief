@@ -99,7 +99,7 @@ public class PrintChart extends PlainTool {
 			try {
 				jp.print();
 			} catch (final java.awt.print.PrinterException e) {
-
+				MWC.Utilities.Errors.Trace.trace(e);
 			}
 		}
 		return null;

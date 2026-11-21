@@ -119,9 +119,11 @@ public abstract class BaseTabbedPanel extends Panel {
 						try {
 							setCurrentTab(x);
 						} catch (final PropertyVetoException exc) {
+							// our own property: nobody vetoes it
 						}
 					}
 				} catch (final ArrayIndexOutOfBoundsException exc) {
+					// no tab at that index: nothing to do
 				}
 			}
 		}
@@ -306,6 +308,7 @@ public abstract class BaseTabbedPanel extends Panel {
 			dbLeft.setShowFocus(false);
 			dbRight.setShowFocus(false);
 		} catch (final PropertyVetoException e) {
+			// our own property: nobody vetoes it
 		}
 
 		dbLeft.shrinkTriangle(1, 1, 0, 1);
@@ -526,6 +529,7 @@ public abstract class BaseTabbedPanel extends Panel {
 		try {
 			disabledTextColor = ColorUtils.fade(c, Color.lightGray, 0.50);
 		} catch (final IllegalArgumentException exc) {
+			// unsuitable colour: keep the previous derived colour
 		}
 	}
 
@@ -637,6 +641,7 @@ public abstract class BaseTabbedPanel extends Panel {
 		try {
 			return vLabels.elementAt(index);
 		} catch (final ArrayIndexOutOfBoundsException e) {
+			// no tab at that index: nothing to do
 		}
 		return "";
 	}
@@ -717,6 +722,7 @@ public abstract class BaseTabbedPanel extends Panel {
 			vEnabled.insertElementAt(new Boolean(bEnabled), index);
 			triggerRepaint();
 		} catch (final ArrayIndexOutOfBoundsException e) {
+			// no tab at that index: nothing to do
 		}
 	}
 
@@ -735,6 +741,7 @@ public abstract class BaseTabbedPanel extends Panel {
 			if (bool.booleanValue())
 				return true;
 		} catch (final ArrayIndexOutOfBoundsException e) {
+			// no tab at that index: nothing to do
 		}
 
 		return false;
@@ -1003,6 +1010,7 @@ public abstract class BaseTabbedPanel extends Panel {
 						g.drawString(sLabel, x1 + 14, y1 - 4 + osAdjustment);
 				}
 			} catch (final ArrayIndexOutOfBoundsException e) {
+				// no tab at that index: nothing to do
 			}
 		}
 
@@ -1167,6 +1175,7 @@ public abstract class BaseTabbedPanel extends Panel {
 			vEnabled.removeElementAt(index);
 			triggerRepaint();
 		} catch (final ArrayIndexOutOfBoundsException e) {
+			// no tab at that index: nothing to do
 		}
 	}
 
@@ -1242,6 +1251,7 @@ public abstract class BaseTabbedPanel extends Panel {
 
 			changes.firePropertyChange("Enabled", oldValue, newValue);
 		} catch (final ArrayIndexOutOfBoundsException e) {
+			// no tab at that index: nothing to do
 		}
 	}
 
@@ -1269,6 +1279,7 @@ public abstract class BaseTabbedPanel extends Panel {
 
 			changes.firePropertyChange("Label", oldValue, sLabel);
 		} catch (final ArrayIndexOutOfBoundsException e) {
+			// no tab at that index: nothing to do
 		}
 	}
 

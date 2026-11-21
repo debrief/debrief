@@ -40,7 +40,7 @@ public class PlotEditorActionBarContributor extends EditorActionBarContributor {
 	public void contributeToMenu(final IMenuManager menuManager) {
 		super.contributeToMenu(menuManager);
 		final IMenuManager editorViewMenu = menuManager.findMenuUsingPath(EDITOR_VIEW_MENU_ID);
-		// TODO: verify what is happening with the above item. Do we need it?
+		// is the item above needed?
 	}
 
 	@Override

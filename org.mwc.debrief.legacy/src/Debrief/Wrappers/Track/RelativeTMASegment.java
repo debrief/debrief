@@ -702,8 +702,6 @@ public class RelativeTMASegment extends CoreTMASegment implements NeedsToKnowAbo
 
 		final TrackWrapper theTrack = (TrackWrapper) _theLayers.findLayer(_referenceTrackName);
 
-		if (theTrack == null) {
-		}
 
 		// ok, we can't work, we'll delete ourselves
 		if (theTrack != null) {

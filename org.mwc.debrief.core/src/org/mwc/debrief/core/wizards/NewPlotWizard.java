@@ -138,6 +138,7 @@ public class NewPlotWizard extends Wizard implements INewWizard {
 			}
 			stream.close();
 		} catch (final IOException e) {
+			CorePlugin.logError(IStatus.ERROR, "Whilst creating the new plot file", e);
 		}
 		monitor.worked(1);
 		monitor.setTaskName("Opening file for editing...");

@@ -321,6 +321,7 @@ class FindAccessory extends JPanel implements Runnable, PropertyChangeListener, 
 							final File f = (File) model.elementAt(index);
 							goTo(f);
 						} catch (final Throwable err) {
+							// no file under the mouse: nothing to go to
 						}
 					}
 				}
@@ -811,6 +812,7 @@ class FindAccessory extends JPanel implements Runnable, PropertyChangeListener, 
 			actionStop.setEnabled(true);
 			runFind(chooser.getCurrentDirectory(), newFind());
 		} catch (final InterruptedException e) {
+			// interrupted: carry on
 		} finally {
 			actionStart.setEnabled(true);
 			actionStop.setEnabled(false);

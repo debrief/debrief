@@ -375,6 +375,7 @@ public class AWTTabPanel extends BaseTabbedPanel implements MWC.GUI.CoreTabPanel
 		try {
 			p = vPanels.elementAt(index);
 		} catch (final ArrayIndexOutOfBoundsException e) {
+			// no tab at that index: nothing to do
 		}
 
 		return p;
@@ -409,6 +410,7 @@ public class AWTTabPanel extends BaseTabbedPanel implements MWC.GUI.CoreTabPanel
 			vPanels.insertElementAt(panel, index);
 			insertTab(sLabel, bEnabled, index);
 		} catch (final ArrayIndexOutOfBoundsException e) {
+			// no tab at that index: nothing to do
 		}
 	}
 
@@ -489,6 +491,7 @@ public class AWTTabPanel extends BaseTabbedPanel implements MWC.GUI.CoreTabPanel
 			super.remove(p);
 			vPanels.removeElementAt(index);
 		} catch (final ArrayIndexOutOfBoundsException e) {
+			// no tab at that index: nothing to do
 		}
 
 		removeTab(index);
@@ -606,6 +609,7 @@ public class AWTTabPanel extends BaseTabbedPanel implements MWC.GUI.CoreTabPanel
 
 			changes.firePropertyChange("TabPanel", oldPanel, panel);
 		} catch (final ArrayIndexOutOfBoundsException e) {
+			// no tab at that index: nothing to do
 		}
 
 	}
@@ -654,7 +658,9 @@ public class AWTTabPanel extends BaseTabbedPanel implements MWC.GUI.CoreTabPanel
 //				else
 				showPanel(p);
 			} catch (final ArrayIndexOutOfBoundsException e) {
+				// no tab at that index: nothing to do
 			} catch (final PropertyVetoException e) {
+				// our own property: nobody vetoes it
 			}
 		}
 	}
@@ -680,6 +686,7 @@ public class AWTTabPanel extends BaseTabbedPanel implements MWC.GUI.CoreTabPanel
 				setLabel(newlabel, i);
 			}
 		} catch (final Throwable thr) {
+			// a tab that can't be labelled keeps its old label
 		}
 	}
 }

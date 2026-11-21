@@ -45,7 +45,7 @@ public class CSVExportPage3 extends CustomWizardPage {
 
 	private final DropdownProvider provider;
 
-	// Data Fields ---- TODO: change default values
+	// Data Fields: the defaults are placeholders
 	private String purpose;
 	private String statement;
 	private String exportFolder = new File(System.getProperty("user.home")).getAbsolutePath();

@@ -194,7 +194,6 @@ public class StepperXYPlot extends XYPlot implements StepperListener {
 					final Date endDate = new Date(endMillis);
 
 					dateAxis.setRange(startDate, endDate);
-				} else {
 				}
 
 			} else {

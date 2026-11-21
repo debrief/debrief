@@ -617,7 +617,7 @@ public class ImportReplay extends PlainImporterBase {
 		if (res == null) {
 			res = SymbolFactory.createSymbolFromId(SymbolFactory.DEFAULT_SYMBOL_TYPE);
 		} else if (res == SymbolFactory.UNKNOWN) {
-			// TODO: instance of itself?
+			// a new importer, or this instance?
 			final ImportReplay importer = new ImportReplay();
 			// In case we have an unknown symbol, we test if it is a SVG
 			final String svgSymbol = importer.getSVGSymbol(theSym);

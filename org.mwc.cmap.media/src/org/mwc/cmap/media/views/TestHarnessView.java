@@ -132,7 +132,7 @@ public class TestHarnessView extends ViewPart {
 				timeToFire.setValue(new Date(Long.parseLong(memento.getString(STATE_TIME_TO_FIRE))));
 			}
 		} catch (final NumberFormatException ex) {
-
+			// not a number: leave it as it was
 		}
 	}
 

@@ -261,8 +261,7 @@ public class MergeTracks implements RightClickContextItemGenerator {
 					validItems += sl.size();
 				}
 
-				if (goForIt) {
-				} else {
+				if (!goForIt) {
 					// may as well drop out - this item wasn't compliant
 					continue;
 				}

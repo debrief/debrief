@@ -42,7 +42,7 @@ public abstract class BiSliderFactory {
 	/**
 	 * Creates BiSlider with specified data model and UI configuration.
 	 *
-	 * @param fc TODO
+	 * @param fc the fc
 	 */
 	public abstract BiSlider createBiSlider(Composite parent, BiSliderDataModel.Writable dataModel,
 			BiSliderUIModel uiConfig, DoFineControl fc);

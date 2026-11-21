@@ -125,6 +125,7 @@ public final class D3Splash extends Window {
 			theStr = "Loading Coastline";
 
 		} catch (final Exception e) {
+			// interrupted: carry on
 		}
 
 	}

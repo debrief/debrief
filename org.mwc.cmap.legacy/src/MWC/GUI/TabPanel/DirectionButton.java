@@ -215,6 +215,7 @@ public class DirectionButton extends ButtonBase {
 		try {
 			setArrowColor(Color.black);
 		} catch (final PropertyVetoException exc) {
+			// our own property: nobody vetoes it
 		}
 
 	}
@@ -577,6 +578,7 @@ public class DirectionButton extends ButtonBase {
 			try {
 				disabledArrowColor = ColorUtils.fade(arrowColor, Color.lightGray, 0.50);
 			} catch (final IllegalArgumentException exc) {
+				// unsuitable colour: keep the previous derived colour
 			}
 
 			repaint();

@@ -125,7 +125,7 @@ public class TimeDeltas {
 
 			// and get the value in seconds
 			final long tMillis = cal2.getTimeInMillis();
-			// TODO switch to storing millis as a long
+			// times are kept in seconds as doubles, not millis as a long
 			final double tSecs = tMillis / 1000;
 			times.add(tSecs);
 

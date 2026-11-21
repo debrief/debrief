@@ -65,7 +65,6 @@ public class FitToWindow extends AbstractAction implements CommandAction {
 				double lat1 = tl.getLat();
 				double long2 = br.getLong();
 				double lat2 = br.getLat();
-				// TODO: Ian Turton
 				// Ideally, I'd like to make use of the GTProjection object here but I'm not
 				// sure how to
 				// find it

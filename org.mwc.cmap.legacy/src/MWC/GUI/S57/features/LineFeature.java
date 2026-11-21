@@ -94,8 +94,6 @@ public class LineFeature extends S57Feature {
 				if (startPt == null)
 					startPt = new Point(pt);
 				if (last != null) {
-					if (last.equals(pt)) {
-					}
 					dest.drawLine(last.x, last.y, pt.x, pt.y);
 					// dest.drawText(myFont, "" + ctr, last.x + xOffset, last.y +
 					// yOffset);

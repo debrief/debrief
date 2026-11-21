@@ -548,6 +548,7 @@ public class MyBasicToolBarUI extends javax.swing.plaf.basic.BasicToolBarUI {
 					dragWindow.show();
 				}
 			} catch (final IllegalComponentStateException e) {
+				// not on screen yet: nothing to move
 			}
 		}
 	}
@@ -576,6 +577,7 @@ public class MyBasicToolBarUI extends javax.swing.plaf.basic.BasicToolBarUI {
 				}
 				dragWindow.setOffset(null);
 			} catch (final IllegalComponentStateException e) {
+				// not on screen yet: nothing to move
 			}
 		}
 	}

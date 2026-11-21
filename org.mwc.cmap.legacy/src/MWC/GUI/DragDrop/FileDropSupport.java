@@ -159,6 +159,7 @@ public class FileDropSupport implements DropTargetListener {
 			} catch (final UnsupportedFlavorException e) {
 				System.out.println("NOT SUPPORTED");
 			} catch (final IOException e) {
+				MWC.Utilities.Errors.Trace.trace(e);
 			}
 		} else {
 			p1.rejectDrop();

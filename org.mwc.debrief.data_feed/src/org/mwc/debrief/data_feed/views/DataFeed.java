@@ -320,10 +320,6 @@ public class DataFeed extends ViewPart implements LiveFeedViewer {
 
 		// and stop listening for part activity
 		_myPartMonitor.ditch();
-
-		// also stop listening for time events
-		if (_controllableTime != null) {
-		}
 	}
 
 	private void fillLocalPullDown(final IMenuManager manager) {

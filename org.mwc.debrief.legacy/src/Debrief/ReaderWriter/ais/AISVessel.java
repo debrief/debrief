@@ -178,7 +178,7 @@ public class AISVessel implements IAISMessage, IAISDecodable, Cloneable {
 		this.name = AISDecoder.getDecStringFrom6BitStr(decBytes.substring(112, 232));
 
 		/* Type of ship and cargo type bits 232-239 - 8 bits */
-		// :TODO Ship and Cargo digits should be splitted
+		// the Ship and Cargo digits are read as one value, not split
 		this.shipType = AISDecoder.getDecValueByBinStr(decBytes.substring(232, 240), false);
 
 		final String mmsiStr = Integer.toString(this.mmsi);
@@ -219,9 +219,9 @@ public class AISVessel implements IAISMessage, IAISDecodable, Cloneable {
 		/* Destionation bits 302-421 - 120 bits */
 		this.destination = AISDecoder.getDecStringFrom6BitStr(decBytes.substring(302, 422));
 
-		// TODO: impelemt the rest bits
+		// the rest of the bits are not decoded:
 
-		// TODO: implement vesselType, countryId, msgSrc, cargoType
+		// vesselType, countryId, msgSrc and cargoType are not read
 		// AISVessel aisVessel = new
 		// AISVessel(messageId,imo,mmsi,callSign,name,vesselType,cargoType,
 		// dimA,dimB,dimC,dimD,countryId,msgSrc);

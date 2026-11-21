@@ -328,6 +328,7 @@ public class ImportWord_LEGACY {
 						probIsDate = true;
 					}
 				} catch (final NumberFormatException e) {
+					// not a number: leave it as it was
 				}
 
 				final boolean probHasContent = entry.length() > 8;

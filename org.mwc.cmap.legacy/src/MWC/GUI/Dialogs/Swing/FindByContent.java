@@ -288,12 +288,14 @@ class FindByContent extends JPanel implements FindFilterFactory {
 			} catch (final LocatedException e) {
 				result = true;
 			} catch (final Throwable e) {
+				// can't read the file: it isn't a match
 			}
 
 			try {
 				if (in != null)
 					in.close();
 			} catch (final IOException e) {
+				// nothing more to do if closing fails
 			}
 			return result;
 		}

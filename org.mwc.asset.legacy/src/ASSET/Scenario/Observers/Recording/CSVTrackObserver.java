@@ -225,8 +225,6 @@ public class CSVTrackObserver extends RecordStatusToFileObserverType {
 				final WorldSpeed demSpeed = ds.getSpeed();
 				if (demSpeed != null) {
 					buff.append(df.format(demSpeed.getValueIn(WorldSpeed.M_sec)));
-				} else {
-
 				}
 
 			}

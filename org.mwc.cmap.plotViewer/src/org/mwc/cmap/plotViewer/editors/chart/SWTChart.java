@@ -1195,7 +1195,7 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider 
 
 	// private void setMap(Editable layer)
 	// {
-	// // TODO: I don't think this should be a "setMap" call, I think it should be a
+	// // I don't think this should be a "setMap" call, I think it should be a
 	// // configureMap call. The gtLayer will already know its map object.
 	// // It just needs to re-configure layers are displayed.
 	//

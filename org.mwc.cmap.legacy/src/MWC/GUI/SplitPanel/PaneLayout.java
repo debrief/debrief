@@ -130,7 +130,7 @@ public class PaneLayout implements LayoutManager2 {
 		// System.err.println("adding Component" + constraints);
 		if (constraints instanceof PaneConstraints) {
 			if (justDeleted(newComponent, (PaneConstraints) constraints)) {
-
+				// it was just deleted: justDeleted() has put it back
 			} else if (setComponentConstraints(newComponent, (PaneConstraints) constraints)) { // make sure it has not
 																								// already been added
 				// System.err.println("this is ok; " + ((PaneConstraints)constraints).name + "

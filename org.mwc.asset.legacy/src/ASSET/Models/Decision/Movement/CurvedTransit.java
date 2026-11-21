@@ -110,7 +110,7 @@ public class CurvedTransit {
 
 			int k = (i - 2) * 3;
 			for (int j = -2; j <= 1; j++) {
-				// TODO: Precompute blending matrix
+				// the blending matrix is not precomputed
 				final double b = blend(j, t);
 
 				x += b * cp[k++];

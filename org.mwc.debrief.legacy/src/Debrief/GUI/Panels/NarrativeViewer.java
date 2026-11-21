@@ -541,7 +541,6 @@ public final class NarrativeViewer extends MWC.GUI.Properties.Swing.SwingCustomE
 					super.columnMarginChanged(e);
 					doResize();
 					_changing = false;
-				} else {
 				}
 			}
 
@@ -549,8 +548,7 @@ public final class NarrativeViewer extends MWC.GUI.Properties.Swing.SwingCustomE
 			@Override
 			public void valueChanged(final javax.swing.event.ListSelectionEvent e) {
 				super.valueChanged(e);
-				if (e.getValueIsAdjusting()) {
-				} else {
+				if (!e.getValueIsAdjusting()) {
 					final int index = e.getFirstIndex();
 					if (index != 0) {
 						itemSelected();

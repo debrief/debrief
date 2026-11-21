@@ -369,9 +369,6 @@ public class WriteToCloudObserver extends RecordToFileObserverType implements AS
 
 		_myTemporalCoverages.get(pt).extend(new HiResDate(stat.getTime()));
 
-		if (_mySpatialCoverages == null) {
-
-		}
 
 		// create the fix
 		final HiResDate hrd = new HiResDate(stat.getTime(), 0);

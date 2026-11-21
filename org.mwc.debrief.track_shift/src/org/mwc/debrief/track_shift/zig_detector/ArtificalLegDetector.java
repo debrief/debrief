@@ -71,8 +71,7 @@ public class ArtificalLegDetector implements IOwnshipLegDetector {
 				thisLegStart = thisTime;
 			}
 
-			if (i == 0) {
-			} else {
+			if (i != 0) {
 				// sort out the direction of change
 				final int thisDir;
 				if (thisCourse > lastCourse) {

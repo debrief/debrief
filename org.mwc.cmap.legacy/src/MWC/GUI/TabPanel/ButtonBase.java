@@ -567,12 +567,14 @@ public abstract class ButtonBase extends Canvas {
 			setBorderColor(Color.black);
 			setButtonColor(Color.lightGray);
 		} catch (final PropertyVetoException exc) {
+			// our own property: nobody vetoes it
 		}
 
 		if (OS.isWindows()) {
 			try {
 				setShowFocus(true);
 			} catch (final PropertyVetoException e) {
+				// our own property: nobody vetoes it
 			}
 		}
 	}
@@ -1116,6 +1118,7 @@ public abstract class ButtonBase extends Canvas {
 			try {
 				disabledBorderColor = ColorUtils.lighten(borderColor, 0.466);
 			} catch (final IllegalArgumentException exc) {
+				// unsuitable colour: keep the previous derived colour
 			}
 			repaint();
 
@@ -1148,6 +1151,7 @@ public abstract class ButtonBase extends Canvas {
 				disabledButtonColor = ColorUtils.lighten(buttonColor, 0.333);
 				pressedButtonColor = ColorUtils.darken(buttonColor, 0.250);
 			} catch (final IllegalArgumentException exc) {
+				// unsuitable colour: keep the previous derived colour
 			}
 			repaint();
 
@@ -1421,6 +1425,7 @@ public abstract class ButtonBase extends Canvas {
 				tracker.addImage(buttonImage, 0);
 				tracker.waitForID(0);
 			} catch (final InterruptedException e) {
+				// interrupted: carry on
 			}
 		}
 

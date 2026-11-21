@@ -66,7 +66,7 @@ public class NebulaGanttPainter implements ITimeBarsPainter {
 
 			@Override
 			public void mouseDoubleClick(final MouseEvent e) {
-				// TODO: do not do anything if an event was double-clicked
+				// a double-click is handled like a single click
 				final Date clickedAt = _chart.getGanttComposite().getDateAt(e.x).getTime();
 				if (_earliestEvent.getStartDate().getTime().compareTo(clickedAt) > 0) {
 					// it is too early

@@ -251,6 +251,7 @@ public class MultiScenarioPresenter extends CoreControllerPresenter {
 		}
 
 		if (controlType == StandaloneObserverListHandler.type) {
+			// a standalone observer list: no scenario controller to load
 		} else if (controlType == ScenarioControllerHandler.type) {
 			try {
 				_scenarioController = ASSETReaderWriter.importThisControlFile(controlFile,
