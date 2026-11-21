@@ -1,2 +1,8 @@
-
-  
+# Bundle a Java runtime (Eclipse JustJ) in the macOS products only. Without
+# one, the launcher searches for the user's Java and, on Apple Silicon, can
+# fail with "JVM shared library ... does not contain the JNI_CreateJavaVM
+# symbol". JustJ's install step points DebriefNG.ini's -vm at the bundled JRE.
+requires.0.namespace=org.eclipse.equinox.p2.iu
+requires.0.name=org.eclipse.justj.openjdk.hotspot.jre.full.stripped.feature.group
+requires.0.range=0.0.0
+requires.0.filter=(osgi.os=macosx)
