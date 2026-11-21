@@ -24,6 +24,10 @@ git fetch origin develop --tags
 python3 contribs/PyScripts/release_versions.py plan
 ```
 
+The Debrief version moves by one in its last segment (3.1.46 to 3.1.47). For a
+minor or major release, add `--marketing-version`, here and to `apply`, for
+example `--marketing-version 3.2.0`. Bundle versions still move by one.
+
 This prints every bundle that changed since the last published release, the
 `old → new` version for each file it will touch, the new Debrief version, the
 release tag it will use, and — importantly — any changed paths that belong to
@@ -40,7 +44,8 @@ This:
 
 - increments `Bundle-Version` in each changed plugin's `META-INF/MANIFEST.MF`
 - increments the `version` of each feature that ships a bumped plugin
-- increments the Debrief version in `org.mwc.debrief.product/debriefng.product`
+- increments the Debrief version, or sets the `--marketing-version` given, in
+  `org.mwc.debrief.product/debriefng.product`
   and `org.mwc.debrief.core/about.mappings` (with today's date in the two date
   fields)
 - runs `tycho-versions-plugin:update-pom` to sync all 63 module poms

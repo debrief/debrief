@@ -220,3 +220,40 @@ def test_release_tag_matches_the_published_naming():
     assert rv.release_tag("3.1.44", date(2025, 3, 7)) == "20250307_3_1_44"
     assert rv.release_tag("3.1.45", date(2026, 9, 22)) == "20260922_3_1_45"
     assert rv.TAG_PATTERN.match(rv.release_tag("3.1.45", date(2026, 9, 22)))
+
+
+# ---------------------------------------------------------------------------
+# marketing version and tag name
+# ---------------------------------------------------------------------------
+
+@pytest.mark.parametrize("current,requested,expected", [
+    ("3.1.46", None, "3.1.47"),
+    ("3.1.46", "3.2.0", "3.2.0"),
+    ("3.1.46", "4.0.0", "4.0.0"),
+    ("3.1.46", "3.1.50", "3.1.50"),
+])
+def test_marketing_version_bumps_or_takes_the_requested_one(
+        current, requested, expected):
+    assert rv.next_marketing_version(current, requested) == expected
+
+
+@pytest.mark.parametrize("requested", [
+    "3.1.46",      # not later
+    "3.1.9",       # earlier, though a string compare would say later
+    "3.2",         # wrong number of segments
+    "3.2.0-rc1",   # not plain numbers
+])
+def test_marketing_version_rejects_a_bad_request(requested):
+    with pytest.raises(rv.ReleaseError):
+        rv.next_marketing_version("3.1.46", requested)
+
+
+def test_tag_name_is_the_version_already_on_the_branch(tmp_path, capsys):
+    # tag-name runs after the version PR merges, so about.mappings already
+    # holds the version being released; it must not be bumped again
+    plugin = tmp_path / os.path.dirname(rv.MAPPINGS_FILE)
+    plugin.mkdir(parents=True)
+    (tmp_path / rv.MAPPINGS_FILE).write_text("0=3.2.0\n")
+    assert rv.main(["--root", str(tmp_path), "tag-name",
+                    "--date", "20261110"]) == 0
+    assert capsys.readouterr().out.strip() == "20261110_3_2_0"
