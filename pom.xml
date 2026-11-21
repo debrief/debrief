@@ -162,6 +162,13 @@
              <version>0.0.1-SNAPSHOT</version>
            </artifact>
          </target>
+          <!-- lets the bundled JustJ JRE (macOS products) resolve beside
+               Tycho's placeholder JRE, which it otherwise conflicts with -->
+          <dependency-resolution>
+            <profileProperties>
+              <org.eclipse.justj.buildtime>true</org.eclipse.justj.buildtime>
+            </profileProperties>
+          </dependency-resolution>
           <environments>
 <!--
             <environment>
@@ -184,6 +191,11 @@
               <os>macosx</os>
               <ws>cocoa</ws>
               <arch>x86_64</arch>
+            </environment>
+            <environment>
+              <os>macosx</os>
+              <ws>cocoa</ws>
+              <arch>aarch64</arch>
             </environment>
           </environments>
          </configuration>
@@ -275,6 +287,58 @@
             <version>${tycho.version}</version>
             <configuration>
 	      <argLine>-Xms512m -Xmx1024m -Dorg.eclipse.ui.testsDisableWorkbenchAutoSave=true -XstartOnFirstThread</argLine>
+            </configuration>
+          </plugin>
+          <plugin>
+            <!-- SWT on Cocoa must run on the main thread -->
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-surefire-plugin</artifactId>
+            <configuration>
+              <argLine>-Xmx1024m -DbuildMode=true -Dorg.eclipse.ui.testsDisableWorkbenchAutoSave=true -XstartOnFirstThread</argLine>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+    <profile>
+      <!-- Apple Silicon: list this Mac's environment first, so plugin unit
+           tests get the Cocoa aarch64 SWT fragment rather than GTK -->
+      <id>mac-aarch64</id>
+      <activation>
+        <os>
+          <family>mac</family>
+          <arch>aarch64</arch>
+        </os>
+      </activation>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.eclipse.tycho</groupId>
+            <artifactId>target-platform-configuration</artifactId>
+            <version>${tycho.version}</version>
+            <configuration>
+              <environments combine.self="override">
+                <environment>
+                  <os>macosx</os>
+                  <ws>cocoa</ws>
+                  <arch>aarch64</arch>
+                </environment>
+                <environment>
+                  <os>macosx</os>
+                  <ws>cocoa</ws>
+                  <arch>x86_64</arch>
+                </environment>
+                <environment>
+                  <os>linux</os>
+                  <ws>gtk</ws>
+                  <arch>x86_64</arch>
+                </environment>
+                <environment>
+                  <os>win32</os>
+                  <ws>win32</ws>
+                  <arch>x86_64</arch>
+                </environment>
+              </environments>
             </configuration>
           </plugin>
         </plugins>

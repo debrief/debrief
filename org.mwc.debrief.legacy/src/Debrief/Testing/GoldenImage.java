@@ -77,7 +77,7 @@ public final class GoldenImage {
 	 */
 	public static void assertMatches(final String name, final BufferedImage actual, final int channelTolerance,
 			final double maxDifferentFraction) throws IOException {
-		final File golden = new File(GoldenFile.dir(), name);
+		final File golden = goldenFile(name);
 		if (GoldenFile.isRegenerating()) {
 			golden.getParentFile().mkdirs();
 			ImageIO.write(actual, "png", golden);
@@ -110,6 +110,27 @@ public final class GoldenImage {
 					100 * maxDifferentFraction, actualFile.getCanonicalPath(), diffFile.getCanonicalPath(),
 					GoldenFile.REGENERATE_ENV));
 		}
+	}
+
+	/**
+	 * the reference PNG for this name on this OS. Fonts rasterise differently on
+	 * macOS, so there the references are kept apart, in a {@value #MACOS_DIR}
+	 * folder beside the Linux ones: "rendering/sample_dpf.png" becomes
+	 * "rendering/macos/sample_dpf.png". Other platforms use the Linux references.
+	 */
+	public static File goldenFile(final String name) {
+		final File linux = new File(GoldenFile.dir(), name);
+		if (!isMacOS()) {
+			return linux;
+		}
+		return new File(new File(linux.getParentFile(), MACOS_DIR), linux.getName());
+	}
+
+	/** folder, beside the Linux references, that holds the macOS references */
+	public static final String MACOS_DIR = "macos";
+
+	private static boolean isMacOS() {
+		return System.getProperty("os.name", "").toLowerCase().startsWith("mac");
 	}
 
 	/** compare two images of the same size */

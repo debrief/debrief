@@ -246,7 +246,7 @@ jobs:
         run: |
           mkdir -p review-builds
           products=org.mwc.debrief.product/target/products
-          for pair in Windows64Bit:Windows-x64 MacOSX64Bit:macOS-x64 Linux64Bit:Linux-x64; do
+          for pair in Windows64Bit:Windows-x64 MacOSX64Bit:macOS-x64 MacOSXArm64:macOS-arm64 Linux64Bit:Linux-x64; do
             src="${products}/DebriefNG-${pair%%:*}.zip"
             [ -f "$src" ] && ln -f "$src" "review-builds/DebriefNG-${pair##*:}-${SHA}.zip"
           done
@@ -268,6 +268,14 @@ jobs:
         if: always() && !startsWith(github.ref, 'refs/tags/')
         with:
           path: review-builds/DebriefNG-macOS-x64-${{ steps.meta.outputs.sha }}.zip
+          archive: false
+          retention-days: 7
+          if-no-files-found: warn
+      - name: Upload macOS Apple Silicon build
+        uses: actions/upload-artifact@v7
+        if: always() && !startsWith(github.ref, 'refs/tags/')
+        with:
+          path: review-builds/DebriefNG-macOS-arm64-${{ steps.meta.outputs.sha }}.zip
           archive: false
           retention-days: 7
           if-no-files-found: warn
@@ -333,6 +341,7 @@ jobs:
           files: |
                  org.mwc.debrief.product/target/products/DebriefNG-Linux64Bit.zip
                  org.mwc.debrief.product/target/products/DebriefNG-MacOSX64Bit.zip
+                 org.mwc.debrief.product/target/products/DebriefNG-MacOSXArm64.zip
                  org.mwc.debrief.product/target/products/DebriefNG-Windows64Bit.zip
                  org.mwc.debrief.product/target/products/P2_Repository.zip
                  org.mwc.debrief.legacy/dist/DebriefLegacy*.jar
