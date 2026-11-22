@@ -262,8 +262,8 @@ public class CommandLine {
 						try {
 							Thread.sleep(100);
 						} catch (final InterruptedException e) {
-							e.printStackTrace(); // To change body of catch statement use
-													// Options | File Templates.
+							Thread.currentThread().interrupt();
+							break;
 						}
 					}
 
@@ -423,8 +423,8 @@ public class CommandLine {
 			try {
 				Thread.sleep(50);
 			} catch (final InterruptedException e) {
-				e.printStackTrace(); // To change body of catch statement use Options |
-										// File Templates.
+				Thread.currentThread().interrupt();
+				break;
 			}
 
 		}

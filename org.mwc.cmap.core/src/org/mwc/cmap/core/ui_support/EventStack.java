@@ -62,7 +62,8 @@ public class EventStack {
 				try {
 					Thread.sleep(10);
 				} catch (final InterruptedException e) {
-					// we can not do anything about it, let's ignore
+					// asked to stop: end the runner
+					return;
 				}
 			}
 		}

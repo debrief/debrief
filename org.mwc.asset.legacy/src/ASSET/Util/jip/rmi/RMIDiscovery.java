@@ -197,7 +197,7 @@ public class RMIDiscovery {
 				try {
 					_lock.wait();
 				} catch (final InterruptedException ex) {
-					ex.printStackTrace();
+					Thread.currentThread().interrupt();
 					return null;
 				}
 			}
@@ -228,7 +228,7 @@ public class RMIDiscovery {
 				try {
 					_lock.wait();
 				} catch (final InterruptedException ex) {
-					ex.printStackTrace();
+					Thread.currentThread().interrupt();
 					return null;
 				}
 			}

@@ -259,7 +259,8 @@ public class LiveStream implements PushBufferStream, Runnable {
 					try {
 						wait(1000);
 					} catch (final InterruptedException ie) {
-						// interrupted: carry on
+						Thread.currentThread().interrupt();
+						return;
 					}
 				} // while
 			}
@@ -269,7 +270,8 @@ public class LiveStream implements PushBufferStream, Runnable {
 				try {
 					Thread.sleep(10);
 				} catch (final InterruptedException ise) {
-					// interrupted: carry on
+					Thread.currentThread().interrupt();
+					return;
 				}
 			}
 		} // while (started)

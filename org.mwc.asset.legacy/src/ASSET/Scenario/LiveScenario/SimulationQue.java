@@ -80,7 +80,8 @@ public class SimulationQue implements ISimulationQue {
 				try {
 					Thread.sleep(200);
 				} catch (final InterruptedException e) {
-					e.printStackTrace();
+					Thread.currentThread().interrupt();
+					return;
 				}
 			}
 		}
@@ -158,7 +159,8 @@ public class SimulationQue implements ISimulationQue {
 			try {
 				Thread.sleep(100);
 			} catch (final InterruptedException e) {
-				e.printStackTrace();
+				Thread.currentThread().interrupt();
+				break;
 			}
 		}
 

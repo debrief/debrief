@@ -299,7 +299,7 @@ public class Startup implements IStartup {
 						Thread.sleep(500);
 						Display.getDefault().asyncExec(this);// retry for IEditorRegistry
 					} catch (final InterruptedException e) {
-						e.printStackTrace();
+						Thread.currentThread().interrupt();
 					}
 				}
 			}

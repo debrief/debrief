@@ -217,7 +217,8 @@ public class ImageLoader implements Runnable {
 					try {
 						loaderMutex.wait();
 					} catch (final InterruptedException ex) {
-						// ignore
+						// asked to stop: end the loader thread
+						return;
 					}
 					continue;
 				}

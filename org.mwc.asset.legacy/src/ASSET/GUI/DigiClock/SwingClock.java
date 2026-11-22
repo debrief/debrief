@@ -109,7 +109,8 @@ public class SwingClock extends javax.swing.JComponent {
 		try {
 			tracker.waitForID(0);
 		} catch (final InterruptedException e) {
-			// interrupted: carry on
+			// carry on with the image as it is, keep the interrupt
+			Thread.currentThread().interrupt();
 		}
 		return image;
 	}

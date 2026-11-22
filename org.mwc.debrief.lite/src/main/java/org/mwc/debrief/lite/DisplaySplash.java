@@ -119,7 +119,9 @@ public class DisplaySplash extends JFrame implements ActionListener, Runnable {
 					splash.update();
 					Thread.sleep(delay);
 				} catch (final InterruptedException e) {
-					// ignore
+					// stop the animation, keep the interrupt
+					Thread.currentThread().interrupt();
+					break;
 				}
 			}
 		} else {

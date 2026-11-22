@@ -673,7 +673,8 @@ public class DebriefLiteApp implements FileDropListener {
 		try {
 			t.join();
 		} catch (final InterruptedException e) {
-			// ignore
+			// carry on without the splash, keep the interrupt
+			Thread.currentThread().interrupt();
 		}
 
 		// configure the default fonts, etc

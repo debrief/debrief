@@ -241,7 +241,7 @@ public class CorePlugin extends AbstractUIPlugin implements ClipboardOwner, Pref
 					try {
 						Thread.sleep(100);
 					} catch (final InterruptedException e) {
-						CorePlugin.logError(IStatus.ERROR, "Property edit interruption", e);
+						Thread.currentThread().interrupt();
 					}
 
 					// now update the selection
