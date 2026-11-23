@@ -10,6 +10,5 @@
 	<classpathentry kind="src" path="intro/"/>
 	<classpathentry exported="true" kind="lib" path="eclipselink.jar"/>
 	<classpathentry exported="true" kind="lib" path="jaxb-api.jar"/>
-	<classpathentry exported="true" kind="lib" path="jaxb-impl.jar"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>
