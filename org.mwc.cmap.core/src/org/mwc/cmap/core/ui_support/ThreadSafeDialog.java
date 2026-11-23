@@ -15,6 +15,7 @@
 package org.mwc.cmap.core.ui_support;
 
 import java.lang.reflect.Method;
+import java.util.concurrent.CountDownLatch;
 
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.swt.widgets.Display;
@@ -54,7 +55,7 @@ public abstract class ThreadSafeDialog<T> extends Dialog {
 	 * we need to store the selection locally, so it can be passed into the lock
 	 * object
 	 */
-	private T selection;
+	private volatile T selection;
 
 	protected ThreadSafeDialog(final Shell parentShell) {
 		super(parentShell);
@@ -73,29 +74,29 @@ public abstract class ThreadSafeDialog<T> extends Dialog {
 			return selection = internalOpenDialog();
 		}
 
-		final Object lock = new Object();
+		// a latch, not wait/notify: the UI thread may open (and close) the dialog
+		// before this thread starts to wait, and a notification sent that early
+		// would be lost, leaving this thread waiting for ever
+		final CountDownLatch done = new CountDownLatch(1);
 
 		final Display current = Display.getDefault();
 
 		current.asyncExec(new Runnable() {
 			@Override
 			public void run() {
-				synchronized (lock) {
-					try {
-						selection = internalOpenDialog();
-					} finally {
-						lock.notify();
-					}
+				try {
+					selection = internalOpenDialog();
+				} finally {
+					done.countDown();
 				}
 			}
 		});
 
-		synchronized (lock) {
-			try {
-				lock.wait();
-			} catch (final InterruptedException e) {
-				e.printStackTrace();
-			}
+		try {
+			done.await();
+		} catch (final InterruptedException e) {
+			e.printStackTrace();
+			Thread.currentThread().interrupt();
 		}
 		return selection;
 	}
