@@ -82,7 +82,15 @@ mvn -pl org.mwc.cmap.geotools.libs generate-resources
 python3 .github/scripts/geotools_manifest.py
 ```
 
-CI runs the script with `--check`. JAXB 2 (`javax.xml.bind`), which
+CI runs the script with `--check`.
+
+When a jar that GeoTools brings in has a security fix GeoTools has not picked
+up yet, raise it in the module's `<dependencyManagement>`: guava is at
+`guava.version` (33.8.0-jre) rather than GeoTools 35.2's 33.5.0-jre
+(GHSA-xxph-c9ww-hj94, debrief/debrief#5355). Drop the entry once GeoTools asks
+for that version or later.
+
+JAXB 2 (`javax.xml.bind`), which
 Debrief's GPX code and the DIS plugin use and which used to come with the
 GeoTools 21 jars, is fetched into `org.mwc.debrief.core` instead (table above).
 
