@@ -454,6 +454,61 @@ jobs:
           path: org.mwc.debrief.lite/temp.folder/reports/
           if-no-files-found: ignore
 
+  # The build's tests on macOS (Apple Silicon), where SWT, fonts and the
+  # default locale differ from Linux. No xvfb: the runner has a display. The
+  # product is left out: it has no tests, and the Linux build packages it.
+  # The Linux cache isn't restored: Actions caches are per OS.
+  macos-tests:
+    name: Tests on macOS (Apple Silicon)
+    needs: changes
+    if: needs.changes.outputs.software == 'true'
+    runs-on: macos-15
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+      - name: Set up Java
+        uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: '21'
+      # The first ./mvnw call downloads the pinned Maven from Central; the
+      # wrapper does not retry, so a network blip would fail the whole job
+      - name: Cache the pinned Maven
+        uses: actions/cache@v6
+        with:
+          path: ~/.m2/wrapper
+          key: maven-dist-${{ hashFiles('.mvn/wrapper/maven-wrapper.properties') }}
+      - name: Fetch the pinned Maven
+        run: |
+          # Central's outages last a minute or two: back off 15, 30, 45, 60 s
+          for n in 1 2 3 4 5; do
+            ./mvnw --version && exit 0
+            echo "::warning::[attempt ${n}/5] the Maven wrapper could not fetch Maven"
+            [ "$n" = 5 ] || sleep $((15 * n))
+          done
+          echo "::error::the Maven wrapper could not fetch Maven after 5 attempts"
+          exit 1
+      - name: Build and run tests
+        run: ./mvnw -B clean verify -fae -pl '!org.mwc.debrief.product'
+      - name: Upload golden image failures
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: golden-failures-macos
+          path: org.mwc.debrief.lite/target/golden-failures/
+          if-no-files-found: ignore
+      - name: Upload test reports
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: macos-test-reports
+          path: |
+            */target/surefire-reports/
+            org.mwc.debrief.lite/temp.folder/headless-reports/
+          if-no-files-found: ignore
+
   # The Debrief NG UI tests (SWTBot, org.mwc.debrief.ui.test): the RCP product's
   # workbench, driven under xvfb. Separate from the main build, like Lite's UI
   # tests, while it proves stable. See docs/testing/rcp-ui-suite-plan.md.
