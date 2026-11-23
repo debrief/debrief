@@ -169,9 +169,13 @@ jobs:
                 platform: 'Windows x64',
                 note: 'Java 21 bundled — unzip and run `DebriefNG.exe`',
               }),
+              row('DebriefNG-macOS-arm64', {
+                platform: 'macOS Apple Silicon',
+                note: 'Java 21 bundled; native arm64 build',
+              }),
               row('DebriefNG-macOS-x64', {
-                platform: 'macOS x64',
-                note: '**Requires Java 21 on the PATH**; Intel build, runs under Rosetta 2',
+                platform: 'macOS Intel',
+                note: 'Java 21 bundled; Intel build (also runs under Rosetta 2)',
               }),
               row('DebriefNG-Linux-x64', {
                 platform: 'Linux x64',

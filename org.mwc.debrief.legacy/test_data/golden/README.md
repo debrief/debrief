@@ -22,6 +22,8 @@ On a failure the test writes the actual image and a diff (different pixels in re
 
 The references are made on CI's Linux runner, because fonts differ between machines. To regenerate them, take the actual images from that artifact, or run the regeneration below on Ubuntu 24.04.
 
+macOS rasterises text differently enough to fail those references, so on a Mac `GoldenImage` uses its own set, in a `macos/` folder beside each Linux set (for example `rendering/macos/sample_dpf_800x600.png`), with the same tolerances. CI doesn't run on macOS, so these are kept up to date by hand: when a Linux reference is regenerated for an intended change, regenerate the macOS one on a Mac too (the command below, without `xvfb-run`), and compare the two before committing. Regenerating on a Mac writes only the `macos/` images, but it rewrites the text golden files too: check `git status` and keep only the changes you meant.
+
 ## Regenerating
 
 Do this only when a change in the output is intended. Run the tests with the environment variable set:

@@ -28,8 +28,37 @@
 
 	<packaging>eclipse-repository</packaging>
 
+	<!-- JustJ Java runtime, bundled in the macOS products (see p2.inf). Here
+	     rather than in the target platform, whose planner can't resolve it
+	     beside Tycho's placeholder JRE. -->
+	<repositories>
+		<repository>
+			<id>justj-21</id>
+			<layout>p2</layout>
+			<url>https://download.eclipse.org/justj/jres/21/updates/release/21.0.13/</url>
+		</repository>
+	</repositories>
+
 	<build>
 		<plugins>
+			<plugin>
+				<!-- dependency resolution doesn't read p2.inf, so name the JRE
+				     here too, for it to reach the product's repository -->
+				<groupId>org.eclipse.tycho</groupId>
+				<artifactId>target-platform-configuration</artifactId>
+				<version>${tycho.version}</version>
+				<configuration>
+					<dependency-resolution>
+						<extraRequirements>
+							<requirement>
+								<type>p2-installable-unit</type>
+								<id>org.eclipse.justj.openjdk.hotspot.jre.full.stripped.feature.group</id>
+								<versionRange>0.0.0</versionRange>
+							</requirement>
+						</extraRequirements>
+					</dependency-resolution>
+				</configuration>
+			</plugin>
 			<plugin>
 				<groupId>org.eclipse.tycho</groupId>
 				<artifactId>tycho-p2-repository-plugin</artifactId>
@@ -84,6 +113,7 @@
 								<copy file="${project.build.directory}/products/DebriefNG-linux.gtk.x86_64.zip" tofile="${project.build.directory}/products/DebriefNG-Linux64Bit.zip" verbose="yes"/>
 								<copy file="${project.build.directory}/products/DebriefNG-win32.win32.x86_64.zip" tofile="${project.build.directory}/products/DebriefNG-Windows64Bit.zip" verbose="yes"/>
 								<copy file="${project.build.directory}/products/DebriefNG-macosx.cocoa.x86_64.zip" tofile="${project.build.directory}/products/DebriefNG-MacOSX64Bit.zip" verbose="yes"/>
+								<copy file="${project.build.directory}/products/DebriefNG-macosx.cocoa.aarch64.zip" tofile="${project.build.directory}/products/DebriefNG-MacOSXArm64.zip" verbose="yes"/>
 								<copy file="${project.build.directory}/product-${project.version}.zip" tofile="${project.build.directory}/products/P2_Repository.zip" verbose="yes"/>
 							</target>
 						</configuration>

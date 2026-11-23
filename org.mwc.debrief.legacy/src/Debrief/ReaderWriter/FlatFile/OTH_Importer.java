@@ -26,6 +26,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.Locale;
 import java.util.Enumeration;
 import java.util.List;
 
@@ -286,7 +287,7 @@ public class OTH_Importer {
 				final int useYear;
 				if (year == YEAR_UNKNOWN) {
 					// ok. is the month before or after this one?
-					final DateFormat dm2 = new GMTDateFormat("MMMyy");
+					final DateFormat dm2 = new GMTDateFormat("MMMyy", Locale.ENGLISH);
 					final int thisYear = LocalDate.now().getYear() - 2000;
 					final Date monDate = dm2.parse(monStr + thisYear);
 					if (monDate.getTime() > new Date().getTime()) {
@@ -300,7 +301,7 @@ public class OTH_Importer {
 				}
 
 				final String wholeStr = dateStr + monStr + useYear;
-				final DateFormat df = new GMTDateFormat("ddHHmm'Z'MMMyy");
+				final DateFormat df = new GMTDateFormat("ddHHmm'Z'MMMyy", Locale.ENGLISH);
 				final Date date = df.parse(wholeStr);
 				res = new HiResDate(date);
 			} catch (final ParseException fe) {
